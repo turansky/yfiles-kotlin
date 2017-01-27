@@ -1,1 +1,1 @@
-# api-js-to-kotlin
+# API JS to Kotlin wrappers converter

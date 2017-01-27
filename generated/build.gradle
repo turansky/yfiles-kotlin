@@ -1,0 +1,62 @@
+group 'com.test.kotlin.wrapper'
+version '0.1-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.1.0-beta-17'
+    repositories {
+        mavenCentral()
+        // Kotlin Dev Repo
+        maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin2js'
+
+def defaultOutputDir = 'out';
+
+clean.doFirst {
+    delete defaultOutputDir
+}
+
+compileKotlin2Js {
+    kotlinOptions {
+        outputFile = "$defaultOutputDir/test.js"
+        moduleKind = 'amd'
+        metaInfo = false
+        sourceMap = false
+    }
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+
+    main.output.resourcesDir = defaultOutputDir
+}
+
+repositories {
+    mavenCentral()
+    // Kotlin Dev Repo
+    maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-js-library:$kotlin_version"
+}
+
+build.doLast {
+    configurations.compile.each { File file ->
+        copy {
+            includeEmptyDirs = false
+
+            from zipTree(file.absolutePath)
+            into "${defaultOutputDir}/lib"
+            include { fileTreeElement ->
+                def path = fileTreeElement.path
+                path.endsWith('.js') && !path.endsWith('.meta.js') && (path.startsWith('META-INF/resources/') || !path.startsWith('META-INF/'))
+            }
+        }
+    }
+}
