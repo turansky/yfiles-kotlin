@@ -43,7 +43,7 @@ open class Declaration(val data: Data) {
 
         val NAMESPACE = "@namespace"
         val CLASS = "@class "
-        val INTERFACE = "@interface "
+        val INTERFACE = "@interface"
         val CONSTRUCTOR = "@constructor"
 
         val CONST = "@const"
@@ -73,7 +73,7 @@ open class Declaration(val data: Data) {
                 return ClassDec(data, lines)
             }
 
-            if (lines.any { it.startsWith(INTERFACE) }) {
+            if (lines.contains(INTERFACE)) {
                 return InterfaceDec(data, lines)
             }
 
@@ -145,16 +145,30 @@ class Undefined(data: Data) : Declaration(data)
 
 class FileGenerator(private val declarations: List<Declaration>) {
 
-    private val classDataList: Set<FQN>
-    private val interfaceDataList: Set<FQN>
+    private val classDataList: Set<ClassFile>
+    private val interfaceDataList: Set<InterfaceFile>
 
     init {
-        classDataList = declarations.filter({ it is ClassDec || it is Constructor })
-                .map { FQN(it.data.name) }
-                .toSet()
+        val classDataList = mutableListOf<ClassFile>()
+        classDataList.addAll(
+                declarations.filter({ it is ClassDec }).map({ ClassFile(FQN(it.data.name)) })
+        )
+
+        declarations.filter({ it is Constructor }).forEach {
+            val fqn = FQN(it.data.name)
+            var classFile = classDataList.firstOrNull { it.fqn == fqn }
+            if (classFile == null) {
+                classFile = ClassFile(fqn)
+                classDataList.add(classFile)
+            }
+            classFile.constructors.add(it as Constructor)
+        }
+
+        this.classDataList = classDataList.toSet()
+
 
         interfaceDataList = declarations.filter({ it is InterfaceDec })
-                .map { FQN(it.data.name) }
+                .map { InterfaceFile(it as InterfaceDec) }
                 .toSet()
     }
 
@@ -162,39 +176,57 @@ class FileGenerator(private val declarations: List<Declaration>) {
         directory.mkdirs()
         directory.deleteRecursively()
 
-        for (classData in classDataList) {
-            val dir = directory.resolve(classData.path)
-            dir.mkdirs()
-
-            val file = dir.resolve("${classData.name}.kt")
-            file.writeText(
-                    "package ${classData.packageName}\n" +
-                            "\n" +
-                            "external class ${classData.name} {\n" +
-                            "}"
-            )
-        }
-
-        for (interfaceData in interfaceDataList) {
-            val dir = directory.resolve(interfaceData.path)
-            dir.mkdirs()
-
-            val file = dir.resolve("${interfaceData.name}.kt")
-            file.writeText(
-                    "package ${interfaceData.packageName}\n" +
-                            "\n" +
-                            "external interface ${interfaceData.name} {\n" +
-                            "}"
-            )
-        }
+        classDataList.forEach { generate(directory, it) }
+        interfaceDataList.forEach { generate(directory, it) }
     }
 
-    class FQN(fqn: String) {
+    private fun generate(directory: File, generatedFile: GeneratedFile) {
+        val fqn = generatedFile.fqn
+        val dir = directory.resolve(fqn.path)
+            dir.mkdirs()
+
+        val file = dir.resolve("${fqn.name}.kt")
+        file.writeText("${generatedFile.header}\n${generatedFile.content()}")
+    }
+
+    class FQN(val fqn: String) {
         private val names = fqn.split(".")
         private val packageNames = names.subList(0, names.size - 1)
 
         val name = names.last()
         val packageName = packageNames.joinToString(separator = ".")
         val path = packageNames.joinToString(separator = "/")
+
+        override fun equals(other: Any?): Boolean {
+            return other is FQN && other.fqn == fqn
+        }
+
+        override fun hashCode(): Int {
+            return fqn.hashCode()
+        }
+    }
+
+    abstract class GeneratedFile(val fqn: FQN) {
+        val header: String
+            get() = "package ${fqn.packageName}\n"
+
+        abstract fun content(): String
+    }
+
+    class ClassFile(fqn: FQN) : GeneratedFile(fqn) {
+        var declaration: ClassDec? = null
+        var constructors: MutableList<Constructor> = mutableListOf()
+
+        override fun content(): String {
+            return "external class ${fqn.name} {\n" +
+                    "}"
+        }
+    }
+
+    class InterfaceFile(val declaration: InterfaceDec) : GeneratedFile(FQN(declaration.data.name)) {
+        override fun content(): String {
+            return "external interface ${fqn.name} {\n" +
+                    "}"
+        }
     }
 }
