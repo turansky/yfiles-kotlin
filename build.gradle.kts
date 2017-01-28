@@ -176,7 +176,7 @@ class FileGenerator(private val declarations: List<Declaration>) {
             file.writeText(
                     "package ${packageNames.joinToString(separator = ".")}\n" +
                             "\n" +
-                            "class $className {\n" +
+                            "class $name {\n" +
                             "}"
             )
         }
