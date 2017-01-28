@@ -13,13 +13,9 @@ fun generateKotlinWrappers(sourceFile: File) {
     val declarations = mutableListOf<Declaration>()
     while (lines.hasNext()) {
         val declaration = DeclarationReader.read(lines)
-        if (declaration is ClassDec) {
-            println(declaration.data.name)
-        }
         declarations.add(declaration)
     }
 
-    println("Declarations count: ${declarations.size}")
     val fileGenerator = FileGenerator(declarations)
     fileGenerator.generate(projectDir.resolve("generated/src/main/kotlin"))
 }
@@ -78,7 +74,7 @@ open class Declaration(val data: Data) {
             }
 
             if (lines.any { it.startsWith(INTERFACE) }) {
-                return Interface(data, lines)
+                return InterfaceDec(data, lines)
             }
 
             if (lines.contains(CONSTRUCTOR)) {
@@ -123,7 +119,7 @@ class ClassDec(data: Data, private val lines: List<String>) : Declaration(data) 
 
 }
 
-class Interface(data: Data, private val lines: List<String>) : Declaration(data) {
+class InterfaceDec(data: Data, private val lines: List<String>) : Declaration(data) {
 
 }
 
@@ -149,36 +145,56 @@ class Undefined(data: Data) : Declaration(data)
 
 class FileGenerator(private val declarations: List<Declaration>) {
 
-    private val classNames: Set<String>
+    private val classDataList: Set<FQN>
+    private val interfaceDataList: Set<FQN>
 
     init {
-        classNames = declarations.filter({ it is ClassDec || it is Constructor })
-                .map { it.data.name }
+        classDataList = declarations.filter({ it is ClassDec || it is Constructor })
+                .map { FQN(it.data.name) }
                 .toSet()
 
-        println(classNames.joinToString(separator = "\n"))
-        println("Classes: ${classNames.size}")
+        interfaceDataList = declarations.filter({ it is InterfaceDec })
+                .map { FQN(it.data.name) }
+                .toSet()
     }
 
     fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
 
-        for (className in classNames) {
-            val names = className.split(".")
-            val name = names.last()
-            val packageNames = names.subList(0, names.size - 1)
-            val relativePath = packageNames.joinToString(separator = "/")
-            val dir = directory.resolve(relativePath)
+        for (classData in classDataList) {
+            val dir = directory.resolve(classData.path)
             dir.mkdirs()
 
-            val file = dir.resolve("$name.kt")
+            val file = dir.resolve("${classData.name}.kt")
             file.writeText(
-                    "package ${packageNames.joinToString(separator = ".")}\n" +
+                    "package ${classData.packageName}\n" +
                             "\n" +
-                            "class $name {\n" +
+                            "external class ${classData.name} {\n" +
                             "}"
             )
         }
+
+        for (interfaceData in interfaceDataList) {
+            val dir = directory.resolve(interfaceData.path)
+            dir.mkdirs()
+
+            val file = dir.resolve("${interfaceData.name}.kt")
+            file.writeText(
+                    "package ${interfaceData.packageName}\n" +
+                            "\n" +
+                            "external interface ${interfaceData.name} {\n" +
+                            "}"
+            )
+        }
+    }
+
+    class FQN(fqn: String) {
+        private val names = fqn.split(".")
+        private val packageNames = names.subList(0, names.size - 1)
+
+        val name = names.last()
+        val packageName = packageNames.joinToString(separator = ".")
+        val path = packageNames.joinToString(separator = "/")
     }
 }
