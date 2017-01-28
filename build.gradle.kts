@@ -21,7 +21,7 @@ fun generateKotlinWrappers(sourceFile: File) {
 
     println("Declarations count: ${declarations.size}")
     val fileGenerator = FileGenerator(declarations)
-    fileGenerator.generate()
+    fileGenerator.generate(projectDir.resolve("generated/src/main/kotlin"))
 }
 
 object DeclarationReader {
@@ -160,7 +160,25 @@ class FileGenerator(private val declarations: List<Declaration>) {
         println("Classes: ${classNames.size}")
     }
 
-    fun generate() {
-        TODO()
+    fun generate(directory: File) {
+        directory.mkdirs()
+        directory.deleteRecursively()
+
+        for (className in classNames) {
+            val names = className.split(".")
+            val name = names.last()
+            val packageNames = names.subList(0, names.size - 1)
+            val relativePath = packageNames.joinToString(separator = "/")
+            val dir = directory.resolve(relativePath)
+            dir.mkdirs()
+
+            val file = dir.resolve("$name.kt")
+            file.writeText(
+                    "package ${packageNames.joinToString(separator = ".")}\n" +
+                            "\n" +
+                            "class $className {\n" +
+                            "}"
+            )
+        }
     }
 }
