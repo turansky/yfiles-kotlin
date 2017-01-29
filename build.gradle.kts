@@ -93,8 +93,10 @@ open class Declaration(val data: Data) {
         }
 
         fun parseType(line: String): String {
-            val regex = Regex.fromLiteral(".*\\{(.+)\\}.*")
-            return line.replace(regex, "$1")
+            val i1 = line.indexOf("{")
+            val i2 = line.indexOf("}")
+
+            return line.substring(i1 + 1, i2)
                     .replace(".<", "<")
                     .replace("object", "yfiles.lang.Object")
                     .replace("boolean", "Boolean")
@@ -222,7 +224,7 @@ class FileGenerator(declarations: List<Declaration>) {
     private fun generate(directory: File, generatedFile: GeneratedFile) {
         val fqn = generatedFile.fqn
         val dir = directory.resolve(fqn.path)
-            dir.mkdirs()
+        dir.mkdirs()
 
         val file = dir.resolve("${fqn.name}.kt")
         file.writeText("${generatedFile.header}\n${generatedFile.content()}")
@@ -274,8 +276,17 @@ class FileGenerator(declarations: List<Declaration>) {
 
     class InterfaceFile(val declaration: InterfaceDec) : GeneratedFile(FQN(declaration.data.name)) {
         override fun content(): String {
+            val constants = consts.map {
+                // TODO: Check. Quick fix for generics in constants
+                val type = it.type.replace("<T>", "")
+                "val ${it.name}: $type = noImpl"
+            }.joinToString("\n")
+
             return "external interface ${fqn.name} {\n" +
-                    "}"
+                    "    companion object {\n" +
+                    constants + "\n" +
+                    "    }\n" +
+                    "}\n"
         }
     }
 }
