@@ -62,6 +62,23 @@ open class Declaration(val data: Data) {
         val GETS_OR_SETS = "Gets or sets"
         val NULL_VALUE = "null;"
 
+        val FUNCTION_START = "function("
+        val FUNCTION_END = "): "
+
+        val GENERIC_START = ".<"
+        val GENERIC_END = ">"
+
+        // TODO: move to script parameter
+        val OBJECT_TYPE = "yfiles.lang.Object"
+
+        val STANDARD_TYPE_MAP = mapOf(
+                "Object" to OBJECT_TYPE,
+                "object" to OBJECT_TYPE,
+                "boolean" to "Boolean",
+                "string" to "String",
+                "number" to "Number"
+        )
+
         fun parse(source: String, lines: List<String>): Declaration {
             val data = Data.parse(source)
 
@@ -92,16 +109,40 @@ open class Declaration(val data: Data) {
             return Function(data, lines)
         }
 
-        fun parseType(line: String): String {
+        fun parseTypeLine(line: String): String {
             val i1 = line.indexOf("{")
             val i2 = line.indexOf("}")
 
-            return line.substring(i1 + 1, i2)
-                    .replace(".<", "<")
-                    .replace("object", "yfiles.lang.Object")
-                    .replace("boolean", "Boolean")
-                    .replace("string", "String")
-                    .replace("number", "Number")
+            val type = line.substring(i1 + 1, i2)
+            if (type.startsWith(FUNCTION_START)) {
+                return parseFunctionType(type)
+            }
+            return parseType(type)
+        }
+
+        fun parseType(type: String): String {
+            val standardType = STANDARD_TYPE_MAP[type]
+            if (standardType != null) {
+                return standardType
+            }
+
+            if (!type.contains(GENERIC_START)) {
+                return type
+            }
+
+            return parseGenericType(type)
+        }
+
+        fun parseGenericType(type: String): String {
+            val mainType = StringUtil.till(type, GENERIC_START)
+            val parametrizedTypes = StringUtil.between(type, GENERIC_START, GENERIC_END).split(",").map { parseType(it) }
+            return "$mainType<${parametrizedTypes.joinToString(", ")}>"
+        }
+
+        fun parseFunctionType(type: String): String {
+            val parameterTypes = StringUtil.between(type, FUNCTION_START, FUNCTION_END).split(",").map({ parseType(it) })
+            val resultType = parseType(StringUtil.from(type, FUNCTION_END))
+            return "(${parameterTypes.joinToString(", ")}) -> $resultType"
         }
     }
 }
@@ -148,7 +189,7 @@ class Const(data: Data, lines: List<String>) : Declaration(data) {
     val className: String
 
     init {
-        type = parseType(lines.first { it.startsWith(TYPE) })
+        type = parseTypeLine(lines.first { it.startsWith(TYPE) })
 
         val names = data.name.split(".")
         name = names.last()
@@ -175,11 +216,7 @@ class Function(data: Data, private val lines: List<String>) : Declaration(data) 
 
     init {
         val value = data.value
-        if (!value.startsWith(START) || !value.endsWith(END)) {
-            throw GradleException("Invalid function declaration: ${data.source}")
-        }
-
-        val parameterNames = value.substring(START.length, value.length - END.length).split(",")
+        val parameterNames = StringUtil.hardBetween(value, START, END).split(",")
         parameters = parameterNames.map { Parameter(it, "") }
     }
 }
@@ -198,7 +235,13 @@ class FileGenerator(declarations: List<Declaration>) {
     init {
         val classDataList = mutableListOf<ClassFile>()
         classDataList.addAll(
-                declarations.filter({ it is ClassDec }).map({ ClassFile(FQN(it.data.name)) })
+                declarations
+                        .filter({ it is ClassDec })
+                        .map({
+                            val classFile = ClassFile(FQN(it.data.name))
+                            classFile.declaration = it as ClassDec
+                            return@map classFile
+                        })
         )
 
         declarations.filter({ it is Constructor }).forEach {
@@ -321,11 +364,59 @@ class FileGenerator(declarations: List<Declaration>) {
 
     class InterfaceFile(val declaration: InterfaceDec) : GeneratedFile(FQN(declaration.data.name)) {
         override fun content(): String {
-
-
             return "external interface ${fqn.name} {\n" +
                     companionContent() +
                     "}\n"
         }
+    }
+}
+
+object StringUtil {
+    fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
+        val startIndex = str.indexOf(start)
+        if (startIndex == -1) {
+            throw GradleException("String doesn't contains '$start'")
+        }
+
+        val endIndex = if (firstEnd) {
+            str.indexOf(end)
+        } else {
+            str.lastIndexOf(end)
+        }
+        if (endIndex == -1) {
+            throw GradleException("String doesn't contains '$end'")
+        }
+
+        return str.substring(startIndex + start.length, endIndex)
+    }
+
+    fun hardBetween(str: String, start: String, end: String): String {
+        if (!str.startsWith(start)) {
+            throw GradleException("String '$this' not started from '$start'")
+        }
+
+        if (!str.endsWith(end)) {
+            throw GradleException("String '$this' not ended with '$end'")
+        }
+
+        return str.substring(start.length, str.length - end.length)
+    }
+
+    fun till(str: String, end: String): String {
+        val endIndex = str.indexOf(end)
+        if (endIndex == -1) {
+            throw GradleException("String doesn't contains '$end'")
+        }
+
+        return str.substring(0, endIndex)
+    }
+
+    fun from(str: String, start: String): String {
+        val startIndex = str.lastIndexOf(start)
+        if (startIndex == -1) {
+            throw GradleException("String doesn't contains '$start'")
+        }
+
+        return str.substring(startIndex + start.length)
     }
 }
