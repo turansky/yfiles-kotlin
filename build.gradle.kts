@@ -106,20 +106,20 @@ open class Declaration(val data: Data) {
     }
 }
 
-class Data(val name: String, val value: String) {
+class Data(val source: String, val name: String, val value: String) {
     companion object {
         fun parse(source: String): Data {
             val items = source.split("=")
             if (items.size == 1) {
                 val name = source.substring(0, source.length - 1)
-                return Data(name, Declaration.NULL_VALUE)
+                return Data(source, name, Declaration.NULL_VALUE)
             }
 
             if (items.size != 2) {
                 throw GradleException("Invalid declaration: '$source'")
             }
 
-            return Data(items[0], items[1])
+            return Data(source, items[0], items[1])
         }
     }
 
@@ -166,7 +166,22 @@ class Property(data: Data, private val lines: List<String>) : Declaration(data) 
 }
 
 class Function(data: Data, private val lines: List<String>) : Declaration(data) {
+    companion object {
+        val START = "function("
+        val END = "){};"
+    }
 
+    val parameters: List<Parameter>
+
+    init {
+        val value = data.value
+        if (!value.startsWith(START) || !value.endsWith(END)) {
+            throw GradleException("Invalid function declaration: ${data.source}")
+        }
+
+        val parameterNames = value.substring(START.length, value.length - END.length).split(",")
+        parameters = parameterNames.map { Parameter(it, "") }
+    }
 }
 
 data class Parameter(val name: String, val type: String)
@@ -249,9 +264,38 @@ class FileGenerator(declarations: List<Declaration>) {
 
     abstract class GeneratedFile(val fqn: FQN) {
         val consts: MutableList<Const> = mutableListOf()
+        val staticConsts: List<Const>
+            get() = consts.filter { it.static }
+        val memeberConsts: List<Const>
+            get() = consts.filter { !it.static }
 
         val header: String
             get() = "package ${fqn.packageName}\n"
+
+        open protected fun isStatic(): Boolean {
+            return false
+        }
+
+        protected fun companionContent(): String {
+            val items = staticConsts.map {
+                // TODO: Check. Quick fix for generics in constants
+                val type = it.type.replace("<T>", "")
+                "        val ${it.name}: $type = noImpl"
+            }
+
+            if (items.isEmpty()) {
+                return ""
+            }
+
+            val result = items.joinToString("\n") + "\n"
+            if (isStatic()) {
+                return result
+            }
+
+            return "    companion object {\n" +
+                    result +
+                    "    }\n"
+        }
 
         abstract fun content(): String
     }
@@ -260,7 +304,7 @@ class FileGenerator(declarations: List<Declaration>) {
         var declaration: ClassDec? = null
         val constructors: MutableList<Constructor> = mutableListOf()
 
-        private fun isStatic(): Boolean {
+        override fun isStatic(): Boolean {
             return declaration?.static ?: false
         }
 
@@ -270,22 +314,17 @@ class FileGenerator(declarations: List<Declaration>) {
 
         override fun content(): String {
             return "external ${type()} ${fqn.name} {\n" +
+                    companionContent() +
                     "}"
         }
     }
 
     class InterfaceFile(val declaration: InterfaceDec) : GeneratedFile(FQN(declaration.data.name)) {
         override fun content(): String {
-            val constants = consts.map {
-                // TODO: Check. Quick fix for generics in constants
-                val type = it.type.replace("<T>", "")
-                "val ${it.name}: $type = noImpl"
-            }.joinToString("\n")
+
 
             return "external interface ${fqn.name} {\n" +
-                    "    companion object {\n" +
-                    constants + "\n" +
-                    "    }\n" +
+                    companionContent() +
                     "}\n"
         }
     }
