@@ -91,6 +91,16 @@ open class Declaration(val data: Data) {
 
             return Function(data, lines)
         }
+
+        fun parseType(line: String): String {
+            val regex = Regex.fromLiteral(".*\\{(.+)\\}.*")
+            return line.replace(regex, "$1")
+                    .replace(".<", "<")
+                    .replace("object", "yfiles.lang.Object")
+                    .replace("boolean", "Boolean")
+                    .replace("string", "String")
+                    .replace("number", "Number")
+        }
     }
 }
 
@@ -116,7 +126,9 @@ class Data(val name: String, val value: String) {
 }
 
 class ClassDec(data: Data, private val lines: List<String>) : Declaration(data) {
-
+    val static = lines.contains(STATIC)
+    val open = !lines.contains(FINAL)
+    val abstract = lines.contains(ABSTRACT)
 }
 
 class InterfaceDec(data: Data, private val lines: List<String>) : Declaration(data) {
@@ -127,8 +139,24 @@ class Constructor(data: Data, private val lines: List<String>) : Declaration(dat
 
 }
 
-class Const(data: Data, private val lines: List<String>) : Declaration(data) {
+class Const(data: Data, lines: List<String>) : Declaration(data) {
+    val static = lines.contains(STATIC)
+    val type: String
+    val name: String
+    val className: String
 
+    init {
+        type = parseType(lines.first { it.startsWith(TYPE) })
+
+        val names = data.name.split(".")
+        name = names.last()
+
+        var i = names.size - 2
+        if (names[i] == "prototype") {
+            i--
+        }
+        className = names.subList(0, i + 1).joinToString(separator = ".")
+    }
 }
 
 class Property(data: Data, private val lines: List<String>) : Declaration(data) {
@@ -139,11 +167,13 @@ class Function(data: Data, private val lines: List<String>) : Declaration(data) 
 
 }
 
+data class Parameter(val name: String, val type: String)
+
 class Namespace(data: Data) : Declaration(data)
 
 class Undefined(data: Data) : Declaration(data)
 
-class FileGenerator(private val declarations: List<Declaration>) {
+class FileGenerator(declarations: List<Declaration>) {
 
     private val classDataList: Set<ClassFile>
     private val interfaceDataList: Set<InterfaceFile>
@@ -166,10 +196,19 @@ class FileGenerator(private val declarations: List<Declaration>) {
 
         this.classDataList = classDataList.toSet()
 
-
         interfaceDataList = declarations.filter({ it is InterfaceDec })
                 .map { InterfaceFile(it as InterfaceDec) }
                 .toSet()
+
+        val generatedData = mutableListOf<GeneratedFile>()
+        generatedData.addAll(classDataList)
+        generatedData.addAll(interfaceDataList)
+
+        declarations.filter({ it is Const }).forEach {
+            val fqn = FQN((it as Const).className)
+            val classFile = generatedData.first { it.fqn == fqn }
+            classFile.consts.add(it)
+        }
     }
 
     fun generate(directory: File) {
@@ -207,6 +246,8 @@ class FileGenerator(private val declarations: List<Declaration>) {
     }
 
     abstract class GeneratedFile(val fqn: FQN) {
+        val consts: MutableList<Const> = mutableListOf()
+
         val header: String
             get() = "package ${fqn.packageName}\n"
 
@@ -215,10 +256,18 @@ class FileGenerator(private val declarations: List<Declaration>) {
 
     class ClassFile(fqn: FQN) : GeneratedFile(fqn) {
         var declaration: ClassDec? = null
-        var constructors: MutableList<Constructor> = mutableListOf()
+        val constructors: MutableList<Constructor> = mutableListOf()
+
+        private fun isStatic(): Boolean {
+            return declaration?.static ?: false
+        }
+
+        private fun type(): String {
+            return if (isStatic()) "object" else "class"
+        }
 
         override fun content(): String {
-            return "external class ${fqn.name} {\n" +
+            return "external ${type()} ${fqn.name} {\n" +
                     "}"
         }
     }
