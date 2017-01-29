@@ -54,6 +54,7 @@ open class Declaration(val data: Data) {
 
         val IMPLEMENTS = "@implements"
         val EXTENDS = "@extends"
+        val TEMPLATE = "@template "
 
         val PARAM = "@param"
         val RETURNS = "@returns"
@@ -168,18 +169,30 @@ class Data(val source: String, val name: String, val value: String) {
         get() = value == Declaration.NULL_VALUE
 }
 
-class ClassDec(data: Data, private val lines: List<String>) : Declaration(data) {
+open class InstanceDec(data: Data, protected val lines: List<String>) : Declaration(data) {
+    fun genericParameters(): List<GenericParameter> {
+        val templateLine = lines.firstOrNull { it.startsWith(TEMPLATE) }
+                ?: return emptyList()
+        val names = StringUtil.from(templateLine, TEMPLATE).split(",")
+        // TODO: support generic type read
+        return names.map { GenericParameter(it, "") }
+    }
+}
+
+class ClassDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
     val static = lines.contains(STATIC)
     val open = !lines.contains(FINAL)
     val abstract = lines.contains(ABSTRACT)
 }
 
-class InterfaceDec(data: Data, private val lines: List<String>) : Declaration(data) {
+class InterfaceDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
 
 }
 
 class Constructor(data: Data, private val lines: List<String>) : Declaration(data) {
-
+    fun toClassDec(): ClassDec {
+        return ClassDec(data, lines)
+    }
 }
 
 class Const(data: Data, lines: List<String>) : Declaration(data) {
@@ -222,6 +235,7 @@ class Function(data: Data, private val lines: List<String>) : Declaration(data) 
 }
 
 data class Parameter(val name: String, val type: String)
+data class GenericParameter(val name: String, val type: String)
 
 class Namespace(data: Data) : Declaration(data)
 
@@ -236,22 +250,15 @@ class FileGenerator(declarations: List<Declaration>) {
         val classDataList = mutableListOf<ClassFile>()
         classDataList.addAll(
                 declarations
-                        .filter({ it is ClassDec })
-                        .map({
-                            val classFile = ClassFile(FQN(it.data.name))
-                            classFile.declaration = it as ClassDec
-                            return@map classFile
-                        })
+                        .filterIsInstance(ClassDec::class.java)
+                        .map({ ClassFile(it) })
         )
 
-        declarations.filter({ it is Constructor }).forEach {
+        declarations.filterIsInstance(Constructor::class.java).forEach {
             val fqn = FQN(it.data.name)
-            var classFile = classDataList.firstOrNull { it.fqn == fqn }
-            if (classFile == null) {
-                classFile = ClassFile(fqn)
-                classDataList.add(classFile)
-            }
-            classFile.constructors.add(it as Constructor)
+            val classFile = classDataList.firstOrNull { it.fqn == fqn }
+                    ?: ClassFile(it.toClassDec()).apply { classDataList.add(this) }
+            classFile.constructors.add(it)
         }
 
         this.classDataList = classDataList.toSet()
@@ -267,7 +274,7 @@ class FileGenerator(declarations: List<Declaration>) {
         declarations.filter({ it is Const }).forEach {
             val fqn = FQN((it as Const).className)
             val classFile = generatedData.first { it.fqn == fqn }
-            classFile.consts.add(it)
+            classFile.addItem(it)
         }
     }
 
@@ -305,15 +312,33 @@ class FileGenerator(declarations: List<Declaration>) {
         }
     }
 
-    abstract class GeneratedFile(val fqn: FQN) {
-        val consts: MutableList<Const> = mutableListOf()
+    abstract class GeneratedFile(private val declaration: InstanceDec) {
+        val fqn: FQN = FQN(declaration.data.name)
+        private val items: MutableList<Declaration> = mutableListOf()
+
+        val consts: List<Const>
+            get() = items.filterIsInstance(Const::class.java)
+
         val staticConsts: List<Const>
             get() = consts.filter { it.static }
+
         val memeberConsts: List<Const>
             get() = consts.filter { !it.static }
 
         val header: String
             get() = "package ${fqn.packageName}\n"
+
+        fun addItem(item: Declaration) {
+            items.add(item)
+        }
+
+        fun genericParameters(): String {
+            val parameters = declaration.genericParameters()
+            if (parameters.isEmpty()) {
+                return ""
+            }
+            return "<${parameters.map { it.name }.joinToString(", ")}>"
+        }
 
         open protected fun isStatic(): Boolean {
             return false
@@ -322,7 +347,7 @@ class FileGenerator(declarations: List<Declaration>) {
         protected fun companionContent(): String {
             val items = staticConsts.map {
                 // TODO: Check. Quick fix for generics in constants
-                val type = it.type.replace("<T>", "")
+                val type = it.type // .replace("<T>", "")
                 "        val ${it.name}: $type = noImpl"
             }
 
@@ -343,12 +368,11 @@ class FileGenerator(declarations: List<Declaration>) {
         abstract fun content(): String
     }
 
-    class ClassFile(fqn: FQN) : GeneratedFile(fqn) {
-        var declaration: ClassDec? = null
+    class ClassFile(private val declaration: ClassDec) : GeneratedFile(declaration) {
         val constructors: MutableList<Constructor> = mutableListOf()
 
         override fun isStatic(): Boolean {
-            return declaration?.static ?: false
+            return declaration.static
         }
 
         private fun type(): String {
@@ -356,15 +380,15 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         override fun content(): String {
-            return "external ${type()} ${fqn.name} {\n" +
+            return "external ${type()} ${fqn.name}${genericParameters()} {\n" +
                     companionContent() +
                     "}"
         }
     }
 
-    class InterfaceFile(val declaration: InterfaceDec) : GeneratedFile(FQN(declaration.data.name)) {
+    class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
         override fun content(): String {
-            return "external interface ${fqn.name} {\n" +
+            return "external interface ${fqn.name}${genericParameters()} {\n" +
                     companionContent() +
                     "}\n"
         }
