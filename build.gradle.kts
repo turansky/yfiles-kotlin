@@ -1,3 +1,4 @@
+import Build_gradle.Declaration.Companion.ENUM_TYPE
 import org.gradle.api.GradleException
 import java.io.File
 import java.nio.charset.Charset
@@ -41,6 +42,10 @@ object DeclarationReader {
 open class Declaration(val data: Data) {
     companion object {
 
+        // TODO: move to script parameter
+        val OBJECT_TYPE = "yfiles.lang.Object"
+        val ENUM_TYPE = "yfiles.lang.Enum"
+
         val NAMESPACE = "@namespace"
         val CLASS = "@class "
         val INTERFACE = "@interface"
@@ -52,13 +57,14 @@ open class Declaration(val data: Data) {
         val ABSTRACT = "@abstract"
         val PROTECTED = "@protected"
 
-        val IMPLEMENTS = "@implements"
-        val EXTENDS = "@extends"
+        val IMPLEMENTS = "@implements "
+        val EXTENDS = "@extends "
+        val EXTENDS_ENUM = "${EXTENDS}{${ENUM_TYPE}}"
         val TEMPLATE = "@template "
 
-        val PARAM = "@param"
-        val RETURNS = "@returns"
-        val TYPE = "@type"
+        val PARAM = "@param "
+        val RETURNS = "@returns "
+        val TYPE = "@type "
 
         val GETS_OR_SETS = "Gets or sets"
         val NULL_VALUE = "null;"
@@ -68,9 +74,6 @@ open class Declaration(val data: Data) {
 
         val GENERIC_START = ".<"
         val GENERIC_END = ">"
-
-        // TODO: move to script parameter
-        val OBJECT_TYPE = "yfiles.lang.Object"
 
         val STANDARD_TYPE_MAP = mapOf(
                 "Object" to OBJECT_TYPE,
@@ -95,12 +98,20 @@ open class Declaration(val data: Data) {
                 return InterfaceDec(data, lines)
             }
 
+            if (lines.contains(EXTENDS_ENUM)) {
+                return EnumDec(data, lines)
+            }
+
             if (lines.contains(CONSTRUCTOR)) {
                 return Constructor(data, lines)
             }
 
             if (lines.contains(CONST)) {
                 return Const(data, lines)
+            }
+
+            if (!source.contains("=")) {
+                return EnumValue(data, lines)
             }
 
             if (data.nullValue) {
@@ -189,6 +200,10 @@ class InterfaceDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
 
 }
 
+class EnumDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
+
+}
+
 class Constructor(data: Data, private val lines: List<String>) : Declaration(data) {
     fun toClassDec(): ClassDec {
         return ClassDec(data, lines)
@@ -234,6 +249,18 @@ class Function(data: Data, private val lines: List<String>) : Declaration(data) 
     }
 }
 
+class EnumValue(data: Data, private val lines: List<String>) : Declaration(data) {
+    val className: String
+    val name: String
+
+    init {
+        val dataName = data.name
+        val index = dataName.lastIndexOf(".")
+        className = dataName.substring(0, index)
+        name = dataName.substring(index + 1, dataName.length)
+    }
+}
+
 data class Parameter(val name: String, val type: String)
 data class GenericParameter(val name: String, val type: String)
 
@@ -243,12 +270,13 @@ class Undefined(data: Data) : Declaration(data)
 
 class FileGenerator(declarations: List<Declaration>) {
 
-    private val classDataList: Set<ClassFile>
-    private val interfaceDataList: Set<InterfaceFile>
+    private val classFileList: Set<ClassFile>
+    private val interfaceFileList: Set<InterfaceFile>
+    private val enumFileList: Set<EnumFile>
 
     init {
-        val classDataList = mutableListOf<ClassFile>()
-        classDataList.addAll(
+        val classFileList = mutableListOf<ClassFile>()
+        classFileList.addAll(
                 declarations
                         .filterIsInstance(ClassDec::class.java)
                         .map({ ClassFile(it) })
@@ -256,24 +284,35 @@ class FileGenerator(declarations: List<Declaration>) {
 
         declarations.filterIsInstance(Constructor::class.java).forEach {
             val fqn = FQN(it.data.name)
-            val classFile = classDataList.firstOrNull { it.fqn == fqn }
-                    ?: ClassFile(it.toClassDec()).apply { classDataList.add(this) }
+            val classFile = classFileList.firstOrNull { it.fqn == fqn }
+                    ?: ClassFile(it.toClassDec()).apply { classFileList.add(this) }
             classFile.constructors.add(it)
         }
 
-        this.classDataList = classDataList.toSet()
+        this.classFileList = classFileList.toSet()
 
-        interfaceDataList = declarations.filter({ it is InterfaceDec })
-                .map { InterfaceFile(it as InterfaceDec) }
+        interfaceFileList = declarations.filterIsInstance(InterfaceDec::class.java)
+                .map { InterfaceFile(it) }
+                .toSet()
+
+        enumFileList = declarations.filterIsInstance(EnumDec::class.java)
+                .map { EnumFile(it) }
                 .toSet()
 
         val generatedData = mutableListOf<GeneratedFile>()
-        generatedData.addAll(classDataList)
-        generatedData.addAll(interfaceDataList)
+        generatedData.addAll(classFileList)
+        generatedData.addAll(interfaceFileList)
+        generatedData.addAll(enumFileList)
 
-        declarations.filter({ it is Const }).forEach {
-            val fqn = FQN((it as Const).className)
+        declarations.filterIsInstance(Const::class.java).forEach {
+            val fqn = FQN(it.className)
             val classFile = generatedData.first { it.fqn == fqn }
+            classFile.addItem(it)
+        }
+
+        declarations.filterIsInstance(EnumValue::class.java).forEach {
+            val fqn = FQN(it.className)
+            val classFile = enumFileList.first { it.fqn == fqn }
             classFile.addItem(it)
         }
     }
@@ -282,8 +321,9 @@ class FileGenerator(declarations: List<Declaration>) {
         directory.mkdirs()
         directory.deleteRecursively()
 
-        classDataList.forEach { generate(directory, it) }
-        interfaceDataList.forEach { generate(directory, it) }
+        classFileList.forEach { generate(directory, it) }
+        interfaceFileList.forEach { generate(directory, it) }
+        enumFileList.forEach { generate(directory, it) }
     }
 
     private fun generate(directory: File, generatedFile: GeneratedFile) {
@@ -314,7 +354,7 @@ class FileGenerator(declarations: List<Declaration>) {
 
     abstract class GeneratedFile(private val declaration: InstanceDec) {
         val fqn: FQN = FQN(declaration.data.name)
-        private val items: MutableList<Declaration> = mutableListOf()
+        protected val items: MutableList<Declaration> = mutableListOf()
 
         val consts: List<Const>
             get() = items.filterIsInstance(Const::class.java)
@@ -347,7 +387,8 @@ class FileGenerator(declarations: List<Declaration>) {
         protected fun companionContent(): String {
             val items = staticConsts.map {
                 // TODO: Check. Quick fix for generics in constants
-                val type = it.type // .replace("<T>", "")
+                // One case - IListEnumerable.EMPTY
+                val type = it.type.replace("<T>", "<out Any>")
                 "        val ${it.name}: $type = noImpl"
             }
 
@@ -376,7 +417,15 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         private fun type(): String {
-            return if (isStatic()) "object" else "class"
+            if (isStatic()) {
+                return "object"
+            }
+
+            if (declaration.open) {
+                return "open class"
+            }
+
+            return "class"
         }
 
         override fun content(): String {
@@ -390,6 +439,17 @@ class FileGenerator(declarations: List<Declaration>) {
         override fun content(): String {
             return "external interface ${fqn.name}${genericParameters()} {\n" +
                     companionContent() +
+                    "}\n"
+        }
+    }
+
+    class EnumFile(declaration: EnumDec) : GeneratedFile(declaration) {
+        override fun content(): String {
+            val values = items.filterIsInstance(EnumValue::class.java)
+                    .map { "    val ${it.name}: ${it.className} = noImpl" }
+                    .joinToString("\n")
+            return "external object ${fqn.name}: ${ENUM_TYPE} {\n" +
+                    values + "\n" +
                     "}\n"
         }
     }
