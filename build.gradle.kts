@@ -421,6 +421,12 @@ class FileGenerator(declarations: List<Declaration>) {
                 return "object"
             }
 
+            // no such cases
+            // JS specific?
+            if (declaration.abstract) {
+                return "abstract class"
+            }
+
             if (declaration.open) {
                 return "open class"
             }
