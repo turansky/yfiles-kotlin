@@ -178,6 +178,8 @@ open class Declaration(val data: Data) {
                 if (indexes.all { it == -1 }) {
                     return parameters
                 }
+
+                // TODO: check calculation
                 index = indexes.map({ if (it == -1) 100000 else it })
                         .minWith(Comparator { o1, o2 -> Math.min(o1, o2) }) ?: -1
 
