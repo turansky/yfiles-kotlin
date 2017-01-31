@@ -142,13 +142,50 @@ open class Declaration(val data: Data) {
                 return type
             }
 
-            return parseGenericType(type)
+            val mainType = StringUtil.till(type, GENERIC_START)
+            var parameters = StringUtil.between(type, GENERIC_START, GENERIC_END)
+            val parametrizedTypes = mutableListOf<String>()
+
+            while (true) {
+                val parameter = firstGenericParameter(parameters)
+                parametrizedTypes.add(parseType(parameter))
+                if (parameter == parameters) {
+                    break
+                }
+
+                parameters = parameters.substring(parameter.length)
+            }
+
+            return "$mainType<${parametrizedTypes.joinToString(", ")}>"
         }
 
-        fun parseGenericType(type: String): String {
-            val mainType = StringUtil.till(type, GENERIC_START)
-            val parametrizedTypes = StringUtil.between(type, GENERIC_START, GENERIC_END).split(",").map { parseType(it) }
-            return "$mainType<${parametrizedTypes.joinToString(", ")}>"
+        fun firstGenericParameter(parameters: String): String {
+            var semafor = 0
+            var index = 0
+
+            while (true) {
+                val indexes = listOf(
+                        parameters.indexOf(",", index),
+                        parameters.indexOf(".<", index),
+                        parameters.indexOf(">", index)
+                )
+
+                if (indexes.all { it == -1 }) {
+                    return parameters
+                }
+                index = indexes.map({ if (it == -1) 100000 else it }).min() ?: -1
+
+                if (index == -1 || index == parameters.lastIndex) {
+                    return parameters
+                }
+
+                when (indexes.indexOf(index)) {
+                    0 -> if (semafor == 0) return parameters.substring(0, index)
+                    1 -> semafor++
+                    2 -> semafor--
+                }
+                index++
+            }
         }
 
         fun parseFunctionType(type: String): String {
@@ -187,6 +224,12 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
         val names = StringUtil.from(templateLine, TEMPLATE).split(",")
         // TODO: support generic type read
         return names.map { GenericParameter(it, "") }
+    }
+
+    fun implementedTypes(): List<String> {
+        return lines.filter { it.startsWith(IMPLEMENTS) }
+                .map { StringUtil.between(it, IMPLEMENTS + "{", "}", true) }
+                .map { parseType(it) }
     }
 }
 
@@ -372,6 +415,18 @@ class FileGenerator(declarations: List<Declaration>) {
             items.add(item)
         }
 
+        protected fun parentTypes(): List<String> {
+            return declaration.implementedTypes()
+        }
+
+        protected fun parentString(): String {
+            val parentTypes = parentTypes()
+            if (parentTypes.isEmpty()) {
+                return ""
+            }
+            return ": " + parentTypes.joinToString(", ")
+        }
+
         fun genericParameters(): String {
             val parameters = declaration.genericParameters()
             if (parameters.isEmpty()) {
@@ -435,7 +490,7 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         override fun content(): String {
-            return "external ${type()} ${fqn.name}${genericParameters()} {\n" +
+            return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
                     "}"
         }
@@ -443,7 +498,7 @@ class FileGenerator(declarations: List<Declaration>) {
 
     class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
         override fun content(): String {
-            return "external interface ${fqn.name}${genericParameters()} {\n" +
+            return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
                     "}\n"
         }
@@ -465,7 +520,7 @@ object StringUtil {
     fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
         val startIndex = str.indexOf(start)
         if (startIndex == -1) {
-            throw GradleException("String doesn't contains '$start'")
+            throw GradleException("String '$str' doesn't contains '$start'")
         }
 
         val endIndex = if (firstEnd) {
@@ -474,7 +529,7 @@ object StringUtil {
             str.lastIndexOf(end)
         }
         if (endIndex == -1) {
-            throw GradleException("String doesn't contains '$end'")
+            throw GradleException("String '$str' doesn't contains '$end'")
         }
 
         return str.substring(startIndex + start.length, endIndex)
@@ -482,11 +537,11 @@ object StringUtil {
 
     fun hardBetween(str: String, start: String, end: String): String {
         if (!str.startsWith(start)) {
-            throw GradleException("String '$this' not started from '$start'")
+            throw GradleException("String '$str' not started from '$start'")
         }
 
         if (!str.endsWith(end)) {
-            throw GradleException("String '$this' not ended with '$end'")
+            throw GradleException("String '$str' not ended with '$end'")
         }
 
         return str.substring(start.length, str.length - end.length)
@@ -495,7 +550,7 @@ object StringUtil {
     fun till(str: String, end: String): String {
         val endIndex = str.indexOf(end)
         if (endIndex == -1) {
-            throw GradleException("String doesn't contains '$end'")
+            throw GradleException("String '$str' doesn't contains '$end'")
         }
 
         return str.substring(0, endIndex)
@@ -504,7 +559,7 @@ object StringUtil {
     fun from(str: String, start: String): String {
         val startIndex = str.lastIndexOf(start)
         if (startIndex == -1) {
-            throw GradleException("String doesn't contains '$start'")
+            throw GradleException("String '$str' doesn't contains '$start'")
         }
 
         return str.substring(startIndex + start.length)
