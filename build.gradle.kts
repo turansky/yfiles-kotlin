@@ -2,6 +2,7 @@ import Build_gradle.Declaration.Companion.ENUM_TYPE
 import org.gradle.api.GradleException
 import java.io.File
 import java.nio.charset.Charset
+import java.util.*
 
 task("build") {
     val source = project.properties["apiFile"] ?: throw GradleException("Invalid 'apiFile' parameter value!")
@@ -143,23 +144,27 @@ open class Declaration(val data: Data) {
             }
 
             val mainType = StringUtil.till(type, GENERIC_START)
-            var parameters = StringUtil.between(type, GENERIC_START, GENERIC_END)
-            val parametrizedTypes = mutableListOf<String>()
-
-            while (true) {
-                val parameter = firstGenericParameter(parameters)
-                parametrizedTypes.add(parseType(parameter))
-                if (parameter == parameters) {
-                    break
-                }
-
-                parameters = parameters.substring(parameter.length)
-            }
-
+            val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
             return "$mainType<${parametrizedTypes.joinToString(", ")}>"
         }
 
-        fun firstGenericParameter(parameters: String): String {
+        fun parseGenericParameters(parameters: String): List<String> {
+            // TODO: temp hack for generic, logic check required
+            if (!parameters.contains(GENERIC_START)) {
+                return parameters.split(",").map { parseType(it) }
+            }
+
+            val firstType = firstGenericType(parameters)
+            if (firstType == parameters) {
+                return listOf(parseType(firstType))
+            }
+
+            val types = mutableListOf(firstType)
+            types.addAll(parseGenericParameters(parameters.substring(firstType.length + 1)))
+            return types.toList()
+        }
+
+        fun firstGenericType(parameters: String): String {
             var semafor = 0
             var index = 0
 
@@ -173,7 +178,8 @@ open class Declaration(val data: Data) {
                 if (indexes.all { it == -1 }) {
                     return parameters
                 }
-                index = indexes.map({ if (it == -1) 100000 else it }).min() ?: -1
+                index = indexes.map({ if (it == -1) 100000 else it })
+                        .minWith(Comparator { o1, o2 -> Math.min(o1, o2) }) ?: -1
 
                 if (index == -1 || index == parameters.lastIndex) {
                     return parameters
