@@ -45,6 +45,7 @@ open class Declaration(val data: Data) {
 
         // TODO: move to script parameter
         val OBJECT_TYPE = "yfiles.lang.Object"
+        val CLASS_TYPE = "yfiles.lang.Class"
         val ENUM_TYPE = "yfiles.lang.Enum"
 
         val NAMESPACE = "@namespace"
@@ -81,7 +82,8 @@ open class Declaration(val data: Data) {
                 "object" to OBJECT_TYPE,
                 "boolean" to "Boolean",
                 "string" to "String",
-                "number" to "Number"
+                "number" to "Number",
+                "void" to "Unit"
         )
 
         fun parse(source: String, lines: List<String>): Declaration {
@@ -146,6 +148,45 @@ open class Declaration(val data: Data) {
             val mainType = StringUtil.till(type, GENERIC_START)
             val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
             return "$mainType<${parametrizedTypes.joinToString(", ")}>"
+        }
+
+        fun parseParamLine(line: String, function: String): Parameter {
+            // TODO: remove, when api file will be updated
+            if (line.startsWith("@param value")) {
+                return when (function) {
+                    "yfiles.collections.IList.prototype.set" -> Parameter("value", "T")
+                    "yfiles.collections.IMapper.prototype.set" -> Parameter("value", "V")
+                    "yfiles.graphml.CreationProperties.prototype.set" -> Parameter("value", OBJECT_TYPE)
+                    "yfiles.algorithms.YList.prototype.set" -> Parameter("value", OBJECT_TYPE)
+                    "yfiles.collections.IMap.prototype.set" -> Parameter("value", "TValue")
+                    else -> throw GradleException()
+                }
+            }
+
+            if (line.startsWith("@param options.")) {
+                return Parameter("", "")
+            }
+
+            var name = StringUtil.from2(line, "} ").split(" ").get(0)
+            var defaultValue: String? = null
+            if (name.startsWith("[")) {
+                val data = StringUtil.hardBetween(name, "[", "]").split("=")
+                name = data[0]
+                defaultValue = data[1]
+            }
+            var rawType = StringUtil.between(line, " {", "} ", true)
+            val vararg = rawType.startsWith("...")
+            if (vararg) {
+                rawType = rawType.substring(3)
+            }
+            val type = if (rawType.startsWith(FUNCTION_START)) {
+                val parameterTypes = StringUtil.between(rawType, FUNCTION_START, FUNCTION_END).split(", ").map { parseType(it) }
+                val resultType = parseType(StringUtil.from(rawType, FUNCTION_END))
+                "(${parameterTypes.joinToString(", ")}) -> $resultType"
+            } else {
+                parseType(rawType)
+            }
+            return Parameter(name, type, defaultValue, vararg)
         }
 
         fun parseGenericParameters(parameters: String): List<String> {
@@ -255,7 +296,7 @@ class EnumDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
 
 }
 
-class Constructor(data: Data, private val lines: List<String>) : Declaration(data) {
+class Constructor(data: Data, lines: List<String>) : Function(data, lines) {
     fun toClassDec(): ClassDec {
         return ClassDec(data, lines)
     }
@@ -285,7 +326,7 @@ class Property(data: Data, private val lines: List<String>) : Declaration(data) 
 
 }
 
-class Function(data: Data, private val lines: List<String>) : Declaration(data) {
+open class Function(data: Data, protected val lines: List<String>) : Declaration(data) {
     companion object {
         val START = "function("
         val END = "){};"
@@ -295,8 +336,26 @@ class Function(data: Data, private val lines: List<String>) : Declaration(data) 
 
     init {
         val value = data.value
-        val parameterNames = StringUtil.hardBetween(value, START, END).split(",")
-        parameters = parameterNames.map { Parameter(it, "") }
+        val parameterNames = StringUtil.hardBetween(value, START, END).split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        if (parameterNames.isEmpty()) {
+            parameters = emptyList()
+        } else {
+            println(data.name)
+
+            val parametersMap = lines.filter { it.startsWith(PARAM) }.map { parseParamLine(it, data.name) }.associate { Pair(it.name, it) }
+            parameters = parameterNames.map { name ->
+                val parameter = parametersMap.get(name)
+                if (parameter != null) {
+                    return@map parameter ?: throw GradleException("Why this check needed? Possibly bug.")
+                }
+
+                return@map if (name.endsWith("Type")) {
+                    Parameter(name, CLASS_TYPE)
+                } else {
+                    throw GradleException("No type info about parameter '$name' in function\n'${data.name}'")
+                }
+            }
+        }
     }
 }
 
@@ -312,7 +371,7 @@ class EnumValue(data: Data, private val lines: List<String>) : Declaration(data)
     }
 }
 
-data class Parameter(val name: String, val type: String)
+data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
 data class GenericParameter(val name: String, val type: String)
 
 class Namespace(data: Data) : Declaration(data)
@@ -337,7 +396,7 @@ class FileGenerator(declarations: List<Declaration>) {
             val fqn = FQN(it.data.name)
             val classFile = classFileList.firstOrNull { it.fqn == fqn }
                     ?: ClassFile(it.toClassDec()).apply { classFileList.add(this) }
-            classFile.constructors.add(it)
+            classFile.addItem(it)
         }
 
         this.classFileList = classFileList.toSet()
@@ -473,7 +532,7 @@ class FileGenerator(declarations: List<Declaration>) {
     }
 
     class ClassFile(private val declaration: ClassDec) : GeneratedFile(declaration) {
-        val constructors: MutableList<Constructor> = mutableListOf()
+        private val constructors: List<Constructor> = items.filterIsInstance(Constructor::class.java)
 
         override fun isStatic(): Boolean {
             return declaration.static
@@ -497,9 +556,21 @@ class FileGenerator(declarations: List<Declaration>) {
             return "class"
         }
 
+        private fun constructors(): String {
+            val constructors: List<Constructor> = items.filterIsInstance(Constructor::class.java)
+            return constructors.map {
+                constructor ->
+                val parameters = constructor.parameters
+                        .map { "${it.name}: ${it.type}" }
+                        .joinToString(", ")
+                return@map "    constructor(${parameters})"
+            }.joinToString("\n") + "\n"
+        }
+
         override fun content(): String {
             return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
+                    constructors() +
                     "}"
         }
     }
@@ -540,6 +611,10 @@ object StringUtil {
             throw GradleException("String '$str' doesn't contains '$end'")
         }
 
+        if (startIndex + start.length >= endIndex) {
+            println("$str :: $start :: $end")
+        }
+
         return str.substring(startIndex + start.length, endIndex)
     }
 
@@ -566,6 +641,15 @@ object StringUtil {
 
     fun from(str: String, start: String): String {
         val startIndex = str.lastIndexOf(start)
+        if (startIndex == -1) {
+            throw GradleException("String '$str' doesn't contains '$start'")
+        }
+
+        return str.substring(startIndex + start.length)
+    }
+
+    fun from2(str: String, start: String): String {
+        val startIndex = str.indexOf(start)
         if (startIndex == -1) {
             throw GradleException("String '$str' doesn't contains '$start'")
         }
