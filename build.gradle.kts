@@ -83,7 +83,11 @@ open class Declaration(val data: Data) {
                 "boolean" to "Boolean",
                 "string" to "String",
                 "number" to "Number",
-                "void" to "Unit"
+                "void" to "Unit",
+                "Event" to "org.w3c.dom.events.Event",
+                "Element" to "org.w3c.dom.Element",
+                "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
+                "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement"
         )
 
         fun parse(source: String, lines: List<String>): Declaration {
