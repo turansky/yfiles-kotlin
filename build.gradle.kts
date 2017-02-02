@@ -85,8 +85,10 @@ open class Declaration(val data: Data) {
                 "number" to "Number",
                 "void" to "Unit",
                 "Event" to "org.w3c.dom.events.Event",
+                "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
                 "Element" to "org.w3c.dom.Element",
                 "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
+                "SVGElement" to "org.w3c.dom.svg.SVGElement",
                 "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement"
         )
 
@@ -140,6 +142,11 @@ open class Declaration(val data: Data) {
         }
 
         fun parseType(type: String): String {
+            // TODO: Fix for SvgDefsManager and SvgVisual required (2 constructors from 1)
+            if (type.contains("|")) {
+                return parseType(type.split("|")[0])
+            }
+
             val standardType = STANDARD_TYPE_MAP[type]
             if (standardType != null) {
                 return standardType
