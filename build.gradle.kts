@@ -95,39 +95,26 @@ open class Declaration(val data: Data) {
         fun parse(source: String, lines: List<String>): Declaration {
             val data = Data.parse(source)
 
-            if (lines.contains(NAMESPACE)) {
-                return Namespace(data)
+            return when {
+                lines.contains(NAMESPACE) ->
+                    Namespace(data)
+                lines.any { it.startsWith(CLASS) } && !lines.contains(CONSTRUCTOR) ->
+                    ClassDec(data, lines)
+                lines.contains(INTERFACE) ->
+                    InterfaceDec(data, lines)
+                lines.contains(EXTENDS_ENUM) ->
+                    EnumDec(data, lines)
+                lines.contains(CONSTRUCTOR) ->
+                    Constructor(data, lines)
+                lines.contains(CONST) ->
+                    Const(data, lines)
+                !source.contains("=") ->
+                    EnumValue(data, lines)
+                data.nullValue ->
+                    Property(data, lines)
+                else ->
+                    Function(data, lines)
             }
-
-            if (lines.any { it.startsWith(CLASS) } && !lines.contains(CONSTRUCTOR)) {
-                return ClassDec(data, lines)
-            }
-
-            if (lines.contains(INTERFACE)) {
-                return InterfaceDec(data, lines)
-            }
-
-            if (lines.contains(EXTENDS_ENUM)) {
-                return EnumDec(data, lines)
-            }
-
-            if (lines.contains(CONSTRUCTOR)) {
-                return Constructor(data, lines)
-            }
-
-            if (lines.contains(CONST)) {
-                return Const(data, lines)
-            }
-
-            if (!source.contains("=")) {
-                return EnumValue(data, lines)
-            }
-
-            if (data.nullValue) {
-                return Property(data, lines)
-            }
-
-            return Function(data, lines)
         }
 
         fun parseTypeLine(line: String): String {
@@ -260,16 +247,14 @@ class Data(val source: String, val name: String, val value: String) {
     companion object {
         fun parse(source: String): Data {
             val items = source.split("=")
-            if (items.size == 1) {
-                val name = source.substring(0, source.length - 1)
-                return Data(source, name, Declaration.NULL_VALUE)
+            return when (items.size) {
+                1 -> {
+                    val name = source.substring(0, source.length - 1)
+                    Data(source, name, Declaration.NULL_VALUE)
+                }
+                2 -> Data(source, items[0], items[1])
+                else -> throw GradleException("Invalid declaration: '$source'")
             }
-
-            if (items.size != 2) {
-                throw GradleException("Invalid declaration: '$source'")
-            }
-
-            return Data(source, items[0], items[1])
         }
     }
 
@@ -351,19 +336,13 @@ open class Function(data: Data, protected val lines: List<String>) : Declaration
         if (parameterNames.isEmpty()) {
             parameters = emptyList()
         } else {
-            println(data.name)
-
             val parametersMap = lines.filter { it.startsWith(PARAM) }.map { parseParamLine(it, data.name) }.associate { Pair(it.name, it) }
             parameters = parameterNames.map { name ->
                 val parameter = parametersMap.get(name)
-                if (parameter != null) {
-                    return@map parameter ?: throw GradleException("Why this check needed? Possibly bug.")
-                }
-
-                return@map if (name.endsWith("Type")) {
-                    Parameter(name, CLASS_TYPE)
-                } else {
-                    throw GradleException("No type info about parameter '$name' in function\n'${data.name}'")
+                when {
+                    parameter != null -> parameter
+                    name.endsWith("Type") -> Parameter(name, CLASS_TYPE)
+                    else -> throw GradleException("No type info about parameter '$name' in function\n'${data.name}'")
                 }
             }
         }
@@ -620,10 +599,6 @@ object StringUtil {
         }
         if (endIndex == -1) {
             throw GradleException("String '$str' doesn't contains '$end'")
-        }
-
-        if (startIndex + start.length >= endIndex) {
-            println("$str :: $start :: $end")
         }
 
         return str.substring(startIndex + start.length, endIndex)
