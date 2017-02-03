@@ -1,4 +1,15 @@
-import Build_gradle.Declaration.Companion.ENUM_TYPE
+import Build_gradle.Hacks.isClassParameter
+import Build_gradle.Hacks.validateStaticConstType
+import Build_gradle.Types.BEND_TYPE
+import Build_gradle.Types.CLASS_TYPE
+import Build_gradle.Types.COLUMN_TYPE
+import Build_gradle.Types.EDGE_TYPE
+import Build_gradle.Types.ENUM_TYPE
+import Build_gradle.Types.LABEL_TYPE
+import Build_gradle.Types.NODE_TYPE
+import Build_gradle.Types.OBJECT_TYPE
+import Build_gradle.Types.PORT_TYPE
+import Build_gradle.Types.ROW_TYPE
 import org.gradle.api.GradleException
 import java.io.File
 import java.nio.charset.Charset
@@ -40,14 +51,22 @@ object DeclarationReader {
     }
 }
 
+object Types {
+    val OBJECT_TYPE = "yfiles.lang.Object"
+    val CLASS_TYPE = "yfiles.lang.Class"
+    val ENUM_TYPE = "yfiles.lang.Enum"
+
+    val NODE_TYPE = "yfiles.graph.INode"
+    val EDGE_TYPE = "yfiles.graph.IEdge"
+    val PORT_TYPE = "yfiles.graph.IPort"
+    val LABEL_TYPE = "yfiles.graph.ILabel"
+    val BEND_TYPE = "yfiles.graph.IBend"
+    val ROW_TYPE = "yfiles.graph.IRow"
+    val COLUMN_TYPE = "yfiles.graph.IColumn"
+}
+
 open class Declaration(val data: Data) {
     companion object {
-
-        // TODO: move to script parameter
-        val OBJECT_TYPE = "yfiles.lang.Object"
-        val CLASS_TYPE = "yfiles.lang.Class"
-        val ENUM_TYPE = "yfiles.lang.Enum"
-
         val NAMESPACE = "@namespace"
         val CLASS = "@class "
         val INTERFACE = "@interface"
@@ -149,20 +168,10 @@ open class Declaration(val data: Data) {
         }
 
         fun parseParamLine(line: String, function: String): Parameter {
-            // TODO: remove, when api file will be updated
-            if (line.startsWith("@param value")) {
-                return when (function) {
-                    "yfiles.collections.IList.prototype.set" -> Parameter("value", "T")
-                    "yfiles.collections.IMapper.prototype.set" -> Parameter("value", "V")
-                    "yfiles.graphml.CreationProperties.prototype.set" -> Parameter("value", OBJECT_TYPE)
-                    "yfiles.algorithms.YList.prototype.set" -> Parameter("value", OBJECT_TYPE)
-                    "yfiles.collections.IMap.prototype.set" -> Parameter("value", "TValue")
-                    else -> throw GradleException()
+            Hacks.parseParamLine(line, function).apply {
+                if (this != null) {
+                    return this
                 }
-            }
-
-            if (line.startsWith("@param options.")) {
-                return Parameter("", "")
             }
 
             var name = StringUtil.from2(line, "} ").split(" ").get(0)
@@ -341,7 +350,7 @@ open class Function(data: Data, protected val lines: List<String>) : Declaration
                 val parameter = parametersMap.get(name)
                 when {
                     parameter != null -> parameter
-                    name.endsWith("Type") -> Parameter(name, CLASS_TYPE)
+                    isClassParameter(name) -> Parameter(name, CLASS_TYPE)
                     else -> throw GradleException("No type info about parameter '$name' in function\n'${data.name}'")
                 }
             }
@@ -498,9 +507,7 @@ class FileGenerator(declarations: List<Declaration>) {
 
         protected fun companionContent(): String {
             val items = staticConsts.map {
-                // TODO: Check. Quick fix for generics in constants
-                // One case - IListEnumerable.EMPTY
-                val type = it.type.replace("<T>", "<out Any>")
+                val type = validateStaticConstType(it.type)
                 "        val ${it.name}: $type = noImpl"
             }
 
@@ -641,5 +648,52 @@ object StringUtil {
         }
 
         return str.substring(startIndex + start.length)
+    }
+}
+
+object Hacks {
+    fun parseParamLine(line: String, function: String): Parameter? {
+        if (line.startsWith("@param value")) {
+            return when (function) {
+                "yfiles.collections.IList.prototype.set" -> Parameter("value", "T")
+                "yfiles.collections.IMapper.prototype.set" -> Parameter("value", "V")
+                "yfiles.graphml.CreationProperties.prototype.set" -> Parameter("value", OBJECT_TYPE)
+                "yfiles.algorithms.YList.prototype.set" -> Parameter("value", OBJECT_TYPE)
+                "yfiles.collections.IMap.prototype.set" -> Parameter("value", "TValue")
+                else -> throw GradleException("No hacked parameter value for function $function")
+            }
+        }
+
+        if (line.startsWith("@param options.")) {
+            val name = line.split(" ")[1]
+
+            return when {
+                function == "yfiles.collections.Map" && name == "options.entries" -> Parameter(name, "Array")
+                function == "yfiles.collections.List" && name == "options.items" -> Parameter(name, "Array<T>")
+                function == "yfiles.view.LinearGradient" || function == "yfiles.view.RadialGradient"
+                        && name == "options.gradientStops" -> Parameter(name, "Array<yfiles.view.GradientStop>")
+                function == "yfiles.graph.IGraph.prototype.createGroupNode" && name == "options.children" -> Parameter(name, "Array<$NODE_TYPE>")
+                function == "yfiles.graph.ITable.prototype.createChildRow" && name == "options.childRows" -> Parameter(name, "Array<$ROW_TYPE>")
+                function == "yfiles.graph.ITable.prototype.createChildColumn" && name == "options.childColumns" -> Parameter(name, "Array<$COLUMN_TYPE>")
+                name == "options.nodes" -> Parameter(name, NODE_TYPE)
+                name == "options.edges" -> Parameter(name, EDGE_TYPE)
+                name == "options.ports" -> Parameter(name, PORT_TYPE)
+                name == "options.labels" -> Parameter(name, LABEL_TYPE)
+                name == "options.bends" -> Parameter(name, BEND_TYPE)
+                else -> throw GradleException("No hacked parameter '$name' for function $function")
+            }
+        }
+
+        return null
+    }
+
+    fun validateStaticConstType(type: String): String {
+        // TODO: Check. Quick fix for generics in constants
+        // One case - IListEnumerable.EMPTY
+        return type.replace("<T>", "<out Any>")
+    }
+
+    fun isClassParameter(name: String): Boolean {
+        return name.endsWith("Type")
     }
 }
