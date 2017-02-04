@@ -379,12 +379,7 @@ class Constructor : Function {
                     "}\n\n"
         }
 
-        val modificator = when {
-            protected -> "protected "
-            adapter != null -> "internal "
-            else -> ""
-        }
-        return "    ${modificator}constructor(${parametersString()})"
+        return "    ${modificator()}constructor(${parametersString()})"
     }
 }
 
@@ -393,7 +388,11 @@ class Const(data: Data, lines: List<String>) : Declaration(data) {
     val type: String
 
     init {
-        type = parseTypeLine(lines.first { it.startsWith(TYPE) })
+        type = validateStaticConstType(parseTypeLine(lines.first { it.startsWith(TYPE) }))
+    }
+
+    override fun toString(): String {
+        return "    val $name: $type = definedExternally"
     }
 }
 
@@ -487,9 +486,15 @@ open class Function : Declaration {
                 .joinToString(", ")
     }
 
-    override fun toString(): String {
-        val functionName = data.name.split(".").last()
+    protected fun modificator(): String {
+        return when {
+            protected -> "protected "
+            adapter != null -> "internal "
+            else -> ""
+        }
+    }
 
+    override fun toString(): String {
         if (generated) {
             TODO("Generated function logic not implemented!")
             /*
@@ -498,7 +503,8 @@ open class Function : Declaration {
                     "}\n\n"
             */
         }
-        return "fun $functionName(${parametersString()}) = definedExternally"
+
+        return "    ${modificator()}fun $name(${parametersString()}) = definedExternally"
     }
 }
 
@@ -641,8 +647,7 @@ class FileGenerator(declarations: List<Declaration>) {
 
         protected fun companionContent(): String {
             val items = staticConsts.map {
-                val type = validateStaticConstType(it.type)
-                "        val ${it.name}: $type = definedExternally"
+                it.toString()
             }
 
             if (items.isEmpty()) {
