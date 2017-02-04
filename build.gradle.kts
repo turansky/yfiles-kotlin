@@ -508,7 +508,7 @@ class FileGenerator(declarations: List<Declaration>) {
         protected fun companionContent(): String {
             val items = staticConsts.map {
                 val type = validateStaticConstType(it.type)
-                "        val ${it.name}: $type = noImpl"
+                "        val ${it.name}: $type = definedExternally"
             }
 
             if (items.isEmpty()) {
@@ -583,7 +583,7 @@ class FileGenerator(declarations: List<Declaration>) {
     class EnumFile(declaration: EnumDec) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = items.filterIsInstance(EnumValue::class.java)
-                    .map { "    val ${it.name}: ${it.className} = noImpl" }
+                    .map { "    val ${it.name}: ${it.className} = definedExternally" }
                     .joinToString("\n")
             return "external object ${fqn.name}: ${ENUM_TYPE} {\n" +
                     values + "\n" +

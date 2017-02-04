@@ -2,11 +2,10 @@ group 'com.test.kotlin.wrapper'
 version '0.1-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.1.0-beta-17'
+    ext.kotlin_version = '1.1.0-beta-38'
     repositories {
         mavenCentral()
-        // Kotlin Dev Repo
-        maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
+        maven { url "http://dl.bintray.com/kotlin/kotlin-eap-1.1" }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -38,12 +37,11 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    // Kotlin Dev Repo
-    maven { url "https://dl.bintray.com/kotlin/kotlin-dev/" }
+    maven { url "http://dl.bintray.com/kotlin/kotlin-eap-1.1" }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-js-library:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
 }
 
 build.doLast {
