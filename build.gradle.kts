@@ -255,6 +255,29 @@ open class Declaration(val data: Data) {
             return "(${parameterTypes.joinToString(", ")}) -> $resultType"
         }
     }
+
+    val className: String
+    val name: String
+
+    init {
+        if (instanceMode()) {
+            className = data.name
+            name = data.name.split(".").last()
+        } else {
+            val names = data.name.split(".")
+            name = names.last()
+
+            var i = names.size - 2
+            if (names[i] == "prototype") {
+                i--
+            }
+            className = names.subList(0, i + 1).joinToString(separator = ".")
+        }
+    }
+
+    open fun instanceMode(): Boolean {
+        return false
+    }
 }
 
 class Data(val source: String, val name: String, val value: String) {
@@ -277,6 +300,10 @@ class Data(val source: String, val name: String, val value: String) {
 }
 
 open class InstanceDec(data: Data, protected val lines: List<String>) : Declaration(data) {
+    override fun instanceMode(): Boolean {
+        return true
+    }
+
     fun genericParameters(): List<GenericParameter> {
         val templateLine = lines.firstOrNull { it.startsWith(TEMPLATE) }
                 ?: return emptyList()
@@ -298,19 +325,19 @@ class ClassDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
     val abstract = lines.contains(ABSTRACT)
 }
 
-class InterfaceDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
+class InterfaceDec(data: Data, lines: List<String>) : InstanceDec(data, lines)
 
-}
-
-class EnumDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
-
-}
+class EnumDec(data: Data, lines: List<String>) : InstanceDec(data, lines)
 
 class Constructor : Function {
     protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean)
             : super(data, lines, parameters, generated)
 
     constructor(data: Data, lines: List<String>) : super(data, lines)
+
+    override fun instanceMode(): Boolean {
+        return true
+    }
 
     override fun generateAdapter(parameters: List<Parameter>): Function {
         return Constructor(data, lines, Parameters(parameters), true)
@@ -345,9 +372,7 @@ class Constructor : Function {
 
     override fun toString(): String {
         if (generated) {
-            // TODO: move with common function
-            val className = data.name.split(".").last()
-            val generic = Hacks.getGenerics(data.name)
+            val generic = Hacks.getGenerics(className)
             return "fun $generic $className.Companion.create(${parametersString()}): $className$generic {\n" +
                     "    return $className(${mapString(parameters)})\n" +
                     "}\n\n"
@@ -365,26 +390,13 @@ class Constructor : Function {
 class Const(data: Data, lines: List<String>) : Declaration(data) {
     val static = lines.contains(STATIC)
     val type: String
-    val name: String
-    val className: String
 
     init {
         type = parseTypeLine(lines.first { it.startsWith(TYPE) })
-
-        val names = data.name.split(".")
-        name = names.last()
-
-        var i = names.size - 2
-        if (names[i] == "prototype") {
-            i--
-        }
-        className = names.subList(0, i + 1).joinToString(separator = ".")
     }
 }
 
-class Property(data: Data, private val lines: List<String>) : Declaration(data) {
-
-}
+class Property(data: Data, private val lines: List<String>) : Declaration(data)
 
 open class Function : Declaration {
     companion object {
@@ -489,26 +501,18 @@ open class Function : Declaration {
     }
 }
 
-class EnumValue(data: Data, private val lines: List<String>) : Declaration(data) {
-    val className: String
-    val name: String
-
-    init {
-        val dataName = data.name
-        val index = dataName.lastIndexOf(".")
-        className = dataName.substring(0, index)
-        name = dataName.substring(index + 1, dataName.length)
-    }
-}
+class EnumValue(data: Data, private val lines: List<String>) : Declaration(data)
 
 class Parameters(val items: List<Parameter>, val generatedItems: List<Parameter>? = null)
 
 data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
 data class GenericParameter(val name: String, val type: String)
 
-class Namespace(data: Data) : Declaration(data)
-
-class Undefined(data: Data) : Declaration(data)
+class Namespace(data: Data) : Declaration(data) {
+    override fun instanceMode(): Boolean {
+        return true
+    }
+}
 
 class FileGenerator(declarations: List<Declaration>) {
 
