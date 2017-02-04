@@ -30,10 +30,11 @@ fun generateKotlinWrappers(sourceFile: File) {
     }
 
     val fileGenerator = FileGenerator(declarations)
-    fileGenerator.generate(projectDir.resolve("generated/src/main/kotlin"))
+    val sourceDir = projectDir.resolve("generated/src/main/kotlin")
+    fileGenerator.generate(sourceDir)
 
     // TODO: Check if this class really needed
-    projectDir.resolve("generated/src/main/kotlin/yfiles/lang/String.kt").delete()
+    sourceDir.resolve("yfiles/lang/String.kt").delete()
 }
 
 object DeclarationReader {
@@ -68,7 +69,7 @@ object Types {
     val COLUMN_TYPE = "yfiles.graph.IColumn"
 }
 
-open class Declaration(val data: Data) {
+open class Declaration(protected val data: Data) {
     companion object {
         val NAMESPACE = "@namespace"
         val CLASS = "@class "
@@ -373,8 +374,8 @@ class Constructor : Function {
     override fun toString(): String {
         if (generated) {
             val generic = Hacks.getGenerics(className)
-            return "fun $generic $className.Companion.create(${parametersString()}): $className$generic {\n" +
-                    "    return $className(${mapString(parameters)})\n" +
+            return "fun $generic $name.Companion.create(${parametersString()}): $name$generic {\n" +
+                    "    return $name(${mapString(parameters)})\n" +
                     "}\n\n"
         }
 
@@ -529,8 +530,8 @@ class FileGenerator(declarations: List<Declaration>) {
         )
 
         declarations.filterIsInstance(Constructor::class.java).forEach {
-            val fqn = FQN(it.data.name)
-            val classFile = classFileList.firstOrNull { it.fqn == fqn }
+            val className = it.className
+            val classFile = classFileList.firstOrNull { it.className == className }
                     ?: ClassFile(it.toClassDec()).apply { classFileList.add(this) }
             classFile.addItem(it)
         }
@@ -550,17 +551,12 @@ class FileGenerator(declarations: List<Declaration>) {
         generatedData.addAll(interfaceFileList)
         generatedData.addAll(enumFileList)
 
-        declarations.filterIsInstance(Const::class.java).forEach {
-            val fqn = FQN(it.className)
-            val classFile = generatedData.first { it.fqn == fqn }
-            classFile.addItem(it)
-        }
-
-        declarations.filterIsInstance(EnumValue::class.java).forEach {
-            val fqn = FQN(it.className)
-            val classFile = enumFileList.first { it.fqn == fqn }
-            classFile.addItem(it)
-        }
+        declarations.filterNot { it is Namespace || it is InstanceDec || it is Constructor }
+                .forEach {
+                    val className = it.className
+                    val classFile = generatedData.first { it.className == className }
+                    classFile.addItem(it)
+                }
     }
 
     fun generate(directory: File) {
@@ -599,7 +595,8 @@ class FileGenerator(declarations: List<Declaration>) {
     }
 
     abstract class GeneratedFile(private val declaration: InstanceDec) {
-        val fqn: FQN = FQN(declaration.data.name)
+        val className = declaration.className
+        val fqn: FQN = FQN(className)
         protected val items: MutableList<Declaration> = mutableListOf()
 
         val consts: List<Const>
@@ -700,9 +697,12 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         private fun adapters(): String {
-            val constructorAdapters = items.filterIsInstance(Constructor::class.java)
-                    .mapNotNull { it.adapter as? Constructor }
-                    .toSet() // TODO: check error in NodeStylePortStyleAdapter constructors
+            val constructorAdapters = Hacks.filterConstructorAdapters(
+                    className,
+                    items.filterIsInstance(Constructor::class.java)
+                            .mapNotNull { it.adapter as? Constructor }
+            )
+
             return constructorAdapters.map {
                 it.toString()
             }.joinToString("\n") + "\n"
@@ -842,12 +842,20 @@ object Hacks {
         return name.endsWith("Type")
     }
 
+    // TODO: get generics from class
     fun getGenerics(className: String): String {
         return when (className) {
             "yfiles.collections.List" -> "<T>"
             "yfiles.collections.Map" -> "<TKey, TValue>"
             "yfiles.collections.Mapper" -> "<K, V>"
             else -> ""
+        }
+    }
+
+    fun filterConstructorAdapters(className: String, adapters: List<Constructor>): List<Constructor> {
+        return when (className) {
+            "yfiles.styles.NodeStylePortStyleAdapter" -> adapters.toSet().toList()
+            else -> adapters
         }
     }
 }
