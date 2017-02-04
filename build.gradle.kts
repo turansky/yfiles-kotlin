@@ -31,6 +31,9 @@ fun generateKotlinWrappers(sourceFile: File) {
 
     val fileGenerator = FileGenerator(declarations)
     fileGenerator.generate(projectDir.resolve("generated/src/main/kotlin"))
+
+    // TODO: Check if this class really needed
+    projectDir.resolve("generated/src/main/kotlin/yfiles/lang/String.kt").delete()
 }
 
 object DeclarationReader {
@@ -313,14 +316,6 @@ class Constructor : Function {
         return Constructor(data, lines, Parameters(parameters), true)
     }
 
-    override fun body(): String {
-        if (generated) {
-            return ": this(${mapString(parameters)})"
-        }
-
-        return ""
-    }
-
     fun toClassDec(): ClassDec {
         return ClassDec(data, lines)
     }
@@ -349,7 +344,21 @@ class Constructor : Function {
     }
 
     override fun toString(): String {
-        return "    constructor(${parametersString()})${body()}"
+        if (generated) {
+            // TODO: move with common function
+            val className = data.name.split(".").last()
+            val generic = Hacks.getGenerics(data.name)
+            return "fun $generic $className.Companion.create(${parametersString()}): $className$generic {\n" +
+                    "    return $className(${mapString(parameters)})\n" +
+                    "}\n\n"
+        }
+
+        val modificator = when {
+            protected -> "protected "
+            adapter != null -> "internal "
+            else -> ""
+        }
+        return "    ${modificator}constructor(${parametersString()})"
     }
 }
 
@@ -409,7 +418,7 @@ open class Function : Declaration {
                             Parameter(name, it.type, it.defaultValue, it.vararg)
                         }
 
-                return Parameters(listOf(Parameter(parameterName, "Map<String, Any>", parameter.defaultValue)), generatedParameters)
+                return Parameters(listOf(Parameter(parameterName, "kotlin.collections.Map<String, Any?>", parameter.defaultValue)), generatedParameters)
             }
 
             val parameters = parameterNames.map { name ->
@@ -427,7 +436,6 @@ open class Function : Declaration {
 
     val adapter: Function?
 
-    protected val name: String
     protected val static: Boolean
     protected val protected: Boolean
     protected val lines: List<String>
@@ -435,7 +443,6 @@ open class Function : Declaration {
     protected val generated: Boolean
 
     protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean) : super(data) {
-        this.name = ""
         this.static = lines.contains(STATIC)
         this.protected = lines.contains(PROTECTED)
         this.lines = lines
@@ -455,18 +462,8 @@ open class Function : Declaration {
         return Function(data, lines, Parameters(parameters), true)
     }
 
-    open fun body(): String {
-        if (generated) {
-            return " {\n" +
-                    "$name(${mapString(parameters)})\n" +
-                    "}\n\n"
-        }
-
-        return " = definedExternally"
-    }
-
     protected fun mapString(parameters: List<Parameter>): String {
-        return "mapOf<String, Any>(\n" +
+        return "mapOf<String, Any?>(\n" +
                 parameters.map { "\"${it.name}\" to ${it.name}" }.joinToString(",\n") +
                 "\n)\n"
     }
@@ -478,7 +475,17 @@ open class Function : Declaration {
     }
 
     override fun toString(): String {
-        return "fun $name(${parametersString()}) ${body()}"
+        val functionName = data.name.split(".").last()
+
+        if (generated) {
+            TODO("Generated function logic not implemented!")
+            /*
+            return " {\n" +
+                    "$name(${mapString(parameters)})\n" +
+                    "}\n\n"
+            */
+        }
+        return "fun $functionName(${parametersString()}) = definedExternally"
     }
 }
 
@@ -638,7 +645,11 @@ class FileGenerator(declarations: List<Declaration>) {
             }
 
             if (items.isEmpty()) {
-                return ""
+                return when {
+                    isStatic() -> ""
+                // TODO: add companion only if needed
+                    else -> "    companion object {}\n"
+                }
             }
 
             val result = items.joinToString("\n") + "\n"
@@ -655,8 +666,6 @@ class FileGenerator(declarations: List<Declaration>) {
     }
 
     class ClassFile(private val declaration: ClassDec) : GeneratedFile(declaration) {
-        private val constructors: List<Constructor> = items.filterIsInstance(Constructor::class.java)
-
         override fun isStatic(): Boolean {
             return declaration.static
         }
@@ -680,14 +689,17 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         private fun constructors(): String {
-            val constructors: List<Constructor> = items.filterIsInstance(Constructor::class.java)
-            /*
-            val constructorSet = constructors.toMutableSet()
-                    .apply { this.addAll((constructors.mapNotNull { it.adapter as? Constructor })) }
-                    .toSet()
-            */
-            val constructorSet = constructors.toSet()
+            val constructorSet = items.filterIsInstance(Constructor::class.java).toSet()
             return constructorSet.map {
+                it.toString()
+            }.joinToString("\n") + "\n"
+        }
+
+        private fun adapters(): String {
+            val constructorAdapters = items.filterIsInstance(Constructor::class.java)
+                    .mapNotNull { it.adapter as? Constructor }
+                    .toSet() // TODO: check error in NodeStylePortStyleAdapter constructors
+            return constructorAdapters.map {
                 it.toString()
             }.joinToString("\n") + "\n"
         }
@@ -696,7 +708,8 @@ class FileGenerator(declarations: List<Declaration>) {
             return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
                     constructors() +
-                    "}"
+                    "}\n\n" +
+                    adapters()
         }
     }
 
@@ -796,7 +809,7 @@ object Hacks {
             val name = line.split(" ")[1]
 
             return when {
-                function == "yfiles.collections.Map" && name == "options.entries" -> Parameter(name, "Array")
+                function == "yfiles.collections.Map" && name == "options.entries" -> Parameter(name, "Array<MapEntry<TKey, TValue>>")
                 function == "yfiles.collections.List" && name == "options.items" -> Parameter(name, "Array<T>")
                 function == "yfiles.view.LinearGradient" || function == "yfiles.view.RadialGradient"
                         && name == "options.gradientStops" -> Parameter(name, "Array<yfiles.view.GradientStop>")
@@ -823,5 +836,14 @@ object Hacks {
 
     fun isClassParameter(name: String): Boolean {
         return name.endsWith("Type")
+    }
+
+    fun getGenerics(className: String): String {
+        return when (className) {
+            "yfiles.collections.List" -> "<T>"
+            "yfiles.collections.Map" -> "<TKey, TValue>"
+            "yfiles.collections.Mapper" -> "<K, V>"
+            else -> ""
+        }
     }
 }
