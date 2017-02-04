@@ -105,7 +105,9 @@ open class Declaration(val data: Data) {
                 "void" to "Unit",
                 "Event" to "org.w3c.dom.events.Event",
                 "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
+                "Node" to "org.w3c.dom.Node",
                 "Element" to "org.w3c.dom.Element",
+                "HTMLElement" to "org.w3c.dom.HTMLElement",
                 "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
                 "SVGElement" to "org.w3c.dom.svg.SVGElement",
                 "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement"
@@ -301,9 +303,53 @@ class EnumDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
 
 }
 
-class Constructor(data: Data, lines: List<String>) : Function(data, lines) {
+class Constructor : Function {
+    protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean)
+            : super(data, lines, parameters, generated)
+
+    constructor(data: Data, lines: List<String>) : super(data, lines)
+
+    override fun generateAdapter(parameters: List<Parameter>): Function {
+        return Constructor(data, lines, Parameters(parameters), true)
+    }
+
+    override fun body(): String {
+        if (generated) {
+            return ": this(${mapString(parameters)})"
+        }
+
+        return ""
+    }
+
     fun toClassDec(): ClassDec {
         return ClassDec(data, lines)
+    }
+
+    // TODO: check why it doesn't work
+    /*
+    override fun hashCode(): Int {
+        return Objects.hash(data.name, parameters)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Constructor
+                && Objects.equals(data.name, other.data.name)
+                && Objects.equals(parameters, other.parameters)
+    }
+    */
+
+    override fun hashCode(): Int {
+        return Objects.hash(data.name, parametersString())
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Constructor
+                && Objects.equals(data.name, other.data.name)
+                && Objects.equals(parametersString(), other.parametersString())
+    }
+
+    override fun toString(): String {
+        return "    constructor(${parametersString()})${body()}"
     }
 }
 
@@ -331,22 +377,42 @@ class Property(data: Data, private val lines: List<String>) : Declaration(data) 
 
 }
 
-open class Function(data: Data, protected val lines: List<String>) : Declaration(data) {
+open class Function : Declaration {
     companion object {
         val START = "function("
         val END = "){};"
-    }
 
-    val parameters: List<Parameter>
+        private fun calculateParameters(data: Data, lines: List<String>): Parameters {
+            val value = data.value
+            val parameterNames = StringUtil.hardBetween(value, START, END).split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            if (parameterNames.isEmpty()) {
+                return Parameters(emptyList())
+            }
 
-    init {
-        val value = data.value
-        val parameterNames = StringUtil.hardBetween(value, START, END).split(",").map { it.trim() }.filter { it.isNotEmpty() }
-        if (parameterNames.isEmpty()) {
-            parameters = emptyList()
-        } else {
             val parametersMap = lines.filter { it.startsWith(PARAM) }.map { parseParamLine(it, data.name) }.associate { Pair(it.name, it) }
-            parameters = parameterNames.map { name ->
+
+            if (parametersMap.keys.any { it.contains(".") }) {
+                if (parameterNames.size != 1) {
+                    throw GradleException("Options parameter available only if parameter is single.")
+                }
+
+                val parameterName = parameterNames[0]
+                val parameter = parametersMap[parameterName]
+                if (parameter?.type != OBJECT_TYPE) {
+                    throw GradleException("Options parameter must have type $OBJECT_TYPE.")
+                }
+
+                val generatedParameters = parametersMap.values
+                        .filter { it.name != parameterName }
+                        .map {
+                            val name = it.name.split(".")[1]
+                            Parameter(name, it.type, it.defaultValue, it.vararg)
+                        }
+
+                return Parameters(listOf(Parameter(parameterName, "Map<String, Any>", parameter.defaultValue)), generatedParameters)
+            }
+
+            val parameters = parameterNames.map { name ->
                 val parameter = parametersMap.get(name)
                 when {
                     parameter != null -> parameter
@@ -354,7 +420,65 @@ open class Function(data: Data, protected val lines: List<String>) : Declaration
                     else -> throw GradleException("No type info about parameter '$name' in function\n'${data.name}'")
                 }
             }
+
+            return Parameters(parameters)
         }
+    }
+
+    val adapter: Function?
+
+    protected val name: String
+    protected val static: Boolean
+    protected val protected: Boolean
+    protected val lines: List<String>
+    protected val parameters: List<Parameter>
+    protected val generated: Boolean
+
+    protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean) : super(data) {
+        this.name = ""
+        this.static = lines.contains(STATIC)
+        this.protected = lines.contains(PROTECTED)
+        this.lines = lines
+        this.parameters = parameters.items
+        this.generated = generated
+
+        adapter = if (parameters.generatedItems != null) {
+            generateAdapter(parameters.generatedItems)
+        } else {
+            null
+        }
+    }
+
+    constructor(data: Data, lines: List<String>) : this(data, lines, calculateParameters(data, lines), false)
+
+    open fun generateAdapter(parameters: List<Parameter>): Function {
+        return Function(data, lines, Parameters(parameters), true)
+    }
+
+    open fun body(): String {
+        if (generated) {
+            return " {\n" +
+                    "$name(${mapString(parameters)})\n" +
+                    "}\n\n"
+        }
+
+        return " = definedExternally"
+    }
+
+    protected fun mapString(parameters: List<Parameter>): String {
+        return "mapOf<String, Any>(\n" +
+                parameters.map { "\"${it.name}\" to ${it.name}" }.joinToString(",\n") +
+                "\n)\n"
+    }
+
+    protected fun parametersString(): String {
+        return parameters
+                .map { "${it.name}: ${it.type}" }
+                .joinToString(", ")
+    }
+
+    override fun toString(): String {
+        return "fun $name(${parametersString()}) ${body()}"
     }
 }
 
@@ -369,6 +493,8 @@ class EnumValue(data: Data, private val lines: List<String>) : Declaration(data)
         name = dataName.substring(index + 1, dataName.length)
     }
 }
+
+class Parameters(val items: List<Parameter>, val generatedItems: List<Parameter>? = null)
 
 data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
 data class GenericParameter(val name: String, val type: String)
@@ -555,12 +681,14 @@ class FileGenerator(declarations: List<Declaration>) {
 
         private fun constructors(): String {
             val constructors: List<Constructor> = items.filterIsInstance(Constructor::class.java)
-            return constructors.map {
-                constructor ->
-                val parameters = constructor.parameters
-                        .map { "${it.name}: ${it.type}" }
-                        .joinToString(", ")
-                return@map "    constructor(${parameters})"
+            /*
+            val constructorSet = constructors.toMutableSet()
+                    .apply { this.addAll((constructors.mapNotNull { it.adapter as? Constructor })) }
+                    .toSet()
+            */
+            val constructorSet = constructors.toSet()
+            return constructorSet.map {
+                it.toString()
             }.joinToString("\n") + "\n"
         }
 
