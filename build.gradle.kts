@@ -30,6 +30,27 @@ fun generateKotlinWrappers(sourceFile: File) {
         declarations.add(declaration)
     }
 
+    val classes = declarations.filterIsInstance(ClassDec::class.java).map { it.className }
+            .toMutableSet()
+
+    val additionalClasses = declarations.filterIsInstance(Constructor::class.java)
+            .mapNotNull {
+                val className = it.className
+                if (classes.contains(className)) {
+                    null
+                } else {
+                    classes.add(className)
+                    it.toClassDec()
+                }
+            }
+
+    declarations.addAll(additionalClasses)
+
+    val classRegistry = ClassRegistryImpl(declarations)
+    declarations.forEach {
+        it.classRegistry = classRegistry
+    }
+
     val fileGenerator = FileGenerator(declarations)
     val sourceDir = projectDir.resolve("generated/src/main/kotlin")
     fileGenerator.generate(sourceDir)
@@ -71,6 +92,10 @@ object Types {
     val COLUMN_TYPE = "yfiles.graph.IColumn"
 }
 
+interface ClassRegistry {
+    fun functionOverriden(className: String, functionName: String): Boolean
+}
+
 open class Declaration(protected val data: Data) {
     companion object {
         val NAMESPACE = "@namespace"
@@ -109,6 +134,7 @@ open class Declaration(protected val data: Data) {
                 "string" to "String",
                 "number" to "Number",
                 "void" to UNIT,
+
                 "Event" to "org.w3c.dom.events.Event",
                 "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
                 "Node" to "org.w3c.dom.Node",
@@ -120,6 +146,7 @@ open class Declaration(protected val data: Data) {
                 "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
                 "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
                 "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
+
                 "Promise" to "kotlin.js.Promise"
         )
 
@@ -289,6 +316,14 @@ open class Declaration(protected val data: Data) {
         }
     }
 
+    private var _classRegistry: ClassRegistry? = null
+
+    var classRegistry: ClassRegistry
+        get() = _classRegistry ?: throw GradleException("Class registry not initialized!")
+        set(value) {
+            _classRegistry = value
+        }
+
     val className: String
     val name: String
 
@@ -385,6 +420,10 @@ class Constructor : Function {
 
     override fun generateAdapter(parameters: List<Parameter>): Function {
         return Constructor(data, lines, Parameters(parameters), true)
+    }
+
+    override fun overridden(): Boolean {
+        return false
     }
 
     fun toClassDec(): ClassDec {
@@ -538,9 +577,18 @@ open class Function : Declaration {
                 .joinToString(", ")
     }
 
+    open protected fun overridden(): Boolean {
+        if (generated) {
+            return false
+        }
+
+        return classRegistry.functionOverriden(className, name)
+    }
+
     protected fun modificator(): String {
         // TODO: add abstract modificator if needed
         return when {
+            overridden() -> "override "
             protected -> "protected "
             adapter != null -> "internal "
             else -> ""
@@ -593,6 +641,13 @@ class Namespace(data: Data) : Declaration(data) {
     }
 }
 
+class ClassRegistryImpl(private val declarations: List<Declaration>) : ClassRegistry {
+    override fun functionOverriden(className: String, functionName: String): Boolean {
+        return false
+    }
+
+}
+
 class FileGenerator(declarations: List<Declaration>) {
 
     private val classFileList: Set<ClassFile>
@@ -609,8 +664,7 @@ class FileGenerator(declarations: List<Declaration>) {
 
         declarations.filterIsInstance(Constructor::class.java).forEach {
             val className = it.className
-            val classFile = classFileList.firstOrNull { it.className == className }
-                    ?: ClassFile(it.toClassDec()).apply { classFileList.add(this) }
+            val classFile = classFileList.first { it.className == className }
             classFile.addItem(it)
         }
 
