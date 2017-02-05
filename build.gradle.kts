@@ -484,9 +484,30 @@ open class Function : Declaration {
                 "\n)\n"
     }
 
-    protected fun parametersString(): String {
+    protected fun parametersString(useDefaultValue: Boolean = true): String {
         return parameters
-                .map { "${it.name}: ${it.type}" }
+                .map {
+                    var str = "${it.name}: "
+                    if (it.vararg) {
+                        str = "vararg " + str
+                    }
+                    str += it.type
+                    val defaultValue = it.defaultValue
+                    if (defaultValue != null) {
+                        // TODO: fix compilation hack
+                        if (defaultValue == "null") {
+                            str += "?"
+                        }
+                        if (useDefaultValue) {
+                            str += if (generated) {
+                                " = $defaultValue"
+                            } else {
+                                " = definedExternally"
+                            }
+                        }
+                    }
+                    str
+                }
                 .joinToString(", ")
     }
 
@@ -499,24 +520,26 @@ open class Function : Declaration {
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(className, name, parametersString())
+        return Objects.hash(className, name, parametersString(false))
     }
 
     override fun equals(other: Any?): Boolean {
         return other is Function
                 && Objects.equals(className, other.className)
                 && Objects.equals(name, other.name)
-                && Objects.equals(parametersString(), other.parametersString())
+                && Objects.equals(parametersString(false), other.parametersString(false))
     }
 
     override fun toString(): String {
         if (generated) {
-            TODO("Generated function logic not implemented!")
-            /*
-            return " {\n" +
-                    "$name(${mapString(parameters)})\n" +
+            var instanceName = className.split(".").last()
+            if (static) {
+                instanceName += ".Companion"
+            }
+
+            return "fun $generics $instanceName.$name(${parametersString()}): $returnType {\n" +
+                    "    return $name(${mapString(parameters)})\n" +
                     "}\n\n"
-            */
         }
 
         return "    ${modificator()}fun $generics$name(${parametersString()}): $returnType = definedExternally"
@@ -739,8 +762,21 @@ class FileGenerator(declarations: List<Declaration>) {
                             .mapNotNull { it.adapter as? Constructor }
             )
 
-            return constructorAdapters.map {
-                it.toString()
+            val staticFunctionAdapters = items.filterIsInstance(Function::class.java)
+                    .filter { it.static }
+                    .mapNotNull { it.adapter }
+                    .filterNot { staticFunctions.contains(it) }
+
+            val adapters = mutableListOf<Declaration>()
+                    .union(constructorAdapters)
+                    .union(staticFunctionAdapters)
+                    .toList()
+            return adapters.map {
+                var text = it.toString()
+                if (isStatic()) {
+                    text = text.replace(".Companion.", ".")
+                }
+                text
             }.joinToString("\n") + "\n"
         }
 
