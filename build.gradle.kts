@@ -383,6 +383,7 @@ class Constructor : Function {
 
 class Const(data: Data, lines: List<String>) : Declaration(data) {
     val static = lines.contains(STATIC)
+    val protected = lines.contains(PROTECTED)
     val type: String
 
     init {
@@ -390,7 +391,8 @@ class Const(data: Data, lines: List<String>) : Declaration(data) {
     }
 
     override fun toString(): String {
-        return "    val $name: $type = definedExternally"
+        val modifier = if (protected) "protected " else ""
+        return "    ${modifier}val $name: $type = definedExternally"
     }
 }
 
@@ -669,7 +671,7 @@ class FileGenerator(declarations: List<Declaration>) {
                         .toList()
             }
 
-        val memeberConsts: List<Const>
+        val memberConsts: List<Const>
             get() = consts.filter { !it.static }
 
         val header: String
@@ -722,7 +724,11 @@ class FileGenerator(declarations: List<Declaration>) {
                     "    }\n"
         }
 
-        abstract fun content(): String
+        open fun content(): String {
+            return memberConsts.map {
+                it.toString()
+            }.joinToString("\n")
+        }
     }
 
     class ClassFile(private val declaration: ClassDec) : GeneratedFile(declaration) {
@@ -784,6 +790,7 @@ class FileGenerator(declarations: List<Declaration>) {
             return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
                     constructors() +
+                    super.content() + "\n" +
                     "}\n\n" +
                     adapters()
         }
@@ -793,6 +800,7 @@ class FileGenerator(declarations: List<Declaration>) {
         override fun content(): String {
             return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
+                    super.content() + "\n" +
                     "}\n"
         }
     }
@@ -803,7 +811,8 @@ class FileGenerator(declarations: List<Declaration>) {
                     .map { "    val ${it.name}: ${it.className} = definedExternally" }
                     .joinToString("\n")
             return "external object ${fqn.name}: ${ENUM_TYPE} {\n" +
-                    values + "\n" +
+                    values + "\n\n" +
+                    super.content() + "\n" +
                     "}\n"
         }
     }
