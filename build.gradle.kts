@@ -10,6 +10,7 @@ import Build_gradle.Types.NODE_TYPE
 import Build_gradle.Types.OBJECT_TYPE
 import Build_gradle.Types.PORT_TYPE
 import Build_gradle.Types.ROW_TYPE
+import Build_gradle.Types.UNIT
 import org.gradle.api.GradleException
 import java.io.File
 import java.nio.charset.Charset
@@ -56,6 +57,7 @@ object DeclarationReader {
 }
 
 object Types {
+    val UNIT = "Unit"
     val OBJECT_TYPE = "yfiles.lang.Object"
     val CLASS_TYPE = "yfiles.lang.Class"
     val ENUM_TYPE = "yfiles.lang.Enum"
@@ -106,7 +108,7 @@ open class Declaration(protected val data: Data) {
                 "boolean" to "Boolean",
                 "string" to "String",
                 "number" to "Number",
-                "void" to "Unit",
+                "void" to UNIT,
                 "Event" to "org.w3c.dom.events.Event",
                 "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
                 "Node" to "org.w3c.dom.Node",
@@ -114,7 +116,8 @@ open class Declaration(protected val data: Data) {
                 "HTMLElement" to "org.w3c.dom.HTMLElement",
                 "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
                 "SVGElement" to "org.w3c.dom.svg.SVGElement",
-                "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement"
+                "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
+                "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement"
         )
 
         fun parse(source: String, lines: List<String>): Declaration {
@@ -143,10 +146,7 @@ open class Declaration(protected val data: Data) {
         }
 
         fun parseTypeLine(line: String): String {
-            val i1 = line.indexOf("{")
-            val i2 = line.indexOf("}")
-
-            val type = line.substring(i1 + 1, i2)
+            val type = StringUtil.between(line, "{", "}", true)
             if (type.startsWith(FUNCTION_START)) {
                 return parseFunctionType(type)
             }
@@ -171,6 +171,31 @@ open class Declaration(protected val data: Data) {
             val mainType = StringUtil.till(type, GENERIC_START)
             val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
             return "$mainType<${parametrizedTypes.joinToString(", ")}>"
+        }
+
+        fun getReturnType(lines: List<String>, className: String, name: String): String {
+            val line = lines.firstOrNull({ it.startsWith(RETURNS) }) ?: return UNIT
+            val hackType = Hacks.getReturnType(line, className, name)
+            if (hackType != null) {
+                return hackType
+            }
+            return parseTypeLine(line)
+        }
+
+        fun parseGenericParameters(lines: List<String>): List<GenericParameter> {
+            val templateLine = lines.firstOrNull { it.startsWith(TEMPLATE) }
+                    ?: return emptyList()
+            val names = StringUtil.from(templateLine, TEMPLATE).split(",")
+            // TODO: support generic type read
+            return names.map { GenericParameter(it, "") }
+        }
+
+        fun getGenericString(lines: List<String>): String {
+            val parameters = parseGenericParameters(lines)
+            if (parameters.isEmpty()) {
+                return ""
+            }
+            return "<${parameters.map { it.toString() }.joinToString(", ")}> "
         }
 
         fun parseParamLine(line: String, function: String): Parameter {
@@ -305,12 +330,8 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
         return true
     }
 
-    fun genericParameters(): List<GenericParameter> {
-        val templateLine = lines.firstOrNull { it.startsWith(TEMPLATE) }
-                ?: return emptyList()
-        val names = StringUtil.from(templateLine, TEMPLATE).split(",")
-        // TODO: support generic type read
-        return names.map { GenericParameter(it, "") }
+    fun genericParameters(): String {
+        return getGenericString(lines)
     }
 
     fun implementedTypes(): List<String> {
@@ -346,29 +367,6 @@ class Constructor : Function {
 
     fun toClassDec(): ClassDec {
         return ClassDec(data, lines)
-    }
-
-    // TODO: check why it doesn't work
-    /*
-    override fun hashCode(): Int {
-        return Objects.hash(data.name, parameters)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is Constructor
-                && Objects.equals(data.name, other.data.name)
-                && Objects.equals(parameters, other.parameters)
-    }
-    */
-
-    override fun hashCode(): Int {
-        return Objects.hash(data.name, parametersString())
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is Constructor
-                && Objects.equals(data.name, other.data.name)
-                && Objects.equals(parametersString(), other.parametersString())
     }
 
     override fun toString(): String {
@@ -448,11 +446,14 @@ open class Function : Declaration {
 
     val adapter: Function?
 
-    protected val static: Boolean
+    val static: Boolean
     protected val protected: Boolean
     protected val lines: List<String>
     protected val parameters: List<Parameter>
     protected val generated: Boolean
+
+    private val returnType: String
+    private val generics: String
 
     protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean) : super(data) {
         this.static = lines.contains(STATIC)
@@ -460,6 +461,9 @@ open class Function : Declaration {
         this.lines = lines
         this.parameters = parameters.items
         this.generated = generated
+
+        this.generics = Hacks.getFunctionGenerics(className, name) ?: getGenericString(lines)
+        this.returnType = getReturnType(lines, className, name)
 
         adapter = if (parameters.generatedItems != null) {
             generateAdapter(parameters.generatedItems)
@@ -494,6 +498,17 @@ open class Function : Declaration {
         }
     }
 
+    override fun hashCode(): Int {
+        return Objects.hash(className, name, parametersString())
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Function
+                && Objects.equals(className, other.className)
+                && Objects.equals(name, other.name)
+                && Objects.equals(parametersString(), other.parametersString())
+    }
+
     override fun toString(): String {
         if (generated) {
             TODO("Generated function logic not implemented!")
@@ -504,7 +519,7 @@ open class Function : Declaration {
             */
         }
 
-        return "    ${modificator()}fun $name(${parametersString()}) = definedExternally"
+        return "    ${modificator()}fun $generics$name(${parametersString()}): $returnType = definedExternally"
     }
 }
 
@@ -513,7 +528,13 @@ class EnumValue(data: Data, private val lines: List<String>) : Declaration(data)
 class Parameters(val items: List<Parameter>, val generatedItems: List<Parameter>? = null)
 
 data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
-data class GenericParameter(val name: String, val type: String)
+
+class GenericParameter(private val name: String, private val type: String) {
+    override fun toString(): String {
+        // TODO: add type
+        return name
+    }
+}
 
 class Namespace(data: Data) : Declaration(data) {
     override fun instanceMode(): Boolean {
@@ -608,8 +629,22 @@ class FileGenerator(declarations: List<Declaration>) {
         val consts: List<Const>
             get() = items.filterIsInstance(Const::class.java)
 
+        val functions: List<Function>
+            get() = items.filterIsInstance(Function::class.java)
+
         val staticConsts: List<Const>
             get() = consts.filter { it.static }
+
+        val staticFunctions: List<Function>
+            get() = functions.filter { it.static }
+
+        val staticDeclarations: List<Declaration>
+            get() {
+                return mutableListOf<Declaration>()
+                        .union(staticConsts)
+                        .union(staticFunctions.toSet())
+                        .toList()
+            }
 
         val memeberConsts: List<Const>
             get() = consts.filter { !it.static }
@@ -634,11 +669,7 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         fun genericParameters(): String {
-            val parameters = declaration.genericParameters()
-            if (parameters.isEmpty()) {
-                return ""
-            }
-            return "<${parameters.map { it.name }.joinToString(", ")}>"
+            return declaration.genericParameters()
         }
 
         open protected fun isStatic(): Boolean {
@@ -646,7 +677,7 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         protected fun companionContent(): String {
-            val items = staticConsts.map {
+            val items = staticDeclarations.map {
                 it.toString()
             }
 
@@ -857,10 +888,36 @@ object Hacks {
         }
     }
 
+    fun getFunctionGenerics(className: String, name: String): String? {
+        return when {
+            className == "yfiles.collections.List" && name == "fromArray" -> "<T>"
+            else -> null
+        }
+    }
+
     fun filterConstructorAdapters(className: String, adapters: List<Constructor>): List<Constructor> {
         return when (className) {
             "yfiles.styles.NodeStylePortStyleAdapter" -> adapters.toSet().toList()
             else -> adapters
+        }
+    }
+
+    fun getReturnType(line: String, className: String, name: String): String? {
+        if (line.startsWith("@returns {")) {
+            return null
+        }
+
+        return when {
+            className == "yfiles.input.ConstrainedReshapeHandler" && name == "handleReshape" -> UNIT
+            className == "yfiles.input.ConstrainedDragHandler" && name == "handleMove" -> UNIT
+            className == "yfiles.geometry.MutableSize" && name == "MutableSize" -> ""
+        // TODO: check (in official doc no return type)
+            className == "yfiles.geometry.OrientedRectangle" && name == "moveBy" -> "Boolean"
+            else -> {
+                println("className == \"$className\" && name == \"$name\" -> \"\"")
+                println(line)
+                throw GradleException("No return type founded!")
+            }
         }
     }
 }
