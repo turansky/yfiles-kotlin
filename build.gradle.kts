@@ -148,8 +148,12 @@ open class Declaration(protected val data: Data) {
             }
         }
 
+        fun findType(line: String): String {
+            return StringUtil.between(line, "{", "}", true)
+        }
+
         fun parseTypeLine(line: String): String {
-            val type = StringUtil.between(line, "{", "}", true)
+            val type = findType(line)
             if (type.startsWith(FUNCTION_START)) {
                 return parseFunctionType(type)
             }
@@ -337,10 +341,19 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
         return getGenericString(lines)
     }
 
+    fun extendedType(): String? {
+        if (Hacks.ignoreExtendedType(className)) {
+            return null
+        }
+
+        val line = lines.firstOrNull { it.startsWith(EXTENDS) } ?: return null
+        return parseType(findType(line))
+    }
+
     fun implementedTypes(): List<String> {
-        return lines.filter { it.startsWith(IMPLEMENTS) }
-                .map { StringUtil.between(it, IMPLEMENTS + "{", "}", true) }
-                .map { parseType(it) }
+        return Hacks.getImplementedTypes(className) ?:
+                lines.filter { it.startsWith(IMPLEMENTS) }
+                        .map { parseType(findType(it)) }
     }
 }
 
@@ -401,7 +414,8 @@ class Const(data: Data, lines: List<String>) : Declaration(data) {
 
     override fun toString(): String {
         val modifier = if (protected) "protected " else ""
-        return "    ${modifier}val $name: $type = definedExternally"
+        val mode = if (static) "" else "get()"
+        return "    ${modifier}val $name: $type $mode = definedExternally"
     }
 }
 
@@ -697,7 +711,7 @@ class FileGenerator(declarations: List<Declaration>) {
             items.add(item)
         }
 
-        protected fun parentTypes(): List<String> {
+        open protected fun parentTypes(): List<String> {
             return declaration.implementedTypes()
         }
 
@@ -743,7 +757,7 @@ class FileGenerator(declarations: List<Declaration>) {
         open fun content(): String {
             return listOf<Declaration>()
                     .union(memberConsts)
-                    .union(memberFunctions)
+                    // .union(memberFunctions)
                     .joinToString("\n") + "\n"
         }
     }
@@ -791,6 +805,17 @@ class FileGenerator(declarations: List<Declaration>) {
                 }
                 text
             }.joinToString("\n") + "\n"
+        }
+
+        override fun parentTypes(): List<String> {
+            val extendedType = declaration.extendedType()
+            if (extendedType == null) {
+                return super.parentTypes()
+            }
+
+            return listOf(extendedType)
+                    .union(super.parentTypes())
+                    .toList()
         }
 
         override fun content(): String {
@@ -972,6 +997,21 @@ object Hacks {
                 println(line)
                 throw GradleException("No return type founded!")
             }
+        }
+    }
+
+    fun ignoreExtendedType(className: String): Boolean {
+        return when (className) {
+            "yfiles.lang.Exception" -> true
+            else -> false
+        }
+    }
+
+    fun getImplementedTypes(className: String): List<String>? {
+        return when (className) {
+            "yfiles.algorithms.EdgeList" -> emptyList()
+            "yfiles.algorithms.NodeList" -> emptyList()
+            else -> null
         }
     }
 }
