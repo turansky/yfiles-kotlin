@@ -117,7 +117,10 @@ open class Declaration(protected val data: Data) {
                 "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
                 "SVGElement" to "org.w3c.dom.svg.SVGElement",
                 "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
-                "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement"
+                "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
+                "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
+                "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
+                "Promise" to "kotlin.js.Promise"
         )
 
         fun parse(source: String, lines: List<String>): Declaration {
@@ -168,7 +171,7 @@ open class Declaration(protected val data: Data) {
                 return type
             }
 
-            val mainType = StringUtil.till(type, GENERIC_START)
+            val mainType = parseType(StringUtil.till(type, GENERIC_START))
             val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
             return "$mainType<${parametrizedTypes.joinToString(", ")}>"
         }
@@ -343,8 +346,14 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
 
 class ClassDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
     val static = lines.contains(STATIC)
-    val open = !lines.contains(FINAL)
-    val abstract = lines.contains(ABSTRACT)
+    private val open = !lines.contains(FINAL)
+    private val abstract = lines.contains(ABSTRACT)
+
+    val modificator = when {
+        abstract -> "abstract" // no such cases (JS specific?)
+        open -> "open"
+        else -> ""
+    }
 }
 
 class InterfaceDec(data: Data, lines: List<String>) : InstanceDec(data, lines)
@@ -450,6 +459,7 @@ open class Function : Declaration {
 
     val static: Boolean
     protected val protected: Boolean
+    protected val abstract: Boolean
     protected val lines: List<String>
     protected val parameters: List<Parameter>
     protected val generated: Boolean
@@ -460,6 +470,7 @@ open class Function : Declaration {
     protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean) : super(data) {
         this.static = lines.contains(STATIC)
         this.protected = lines.contains(PROTECTED)
+        this.abstract = lines.contains(ABSTRACT)
         this.lines = lines
         this.parameters = parameters.items
         this.generated = generated
@@ -514,6 +525,7 @@ open class Function : Declaration {
     }
 
     protected fun modificator(): String {
+        // TODO: add abstract modificator if needed
         return when {
             protected -> "protected "
             adapter != null -> "internal "
@@ -656,6 +668,7 @@ class FileGenerator(declarations: List<Declaration>) {
 
         val functions: List<Function>
             get() = items.filterIsInstance(Function::class.java)
+                    .filter { it !is Constructor }
 
         val staticConsts: List<Const>
             get() = consts.filter { it.static }
@@ -673,6 +686,9 @@ class FileGenerator(declarations: List<Declaration>) {
 
         val memberConsts: List<Const>
             get() = consts.filter { !it.static }
+
+        val memberFunctions: List<Function>
+            get() = functions.filter { !it.static }
 
         val header: String
             get() = "package ${fqn.packageName}\n"
@@ -725,9 +741,10 @@ class FileGenerator(declarations: List<Declaration>) {
         }
 
         open fun content(): String {
-            return memberConsts.map {
-                it.toString()
-            }.joinToString("\n")
+            return listOf<Declaration>()
+                    .union(memberConsts)
+                    .union(memberFunctions)
+                    .joinToString("\n") + "\n"
         }
     }
 
@@ -741,17 +758,7 @@ class FileGenerator(declarations: List<Declaration>) {
                 return "object"
             }
 
-            // no such cases
-            // JS specific?
-            if (declaration.abstract) {
-                return "abstract class"
-            }
-
-            if (declaration.open) {
-                return "open class"
-            }
-
-            return "class"
+            return declaration.modificator + " class"
         }
 
         private fun constructors(): String {
@@ -798,9 +805,11 @@ class FileGenerator(declarations: List<Declaration>) {
 
     class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
         override fun content(): String {
+            // TODO: move modifications to functions
+            val content = super.content().replace(" = definedExternally", "")
             return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
-                    super.content() + "\n" +
+                    content + "\n" +
                     "}\n"
         }
     }
