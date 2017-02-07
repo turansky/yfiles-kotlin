@@ -147,6 +147,7 @@ open class Declaration(protected val data: Data) {
                 "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
                 "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
 
+                // TODO: check if Kotlin promises is what we need in yFiles
                 "Promise" to "kotlin.js.Promise"
         )
 
@@ -590,7 +591,7 @@ open class Function : Declaration {
         return when {
             overridden() -> "override "
             protected -> "protected "
-            adapter != null -> "internal "
+        // adapter != null -> "internal "
             else -> ""
         }
     }
@@ -641,11 +642,44 @@ class Namespace(data: Data) : Declaration(data) {
     }
 }
 
-class ClassRegistryImpl(private val declarations: List<Declaration>) : ClassRegistry {
-    override fun functionOverriden(className: String, functionName: String): Boolean {
-        return false
+class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
+
+    private val instances = declarations.filterIsInstance(InstanceDec::class.java)
+            .associateBy({ it.className }, { it })
+
+    private val functions = declarations.filterIsInstance(Function::class.java)
+            .filter { it !is Constructor }
+
+    private val functionsMap = instances.values.associateBy(
+            { it.className },
+            { instance -> functions.filter { it.className == instance.className }.map { it.name } }
+    )
+
+    private fun getParents(className: String): List<String> {
+        val instance = instances[className] ?: throw GradleException("Unknown instance type: $className")
+
+        return mutableListOf<String>()
+                .union(listOf(instance.extendedType()).filterNotNull())
+                .union(instance.implementedTypes())
+                .map { if (it.contains("<")) StringUtil.till(it, "<") else it }
+                .toList()
     }
 
+    private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {
+        if (checkCurrentClass) {
+            val funs = functionsMap[className] ?: throw GradleException("No functions found for type: $className")
+            if (funs.contains(functionName)) {
+                return true
+            }
+        }
+        return getParents(className).any {
+            functionOverriden(it, functionName, true)
+        }
+    }
+
+    override fun functionOverriden(className: String, functionName: String): Boolean {
+        return functionOverriden(className, functionName, false)
+    }
 }
 
 class FileGenerator(declarations: List<Declaration>) {
@@ -733,10 +767,12 @@ class FileGenerator(declarations: List<Declaration>) {
 
         val consts: List<Const>
             get() = items.filterIsInstance(Const::class.java)
+                    .sortedBy { it.name }
 
         val functions: List<Function>
             get() = items.filterIsInstance(Function::class.java)
                     .filter { it !is Constructor }
+                    .sortedBy { it.name }
 
         val staticConsts: List<Const>
             get() = consts.filter { it.static }
@@ -811,7 +847,7 @@ class FileGenerator(declarations: List<Declaration>) {
         open fun content(): String {
             return listOf<Declaration>()
                     .union(memberConsts)
-                    // .union(memberFunctions)
+                    .union(memberFunctions)
                     .joinToString("\n") + "\n"
         }
     }
