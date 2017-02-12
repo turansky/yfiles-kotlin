@@ -1,3 +1,4 @@
+import Build_gradle.Hacks.getAdditionalContent
 import Build_gradle.Hacks.isClassParameter
 import Build_gradle.Hacks.validateStaticConstType
 import Build_gradle.Types.BEND_TYPE
@@ -46,6 +47,8 @@ fun generateKotlinWrappers(sourceFile: File) {
 
     declarations.addAll(additionalClasses)
 
+    declarations.removeIf { Hacks.redundantDeclaration(it) }
+
     val classRegistry = ClassRegistryImpl(declarations)
     declarations.forEach {
         it.classRegistry = classRegistry
@@ -56,7 +59,9 @@ fun generateKotlinWrappers(sourceFile: File) {
     fileGenerator.generate(sourceDir)
 
     // TODO: Check if this class really needed
+    sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
+    sourceDir.resolve("yfiles/lang/Struct.kt").delete()
 }
 
 object DeclarationReader {
@@ -93,6 +98,7 @@ object Types {
 }
 
 interface ClassRegistry {
+    fun isInterface(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
 }
 
@@ -134,18 +140,23 @@ open class Declaration(protected val data: Data) {
                 "string" to "String",
                 "number" to "Number",
                 "void" to UNIT,
+                "Function" to "() -> $UNIT",
 
                 "Event" to "org.w3c.dom.events.Event",
                 "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
+                "Document" to "org.w3c.dom.Document",
                 "Node" to "org.w3c.dom.Node",
                 "Element" to "org.w3c.dom.Element",
                 "HTMLElement" to "org.w3c.dom.HTMLElement",
+                "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
                 "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
                 "SVGElement" to "org.w3c.dom.svg.SVGElement",
                 "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
                 "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
                 "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
+                "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
                 "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
+                "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
 
                 // TODO: check if Kotlin promises is what we need in yFiles
                 "Promise" to "kotlin.js.Promise"
@@ -317,7 +328,7 @@ open class Declaration(protected val data: Data) {
         }
     }
 
-    private var _classRegistry: ClassRegistry? = null
+    protected var _classRegistry: ClassRegistry? = null
 
     var classRegistry: ClassRegistry
         get() = _classRegistry ?: throw GradleException("Class registry not initialized!")
@@ -325,23 +336,26 @@ open class Declaration(protected val data: Data) {
             _classRegistry = value
         }
 
+    val shortClassName: String
     val className: String
     val name: String
 
     init {
         if (instanceMode()) {
-            className = data.name
-            name = data.name.split(".").last()
+            this.className = data.name
+            this.name = className.split(".").last()
         } else {
             val names = data.name.split(".")
-            name = names.last()
+            this.name = names.last()
 
             var i = names.size - 2
             if (names[i] == "prototype") {
                 i--
             }
-            className = names.subList(0, i + 1).joinToString(separator = ".")
+            this.className = names.subList(0, i + 1).joinToString(separator = ".")
         }
+
+        this.shortClassName = className.split(".").last()
     }
 
     open fun instanceMode(): Boolean {
@@ -439,7 +453,7 @@ class Constructor : Function {
                     "}\n\n"
         }
 
-        return "    ${modificator()}constructor(${parametersString()})"
+        return "    ${modificator(false)}constructor(${parametersString()})"
     }
 }
 
@@ -512,8 +526,8 @@ open class Function : Declaration {
     val adapter: Function?
 
     val static: Boolean
-    protected val protected: Boolean
-    protected val abstract: Boolean
+    val protected: Boolean
+    val abstract: Boolean
     protected val lines: List<String>
     protected val parameters: List<Parameter>
     protected val generated: Boolean
@@ -566,10 +580,11 @@ open class Function : Declaration {
                             str += "?"
                         }
                         if (useDefaultValue) {
-                            str += if (generated) {
-                                " = $defaultValue"
-                            } else {
-                                " = definedExternally"
+                            str += when {
+                                _classRegistry?.functionOverriden(className, name) ?: false -> ""
+                            // generated || classRegistry.isInterface(className) -> " = $defaultValue"
+                                generated -> " = $defaultValue"
+                                else -> " = definedExternally"
                             }
                         }
                     }
@@ -586,12 +601,19 @@ open class Function : Declaration {
         return classRegistry.functionOverriden(className, name)
     }
 
-    protected fun modificator(): String {
+    protected fun modificator(canBeOpen: Boolean = true): String {
         // TODO: add abstract modificator if needed
-        return when {
-            overridden() -> "override "
+        if (overridden()) {
+            return "override "
+        }
+
+        val result = when {
+            abstract -> "abstract "
+            canBeOpen -> "open "
+            else -> ""
+        }
+        return result + when {
             protected -> "protected "
-        // adapter != null -> "internal "
             else -> ""
         }
     }
@@ -609,17 +631,14 @@ open class Function : Declaration {
 
     override fun toString(): String {
         if (generated) {
-            var instanceName = className.split(".").last()
-            if (static) {
-                instanceName += ".Companion"
-            }
-
-            return "fun $generics $instanceName.$name(${parametersString()}): $returnType {\n" +
+            val instanceName = shortClassName + if (static) ".Companion" else ""
+            return "${modificator()}fun $generics $instanceName.$name(${parametersString()}): $returnType {\n" +
                     "    return $name(${mapString(parameters)})\n" +
                     "}\n\n"
         }
 
-        return "    ${modificator()}fun $generics$name(${parametersString()}): $returnType = definedExternally"
+        val body = if (abstract) "" else " = definedExternally"
+        return "    ${modificator()}fun $generics$name(${parametersString()}): $returnType$body"
     }
 }
 
@@ -643,7 +662,6 @@ class Namespace(data: Data) : Declaration(data) {
 }
 
 class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
-
     private val instances = declarations.filterIsInstance(InstanceDec::class.java)
             .associateBy({ it.className }, { it })
 
@@ -675,6 +693,10 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
         return getParents(className).any {
             functionOverriden(it, functionName, true)
         }
+    }
+
+    override fun isInterface(className: String): Boolean {
+        return instances[className] is InterfaceDec
     }
 
     override fun functionOverriden(className: String, functionName: String): Boolean {
@@ -848,6 +870,7 @@ class FileGenerator(declarations: List<Declaration>) {
             return listOf<Declaration>()
                     .union(memberConsts)
                     .union(memberFunctions)
+                    .union(listOf(getAdditionalContent(declaration.className, declaration.extendedType())))
                     .joinToString("\n") + "\n"
         }
     }
@@ -862,7 +885,13 @@ class FileGenerator(declarations: List<Declaration>) {
                 return "object"
             }
 
-            return declaration.modificator + " class"
+            val modificator = if (memberFunctions.any { it.abstract }) {
+                "abstract"
+            } else {
+                declaration.modificator
+            }
+
+            return modificator + " class"
         }
 
         private fun constructors(): String {
@@ -920,9 +949,16 @@ class FileGenerator(declarations: List<Declaration>) {
 
     class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
         override fun content(): String {
-            // TODO: move modifications to functions
-            val content = super.content().replace(" = definedExternally", "")
-            return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
+            var content = super.content()
+            val likeAbstractClass = Hacks.defineLikeAbstractClass(className, memberFunctions)
+            if (!likeAbstractClass) {
+                content = content.replace("abstract ", "")
+                        .replace("open fun", "fun")
+                        .replace(" = definedExternally", "")
+            }
+
+            val type = if (likeAbstractClass) "abstract class" else "interface"
+            return "external $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     companionContent() +
                     content + "\n" +
                     "}\n"
@@ -1002,6 +1038,20 @@ object StringUtil {
 }
 
 object Hacks {
+    val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
+
+    fun redundantDeclaration(declaration: Declaration): Boolean {
+        if (declaration !is Function) {
+            return false
+        }
+
+        if (declaration.className == OBJECT_TYPE) {
+            return declaration.name in SYSTEM_FUNCTIONS
+        }
+
+        return false
+    }
+
     fun parseParamLine(line: String, function: String): Parameter? {
         if (line.startsWith("@param value")) {
             return when (function) {
@@ -1073,7 +1123,11 @@ object Hacks {
 
     fun getReturnType(line: String, className: String, name: String): String? {
         if (line.startsWith("@returns {")) {
-            return null
+            return when {
+                className == "yfiles.algorithms.EdgeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
+                className == "yfiles.algorithms.NodeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
+                else -> null
+            }
         }
 
         return when {
@@ -1101,7 +1155,105 @@ object Hacks {
         return when (className) {
             "yfiles.algorithms.EdgeList" -> emptyList()
             "yfiles.algorithms.NodeList" -> emptyList()
+
+        // TODO: for interface hack
+            "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
             else -> null
         }
+    }
+
+    val CLONE_REQUIRED = listOf(
+            "yfiles.geometry.Matrix",
+            "yfiles.geometry.MutablePoint",
+            "yfiles.geometry.MutableRectangle",
+            "yfiles.geometry.MutableSize",
+            "yfiles.geometry.OrientedRectangle"
+    )
+
+    val INVALID_PLACERS = listOf(
+            "yfiles.tree.AssistantNodePlacer",
+            "yfiles.tree.BusNodePlacer",
+            "yfiles.tree.DelegatingNodePlacer",
+            "yfiles.tree.DoubleLineNodePlacer",
+            "yfiles.tree.FreeNodePlacer",
+            "yfiles.tree.GridNodePlacer",
+            "yfiles.tree.LayeredNodePlacer",
+            "yfiles.tree.LeftRightNodePlacer",
+            "yfiles.tree.SimpleNodePlacer"
+    )
+
+    val MULTI_STAGE_LAYOUT_CLASSES = listOf(
+            "yfiles.layout.GraphTransformer",
+            "yfiles.tree.BalloonLayout",
+            "yfiles.genealogy.FamilyTreeLayout",
+            "yfiles.hierarchic.HierarchicLayout",
+            "yfiles.hierarchic.HierarchicLayoutCore",
+            "yfiles.circular.CircularLayout",
+            "yfiles.circular.SingleCycleLayout",
+            "yfiles.organic.ClassicOrganicLayout",
+            "yfiles.organic.OrganicLayout",
+            "yfiles.orthogonal.OrthogonalLayout",
+            "yfiles.radial.RadialLayout",
+            "yfiles.seriesparallel.SeriesParallelLayout",
+            "yfiles.tree.AspectRatioTreeLayout",
+            "yfiles.tree.ClassicTreeLayout",
+            "yfiles.tree.TreeLayout"
+    )
+
+    fun getAdditionalContent(className: String, baseClassName: String?): String {
+        return when {
+            baseClassName == "yfiles.layout.LayoutData"
+            -> "override fun apply(layoutGraphAdapter: yfiles.layout.LayoutGraphAdapter, layout: yfiles.layout.ILayoutAlgorithm, layoutGraph: yfiles.layout.CopiedLayoutGraph): Unit = definedExternally"
+            className == "yfiles.algorithms.YList"
+            -> "override fun add(item: $OBJECT_TYPE) = definedExternally"
+            className in CLONE_REQUIRED
+            -> "override fun clone(): yfiles.lang.Object = definedExternally"
+            baseClassName == "yfiles.tree.RotatableNodePlacerBase"
+            -> "override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally\n" +
+                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.RotatedSubtreeShape = definedExternally"
+            baseClassName == "yfiles.tree.NodePlacerBase"
+            -> "override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally\n" +
+                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.SubtreeShape = definedExternally"
+            baseClassName == "yfiles.layout.MultiStageLayout"
+            -> "override fun applyLayoutCore(graph: yfiles.layout.LayoutGraph): Unit = definedExternally"
+            baseClassName == "yfiles.view.ModelManager<T>"
+            -> "override fun getCanvasObjectGroup(item: T): ICanvasObjectGroup = definedExternally\n" +
+                    "override fun getInstaller(item: T): ICanvasObjectInstaller = definedExternally\n" +
+                    "override fun onDisabled() = definedExternally\n" +
+                    "override fun onEnabled() = definedExternally\n"
+            baseClassName == "yfiles.view.EdgeDecorationInstaller"
+            -> "override fun getBendDrawing(canvas: CanvasComponent, edge: yfiles.graph.IEdge): IVisualTemplate = definedExternally\n" +
+                    "override fun getStroke(canvas: CanvasComponent, edge: yfiles.graph.IEdge): Stroke = definedExternally"
+            className == "yfiles.view.ColorExtension"
+            -> "override fun provideValue(serviceProvider: yfiles.graph.ILookup): yfiles.lang.Object = definedExternally"
+            else -> ""
+        }
+    }
+
+    val MUST_BE_ABSTRACT_CLASSES = listOf(
+            "yfiles.collections.ICollection",
+            "yfiles.collections.IList",
+            "yfiles.collections.IMap",
+            "yfiles.collections.IListEnumerable",
+            "yfiles.collections.IObservableCollection",
+            "yfiles.view.ICanvasObjectGroup",
+            "yfiles.view.ISelectionModel",
+            "yfiles.view.IStripeSelection",
+            "yfiles.view.IGraphSelection",
+
+            "yfiles.graph.IColumn",
+            "yfiles.graph.IRow"
+    )
+
+    fun defineLikeAbstractClass(className: String, functions: List<Function>): Boolean {
+        if (className.startsWith("yfiles.geometry.")) {
+            return false
+        }
+
+        if (className in MUST_BE_ABSTRACT_CLASSES) {
+            return true
+        }
+
+        return functions.any { !it.abstract }
     }
 }
