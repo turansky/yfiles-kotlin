@@ -401,9 +401,15 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
     }
 
     fun implementedTypes(): List<String> {
-        return Hacks.getImplementedTypes(className) ?:
-                lines.filter { it.startsWith(IMPLEMENTS) }
-                        .map { parseType(findType(it)) }
+        var types = Hacks.getImplementedTypes(className)
+        if (types != null) {
+            return types
+        }
+
+        types = lines.filter { it.startsWith(IMPLEMENTS) }
+                .map { parseType(findType(it)) }
+
+        return Hacks.removeImplementedTypesWhileMixinsNotSupported(className, types)
     }
 }
 
@@ -1156,18 +1162,36 @@ object Hacks {
             "yfiles.algorithms.EdgeList" -> emptyList()
             "yfiles.algorithms.NodeList" -> emptyList()
 
-        // TODO: for interface hack
             "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
             else -> null
         }
     }
 
+    // TODO: for interface hack
+    fun removeImplementedTypesWhileMixinsNotSupported(className: String, implementedTypes: List<String>): List<String> {
+        return when (className) {
+            "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
+            "yfiles.geometry.IRectangle" -> existedItem("yfiles.geometry.IPoint", implementedTypes)
+            "yfiles.geometry.IMutableRectangle" -> existedItem("yfiles.geometry.IRectangle", implementedTypes)
+            "yfiles.geometry.MutableRectangle" -> existedItem("yfiles.geometry.IMutableRectangle", implementedTypes)
+            "yfiles.geometry.IMutableOrientedRectangle" -> existedItem("yfiles.geometry.IOrientedRectangle", implementedTypes)
+            "yfiles.geometry.OrientedRectangle" -> existedItem("yfiles.geometry.IMutableOrientedRectangle", implementedTypes)
+            else -> implementedTypes
+        }
+    }
+
+    private fun existedItem(item: String, items: List<String>): List<String> {
+        if (items.contains(item)) {
+            return listOf(item)
+        }
+
+        throw GradleException("Item '$item' not contains in item list '$items'")
+    }
+
     val CLONE_REQUIRED = listOf(
             "yfiles.geometry.Matrix",
             "yfiles.geometry.MutablePoint",
-            "yfiles.geometry.MutableRectangle",
-            "yfiles.geometry.MutableSize",
-            "yfiles.geometry.OrientedRectangle"
+            "yfiles.geometry.MutableSize"
     )
 
     val INVALID_PLACERS = listOf(
@@ -1200,34 +1224,49 @@ object Hacks {
             "yfiles.tree.TreeLayout"
     )
 
+    private val CLONE_OVERRIDE = "override fun clone(): yfiles.lang.Object = definedExternally"
+
     fun getAdditionalContent(className: String, baseClassName: String?): String {
+
         return when {
             baseClassName == "yfiles.layout.LayoutData"
             -> "override fun apply(layoutGraphAdapter: yfiles.layout.LayoutGraphAdapter, layout: yfiles.layout.ILayoutAlgorithm, layoutGraph: yfiles.layout.CopiedLayoutGraph): Unit = definedExternally"
+
             className == "yfiles.algorithms.YList"
             -> "override fun add(item: $OBJECT_TYPE) = definedExternally"
+
             className in CLONE_REQUIRED
-            -> "override fun clone(): yfiles.lang.Object = definedExternally"
+            -> CLONE_OVERRIDE
+
             baseClassName == "yfiles.tree.RotatableNodePlacerBase"
-            -> "override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally\n" +
-                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.RotatedSubtreeShape = definedExternally"
+            -> lines("override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally",
+                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.RotatedSubtreeShape = definedExternally")
+
             baseClassName == "yfiles.tree.NodePlacerBase"
-            -> "override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally\n" +
-                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.SubtreeShape = definedExternally"
+            -> lines("override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally",
+                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.SubtreeShape = definedExternally")
+
             baseClassName == "yfiles.layout.MultiStageLayout"
             -> "override fun applyLayoutCore(graph: yfiles.layout.LayoutGraph): Unit = definedExternally"
+
             baseClassName == "yfiles.view.ModelManager<T>"
-            -> "override fun getCanvasObjectGroup(item: T): ICanvasObjectGroup = definedExternally\n" +
-                    "override fun getInstaller(item: T): ICanvasObjectInstaller = definedExternally\n" +
-                    "override fun onDisabled() = definedExternally\n" +
-                    "override fun onEnabled() = definedExternally\n"
+            -> lines("override fun getCanvasObjectGroup(item: T): ICanvasObjectGroup = definedExternally",
+                    "override fun getInstaller(item: T): ICanvasObjectInstaller = definedExternally",
+                    "override fun onDisabled() = definedExternally",
+                    "override fun onEnabled() = definedExternally")
+
             baseClassName == "yfiles.view.EdgeDecorationInstaller"
-            -> "override fun getBendDrawing(canvas: CanvasComponent, edge: yfiles.graph.IEdge): IVisualTemplate = definedExternally\n" +
-                    "override fun getStroke(canvas: CanvasComponent, edge: yfiles.graph.IEdge): Stroke = definedExternally"
+            -> lines("override fun getBendDrawing(canvas: CanvasComponent, edge: yfiles.graph.IEdge): IVisualTemplate = definedExternally",
+                    "override fun getStroke(canvas: CanvasComponent, edge: yfiles.graph.IEdge): Stroke = definedExternally")
+
             className == "yfiles.view.ColorExtension"
             -> "override fun provideValue(serviceProvider: yfiles.graph.ILookup): yfiles.lang.Object = definedExternally"
             else -> ""
         }
+    }
+
+    private fun lines(vararg lines: String): String {
+        return lines.joinToString("\n")
     }
 
     val MUST_BE_ABSTRACT_CLASSES = listOf(
@@ -1246,10 +1285,6 @@ object Hacks {
     )
 
     fun defineLikeAbstractClass(className: String, functions: List<Function>): Boolean {
-        if (className.startsWith("yfiles.geometry.")) {
-            return false
-        }
-
         if (className in MUST_BE_ABSTRACT_CLASSES) {
             return true
         }
