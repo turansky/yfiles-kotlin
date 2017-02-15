@@ -99,6 +99,7 @@ object Types {
 
 interface ClassRegistry {
     fun isInterface(className: String): Boolean
+    fun isFinalClass(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
 }
 
@@ -415,8 +416,9 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
 
 class ClassDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
     val static = lines.contains(STATIC)
-    private val open = !lines.contains(FINAL)
-    private val abstract = lines.contains(ABSTRACT)
+    val final = lines.contains(FINAL)
+    val open = !final
+    val abstract = lines.contains(ABSTRACT)
 
     val modificator = when {
         abstract -> "abstract" // no such cases (JS specific?)
@@ -615,7 +617,7 @@ open class Function : Declaration {
 
         val result = when {
             abstract -> "abstract "
-            canBeOpen -> "open "
+            canBeOpen && !static && !classRegistry.isFinalClass(className) -> "open "
             else -> ""
         }
         return result + when {
@@ -703,6 +705,11 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
 
     override fun isInterface(className: String): Boolean {
         return instances[className] is InterfaceDec
+    }
+
+    override fun isFinalClass(className: String): Boolean {
+        val instance = instances[className]
+        return instance is ClassDec && instance.final
     }
 
     override fun functionOverriden(className: String, functionName: String): Boolean {
@@ -1224,7 +1231,7 @@ object Hacks {
             "yfiles.tree.TreeLayout"
     )
 
-    private val CLONE_OVERRIDE = "override fun clone(): yfiles.lang.Object = definedExternally"
+    private val CLONE_OVERRIDE = "override fun clone(): $OBJECT_TYPE = definedExternally"
 
     fun getAdditionalContent(className: String, baseClassName: String?): String {
 
@@ -1260,7 +1267,89 @@ object Hacks {
                     "override fun getStroke(canvas: CanvasComponent, edge: yfiles.graph.IEdge): Stroke = definedExternally")
 
             className == "yfiles.view.ColorExtension"
-            -> "override fun provideValue(serviceProvider: yfiles.graph.ILookup): yfiles.lang.Object = definedExternally"
+            -> "override fun provideValue(serviceProvider: yfiles.graph.ILookup): $OBJECT_TYPE = definedExternally"
+
+            className == "yfiles.graph.CompositeUndoUnit"
+            -> lines("override fun tryMergeUnit(unit: IUndoUnit): Boolean = definedExternally",
+                    "override fun tryReplaceUnit(unit: IUndoUnit): Boolean = definedExternally")
+
+            className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"
+            -> lines("override fun findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter = definedExternally",
+                    "override fun getParameters(label: ILabel, model: ILabelModel): yfiles.collections.IEnumerable<ILabelModelParameter> = definedExternally",
+                    "override fun getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle = definedExternally")
+
+            baseClassName == "yfiles.graph.FoldingLabelOwnerState"
+            -> "override fun addLabel(text: String, layoutParameter: ILabelModelParameter, style: yfiles.styles.ILabelStyle, preferredSize: yfiles.geometry.Size, tag: $OBJECT_TYPE): FoldingLabelState = definedExternally"
+
+            className == "yfiles.graph.FreeLabelModel"
+            -> "override fun findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter = definedExternally"
+
+            className == "yfiles.graph.GenericLabelModel"
+            -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): Boolean = definedExternally",
+                    "override fun getParameters(label: ILabel, model: ILabelModel): yfiles.collections.IEnumerable<ILabelModelParameter> = definedExternally",
+                    "override fun convert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): yfiles.graphml.MarkupExtension = definedExternally",
+                    "override fun getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle = definedExternally")
+
+            className == "yfiles.graphml.MapperOutputHandler"
+            -> lines("override fun getValue(context: IWriteContext, key: TKey): TData = definedExternally",
+                    "override fun writeValueCore(context: IWriteContext, data: TData) = definedExternally")
+
+            className == "yfiles.graphml.MapperInputHandler"
+            -> lines("override fun parseDataCore(context: IParseContext, node: org.w3c.dom.Node): TData = definedExternally",
+                    "override fun setValue(context: IParseContext, key: TKey, data: TData) = definedExternally")
+
+            className == "yfiles.graph.GenericPortLocationModel"
+            -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): Boolean = definedExternally",
+                    "override fun convert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): yfiles.graphml.MarkupExtension = definedExternally",
+                    "override fun getEnumerator(): yfiles.collections.IEnumerator<IPortLocationModelParameter> = definedExternally")
+
+            baseClassName == "yfiles.layout.LayoutGraph"
+            -> lines("override fun createLabelFactory(): ILabelLayoutFactory = definedExternally",
+                    "override fun getLabelLayout(node: yfiles.algorithms.Node): Array<INodeLabelLayout> = definedExternally",
+                    "override fun getLabelLayout(edge: yfiles.algorithms.Edge): Array<IEdgeLabelLayout> = definedExternally",
+                    "override fun getLayout(node: yfiles.algorithms.Node): INodeLayout = definedExternally",
+                    "override fun getLayout(edge: yfiles.algorithms.Edge): IEdgeLayout = definedExternally",
+                    "override fun getOwnerEdge(labelLayout: IEdgeLabelLayout): yfiles.algorithms.Edge = definedExternally",
+                    "override fun getOwnerNode(labelLayout: INodeLabelLayout): yfiles.algorithms.Node = definedExternally")
+
+            className == "yfiles.hierarchic.PortCandidateOptimizer"
+            -> "override fun optimizeAfterSequencingForSingleNode(node: yfiles.algorithms.Node, inEdgeOrder: yfiles.collections.IComparer<$OBJECT_TYPE>, outEdgeOrder: yfiles.collections.IComparer<$OBJECT_TYPE>, graph: yfiles.layout.LayoutGraph, ldp: ILayoutDataProvider, itemFactory: IItemFactory) = definedExternally"
+
+            baseClassName != null && baseClassName.startsWith("yfiles.input.ConstrainedDragHandler<")
+            -> "override fun constrainNewLocation(context: IInputModeContext, originalLocation: yfiles.geometry.Point, newLocation: yfiles.geometry.Point): yfiles.geometry.Point = definedExternally"
+
+            className == "yfiles.input.PortRelocationHandleProvider"
+            -> "override fun getHandle(context: IInputModeContext, edge: yfiles.graph.IEdge, sourceHandle: Boolean): IHandle = definedExternally"
+
+            baseClassName != null && baseClassName.startsWith("yfiles.styles.PathBasedEdgeStyleRenderer<")
+            -> lines("override fun createPath(): yfiles.geometry.GeneralPath = definedExternally",
+                    "override fun getSourceArrow(): IArrow = definedExternally",
+                    "override fun getStroke(): yfiles.view.Stroke = definedExternally",
+                    "override fun getTargetArrow(): IArrow = definedExternally")
+
+            className == "yfiles.styles.Arrow"
+            -> lines("override fun getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider = definedExternally",
+                    "override fun getVisualCreator(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point): yfiles.view.IVisualCreator = definedExternally",
+                    CLONE_OVERRIDE)
+
+            className == "yfiles.styles.GraphOverviewSvgVisualCreator" || className == "yfiles.view.GraphOverviewCanvasVisualCreator"
+            -> lines("override fun createVisual(context: yfiles.view.IRenderContext): yfiles.view.Visual = definedExternally",
+                    "override fun updateVisual(context: yfiles.view.IRenderContext, oldVisual: yfiles.view.Visual): yfiles.view.Visual = definedExternally")
+
+            className == "yfiles.view.DefaultPortCandidateDescriptor"
+            -> lines("override fun createVisual(context: IRenderContext): Visual = definedExternally",
+                    "override fun updateVisual(context: IRenderContext, oldVisual: Visual): Visual = definedExternally",
+                    "override fun isInBox(context: yfiles.input.IInputModeContext, rectangle: yfiles.geometry.Rect): Boolean = definedExternally",
+                    "override fun isVisible(context: ICanvasContext, rectangle: yfiles.geometry.Rect): Boolean = definedExternally",
+                    "override fun getBounds(context: ICanvasContext): yfiles.geometry.Rect = definedExternally",
+                    "override fun isHit(context: yfiles.input.IInputModeContext, location: yfiles.geometry.Point): Boolean = definedExternally")
+
+            className == "yfiles.styles.VoidPathGeometry"
+            -> lines("override fun getPath(): yfiles.geometry.GeneralPath = definedExternally",
+                    "override fun getSegmentCount(): Number = definedExternally",
+                    "override fun getTangent(ratio: Number): yfiles.geometry.Tangent = definedExternally",
+                    "override fun getTangent(segmentIndex: Number, ratio: Number): yfiles.geometry.Tangent = definedExternally")
+
             else -> ""
         }
     }
