@@ -59,6 +59,7 @@ fun generateKotlinWrappers(sourceFile: File) {
     fileGenerator.generate(sourceDir)
 
     // TODO: Check if this class really needed
+    sourceDir.resolve("yfiles/lang/Boolean.kt").delete()
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
     sourceDir.resolve("yfiles/lang/Struct.kt").delete()
@@ -548,7 +549,10 @@ open class Function : Declaration {
         this.protected = lines.contains(PROTECTED)
         this.abstract = lines.contains(ABSTRACT)
         this.lines = lines
-        this.parameters = parameters.items
+        this.parameters = parameters.items.map {
+            val newName = Hacks.fixParameterName(className, name, it.name)
+            if (newName == it.name) it else Parameter(newName, it.type, it.defaultValue, it.vararg)
+        }
         this.generated = generated
 
         this.generics = Hacks.getFunctionGenerics(className, name) ?: getGenericString(lines)
@@ -1334,6 +1338,61 @@ object Hacks {
     private fun lines(vararg lines: String): String {
         return lines.joinToString("\n")
     }
+
+    private val PARAMETERS_CORRECTION = mapOf(
+            ParameterData("yfiles.lang.IComparable", "compareTo", "obj") to "o",
+            ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
+            ParameterData("yfiles.collections.IEnumerable", "includes", "value") to "item",
+
+            ParameterData("yfiles.algorithms.YList", "elementAt", "i") to "index",
+            ParameterData("yfiles.algorithms.YList", "includes", "o") to "item",
+            ParameterData("yfiles.algorithms.YList", "indexOf", "obj") to "item",
+            ParameterData("yfiles.algorithms.YList", "insert", "element") to "item",
+            ParameterData("yfiles.algorithms.YList", "remove", "o") to "item",
+
+            ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
+
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "label") to "labelLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "sourceNode") to "sourceLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "targetNode") to "targetLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+            ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+
+            ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+            ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+            ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+
+            ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
+            ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
+            ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+            ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+            ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "para") to "parameter",
+
+            ParameterData("yfiles.layout.INodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+            ParameterData("yfiles.layout.FreeNodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+
+            ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge1") to "x",
+            ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge2") to "y",
+
+            ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o1") to "x",
+            ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o2") to "y",
+
+            ParameterData("yfiles.view.LinearGradient", "accept", "item") to "node",
+
+            ParameterData("yfiles.graphml.GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
+            ParameterData("yfiles.graphml.GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
+
+            ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph"
+    )
+
+    fun fixParameterName(className: String, functionName: String, parameterName: String): String {
+        return PARAMETERS_CORRECTION[ParameterData(className, functionName, parameterName)] ?: parameterName
+    }
+
+    private data class ParameterData(val className: String, val functionName: String, val parameterName: String)
 }
 
 object MixinHacks {
