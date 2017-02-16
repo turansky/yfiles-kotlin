@@ -1381,11 +1381,18 @@ object Hacks {
             ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o2") to "y",
 
             ParameterData("yfiles.view.LinearGradient", "accept", "item") to "node",
+            ParameterData("yfiles.view.RadialGradient", "accept", "item") to "node",
 
             ParameterData("yfiles.graphml.GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
             ParameterData("yfiles.graphml.GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
-            ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph"
+            ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
+
+            ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
+            ParameterData("yfiles.input.ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
+            ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
+            ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
+            ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
     fun fixParameterName(className: String, functionName: String, parameterName: String): String {
