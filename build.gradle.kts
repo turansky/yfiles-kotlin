@@ -410,7 +410,7 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
         types = lines.filter { it.startsWith(IMPLEMENTS) }
                 .map { parseType(findType(it)) }
 
-        return Hacks.removeImplementedTypesWhileMixinsNotSupported(className, types)
+        return MixinHacks.getImplementedTypes(className, types)
     }
 }
 
@@ -963,7 +963,7 @@ class FileGenerator(declarations: List<Declaration>) {
     class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
         override fun content(): String {
             var content = super.content()
-            val likeAbstractClass = Hacks.defineLikeAbstractClass(className, memberFunctions)
+            val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions)
             if (!likeAbstractClass) {
                 content = content.replace("abstract ", "")
                         .replace("open fun", "fun")
@@ -1168,31 +1168,8 @@ object Hacks {
         return when (className) {
             "yfiles.algorithms.EdgeList" -> emptyList()
             "yfiles.algorithms.NodeList" -> emptyList()
-
-            "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
             else -> null
         }
-    }
-
-    // TODO: for interface hack
-    fun removeImplementedTypesWhileMixinsNotSupported(className: String, implementedTypes: List<String>): List<String> {
-        return when (className) {
-            "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
-            "yfiles.geometry.IRectangle" -> existedItem("yfiles.geometry.IPoint", implementedTypes)
-            "yfiles.geometry.IMutableRectangle" -> existedItem("yfiles.geometry.IRectangle", implementedTypes)
-            "yfiles.geometry.MutableRectangle" -> existedItem("yfiles.geometry.IMutableRectangle", implementedTypes)
-            "yfiles.geometry.IMutableOrientedRectangle" -> existedItem("yfiles.geometry.IOrientedRectangle", implementedTypes)
-            "yfiles.geometry.OrientedRectangle" -> existedItem("yfiles.geometry.IMutableOrientedRectangle", implementedTypes)
-            else -> implementedTypes
-        }
-    }
-
-    private fun existedItem(item: String, items: List<String>): List<String> {
-        if (items.contains(item)) {
-            return listOf(item)
-        }
-
-        throw GradleException("Item '$item' not contains in item list '$items'")
     }
 
     val CLONE_REQUIRED = listOf(
@@ -1356,6 +1333,28 @@ object Hacks {
 
     private fun lines(vararg lines: String): String {
         return lines.joinToString("\n")
+    }
+}
+
+object MixinHacks {
+    fun getImplementedTypes(className: String, implementedTypes: List<String>): List<String> {
+        return when (className) {
+            "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
+            "yfiles.geometry.IRectangle" -> existedItem("yfiles.geometry.IPoint", implementedTypes)
+            "yfiles.geometry.IMutableRectangle" -> existedItem("yfiles.geometry.IRectangle", implementedTypes)
+            "yfiles.geometry.MutableRectangle" -> existedItem("yfiles.geometry.IMutableRectangle", implementedTypes)
+            "yfiles.geometry.IMutableOrientedRectangle" -> existedItem("yfiles.geometry.IOrientedRectangle", implementedTypes)
+            "yfiles.geometry.OrientedRectangle" -> existedItem("yfiles.geometry.IMutableOrientedRectangle", implementedTypes)
+            else -> implementedTypes
+        }
+    }
+
+    private fun existedItem(item: String, items: List<String>): List<String> {
+        if (items.contains(item)) {
+            return listOf(item)
+        }
+
+        throw GradleException("Item '$item' not contains in item list '$items'")
     }
 
     val MUST_BE_ABSTRACT_CLASSES = listOf(
