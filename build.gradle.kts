@@ -101,6 +101,7 @@ object Types {
 interface ClassRegistry {
     fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
+    fun isGetterSetter(className: String, propertyName: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
     fun propertyOverriden(className: String, functionName: String): Boolean
 }
@@ -142,6 +143,7 @@ open class Declaration(protected val data: Data) {
                 "boolean" to "Boolean",
                 "string" to "String",
                 "number" to "Number",
+                "Date" to "kotlin.js.Date",
                 "void" to UNIT,
                 "Function" to "() -> $UNIT",
 
@@ -495,11 +497,11 @@ class Property(data: Data, lines: List<String>) : Declaration(data) {
     val protected: Boolean
     val abstract: Boolean
 
-    private val getter: Boolean
+    val getterSetter: Boolean
     private val type: String
 
     init {
-        this.getter = lines.none { it.startsWith(GETS_OR_SETS) }
+        this.getterSetter = lines.any { it.startsWith(GETS_OR_SETS) }
         val line = lines.firstOrNull { it.startsWith(TYPE) }
         if (line != null) {
             this.type = parseTypeLine(line)
@@ -515,6 +517,8 @@ class Property(data: Data, lines: List<String>) : Declaration(data) {
     }
 
     override fun toString(): String {
+        val getterSetter = this.getterSetter || classRegistry.isGetterSetter(className, name)
+
         var str = ""
 
         if (classRegistry.propertyOverriden(className, name)) {
@@ -524,19 +528,19 @@ class Property(data: Data, lines: List<String>) : Declaration(data) {
                 str += "protected "
             }
 
-            if (abstract) {
-                str += "abstract "
-            } else {
-                str += "open "
+            str += when {
+                abstract -> "abstract "
+                !static && !classRegistry.isFinalClass(className) -> "open "
+                else -> ""
             }
         }
 
-        str += if (getter) "val " else "var "
+        str += if (getterSetter) "var " else "val "
 
         str += "$name: $type"
         if (!abstract) {
             str += "\n    get() = definedExternally"
-            if (!getter) {
+            if (getterSetter) {
                 str += "\n    set(value) = definedExternally"
             }
         }
@@ -752,6 +756,11 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
             { instance -> properties.filter { it.className == instance.className }.map { it.name } }
     )
 
+    private val propertiesMap2 = instances.values.associateBy(
+            { it.className },
+            { instance -> properties.filter { it.className == instance.className }.associateBy({ it.name }, { it.getterSetter }) }
+    )
+
     private fun getParents(className: String): List<String> {
         val instance = instances[className] ?: throw GradleException("Unknown instance type: $className")
 
@@ -760,6 +769,18 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
                 .union(instance.implementedTypes())
                 .map { if (it.contains("<")) StringUtil.till(it, "<") else it }
                 .toList()
+    }
+
+    private fun isGetterSetter(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
+        if (checkCurrentClass) {
+            val props = propertiesMap2[className] ?: throw GradleException("No properties found for type: $className")
+            if (props[propertyName] ?: false) {
+                return true
+            }
+        }
+        return getParents(className).any {
+            propertyOverriden(it, propertyName, true)
+        }
     }
 
     private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {
@@ -776,7 +797,7 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
 
     private fun propertyOverriden(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
         if (checkCurrentClass) {
-            val props = propertiesMap[className] ?: throw GradleException("No functions found for type: $className")
+            val props = propertiesMap[className] ?: throw GradleException("No properties found for type: $className")
             if (props.contains(propertyName)) {
                 return true
             }
@@ -795,8 +816,12 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
         return instance is ClassDec && instance.final
     }
 
-    override fun functionOverriden(className: String, propertyName: String): Boolean {
-        return functionOverriden(className, propertyName, false)
+    override fun isGetterSetter(className: String, propertyName: String): Boolean {
+        return isGetterSetter(className, propertyName, false)
+    }
+
+    override fun functionOverriden(className: String, functionName: String): Boolean {
+        return functionOverriden(className, functionName, false)
     }
 
     override fun propertyOverriden(className: String, functionName: String): Boolean {
@@ -997,7 +1022,7 @@ class FileGenerator(declarations: List<Declaration>) {
                 return "object"
             }
 
-            val modificator = if (memberFunctions.any { it.abstract }) {
+            val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
                 "abstract"
             } else {
                 declaration.modificator
@@ -1318,7 +1343,9 @@ object Hacks {
             -> "override fun apply(layoutGraphAdapter: yfiles.layout.LayoutGraphAdapter, layout: yfiles.layout.ILayoutAlgorithm, layoutGraph: yfiles.layout.CopiedLayoutGraph): Unit = definedExternally"
 
             className == "yfiles.algorithms.YList"
-            -> "override fun add(item: $OBJECT_TYPE) = definedExternally"
+            -> lines("override val isReadOnly: Boolean",
+                    "    get() = definedExternally",
+                    "override fun add(item: $OBJECT_TYPE) = definedExternally")
 
             className in CLONE_REQUIRED
             -> CLONE_OVERRIDE
@@ -1406,7 +1433,9 @@ object Hacks {
                     "override fun getTargetArrow(): IArrow = definedExternally")
 
             className == "yfiles.styles.Arrow"
-            -> lines("override fun getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider = definedExternally",
+            -> lines("override val length: Number",
+                    "    get() = definedExternally",
+                    "override fun getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider = definedExternally",
                     "override fun getVisualCreator(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point): yfiles.view.IVisualCreator = definedExternally",
                     CLONE_OVERRIDE)
 
