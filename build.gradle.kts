@@ -102,6 +102,7 @@ interface ClassRegistry {
     fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
+    fun propertyOverriden(className: String, functionName: String): Boolean
 }
 
 open class Declaration(protected val data: Data) {
@@ -126,7 +127,7 @@ open class Declaration(protected val data: Data) {
         val RETURNS = "@returns "
         val TYPE = "@type "
 
-        val GETS_OR_SETS = "Gets or sets"
+        val GETS_OR_SETS = "Gets or sets "
         val NULL_VALUE = "null;"
 
         val FUNCTION_START = "function("
@@ -278,7 +279,14 @@ open class Declaration(protected val data: Data) {
         fun parseGenericParameters(parameters: String): List<String> {
             // TODO: temp hack for generic, logic check required
             if (!parameters.contains(GENERIC_START)) {
-                return parameters.split(",").map { parseType(it) }
+                return if (parameters.contains(FUNCTION_START)) {
+                    // TODO: realize full logic if needed
+                    parameters.split(delimiters = ",", limit = 2).map {
+                        if (it.startsWith(FUNCTION_START)) parseFunctionType(it) else parseType(it)
+                    }
+                } else {
+                    parameters.split(",").map { parseType(it) }
+                }
             }
 
             val firstType = firstGenericType(parameters)
@@ -482,7 +490,59 @@ class Const(data: Data, lines: List<String>) : Declaration(data) {
     }
 }
 
-class Property(data: Data, private val lines: List<String>) : Declaration(data)
+class Property(data: Data, lines: List<String>) : Declaration(data) {
+    val static: Boolean
+    val protected: Boolean
+    val abstract: Boolean
+
+    private val getter: Boolean
+    private val type: String
+
+    init {
+        this.getter = lines.none { it.startsWith(GETS_OR_SETS) }
+        val line = lines.firstOrNull { it.startsWith(TYPE) }
+        if (line != null) {
+            this.type = parseTypeLine(line)
+            this.static = lines.contains(STATIC)
+            this.protected = lines.contains(PROTECTED)
+            this.abstract = lines.contains(ABSTRACT)
+        } else {
+            this.type = className
+            this.static = true
+            this.protected = false
+            this.abstract = false
+        }
+    }
+
+    override fun toString(): String {
+        var str = ""
+
+        if (classRegistry.propertyOverriden(className, name)) {
+            str += "override "
+        } else {
+            if (protected) {
+                str += "protected "
+            }
+
+            if (abstract) {
+                str += "abstract "
+            } else {
+                str += "open "
+            }
+        }
+
+        str += if (getter) "val " else "var "
+
+        str += "$name: $type"
+        if (!abstract) {
+            str += "\n    get() = definedExternally"
+            if (!getter) {
+                str += "\n    set(value) = definedExternally"
+            }
+        }
+        return str
+    }
+}
 
 open class Function : Declaration {
     companion object {
@@ -680,9 +740,16 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
     private val functions = declarations.filterIsInstance(Function::class.java)
             .filter { it !is Constructor }
 
+    private val properties = declarations.filterIsInstance(Property::class.java)
+
     private val functionsMap = instances.values.associateBy(
             { it.className },
             { instance -> functions.filter { it.className == instance.className }.map { it.name } }
+    )
+
+    private val propertiesMap = instances.values.associateBy(
+            { it.className },
+            { instance -> properties.filter { it.className == instance.className }.map { it.name } }
     )
 
     private fun getParents(className: String): List<String> {
@@ -707,6 +774,18 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
         }
     }
 
+    private fun propertyOverriden(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
+        if (checkCurrentClass) {
+            val props = propertiesMap[className] ?: throw GradleException("No functions found for type: $className")
+            if (props.contains(propertyName)) {
+                return true
+            }
+        }
+        return getParents(className).any {
+            propertyOverriden(it, propertyName, true)
+        }
+    }
+
     override fun isInterface(className: String): Boolean {
         return instances[className] is InterfaceDec
     }
@@ -716,8 +795,12 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
         return instance is ClassDec && instance.final
     }
 
-    override fun functionOverriden(className: String, functionName: String): Boolean {
-        return functionOverriden(className, functionName, false)
+    override fun functionOverriden(className: String, propertyName: String): Boolean {
+        return functionOverriden(className, propertyName, false)
+    }
+
+    override fun propertyOverriden(className: String, functionName: String): Boolean {
+        return propertyOverriden(className, functionName, false)
     }
 }
 
@@ -813,8 +896,15 @@ class FileGenerator(declarations: List<Declaration>) {
                     .filter { it !is Constructor }
                     .sortedBy { it.name }
 
+        val properties: List<Property>
+            get() = items.filterIsInstance(Property::class.java)
+                    .sortedBy { it.name }
+
         val staticConsts: List<Const>
             get() = consts.filter { it.static }
+
+        val staticProperties: List<Property>
+            get() = properties.filter { it.static }
 
         val staticFunctions: List<Function>
             get() = functions.filter { it.static }
@@ -823,12 +913,16 @@ class FileGenerator(declarations: List<Declaration>) {
             get() {
                 return mutableListOf<Declaration>()
                         .union(staticConsts)
+                        .union(staticProperties)
                         .union(staticFunctions.toSet())
                         .toList()
             }
 
         val memberConsts: List<Const>
             get() = consts.filter { !it.static }
+
+        val memberProperties: List<Property>
+            get() = properties.filter { !it.static }
 
         val memberFunctions: List<Function>
             get() = functions.filter { !it.static }
@@ -886,6 +980,7 @@ class FileGenerator(declarations: List<Declaration>) {
         open fun content(): String {
             return listOf<Declaration>()
                     .union(memberConsts)
+                    .union(memberProperties)
                     .union(memberFunctions)
                     .union(listOf(getAdditionalContent(declaration.className, declaration.extendedType())))
                     .joinToString("\n") + "\n"
@@ -967,10 +1062,12 @@ class FileGenerator(declarations: List<Declaration>) {
     class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
         override fun content(): String {
             var content = super.content()
-            val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions)
+            val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
             if (!likeAbstractClass) {
                 content = content.replace("abstract ", "")
                         .replace("open fun", "fun")
+                        .replace("\n    get() = definedExternally", "")
+                        .replace("\n    set(value) = definedExternally", "")
                         .replace(" = definedExternally", "")
             }
 
@@ -1438,11 +1535,11 @@ object MixinHacks {
             "yfiles.graph.IRow"
     )
 
-    fun defineLikeAbstractClass(className: String, functions: List<Function>): Boolean {
+    fun defineLikeAbstractClass(className: String, functions: List<Function>, properties: List<Property>): Boolean {
         if (className in MUST_BE_ABSTRACT_CLASSES) {
             return true
         }
 
-        return functions.any { !it.abstract }
+        return functions.any { !it.abstract } || properties.any { !it.abstract }
     }
 }
