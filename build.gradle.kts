@@ -13,18 +13,37 @@ import Build_gradle.Types.PORT_TYPE
 import Build_gradle.Types.ROW_TYPE
 import Build_gradle.Types.UNIT
 import org.gradle.api.GradleException
+import org.json.JSONObject
 import java.io.File
 import java.nio.charset.Charset
 import java.util.*
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath("org.json:json:20160810")
+    }
+}
+
 task("build") {
-    val source = project.properties["apiFile"] ?: throw GradleException("Invalid 'apiFile' parameter value!")
+    // val source = project.properties["apiFile"] ?: throw GradleException("Invalid 'apiFile' parameter value!")
+    val source = "descriptors/yfiles/2.0.0.1/api.json"
     val file = file(source) ?: throw GradleException("No file located in '$source'")
     generateKotlinWrappers(file)
 }
 
 fun generateKotlinWrappers(sourceFile: File) {
-    val lines = sourceFile.readLines(Charset.forName("UTF-8")).iterator()
+    val source = JSONObject(sourceFile.readText(Charset.forName("UTF-8")))
+    val apiRoot = JAPIRoot(source)
+
+    apiRoot.namespaces.forEach {
+        println("Namespace: ${it.id}")
+    }
+
+    /*
     val declarations = mutableListOf<Declaration>()
     while (lines.hasNext()) {
         val declaration = DeclarationReader.read(lines)
@@ -63,22 +82,44 @@ fun generateKotlinWrappers(sourceFile: File) {
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
     sourceDir.resolve("yfiles/lang/Struct.kt").delete()
+    */
 }
 
-object DeclarationReader {
-    fun read(lineIterator: Iterator<String>): Declaration {
-        if (lineIterator.next() != "/**") {
-            throw IllegalStateException("Invalid comment start!")
+abstract class JsonWrapper(protected val source: JSONObject) {
+    protected fun getString(key: String): String {
+        return source.getString(key)
+    }
+
+    protected fun <T> toArray(key: String, transform: (JSONObject) -> T): List<T> {
+        val array = source.getJSONArray(key)
+        val length = array.length()
+        if (length == 0) {
+            return emptyList()
         }
 
-        val lines = mutableListOf<String>()
-        while (true) {
-            val line = lineIterator.next()
-            if (line == " */") {
-                return Declaration.parse(lineIterator.next(), lines)
-            }
+        val list = mutableListOf<T>()
+        for (i in 0..length - 1) {
+            list.add(transform(array.getJSONObject(i)))
+        }
+        return list.toList()
+    }
+}
 
-            lines.add(line.substring(3))
+class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
+    val namespaces: List<JNamespace> by lazy {
+        toArray("namespaces") {
+            JNamespace(it)
+        }
+    }
+}
+
+open class JNamespace(source: JSONObject) : JsonWrapper(source) {
+    val id: String by lazy { getString("id") }
+    val name: String by lazy { getString("name") }
+
+    val namespaces: List<JNamespace> by lazy {
+        toArray("namespaces") {
+            JNamespace(it)
         }
     }
 }
@@ -988,7 +1029,7 @@ class FileGenerator(declarations: List<Declaration>) {
                 return when {
                     isStatic() -> ""
                 // TODO: add companion only if needed
-                    else -> "    companion object {}\n"
+                    else -> "    companion object \n\n"
                 }
             }
 
@@ -1114,6 +1155,33 @@ class FileGenerator(declarations: List<Declaration>) {
                     super.content() + "\n" +
                     "}\n"
         }
+    }
+
+    class JsInfo {
+        private val COMPLETE = "yfiles/complete"
+        private val VIEW = "yfiles/view"
+        private val LAYOUT = "yfiles/layout"
+
+        private val LANG = "yfiles/lang"
+
+        private val VIEW_COMPONENT = "yfiles/view-component"
+        private val VIEW_EDITOR = "yfiles/view-editor"
+        private val VIEW_FOLDING = "yfiles/view-folding"
+        private val VIEW_TABLE = "yfiles/view-table"
+        private val VIEW_GRAPHML = "yfiles/view-graphml"
+        private val VIEW_LAYOUT_BRIDGE = "yfiles/view-layout-bridge"
+        private val ALGORITHMS = "yfiles/algorithms"
+        private val LAYOUT_TREE = "yfiles/layout-tree"
+        private val LAYOUT_ORGANIC = "yfiles/layout-organic"
+        private val LAYOUT_HIERARCHIC = "yfiles/layout-hierarchic"
+        private val LAYOUT_ORTHOGONAL = "yfiles/layout-orthogonal"
+        private val LAYOUT_ORTHOGONAL_COMPACT = "yfiles/layout-orthogonal-compact"
+        private val LAYOUT_FAMILYTREE = "yfiles/layout-familytree"
+        private val LAYOUT_MULTIPAGE = "yfiles/layout-multipage"
+        private val LAYOUT_RADIAL = "yfiles/layout-radial"
+        private val LAYOUT_SERIESPARALLEL = "yfiles/layout-seriesparallel"
+        private val ROUTER_POLYLINE = "yfiles/router-polyline"
+        private val ROUTER_OTHER = "yfiles/router-other"
     }
 }
 
