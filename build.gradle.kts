@@ -90,7 +90,7 @@ abstract class JsonWrapper(protected val source: JSONObject) {
         return source.getString(key)
     }
 
-    protected fun <T> toArray(key: String, transform: (JSONObject) -> T): List<T> {
+    protected fun <T> getArray(key: String, transform: (JSONObject) -> T): List<T> {
         val array = source.getJSONArray(key)
         val length = array.length()
         if (length == 0) {
@@ -107,22 +107,24 @@ abstract class JsonWrapper(protected val source: JSONObject) {
 
 class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
     val namespaces: List<JNamespace> by lazy {
-        toArray("namespaces") {
-            JNamespace(it)
-        }
+        getArray("namespaces") { JNamespace(it) }
     }
 }
 
-open class JNamespace(source: JSONObject) : JsonWrapper(source) {
+class JNamespace(source: JSONObject) : JsonWrapper(source) {
     val id: String by lazy { getString("id") }
     val name: String by lazy { getString("name") }
 
     val namespaces: List<JNamespace> by lazy {
-        toArray("namespaces") {
-            JNamespace(it)
-        }
+        getArray("namespaces") { JNamespace(it) }
+    }
+
+    val types: List<JType> by lazy {
+        getArray("types") { JType(it) }
     }
 }
+
+class JType(source: JSONObject) : JsonWrapper(source)
 
 object Types {
     val UNIT = "Unit"
