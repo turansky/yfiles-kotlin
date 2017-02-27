@@ -1,6 +1,8 @@
 import Build_gradle.Hacks.getAdditionalContent
 import Build_gradle.Hacks.isClassParameter
 import Build_gradle.Hacks.validateStaticConstType
+import Build_gradle.TypeParser.getGenericString
+import Build_gradle.TypeParser.parseType
 import Build_gradle.Types.BEND_TYPE
 import Build_gradle.Types.CLASS_TYPE
 import Build_gradle.Types.COLUMN_TYPE
@@ -116,9 +118,46 @@ abstract class JType(source: JSONObject) : JDeclaration(source) {
     val staticMethods: List<JMethod> by ArrayDelegate { JMethod(this.fqn, it) }
 
     val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
+
+    val extends: String? by NullableStringDelegate()
+    val implements: List<String> by StringArrayDelegate()
+
+    fun genericParameters(): String {
+        return getGenericString(typeparameters)
+    }
+
+    fun extendedType(): String? {
+        if (Hacks.ignoreExtendedType(fqn)) {
+            return null
+        }
+
+        val type = extends ?: return null
+        return parseType(type)
+    }
+
+    fun implementedTypes(): List<String> {
+        var types = Hacks.getImplementedTypes(fqn)
+        if (types != null) {
+            return types
+        }
+
+        types = implements.map { parseType(it) }
+        return MixinHacks.getImplementedTypes(fqn, types)
+    }
 }
 
 class JClass(source: JSONObject) : JType(source) {
+    val static = modifiers.contains("static")
+    val final = modifiers.contains("final")
+    val open = !final
+    val abstract = modifiers.contains("abstract")
+
+    val modificator = when {
+        abstract -> "abstract" // no such cases (JS specific?)
+        open -> "open"
+        else -> ""
+    }
+
     val constructors: List<JConstructor> by ArrayDelegate { JConstructor(this.fqn, it) }
 }
 
@@ -191,6 +230,15 @@ class StringArrayDelegate {
             list.add(array.getString(i))
         }
         return list.toList()
+    }
+}
+
+class NullableStringDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String? {
+        val source = thisRef.source
+        val key = property.name
+
+        return if (source.has(key)) source.getString(key) else null
     }
 }
 
@@ -426,50 +474,6 @@ interface ClassRegistry {
     fun propertyOverriden(className: String, functionName: String): Boolean
 }
 
-open class InstanceDec(protected val lines: List<String>) {
-    fun genericParameters(): String {
-        return getGenericString(lines)
-    }
-
-    fun extendedType(): String? {
-        if (Hacks.ignoreExtendedType(className)) {
-            return null
-        }
-
-        val line = lines.firstOrNull { it.startsWith(EXTENDS) } ?: return null
-        return parseType(findType(line))
-    }
-
-    fun implementedTypes(): List<String> {
-        var types = Hacks.getImplementedTypes(className)
-        if (types != null) {
-            return types
-        }
-
-        types = lines.filter { it.startsWith(IMPLEMENTS) }
-                .map { parseType(findType(it)) }
-
-        return MixinHacks.getImplementedTypes(className, types)
-    }
-}
-
-class ClassDec(lines: List<String>) : InstanceDec(lines) {
-    val static = lines.contains(STATIC)
-    val final = lines.contains(FINAL)
-    val open = !final
-    val abstract = lines.contains(ABSTRACT)
-
-    val modificator = when {
-        abstract -> "abstract" // no such cases (JS specific?)
-        open -> "open"
-        else -> ""
-    }
-}
-
-class InterfaceDec(lines: List<String>) : InstanceDec(lines)
-
-class EnumDec(lines: List<String>) : InstanceDec(lines)
-
 class Constructor : Function {
     protected constructor(lines: List<String>, parameters: Parameters, generated: Boolean)
             : super(lines, parameters, generated)
@@ -482,10 +486,6 @@ class Constructor : Function {
 
     override fun overridden(): Boolean {
         return false
-    }
-
-    fun toClassDec(): ClassDec {
-        return ClassDec(lines)
     }
 
     override fun toString(): String {
