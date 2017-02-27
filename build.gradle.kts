@@ -100,7 +100,15 @@ class JNamespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<JType> by ArrayDelegate({ JType(it) })
 }
 
-class JType(source: JSONObject) : JsonWrapper(source)
+class JType(source: JSONObject) : JsonWrapper(source) {
+    val id: String by StringDelegate()
+    val name: String by StringDelegate()
+    val modifiers: List<String> by StringArrayDelegate()
+
+    val group: String by StringDelegate()
+    val summary: String by StringDelegate()
+    val remarks: String by StringDelegate()
+}
 
 class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
@@ -113,6 +121,22 @@ class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
         val list = mutableListOf<T>()
         for (i in 0..length - 1) {
             list.add(transform(array.getJSONObject(i)))
+        }
+        return list.toList()
+    }
+}
+
+class StringArrayDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<String> {
+        val array = thisRef.source.getJSONArray(property.name)
+        val length = array.length()
+        if (length == 0) {
+            return emptyList()
+        }
+
+        val list = mutableListOf<String>()
+        for (i in 0..length - 1) {
+            list.add(array.getString(i))
         }
         return list.toList()
     }
