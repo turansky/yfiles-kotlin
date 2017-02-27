@@ -88,13 +88,24 @@ fun generateKotlinWrappers(sourceFile: File) {
 }
 
 abstract class JsonWrapper(val source: JSONObject)
-abstract class JDeclaration(source: JSONObject) : JsonWrapper(source) {
+abstract class JDeclaration : JsonWrapper {
+
     val id: String by StringDelegate()
     val name: String by StringDelegate()
     val modifiers: List<String> by StringArrayDelegate()
 
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
+
+    val fqn: String
+
+    constructor(source: JSONObject) : super(source) {
+        this.fqn = id
+    }
+
+    constructor(fqn: String, source: JSONObject) : super(source) {
+        this.fqn = fqn
+    }
 }
 
 class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
@@ -122,46 +133,50 @@ class JNamespace(source: JSONObject) : JsonWrapper(source) {
 }
 
 abstract class JType(source: JSONObject) : JDeclaration(source) {
-    val fields: List<JField> by ArrayDelegate { JField(it) }
-    val properties: List<JProperty> by ArrayDelegate { JProperty(it) }
-    val methods: List<JMethod> by ArrayDelegate { JMethod(it) }
-    val staticMethods: List<JMethod> by ArrayDelegate { JMethod(it) }
+    val fields: List<JField> by ArrayDelegate { JField(this.fqn, it) }
+    val properties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
+    val methods: List<JMethod> by ArrayDelegate { JMethod(this.fqn, it) }
+    val staticMethods: List<JMethod> by ArrayDelegate { JMethod(this.fqn, it) }
+
+    val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
 }
 
 class JClass(source: JSONObject) : JType(source) {
-    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(it) }
+    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(this.fqn, it) }
 }
 
 class JInterface(source: JSONObject) : JType(source)
 
 class JEnum(source: JSONObject) : JType(source) {
-    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(it) }
+    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(this.fqn, it) }
 }
 
-abstract class JTypedDeclaration(source: JSONObject) : JDeclaration(source) {
-    val type: String by TypeDelegate()
+abstract class JTypedDeclaration(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
+    val type: String by TypeDelegate { TypeParser.parse(it) }
 }
 
-class JConstructor(source: JSONObject) : JDeclaration(source) {
+class JConstructor(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
     val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
 }
 
-class JField(source: JSONObject) : JTypedDeclaration(source)
-class JProperty(source: JSONObject) : JTypedDeclaration(source)
-class JMethod(source: JSONObject) : JDeclaration(source) {
+class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source)
+class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source)
+class JMethod(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
     val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
     val returns: JReturns? by ReturnsDelegate()
 }
 
 class JParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val type: String by TypeDelegate()
+    val type: String by TypeDelegate { TypeParser.parse(it) }
     val summary: String by StringDelegate()
 }
 
-class JReturns(source: JSONObject) : JsonWrapper(source) {
-    val type: String by TypeDelegate()
+class JTypeParameter(source: JSONObject) : JsonWrapper(source) {
+    val name: String by StringDelegate()
 }
+
+class JReturns(val type: String, source: JSONObject) : JsonWrapper(source)
 
 class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
@@ -214,18 +229,26 @@ class StringDelegate {
     }
 }
 
-class TypeDelegate {
+class TypeDelegate(private val parse: (String) -> String) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
-        return StringDelegate.value(thisRef, property)
+        return parse(StringDelegate.value(thisRef, property))
     }
 }
 
 class ReturnsDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JReturns? {
+    operator fun getValue(thisRef: JMethod, property: KProperty<*>): JReturns? {
         val source = thisRef.source
         val key = property.name
+
+        val hackedType = Hacks.getReturnType(thisRef.fqn, thisRef.name)
+        if (hackedType != null) {
+            return JReturns(hackedType, source)
+        }
+
         return if (source.has(key)) {
-            JReturns(source.getJSONObject(key))
+            val data = source.getJSONObject(key)
+            val type = TypeParser.parse(data.getString("type"))
+            JReturns(type, data)
         } else {
             null
         }
@@ -247,6 +270,165 @@ object Types {
     val COLUMN_TYPE = "yfiles.graph.IColumn"
 }
 
+object TypeParser {
+    val FUNCTION_START = "function("
+    val FUNCTION_END = "): "
+
+    val GENERIC_START = ".<"
+    val GENERIC_END = ">"
+
+    val STANDARD_TYPE_MAP = mapOf(
+            "Object" to OBJECT_TYPE,
+            "object" to OBJECT_TYPE,
+            "boolean" to "Boolean",
+            "string" to "String",
+            "number" to "Number",
+            "Date" to "kotlin.js.Date",
+            "void" to UNIT,
+            "Function" to "() -> $UNIT",
+
+            "Event" to "org.w3c.dom.events.Event",
+            "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
+            "Document" to "org.w3c.dom.Document",
+            "Node" to "org.w3c.dom.Node",
+            "Element" to "org.w3c.dom.Element",
+            "HTMLElement" to "org.w3c.dom.HTMLElement",
+            "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
+            "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
+            "SVGElement" to "org.w3c.dom.svg.SVGElement",
+            "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
+            "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
+            "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
+            "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
+            "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
+            "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
+
+            // TODO: check if Kotlin promises is what we need in yFiles
+            "Promise" to "kotlin.js.Promise"
+    )
+
+    fun parse(type: String): String {
+        if (type.startsWith(FUNCTION_START)) {
+            return parseFunctionType(type)
+        }
+        return parseType(type)
+    }
+
+    fun parseType(type: String): String {
+        // TODO: Fix for SvgDefsManager and SvgVisual required (2 constructors from 1)
+        if (type.contains("|")) {
+            return parseType(type.split("|")[0])
+        }
+
+        val standardType = STANDARD_TYPE_MAP[type]
+        if (standardType != null) {
+            return standardType
+        }
+
+        if (!type.contains(GENERIC_START)) {
+            return type
+        }
+
+        val mainType = parseType(StringUtil.till(type, GENERIC_START))
+        val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
+        return "$mainType<${parametrizedTypes.joinToString(", ")}>"
+    }
+
+    fun getGenericString(parameters: List<JTypeParameter>): String {
+        return if (parameters.isEmpty()) "" else "<${parameters.map { it.name }.joinToString(", ")}> "
+    }
+
+    fun parseParamLine(line: String, function: String): Parameter {
+        Hacks.parseParamLine(line, function).apply {
+            if (this != null) {
+                return this
+            }
+        }
+
+        var name = StringUtil.from2(line, "} ").split(" ").get(0)
+        var defaultValue: String? = null
+        if (name.startsWith("[")) {
+            val data = StringUtil.hardBetween(name, "[", "]").split("=")
+            name = data[0]
+            defaultValue = data[1]
+        }
+        var rawType = StringUtil.between(line, " {", "} ", true)
+        val vararg = rawType.startsWith("...")
+        if (vararg) {
+            rawType = rawType.substring(3)
+        }
+        val type = if (rawType.startsWith(FUNCTION_START)) {
+            val parameterTypes = StringUtil.between(rawType, FUNCTION_START, FUNCTION_END).split(", ").map { parseType(it) }
+            val resultType = parseType(StringUtil.from(rawType, FUNCTION_END))
+            "(${parameterTypes.joinToString(", ")}) -> $resultType"
+        } else {
+            parseType(rawType)
+        }
+        return Parameter(name, type, defaultValue, vararg)
+    }
+
+    fun parseGenericParameters(parameters: String): List<String> {
+        // TODO: temp hack for generic, logic check required
+        if (!parameters.contains(GENERIC_START)) {
+            return if (parameters.contains(FUNCTION_START)) {
+                // TODO: realize full logic if needed
+                parameters.split(delimiters = ",", limit = 2).map {
+                    if (it.startsWith(FUNCTION_START)) parseFunctionType(it) else parseType(it)
+                }
+            } else {
+                parameters.split(",").map { parseType(it) }
+            }
+        }
+
+        val firstType = firstGenericType(parameters)
+        if (firstType == parameters) {
+            return listOf(parseType(firstType))
+        }
+
+        val types = mutableListOf(firstType)
+        types.addAll(parseGenericParameters(parameters.substring(firstType.length + 1)))
+        return types.toList()
+    }
+
+    fun firstGenericType(parameters: String): String {
+        var semafor = 0
+        var index = 0
+
+        while (true) {
+            val indexes = listOf(
+                    parameters.indexOf(",", index),
+                    parameters.indexOf(".<", index),
+                    parameters.indexOf(">", index)
+            )
+
+            if (indexes.all { it == -1 }) {
+                return parameters
+            }
+
+            // TODO: check calculation
+            index = indexes.map({ if (it == -1) 100000 else it })
+                    .minWith(Comparator { o1, o2 -> Math.min(o1, o2) }) ?: -1
+
+            if (index == -1 || index == parameters.lastIndex) {
+                return parameters
+            }
+
+            when (indexes.indexOf(index)) {
+                0 -> if (semafor == 0) return parameters.substring(0, index)
+                1 -> semafor++
+                2 -> semafor--
+            }
+            index++
+        }
+    }
+
+    fun parseFunctionType(type: String): String {
+        val parameterTypes = StringUtil.between(type, FUNCTION_START, FUNCTION_END).split(",").map({ parseType(it) })
+        val resultType = parseType(StringUtil.from(type, FUNCTION_END))
+        return "(${parameterTypes.joinToString(", ")}) -> $resultType"
+    }
+}
+
 interface ClassRegistry {
     fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
@@ -256,239 +438,6 @@ interface ClassRegistry {
 }
 
 open class Declaration(protected val data: Data) {
-    companion object {
-        val NAMESPACE = "@namespace"
-        val CLASS = "@class "
-        val INTERFACE = "@interface"
-        val CONSTRUCTOR = "@constructor"
-
-        val CONST = "@const"
-        val STATIC = "@static"
-        val FINAL = "@final"
-        val ABSTRACT = "@abstract"
-        val PROTECTED = "@protected"
-
-        val IMPLEMENTS = "@implements "
-        val EXTENDS = "@extends "
-        val EXTENDS_ENUM = "${EXTENDS}{${ENUM_TYPE}}"
-        val TEMPLATE = "@template "
-
-        val PARAM = "@param "
-        val RETURNS = "@returns "
-        val TYPE = "@type "
-
-        val GETS_OR_SETS = "Gets or sets "
-        val NULL_VALUE = "null;"
-
-        val FUNCTION_START = "function("
-        val FUNCTION_END = "): "
-
-        val GENERIC_START = ".<"
-        val GENERIC_END = ">"
-
-        val STANDARD_TYPE_MAP = mapOf(
-                "Object" to OBJECT_TYPE,
-                "object" to OBJECT_TYPE,
-                "boolean" to "Boolean",
-                "string" to "String",
-                "number" to "Number",
-                "Date" to "kotlin.js.Date",
-                "void" to UNIT,
-                "Function" to "() -> $UNIT",
-
-                "Event" to "org.w3c.dom.events.Event",
-                "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
-                "Document" to "org.w3c.dom.Document",
-                "Node" to "org.w3c.dom.Node",
-                "Element" to "org.w3c.dom.Element",
-                "HTMLElement" to "org.w3c.dom.HTMLElement",
-                "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
-                "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
-                "SVGElement" to "org.w3c.dom.svg.SVGElement",
-                "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
-                "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
-                "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
-                "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
-                "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
-                "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
-
-                // TODO: check if Kotlin promises is what we need in yFiles
-                "Promise" to "kotlin.js.Promise"
-        )
-
-        fun parse(source: String, lines: List<String>): Declaration {
-            val data = Data.parse(source)
-
-            return when {
-                lines.contains(NAMESPACE) ->
-                    Namespace(data)
-                lines.any { it.startsWith(CLASS) } && !lines.contains(CONSTRUCTOR) ->
-                    ClassDec(data, lines)
-                lines.contains(INTERFACE) ->
-                    InterfaceDec(data, lines)
-                lines.contains(EXTENDS_ENUM) ->
-                    EnumDec(data, lines)
-                lines.contains(CONSTRUCTOR) ->
-                    Constructor(data, lines)
-                lines.contains(CONST) ->
-                    Const(data, lines)
-                !source.contains("=") ->
-                    EnumValue(data, lines)
-                data.nullValue ->
-                    Property(data, lines)
-                else ->
-                    Function(data, lines)
-            }
-        }
-
-        fun findType(line: String): String {
-            return StringUtil.between(line, "{", "}", true)
-        }
-
-        fun parseTypeLine(line: String): String {
-            val type = findType(line)
-            if (type.startsWith(FUNCTION_START)) {
-                return parseFunctionType(type)
-            }
-            return parseType(type)
-        }
-
-        fun parseType(type: String): String {
-            // TODO: Fix for SvgDefsManager and SvgVisual required (2 constructors from 1)
-            if (type.contains("|")) {
-                return parseType(type.split("|")[0])
-            }
-
-            val standardType = STANDARD_TYPE_MAP[type]
-            if (standardType != null) {
-                return standardType
-            }
-
-            if (!type.contains(GENERIC_START)) {
-                return type
-            }
-
-            val mainType = parseType(StringUtil.till(type, GENERIC_START))
-            val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
-            return "$mainType<${parametrizedTypes.joinToString(", ")}>"
-        }
-
-        fun getReturnType(lines: List<String>, className: String, name: String): String {
-            val line = lines.firstOrNull({ it.startsWith(RETURNS) }) ?: return UNIT
-            val hackType = Hacks.getReturnType(line, className, name)
-            if (hackType != null) {
-                return hackType
-            }
-            return parseTypeLine(line)
-        }
-
-        fun parseGenericParameters(lines: List<String>): List<GenericParameter> {
-            val templateLine = lines.firstOrNull { it.startsWith(TEMPLATE) }
-                    ?: return emptyList()
-            val names = StringUtil.from(templateLine, TEMPLATE).split(",")
-            // TODO: support generic type read
-            return names.map { GenericParameter(it, "") }
-        }
-
-        fun getGenericString(lines: List<String>): String {
-            val parameters = parseGenericParameters(lines)
-            if (parameters.isEmpty()) {
-                return ""
-            }
-            return "<${parameters.map { it.toString() }.joinToString(", ")}> "
-        }
-
-        fun parseParamLine(line: String, function: String): Parameter {
-            Hacks.parseParamLine(line, function).apply {
-                if (this != null) {
-                    return this
-                }
-            }
-
-            var name = StringUtil.from2(line, "} ").split(" ").get(0)
-            var defaultValue: String? = null
-            if (name.startsWith("[")) {
-                val data = StringUtil.hardBetween(name, "[", "]").split("=")
-                name = data[0]
-                defaultValue = data[1]
-            }
-            var rawType = StringUtil.between(line, " {", "} ", true)
-            val vararg = rawType.startsWith("...")
-            if (vararg) {
-                rawType = rawType.substring(3)
-            }
-            val type = if (rawType.startsWith(FUNCTION_START)) {
-                val parameterTypes = StringUtil.between(rawType, FUNCTION_START, FUNCTION_END).split(", ").map { parseType(it) }
-                val resultType = parseType(StringUtil.from(rawType, FUNCTION_END))
-                "(${parameterTypes.joinToString(", ")}) -> $resultType"
-            } else {
-                parseType(rawType)
-            }
-            return Parameter(name, type, defaultValue, vararg)
-        }
-
-        fun parseGenericParameters(parameters: String): List<String> {
-            // TODO: temp hack for generic, logic check required
-            if (!parameters.contains(GENERIC_START)) {
-                return if (parameters.contains(FUNCTION_START)) {
-                    // TODO: realize full logic if needed
-                    parameters.split(delimiters = ",", limit = 2).map {
-                        if (it.startsWith(FUNCTION_START)) parseFunctionType(it) else parseType(it)
-                    }
-                } else {
-                    parameters.split(",").map { parseType(it) }
-                }
-            }
-
-            val firstType = firstGenericType(parameters)
-            if (firstType == parameters) {
-                return listOf(parseType(firstType))
-            }
-
-            val types = mutableListOf(firstType)
-            types.addAll(parseGenericParameters(parameters.substring(firstType.length + 1)))
-            return types.toList()
-        }
-
-        fun firstGenericType(parameters: String): String {
-            var semafor = 0
-            var index = 0
-
-            while (true) {
-                val indexes = listOf(
-                        parameters.indexOf(",", index),
-                        parameters.indexOf(".<", index),
-                        parameters.indexOf(">", index)
-                )
-
-                if (indexes.all { it == -1 }) {
-                    return parameters
-                }
-
-                // TODO: check calculation
-                index = indexes.map({ if (it == -1) 100000 else it })
-                        .minWith(Comparator { o1, o2 -> Math.min(o1, o2) }) ?: -1
-
-                if (index == -1 || index == parameters.lastIndex) {
-                    return parameters
-                }
-
-                when (indexes.indexOf(index)) {
-                    0 -> if (semafor == 0) return parameters.substring(0, index)
-                    1 -> semafor++
-                    2 -> semafor--
-                }
-                index++
-            }
-        }
-
-        fun parseFunctionType(type: String): String {
-            val parameterTypes = StringUtil.between(type, FUNCTION_START, FUNCTION_END).split(",").map({ parseType(it) })
-            val resultType = parseType(StringUtil.from(type, FUNCTION_END))
-            return "(${parameterTypes.joinToString(", ")}) -> $resultType"
-        }
-    }
-
     protected var _classRegistry: ClassRegistry? = null
 
     var classRegistry: ClassRegistry
@@ -522,25 +471,6 @@ open class Declaration(protected val data: Data) {
     open fun instanceMode(): Boolean {
         return false
     }
-}
-
-class Data(val source: String, val name: String, val value: String) {
-    companion object {
-        fun parse(source: String): Data {
-            val items = source.split("=")
-            return when (items.size) {
-                1 -> {
-                    val name = source.substring(0, source.length - 1)
-                    Data(source, name, Declaration.NULL_VALUE)
-                }
-                2 -> Data(source, items[0], items[1])
-                else -> throw GradleException("Invalid declaration: '$source'")
-            }
-        }
-    }
-
-    val nullValue: Boolean
-        get() = value == Declaration.NULL_VALUE
 }
 
 open class InstanceDec(data: Data, protected val lines: List<String>) : Declaration(data) {
@@ -1436,26 +1366,17 @@ object Hacks {
         }
     }
 
-    fun getReturnType(line: String, className: String, name: String): String? {
-        if (line.startsWith("@returns {")) {
-            return when {
-                className == "yfiles.algorithms.EdgeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
-                className == "yfiles.algorithms.NodeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
-                else -> null
-            }
-        }
-
+    fun getReturnType(className: String, name: String): String? {
         return when {
+            className == "yfiles.algorithms.EdgeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
+            className == "yfiles.algorithms.NodeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
+
             className == "yfiles.input.ConstrainedReshapeHandler" && name == "handleReshape" -> UNIT
             className == "yfiles.input.ConstrainedDragHandler" && name == "handleMove" -> UNIT
             className == "yfiles.geometry.MutableSize" && name == "MutableSize" -> ""
         // TODO: check (in official doc no return type)
             className == "yfiles.geometry.OrientedRectangle" && name == "moveBy" -> "Boolean"
-            else -> {
-                println("className == \"$className\" && name == \"$name\" -> \"\"")
-                println(line)
-                throw GradleException("No return type founded!")
-            }
+            else -> null
         }
     }
 
