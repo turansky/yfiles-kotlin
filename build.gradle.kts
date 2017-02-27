@@ -45,37 +45,12 @@ fun generateKotlinWrappers(sourceFile: File) {
         namespace.types.forEach { println(it.id) }
     }
 
-    /*
-    val declarations = mutableListOf<Declaration>()
-    while (lines.hasNext()) {
-        val declaration = DeclarationReader.read(lines)
-        declarations.add(declaration)
-    }
+    val types = yfilesNamespace.namespaces.flatMap { it.types }
+    // types.removeIf { Hacks.redundantDeclaration(it) }
 
-    val classes = declarations.filterIsInstance(ClassDec::class.java).map { it.className }
-            .toMutableSet()
+    ClassRegistry.instance = ClassRegistryImpl(types)
 
-    val additionalClasses = declarations.filterIsInstance(Constructor::class.java)
-            .mapNotNull {
-                val className = it.className
-                if (classes.contains(className)) {
-                    null
-                } else {
-                    classes.add(className)
-                    it.toClassDec()
-                }
-            }
-
-    declarations.addAll(additionalClasses)
-
-    declarations.removeIf { Hacks.redundantDeclaration(it) }
-
-    val classRegistry = ClassRegistryImpl(declarations)
-    declarations.forEach {
-        it.classRegistry = classRegistry
-    }
-
-    val fileGenerator = FileGenerator(declarations)
+    val fileGenerator = FileGenerator(types)
     val sourceDir = projectDir.resolve("generated/src/main/kotlin")
     fileGenerator.generate(sourceDir)
 
@@ -84,7 +59,6 @@ fun generateKotlinWrappers(sourceFile: File) {
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
     sourceDir.resolve("yfiles/lang/Struct.kt").delete()
-    */
 }
 
 abstract class JsonWrapper(val source: JSONObject)
@@ -98,13 +72,16 @@ abstract class JDeclaration : JsonWrapper {
     val remarks: String by StringDelegate()
 
     val fqn: String
+    val nameOfClass: String
 
     constructor(source: JSONObject) : super(source) {
         this.fqn = id
+        this.nameOfClass = fqn.split(".").last()
     }
 
     constructor(fqn: String, source: JSONObject) : super(source) {
         this.fqn = fqn
+        this.nameOfClass = fqn.split(".").last()
     }
 }
 
@@ -430,6 +407,18 @@ object TypeParser {
 }
 
 interface ClassRegistry {
+    companion object {
+        private var _instance: ClassRegistry? = null
+
+        var instance: ClassRegistry
+            get() {
+                _instance ?: throw GradleException("ClassRegistry instance not initialized!")
+            }
+            set(value) {
+                _instance = value
+            }
+    }
+
     fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
     fun isGetterSetter(className: String, propertyName: String): Boolean
@@ -437,47 +426,7 @@ interface ClassRegistry {
     fun propertyOverriden(className: String, functionName: String): Boolean
 }
 
-open class Declaration(protected val data: Data) {
-    protected var _classRegistry: ClassRegistry? = null
-
-    var classRegistry: ClassRegistry
-        get() = _classRegistry ?: throw GradleException("Class registry not initialized!")
-        set(value) {
-            _classRegistry = value
-        }
-
-    val shortClassName: String
-    val className: String
-    val name: String
-
-    init {
-        if (instanceMode()) {
-            this.className = data.name
-            this.name = className.split(".").last()
-        } else {
-            val names = data.name.split(".")
-            this.name = names.last()
-
-            var i = names.size - 2
-            if (names[i] == "prototype") {
-                i--
-            }
-            this.className = names.subList(0, i + 1).joinToString(separator = ".")
-        }
-
-        this.shortClassName = className.split(".").last()
-    }
-
-    open fun instanceMode(): Boolean {
-        return false
-    }
-}
-
-open class InstanceDec(data: Data, protected val lines: List<String>) : Declaration(data) {
-    override fun instanceMode(): Boolean {
-        return true
-    }
-
+open class InstanceDec(protected val lines: List<String>) {
     fun genericParameters(): String {
         return getGenericString(lines)
     }
@@ -504,7 +453,7 @@ open class InstanceDec(data: Data, protected val lines: List<String>) : Declarat
     }
 }
 
-class ClassDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
+class ClassDec(lines: List<String>) : InstanceDec(lines) {
     val static = lines.contains(STATIC)
     val final = lines.contains(FINAL)
     val open = !final
@@ -517,22 +466,18 @@ class ClassDec(data: Data, lines: List<String>) : InstanceDec(data, lines) {
     }
 }
 
-class InterfaceDec(data: Data, lines: List<String>) : InstanceDec(data, lines)
+class InterfaceDec(lines: List<String>) : InstanceDec(lines)
 
-class EnumDec(data: Data, lines: List<String>) : InstanceDec(data, lines)
+class EnumDec(lines: List<String>) : InstanceDec(lines)
 
 class Constructor : Function {
-    protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean)
-            : super(data, lines, parameters, generated)
+    protected constructor(lines: List<String>, parameters: Parameters, generated: Boolean)
+            : super(lines, parameters, generated)
 
-    constructor(data: Data, lines: List<String>) : super(data, lines)
-
-    override fun instanceMode(): Boolean {
-        return true
-    }
+    constructor(lines: List<String>) : super(lines)
 
     override fun generateAdapter(parameters: List<Parameter>): Function {
-        return Constructor(data, lines, Parameters(parameters), true)
+        return Constructor(lines, Parameters(parameters), true)
     }
 
     override fun overridden(): Boolean {
@@ -540,7 +485,7 @@ class Constructor : Function {
     }
 
     fun toClassDec(): ClassDec {
-        return ClassDec(data, lines)
+        return ClassDec(lines)
     }
 
     override fun toString(): String {
@@ -555,7 +500,7 @@ class Constructor : Function {
     }
 }
 
-class Const(data: Data, lines: List<String>) : Declaration(data) {
+class Const(lines: List<String>) {
     val static = lines.contains(STATIC)
     val protected = lines.contains(PROTECTED)
     val type: String
@@ -571,7 +516,7 @@ class Const(data: Data, lines: List<String>) : Declaration(data) {
     }
 }
 
-class Property(data: Data, lines: List<String>) : Declaration(data) {
+class Property(lines: List<String>) {
     val static: Boolean
     val protected: Boolean
     val abstract: Boolean
@@ -627,12 +572,12 @@ class Property(data: Data, lines: List<String>) : Declaration(data) {
     }
 }
 
-open class Function : Declaration {
+open class Function {
     companion object {
         val START = "function("
         val END = "){};"
 
-        private fun calculateParameters(data: Data, lines: List<String>): Parameters {
+        private fun calculateParameters(lines: List<String>): Parameters {
             val value = data.value
             val parameterNames = StringUtil.hardBetween(value, START, END).split(",").map { it.trim() }.filter { it.isNotEmpty() }
             if (parameterNames.isEmpty()) {
@@ -687,7 +632,7 @@ open class Function : Declaration {
     private val returnType: String
     private val generics: String
 
-    protected constructor(data: Data, lines: List<String>, parameters: Parameters, generated: Boolean) : super(data) {
+    protected constructor(lines: List<String>, parameters: Parameters, generated: Boolean) : super() {
         this.static = lines.contains(STATIC)
         this.protected = lines.contains(PROTECTED)
         this.abstract = lines.contains(ABSTRACT)
@@ -708,10 +653,10 @@ open class Function : Declaration {
         }
     }
 
-    constructor(data: Data, lines: List<String>) : this(data, lines, calculateParameters(data, lines), false)
+    constructor(lines: List<String>) : this(lines, calculateParameters(lines), false)
 
     open fun generateAdapter(parameters: List<Parameter>): Function {
-        return Function(data, lines, Parameters(parameters), true)
+        return Function(lines, Parameters(parameters), true)
     }
 
     protected fun mapString(parameters: List<Parameter>): String {
@@ -797,26 +742,13 @@ open class Function : Declaration {
     }
 }
 
-class EnumValue(data: Data, private val lines: List<String>) : Declaration(data)
+class EnumValue(private val lines: List<String>)
 
 class Parameters(val items: List<Parameter>, val generatedItems: List<Parameter>? = null)
 
 data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
 
-class GenericParameter(private val name: String, private val type: String) {
-    override fun toString(): String {
-        // TODO: add type
-        return name
-    }
-}
-
-class Namespace(data: Data) : Declaration(data) {
-    override fun instanceMode(): Boolean {
-        return true
-    }
-}
-
-class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
+class ClassRegistryImpl(declarations: List<JDeclaration>) : ClassRegistry {
     private val instances = declarations.filterIsInstance(InstanceDec::class.java)
             .associateBy({ it.className }, { it })
 
@@ -908,7 +840,7 @@ class ClassRegistryImpl(declarations: List<Declaration>) : ClassRegistry {
     }
 }
 
-class FileGenerator(declarations: List<Declaration>) {
+class FileGenerator(types: List<JType>) {
 
     private val classFileList: Set<ClassFile>
     private val interfaceFileList: Set<InterfaceFile>
@@ -917,12 +849,12 @@ class FileGenerator(declarations: List<Declaration>) {
     init {
         val classFileList = mutableListOf<ClassFile>()
         classFileList.addAll(
-                declarations
+                types
                         .filterIsInstance(ClassDec::class.java)
                         .map({ ClassFile(it) })
         )
 
-        declarations.filterIsInstance(Constructor::class.java).forEach {
+        types.filterIsInstance(Constructor::class.java).forEach {
             val className = it.className
             val classFile = classFileList.first { it.className == className }
             classFile.addItem(it)
@@ -930,11 +862,11 @@ class FileGenerator(declarations: List<Declaration>) {
 
         this.classFileList = classFileList.toSet()
 
-        interfaceFileList = declarations.filterIsInstance(InterfaceDec::class.java)
+        interfaceFileList = types.filterIsInstance(InterfaceDec::class.java)
                 .map { InterfaceFile(it) }
                 .toSet()
 
-        enumFileList = declarations.filterIsInstance(EnumDec::class.java)
+        enumFileList = types.filterIsInstance(EnumDec::class.java)
                 .map { EnumFile(it) }
                 .toSet()
 
@@ -943,7 +875,7 @@ class FileGenerator(declarations: List<Declaration>) {
         generatedData.addAll(interfaceFileList)
         generatedData.addAll(enumFileList)
 
-        declarations.filterNot { it is Namespace || it is InstanceDec || it is Constructor }
+        types.filterNot { it is Namespace || it is InstanceDec || it is Constructor }
                 .forEach {
                     val className = it.className
                     val classFile = generatedData.first { it.className == className }
