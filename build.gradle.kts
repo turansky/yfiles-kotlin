@@ -17,6 +17,7 @@ import org.json.JSONObject
 import java.io.File
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.reflect.KProperty
 
 buildscript {
     repositories {
@@ -85,13 +86,25 @@ fun generateKotlinWrappers(sourceFile: File) {
     */
 }
 
-abstract class JsonWrapper(protected val source: JSONObject) {
-    protected fun getString(key: String): String {
-        return source.getString(key)
-    }
+abstract class JsonWrapper(val source: JSONObject)
 
-    protected fun <T> getArray(key: String, transform: (JSONObject) -> T): List<T> {
-        val array = source.getJSONArray(key)
+class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
+    val namespaces: List<JNamespace> by ArrayDelegate({ JNamespace(it) })
+}
+
+class JNamespace(source: JSONObject) : JsonWrapper(source) {
+    val id: String by StringDelegate()
+    val name: String by StringDelegate()
+
+    val namespaces: List<JNamespace> by ArrayDelegate({ JNamespace(it) })
+    val types: List<JType> by ArrayDelegate({ JType(it) })
+}
+
+class JType(source: JSONObject) : JsonWrapper(source)
+
+class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
+        val array = thisRef.source.getJSONArray(property.name)
         val length = array.length()
         if (length == 0) {
             return emptyList()
@@ -105,26 +118,11 @@ abstract class JsonWrapper(protected val source: JSONObject) {
     }
 }
 
-class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
-    val namespaces: List<JNamespace> by lazy {
-        getArray("namespaces") { JNamespace(it) }
+class StringDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
+        return thisRef.source.getString(property.name)
     }
 }
-
-class JNamespace(source: JSONObject) : JsonWrapper(source) {
-    val id: String by lazy { getString("id") }
-    val name: String by lazy { getString("name") }
-
-    val namespaces: List<JNamespace> by lazy {
-        getArray("namespaces") { JNamespace(it) }
-    }
-
-    val types: List<JType> by lazy {
-        getArray("types") { JType(it) }
-    }
-}
-
-class JType(source: JSONObject) : JsonWrapper(source)
 
 object Types {
     val UNIT = "Unit"
