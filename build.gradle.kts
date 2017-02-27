@@ -40,10 +40,9 @@ fun generateKotlinWrappers(sourceFile: File) {
     val source = JSONObject(sourceFile.readText(Charset.forName("UTF-8")))
     val apiRoot = JAPIRoot(source)
 
-    apiRoot.namespaces.forEach {
-        it.namespaces.forEach {
-            it.types.map { it.group }.forEach { println(it) }
-        }
+    val yfilesNamespace = apiRoot.namespaces.first { it.id == "yfiles" }
+    for (namespace in yfilesNamespace.namespaces) {
+        namespace.types.forEach { println(it.id) }
     }
 
     /*
@@ -89,33 +88,79 @@ fun generateKotlinWrappers(sourceFile: File) {
 }
 
 abstract class JsonWrapper(val source: JSONObject)
-
-class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
-    val namespaces: List<JNamespace> by ArrayDelegate({ JNamespace(it) })
-}
-
-class JNamespace(source: JSONObject) : JsonWrapper(source) {
-    val id: String by StringDelegate()
-    val name: String by StringDelegate()
-
-    val namespaces: List<JNamespace> by ArrayDelegate({ JNamespace(it) })
-    val types: List<JType> by ArrayDelegate({ JType(it) })
-}
-
-class JType(source: JSONObject) : JsonWrapper(source) {
+abstract class JDeclaration(source: JSONObject) : JsonWrapper(source) {
     val id: String by StringDelegate()
     val name: String by StringDelegate()
     val modifiers: List<String> by StringArrayDelegate()
 
-    val group: Group by GroupDelegate()
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
 }
 
-enum class Group {
-    CLASS,
-    INTERFACE,
-    ENUM
+class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
+    val namespaces: List<JNamespace> by ArrayDelegate { JNamespace(it) }
+}
+
+class JNamespace(source: JSONObject) : JsonWrapper(source) {
+    companion object {
+        fun parseType(source: JSONObject): JType {
+            val group = source.getString("group")
+            return when (group) {
+                "class" -> JClass(source)
+                "interface" -> JInterface(source)
+                "enum" -> JEnum(source)
+                else -> throw GradleException("Undefined type group '$group'")
+            }
+        }
+    }
+
+    val id: String by StringDelegate()
+    val name: String by StringDelegate()
+
+    val namespaces: List<JNamespace> by ArrayDelegate { JNamespace(it) }
+    val types: List<JType> by ArrayDelegate { parseType(it) }
+}
+
+abstract class JType(source: JSONObject) : JDeclaration(source) {
+    val fields: List<JField> by ArrayDelegate { JField(it) }
+    val properties: List<JProperty> by ArrayDelegate { JProperty(it) }
+    val methods: List<JMethod> by ArrayDelegate { JMethod(it) }
+    val staticMethods: List<JMethod> by ArrayDelegate { JMethod(it) }
+}
+
+class JClass(source: JSONObject) : JType(source) {
+    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(it) }
+}
+
+class JInterface(source: JSONObject) : JType(source)
+
+class JEnum(source: JSONObject) : JType(source) {
+    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(it) }
+}
+
+abstract class JTypedDeclaration(source: JSONObject) : JDeclaration(source) {
+    val type: String by TypeDelegate()
+}
+
+class JConstructor(source: JSONObject) : JDeclaration(source) {
+    val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
+}
+
+class JField(source: JSONObject) : JTypedDeclaration(source)
+class JProperty(source: JSONObject) : JTypedDeclaration(source)
+class JMethod(source: JSONObject) : JDeclaration(source) {
+    val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
+    val returns: JReturns? by ReturnsDelegate()
+}
+
+class JParameter(source: JSONObject) : JsonWrapper(source) {
+    val name: String by StringDelegate()
+    val type: String by TypeDelegate()
+    val summary: String by StringDelegate()
+}
+
+class JReturns(source: JSONObject) : JsonWrapper(source) {
+    val type: String by TypeDelegate()
 }
 
 class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
@@ -169,14 +214,20 @@ class StringDelegate {
     }
 }
 
-class GroupDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Group {
-        val value = StringDelegate.value(thisRef, property)
-        return when (value) {
-            "class" -> Group.CLASS
-            "interface" -> Group.INTERFACE
-            "enum" -> Group.ENUM
-            else -> throw GradleException("Undefined type group '$value'")
+class TypeDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
+        return StringDelegate.value(thisRef, property)
+    }
+}
+
+class ReturnsDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JReturns? {
+        val source = thisRef.source
+        val key = property.name
+        return if (source.has(key)) {
+            JReturns(source.getJSONObject(key))
+        } else {
+            null
         }
     }
 }
