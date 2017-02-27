@@ -41,7 +41,9 @@ fun generateKotlinWrappers(sourceFile: File) {
     val apiRoot = JAPIRoot(source)
 
     apiRoot.namespaces.forEach {
-        println("Namespace: ${it.id}")
+        it.namespaces.forEach {
+            it.types.map { it.group }.forEach { println(it) }
+        }
     }
 
     /*
@@ -105,14 +107,27 @@ class JType(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val modifiers: List<String> by StringArrayDelegate()
 
-    val group: String by StringDelegate()
+    val group: Group by GroupDelegate()
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
 }
 
+enum class Group {
+    CLASS,
+    INTERFACE,
+    ENUM
+}
+
 class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
-        val array = thisRef.source.getJSONArray(property.name)
+        val source = thisRef.source
+        val key = property.name
+
+        if (!source.has(key)) {
+            return emptyList()
+        }
+
+        val array = source.getJSONArray(key)
         val length = array.length()
         if (length == 0) {
             return emptyList()
@@ -143,8 +158,26 @@ class StringArrayDelegate {
 }
 
 class StringDelegate {
+    companion object {
+        fun value(thisRef: JsonWrapper, property: KProperty<*>): String {
+            return thisRef.source.getString(property.name)
+        }
+    }
+
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
-        return thisRef.source.getString(property.name)
+        return value(thisRef, property)
+    }
+}
+
+class GroupDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Group {
+        val value = StringDelegate.value(thisRef, property)
+        return when (value) {
+            "class" -> Group.CLASS
+            "interface" -> Group.INTERFACE
+            "enum" -> Group.ENUM
+            else -> throw GradleException("Undefined type group '$value'")
+        }
     }
 }
 
