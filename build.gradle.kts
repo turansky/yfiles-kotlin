@@ -52,6 +52,7 @@ fun generateKotlinWrappers(sourceFile: File) {
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
+    /*
     val fileGenerator = FileGenerator(types)
     val sourceDir = projectDir.resolve("generated/src/main/kotlin")
     fileGenerator.generate(sourceDir)
@@ -61,6 +62,7 @@ fun generateKotlinWrappers(sourceFile: File) {
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
     sourceDir.resolve("yfiles/lang/Struct.kt").delete()
+    */
 }
 
 abstract class JsonWrapper(val source: JSONObject)
@@ -176,16 +178,33 @@ class JConstructor(fqn: String, source: JSONObject) : JDeclaration(fqn, source) 
 }
 
 class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source)
-class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source)
+class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
+    val getterSetter = !modifiers.contains("ro")
+
+    val abstract = modifiers.contains("abstract")
+}
 class JMethod(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
+    val abstract = modifiers.contains("abstract")
+
     val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
     val returns: JReturns? by ReturnsDelegate()
 }
 
 class JParameter(source: JSONObject) : JsonWrapper(source) {
+    companion object {
+        fun create(name: String, type: String): JParameter {
+            TODO()
+        }
+
+        fun create(name: String, type: String, defaultValue: String?, vararg: Boolean): JParameter {
+            TODO()
+        }
+    }
+
     val name: String by StringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
     val summary: String by StringDelegate()
+    val optional: Boolean by BooleanDelegate()
 }
 
 class JTypeParameter(source: JSONObject) : JsonWrapper(source) {
@@ -251,6 +270,15 @@ class StringDelegate {
 
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
         return value(thisRef, property)
+    }
+}
+
+class BooleanDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Boolean {
+        val source = thisRef.source
+        val key = property.name
+
+        return if (source.has(key)) source.getBoolean(key) else false
     }
 }
 
@@ -363,7 +391,7 @@ object TypeParser {
         return if (parameters.isEmpty()) "" else "<${parameters.map { it.name }.joinToString(", ")}> "
     }
 
-    fun parseParamLine(line: String, function: String): Parameter {
+    fun parseParamLine(line: String, function: String): JParameter {
         Hacks.parseParamLine(line, function).apply {
             if (this != null) {
                 return this
@@ -389,7 +417,7 @@ object TypeParser {
         } else {
             parseType(rawType)
         }
-        return Parameter(name, type, defaultValue, vararg)
+        return JParameter.create(name, type, defaultValue, vararg)
     }
 
     fun parseGenericParameters(parameters: String): List<String> {
@@ -460,7 +488,7 @@ interface ClassRegistry {
 
         var instance: ClassRegistry
             get() {
-                _instance ?: throw GradleException("ClassRegistry instance not initialized!")
+                return _instance ?: throw GradleException("ClassRegistry instance not initialized!")
             }
             set(value) {
                 _instance = value
@@ -474,6 +502,7 @@ interface ClassRegistry {
     fun propertyOverriden(className: String, functionName: String): Boolean
 }
 
+/*
 class Constructor : Function {
     protected constructor(lines: List<String>, parameters: Parameters, generated: Boolean)
             : super(lines, parameters, generated)
@@ -747,29 +776,24 @@ class EnumValue(private val lines: List<String>)
 class Parameters(val items: List<Parameter>, val generatedItems: List<Parameter>? = null)
 
 data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
+*/
 
-class ClassRegistryImpl(declarations: List<JDeclaration>) : ClassRegistry {
-    private val instances = declarations.filterIsInstance(InstanceDec::class.java)
-            .associateBy({ it.className }, { it })
+class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
+    private val instances = types.associateBy({ it.fqn }, { it })
 
-    private val functions = declarations.filterIsInstance(Function::class.java)
-            .filter { it !is Constructor }
-
-    private val properties = declarations.filterIsInstance(Property::class.java)
-
-    private val functionsMap = instances.values.associateBy(
-            { it.className },
-            { instance -> functions.filter { it.className == instance.className }.map { it.name } }
+    private val functionsMap = types.associateBy(
+            { it.fqn },
+            { it.methods.map { it.name } }
     )
 
-    private val propertiesMap = instances.values.associateBy(
-            { it.className },
-            { instance -> properties.filter { it.className == instance.className }.map { it.name } }
+    private val propertiesMap = types.associateBy(
+            { it.fqn },
+            { it.properties.map { it.name } }
     )
 
-    private val propertiesMap2 = instances.values.associateBy(
-            { it.className },
-            { instance -> properties.filter { it.className == instance.className }.associateBy({ it.name }, { it.getterSetter }) }
+    private val propertiesMap2 = types.associateBy(
+            { it.fqn },
+            { it.properties.associateBy({ it.name }, { it.getterSetter }) }
     )
 
     private fun getParents(className: String): List<String> {
@@ -819,12 +843,12 @@ class ClassRegistryImpl(declarations: List<JDeclaration>) : ClassRegistry {
     }
 
     override fun isInterface(className: String): Boolean {
-        return instances[className] is InterfaceDec
+        return instances[className] is JInterface
     }
 
     override fun isFinalClass(className: String): Boolean {
         val instance = instances[className]
-        return instance is ClassDec && instance.final
+        return instance is JClass && instance.final
     }
 
     override fun isGetterSetter(className: String, propertyName: String): Boolean {
@@ -840,49 +864,8 @@ class ClassRegistryImpl(declarations: List<JDeclaration>) : ClassRegistry {
     }
 }
 
-class FileGenerator(types: List<JType>) {
-
-    private val classFileList: Set<ClassFile>
-    private val interfaceFileList: Set<InterfaceFile>
-    private val enumFileList: Set<EnumFile>
-
-    init {
-        val classFileList = mutableListOf<ClassFile>()
-        classFileList.addAll(
-                types
-                        .filterIsInstance(ClassDec::class.java)
-                        .map({ ClassFile(it) })
-        )
-
-        types.filterIsInstance(Constructor::class.java).forEach {
-            val className = it.className
-            val classFile = classFileList.first { it.className == className }
-            classFile.addItem(it)
-        }
-
-        this.classFileList = classFileList.toSet()
-
-        interfaceFileList = types.filterIsInstance(InterfaceDec::class.java)
-                .map { InterfaceFile(it) }
-                .toSet()
-
-        enumFileList = types.filterIsInstance(EnumDec::class.java)
-                .map { EnumFile(it) }
-                .toSet()
-
-        val generatedData = mutableListOf<GeneratedFile>()
-        generatedData.addAll(classFileList)
-        generatedData.addAll(interfaceFileList)
-        generatedData.addAll(enumFileList)
-
-        types.filterNot { it is Namespace || it is InstanceDec || it is Constructor }
-                .forEach {
-                    val className = it.className
-                    val classFile = generatedData.first { it.className == className }
-                    classFile.addItem(it)
-                }
-    }
-
+/*
+class FileGenerator(private val types: List<JType>) {
     fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
@@ -918,10 +901,9 @@ class FileGenerator(types: List<JType>) {
         }
     }
 
-    abstract class GeneratedFile(private val declaration: InstanceDec) {
-        val className = declaration.className
+    abstract class GeneratedFile(private val declaration: JType) {
+        val className = declaration.nameOfClass
         val fqn: FQN = FQN(className)
-        protected val items: MutableList<Declaration> = mutableListOf()
 
         val consts: List<Const>
             get() = items.filterIsInstance(Const::class.java)
@@ -965,10 +947,6 @@ class FileGenerator(types: List<JType>) {
 
         val header: String
             get() = "package ${fqn.packageName}\n"
-
-        fun addItem(item: Declaration) {
-            items.add(item)
-        }
 
         open protected fun parentTypes(): List<String> {
             return declaration.implementedTypes()
@@ -1154,6 +1132,7 @@ class FileGenerator(types: List<JType>) {
         private val ROUTER_OTHER = "yfiles/router-other"
     }
 }
+*/
 
 object StringUtil {
     fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
@@ -1217,26 +1196,22 @@ object StringUtil {
 object Hacks {
     val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
-    fun redundantDeclaration(declaration: Declaration): Boolean {
-        if (declaration !is Function) {
-            return false
-        }
-
-        if (declaration.className == OBJECT_TYPE) {
-            return declaration.name in SYSTEM_FUNCTIONS
+    fun redundantMethod(method: JMethod): Boolean {
+        if (method.fqn == OBJECT_TYPE) {
+            return method.name in SYSTEM_FUNCTIONS
         }
 
         return false
     }
 
-    fun parseParamLine(line: String, function: String): Parameter? {
+    fun parseParamLine(line: String, function: String): JParameter? {
         if (line.startsWith("@param value")) {
             return when (function) {
-                "yfiles.collections.IList.prototype.set" -> Parameter("value", "T")
-                "yfiles.collections.IMapper.prototype.set" -> Parameter("value", "V")
-                "yfiles.graphml.CreationProperties.prototype.set" -> Parameter("value", OBJECT_TYPE)
-                "yfiles.algorithms.YList.prototype.set" -> Parameter("value", OBJECT_TYPE)
-                "yfiles.collections.IMap.prototype.set" -> Parameter("value", "TValue")
+                "yfiles.collections.IList.prototype.set" -> JParameter.create("value", "T")
+                "yfiles.collections.IMapper.prototype.set" -> JParameter.create("value", "V")
+                "yfiles.graphml.CreationProperties.prototype.set" -> JParameter.create("value", OBJECT_TYPE)
+                "yfiles.algorithms.YList.prototype.set" -> JParameter.create("value", OBJECT_TYPE)
+                "yfiles.collections.IMap.prototype.set" -> JParameter.create("value", "TValue")
                 else -> throw GradleException("No hacked parameter value for function $function")
             }
         }
@@ -1245,18 +1220,18 @@ object Hacks {
             val name = line.split(" ")[1]
 
             return when {
-                function == "yfiles.collections.Map" && name == "options.entries" -> Parameter(name, "Array<MapEntry<TKey, TValue>>")
-                function == "yfiles.collections.List" && name == "options.items" -> Parameter(name, "Array<T>")
+                function == "yfiles.collections.Map" && name == "options.entries" -> JParameter.create(name, "Array<MapEntry<TKey, TValue>>")
+                function == "yfiles.collections.List" && name == "options.items" -> JParameter.create(name, "Array<T>")
                 function == "yfiles.view.LinearGradient" || function == "yfiles.view.RadialGradient"
-                        && name == "options.gradientStops" -> Parameter(name, "Array<yfiles.view.GradientStop>")
-                function == "yfiles.graph.IGraph.prototype.createGroupNode" && name == "options.children" -> Parameter(name, "Array<$NODE_TYPE>")
-                function == "yfiles.graph.ITable.prototype.createChildRow" && name == "options.childRows" -> Parameter(name, "Array<$ROW_TYPE>")
-                function == "yfiles.graph.ITable.prototype.createChildColumn" && name == "options.childColumns" -> Parameter(name, "Array<$COLUMN_TYPE>")
-                name == "options.nodes" -> Parameter(name, NODE_TYPE)
-                name == "options.edges" -> Parameter(name, EDGE_TYPE)
-                name == "options.ports" -> Parameter(name, PORT_TYPE)
-                name == "options.labels" -> Parameter(name, LABEL_TYPE)
-                name == "options.bends" -> Parameter(name, BEND_TYPE)
+                        && name == "options.gradientStops" -> JParameter.create(name, "Array<yfiles.view.GradientStop>")
+                function == "yfiles.graph.IGraph.prototype.createGroupNode" && name == "options.children" -> JParameter.create(name, "Array<$NODE_TYPE>")
+                function == "yfiles.graph.ITable.prototype.createChildRow" && name == "options.childRows" -> JParameter.create(name, "Array<$ROW_TYPE>")
+                function == "yfiles.graph.ITable.prototype.createChildColumn" && name == "options.childColumns" -> JParameter.create(name, "Array<$COLUMN_TYPE>")
+                name == "options.nodes" -> JParameter.create(name, NODE_TYPE)
+                name == "options.edges" -> JParameter.create(name, EDGE_TYPE)
+                name == "options.ports" -> JParameter.create(name, PORT_TYPE)
+                name == "options.labels" -> JParameter.create(name, LABEL_TYPE)
+                name == "options.bends" -> JParameter.create(name, BEND_TYPE)
                 else -> throw GradleException("No hacked parameter '$name' for function $function")
             }
         }
@@ -1291,7 +1266,7 @@ object Hacks {
         }
     }
 
-    fun filterConstructorAdapters(className: String, adapters: List<Constructor>): List<Constructor> {
+    fun filterConstructorAdapters(className: String, adapters: List<JConstructor>): List<JConstructor> {
         return when (className) {
             "yfiles.styles.NodeStylePortStyleAdapter" -> adapters.toSet().toList()
             else -> adapters
@@ -1593,7 +1568,7 @@ object MixinHacks {
             "yfiles.graph.IRow"
     )
 
-    fun defineLikeAbstractClass(className: String, functions: List<Function>, properties: List<Property>): Boolean {
+    fun defineLikeAbstractClass(className: String, functions: List<JMethod>, properties: List<JProperty>): Boolean {
         if (className in MUST_BE_ABSTRACT_CLASSES) {
             return true
         }
