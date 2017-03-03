@@ -40,14 +40,11 @@ task("build") {
 
 fun generateKotlinWrappers(sourceFile: File) {
     val source = JSONObject(sourceFile.readText(Charset.forName("UTF-8")))
-    val apiRoot = JAPIRoot(source)
 
-    val yfilesNamespace = apiRoot.namespaces.first { it.id == "yfiles" }
-    for (namespace in yfilesNamespace.namespaces) {
-        namespace.types.forEach { println(it.id) }
-    }
+    val types = JAPIRoot(source)
+            .namespaces.first { it.id == "yfiles" }
+            .namespaces.flatMap { it.types }
 
-    val types = yfilesNamespace.namespaces.flatMap { it.types }
     // types.removeIf { Hacks.redundantDeclaration(it) }
 
     ClassRegistry.instance = ClassRegistryImpl(types)
@@ -57,7 +54,6 @@ fun generateKotlinWrappers(sourceFile: File) {
     val fileGenerator = FileGenerator(types)
     fileGenerator.generate(sourceDir)
 
-    // TODO: Check if this class really needed
     sourceDir.resolve("yfiles/lang/Boolean.kt").delete()
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
