@@ -52,9 +52,9 @@ fun generateKotlinWrappers(sourceFile: File) {
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
-    /*
-    val fileGenerator = FileGenerator(types)
     val sourceDir = projectDir.resolve("generated/src/main/kotlin")
+
+    val fileGenerator = FileGenerator(types)
     fileGenerator.generate(sourceDir)
 
     // TODO: Check if this class really needed
@@ -62,21 +62,28 @@ fun generateKotlinWrappers(sourceFile: File) {
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
     sourceDir.resolve("yfiles/lang/Struct.kt").delete()
-    */
 }
 
 abstract class JsonWrapper(val source: JSONObject)
 abstract class JDeclaration : JsonWrapper {
+    companion object {
+        fun code(vararg lines: String): String {
+            return lines.joinToString("\n")
+        }
+    }
 
     val id: String by StringDelegate()
     val name: String by StringDelegate()
-    val modifiers: List<String> by StringArrayDelegate()
+    val modifiers: JModifiers by ModifiersDelegate()
 
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
 
     val fqn: String
     val nameOfClass: String
+
+    val classRegistry: ClassRegistry
+        get() = ClassRegistry.instance
 
     constructor(source: JSONObject) : super(source) {
         this.fqn = id
@@ -87,10 +94,18 @@ abstract class JDeclaration : JsonWrapper {
         this.fqn = fqn
         this.nameOfClass = fqn.split(".").last()
     }
+
+    override fun toString(): String {
+        return ""
+        // TODO: uncomment
+        // throw Gradle exception("toString() method must be overridden for object " + this)
+    }
 }
 
 class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
     val namespaces: List<JNamespace> by ArrayDelegate { JNamespace(it) }
+
+    val x = 5.apply { }
 }
 
 class JNamespace(source: JSONObject) : JsonWrapper(source) {
@@ -149,10 +164,10 @@ abstract class JType(source: JSONObject) : JDeclaration(source) {
 }
 
 class JClass(source: JSONObject) : JType(source) {
-    val static = modifiers.contains("static")
-    val final = modifiers.contains("final")
+    val static = modifiers.static
+    val final = modifiers.final
     val open = !final
-    val abstract = modifiers.contains("abstract")
+    val abstract = modifiers.abstract
 
     val modificator = when {
         abstract -> "abstract" // no such cases (JS specific?)
@@ -161,6 +176,14 @@ class JClass(source: JSONObject) : JType(source) {
     }
 
     val constructors: List<JConstructor> by ArrayDelegate { JConstructor(this.fqn, it) }
+}
+
+class JModifiers(flags: List<String>) {
+    val static = flags.contains("static")
+    val final = flags.contains("final")
+    val readOnly = flags.contains("ro")
+    val abstract = flags.contains("abstract")
+    val protected = flags.contains("protected")
 }
 
 class JInterface(source: JSONObject) : JType(source)
@@ -173,21 +196,136 @@ abstract class JTypedDeclaration(fqn: String, source: JSONObject) : JDeclaration
     val type: String by TypeDelegate { TypeParser.parse(it) }
 }
 
-class JConstructor(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
-    val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
+class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
+    val adapter: JConstructor? = null // TODO: implement
+    val protected = modifiers.protected
+
+    val modificator: String = when {
+        protected -> "protected "
+        else -> ""
+    }
+
+    override fun toString(): String {
+        if (generated) {
+            val generic = Hacks.getGenerics(fqn)
+            return code(
+                    "fun $generic $name.Companion.create(${parametersString()}): $name$generic {",
+                    "    return $name(${mapString(parameters)})",
+                    "}"
+            )
+        }
+
+        return "${modificator}constructor(${parametersString()})"
+    }
 }
 
-class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source)
+class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
+    val static = modifiers.static
+}
+
 class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
-    val getterSetter = !modifiers.contains("ro")
+    val static = modifiers.static
+    val getterSetter = !modifiers.readOnly
 
-    val abstract = modifiers.contains("abstract")
+    val abstract = modifiers.abstract
 }
-class JMethod(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
-    val abstract = modifiers.contains("abstract")
 
-    val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
+class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
+    val adapter: JMethod? = null // TODO: implement
+
+    val abstract = modifiers.abstract
+    val static = modifiers.static
+    val protected = modifiers.protected
+
+    val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
     val returns: JReturns? by ReturnsDelegate()
+
+    val generics: String
+        get() = Hacks.getFunctionGenerics(fqn, name) ?: getGenericString(typeparameters)
+
+    private fun modificator(canBeOpen: Boolean = true): String {
+        // TODO: add abstract modificator if needed
+        if (!generated && classRegistry.functionOverriden(fqn, name)) {
+            return "override "
+        }
+
+        val result = when {
+            abstract -> "abstract "
+            canBeOpen && !static && !classRegistry.isFinalClass(fqn) -> "open "
+            else -> ""
+        }
+        return result + when {
+            protected -> "protected "
+            else -> ""
+        }
+    }
+
+    override fun toString(): String {
+        val returnType = returns?.type ?: UNIT
+
+        if (generated) {
+            val instanceName = nameOfClass + if (static) ".Companion" else ""
+            return code(
+                    "${modificator()}fun $generics $instanceName.$name(${parametersString()}): $returnType {",
+                    "    return $name(${mapString(parameters)})",
+                    "}"
+            )
+        }
+
+        val body = if (abstract) "" else " = definedExternally"
+        return "${modificator()}fun $generics$name(${parametersString()}): $returnType$body"
+    }
+}
+
+abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
+    val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
+
+    val generated = false // TODO: realize
+
+    protected fun mapString(parameters: List<JParameter>): String {
+        return "mapOf<String, Any?>(\n" +
+                parameters.map { "\"${it.name}\" to ${it.name}" }.joinToString(",\n") +
+                "\n)\n"
+    }
+
+    protected fun parametersString(useDefaultValue: Boolean = true): String {
+        return parameters
+                .map {
+                    var str = "${it.name}: "
+                    if (it.vararg) {
+                        str = "vararg " + str
+                    }
+                    str += it.type
+                    if (it.optional) {
+                        // TODO: fix compilation hack
+                        val defaultValue = it.defaultValue
+                        if (defaultValue == "null") {
+                            str += "?"
+                        }
+                        if (useDefaultValue) {
+                            str += when {
+                                classRegistry.functionOverriden(fqn, name) -> ""
+                            // generated || classRegistry.isInterface(className) -> " = $defaultValue"
+                                generated -> " = $defaultValue"
+                                else -> " = definedExternally"
+                            }
+                        }
+                    }
+                    str
+                }
+                .joinToString(", ")
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(fqn, name, parametersString(false))
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is JMethodBase
+                && Objects.equals(fqn, other.fqn)
+                && Objects.equals(name, other.name)
+                && Objects.equals(parametersString(false), other.parametersString(false))
+    }
 }
 
 class JParameter(source: JSONObject) : JsonWrapper(source) {
@@ -203,8 +341,11 @@ class JParameter(source: JSONObject) : JsonWrapper(source) {
 
     val name: String by StringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
+    val vararg: Boolean = false // TODO: add reading
     val summary: String by StringDelegate()
     val optional: Boolean by BooleanDelegate()
+
+    val defaultValue: String = "" // TODO: add reading
 }
 
 class JTypeParameter(source: JSONObject) : JsonWrapper(source) {
@@ -237,18 +378,31 @@ class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
 }
 
 class StringArrayDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<String> {
-        val array = thisRef.source.getJSONArray(property.name)
-        val length = array.length()
-        if (length == 0) {
-            return emptyList()
-        }
+    companion object {
+        fun value(thisRef: JsonWrapper, property: KProperty<*>): List<String> {
+            val source = thisRef.source
+            val key = property.name
 
-        val list = mutableListOf<String>()
-        for (i in 0..length - 1) {
-            list.add(array.getString(i))
+            if (!source.has(key)) {
+                return emptyList()
+            }
+
+            val array = source.getJSONArray(key)
+            val length = array.length()
+            if (length == 0) {
+                return emptyList()
+            }
+
+            val list = mutableListOf<String>()
+            for (i in 0..length - 1) {
+                list.add(array.getString(i))
+            }
+            return list.toList()
         }
-        return list.toList()
+    }
+
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<String> {
+        return value(thisRef, property)
     }
 }
 
@@ -288,6 +442,12 @@ class TypeDelegate(private val parse: (String) -> String) {
     }
 }
 
+class ModifiersDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JModifiers {
+        return JModifiers(StringArrayDelegate.value(thisRef, property))
+    }
+}
+
 class ReturnsDelegate {
     operator fun getValue(thisRef: JMethod, property: KProperty<*>): JReturns? {
         val source = thisRef.source
@@ -324,13 +484,14 @@ object Types {
 }
 
 object TypeParser {
-    val FUNCTION_START = "function("
-    val FUNCTION_END = "): "
+    private val FUNCTION_START = "function("
+    private val FUNCTION_END = "):"
+    private val FUNCTION_END_VOID = ")"
 
-    val GENERIC_START = ".<"
-    val GENERIC_END = ">"
+    private val GENERIC_START = "<"
+    private val GENERIC_END = ">"
 
-    val STANDARD_TYPE_MAP = mapOf(
+    private val STANDARD_TYPE_MAP = mapOf(
             "Object" to OBJECT_TYPE,
             "object" to OBJECT_TYPE,
             "boolean" to "Boolean",
@@ -450,7 +611,7 @@ object TypeParser {
         while (true) {
             val indexes = listOf(
                     parameters.indexOf(",", index),
-                    parameters.indexOf(".<", index),
+                    parameters.indexOf("<", index),
                     parameters.indexOf(">", index)
             )
 
@@ -476,8 +637,11 @@ object TypeParser {
     }
 
     fun parseFunctionType(type: String): String {
-        val parameterTypes = StringUtil.between(type, FUNCTION_START, FUNCTION_END).split(",").map({ parseType(it) })
-        val resultType = parseType(StringUtil.from(type, FUNCTION_END))
+        val voidResult = type.endsWith(FUNCTION_END_VOID)
+        val functionEnd = if (voidResult) FUNCTION_END_VOID else FUNCTION_END
+        val parameterTypes = StringUtil.between(type, FUNCTION_START, functionEnd)
+                .split(",").map({ parseType(it) })
+        val resultType = if (voidResult) UNIT else parseType(StringUtil.from(type, FUNCTION_END))
         return "(${parameterTypes.joinToString(", ")}) -> $resultType"
     }
 }
@@ -503,32 +667,6 @@ interface ClassRegistry {
 }
 
 /*
-class Constructor : Function {
-    protected constructor(lines: List<String>, parameters: Parameters, generated: Boolean)
-            : super(lines, parameters, generated)
-
-    constructor(lines: List<String>) : super(lines)
-
-    override fun generateAdapter(parameters: List<Parameter>): Function {
-        return Constructor(lines, Parameters(parameters), true)
-    }
-
-    override fun overridden(): Boolean {
-        return false
-    }
-
-    override fun toString(): String {
-        if (generated) {
-            val generic = Hacks.getGenerics(className)
-            return "fun $generic $name.Companion.create(${parametersString()}): $name$generic {\n" +
-                    "    return $name(${mapString(parameters)})\n" +
-                    "}\n\n"
-        }
-
-        return "    ${modificator(false)}constructor(${parametersString()})"
-    }
-}
-
 class Const(lines: List<String>) {
     val static = lines.contains(STATIC)
     val protected = lines.contains(PROTECTED)
@@ -864,15 +1002,21 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
     }
 }
 
-/*
 class FileGenerator(private val types: List<JType>) {
     fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
 
-        classFileList.forEach { generate(directory, it) }
-        interfaceFileList.forEach { generate(directory, it) }
-        enumFileList.forEach { generate(directory, it) }
+        types.forEach {
+            val generatedFile = when (it) {
+                is JClass -> ClassFile(it)
+                is JInterface -> InterfaceFile(it)
+                is JEnum -> EnumFile(it)
+                else -> throw GradleException("Undefined type for generation: " + it)
+            }
+
+            generate(directory, generatedFile)
+        }
     }
 
     private fun generate(directory: File, generatedFile: GeneratedFile) {
@@ -902,47 +1046,46 @@ class FileGenerator(private val types: List<JType>) {
     }
 
     abstract class GeneratedFile(private val declaration: JType) {
-        val className = declaration.nameOfClass
+        val className = declaration.fqn
         val fqn: FQN = FQN(className)
 
-        val consts: List<Const>
-            get() = items.filterIsInstance(Const::class.java)
+        val consts: List<JField>
+            get() = declaration.fields
                     .sortedBy { it.name }
 
-        val functions: List<Function>
-            get() = items.filterIsInstance(Function::class.java)
-                    .filter { it !is Constructor }
+        val functions: List<JMethod>
+            get() = declaration.methods
                     .sortedBy { it.name }
 
-        val properties: List<Property>
-            get() = items.filterIsInstance(Property::class.java)
+        val properties: List<JProperty>
+            get() = declaration.properties
                     .sortedBy { it.name }
 
-        val staticConsts: List<Const>
+        val staticConsts: List<JField>
             get() = consts.filter { it.static }
 
-        val staticProperties: List<Property>
+        val staticProperties: List<JProperty>
             get() = properties.filter { it.static }
 
-        val staticFunctions: List<Function>
+        val staticFunctions: List<JMethod>
             get() = functions.filter { it.static }
 
-        val staticDeclarations: List<Declaration>
+        val staticDeclarations: List<JDeclaration>
             get() {
-                return mutableListOf<Declaration>()
+                return mutableListOf<JDeclaration>()
                         .union(staticConsts)
                         .union(staticProperties)
                         .union(staticFunctions.toSet())
                         .toList()
             }
 
-        val memberConsts: List<Const>
+        val memberConsts: List<JField>
             get() = consts.filter { !it.static }
 
-        val memberProperties: List<Property>
+        val memberProperties: List<JProperty>
             get() = properties.filter { !it.static }
 
-        val memberFunctions: List<Function>
+        val memberFunctions: List<JMethod>
             get() = functions.filter { !it.static }
 
         val header: String
@@ -977,7 +1120,7 @@ class FileGenerator(private val types: List<JType>) {
                 return when {
                     isStatic() -> ""
                 // TODO: add companion only if needed
-                    else -> "    companion object \n\n"
+                    else -> "    companion object {} \n\n"
                 }
             }
 
@@ -992,16 +1135,16 @@ class FileGenerator(private val types: List<JType>) {
         }
 
         open fun content(): String {
-            return listOf<Declaration>()
+            return listOf<JDeclaration>()
                     .union(memberConsts)
                     .union(memberProperties)
                     .union(memberFunctions)
-                    .union(listOf(getAdditionalContent(declaration.className, declaration.extendedType())))
+                    .union(listOf(getAdditionalContent(declaration.fqn, declaration.extendedType())))
                     .joinToString("\n") + "\n"
         }
     }
 
-    class ClassFile(private val declaration: ClassDec) : GeneratedFile(declaration) {
+    class ClassFile(private val declaration: JClass) : GeneratedFile(declaration) {
         override fun isStatic(): Boolean {
             return declaration.static
         }
@@ -1021,7 +1164,7 @@ class FileGenerator(private val types: List<JType>) {
         }
 
         private fun constructors(): String {
-            val constructorSet = items.filterIsInstance(Constructor::class.java).toSet()
+            val constructorSet = declaration.constructors.toSet()
             return constructorSet.map {
                 it.toString()
             }.joinToString("\n") + "\n"
@@ -1030,16 +1173,15 @@ class FileGenerator(private val types: List<JType>) {
         private fun adapters(): String {
             val constructorAdapters = Hacks.filterConstructorAdapters(
                     className,
-                    items.filterIsInstance(Constructor::class.java)
-                            .mapNotNull { it.adapter as? Constructor }
+                    declaration.constructors.mapNotNull { it.adapter }
             )
 
-            val staticFunctionAdapters = items.filterIsInstance(Function::class.java)
+            val staticFunctionAdapters = declaration.methods
                     .filter { it.static }
                     .mapNotNull { it.adapter }
                     .filterNot { staticFunctions.contains(it) }
 
-            val adapters = mutableListOf<Declaration>()
+            val adapters = mutableListOf<JDeclaration>()
                     .union(constructorAdapters)
                     .union(staticFunctionAdapters)
                     .toList()
@@ -1073,7 +1215,7 @@ class FileGenerator(private val types: List<JType>) {
         }
     }
 
-    class InterfaceFile(declaration: InterfaceDec) : GeneratedFile(declaration) {
+    class InterfaceFile(declaration: JInterface) : GeneratedFile(declaration) {
         override fun content(): String {
             var content = super.content()
             val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
@@ -1093,10 +1235,10 @@ class FileGenerator(private val types: List<JType>) {
         }
     }
 
-    class EnumFile(declaration: EnumDec) : GeneratedFile(declaration) {
+    class EnumFile(private val declaration: JEnum) : GeneratedFile(declaration) {
         override fun content(): String {
-            val values = items.filterIsInstance(EnumValue::class.java)
-                    .map { "    val ${it.name}: ${it.className} = definedExternally" }
+            val values = declaration.fields
+                    .map { "    val ${it.name}: ${it.nameOfClass} = definedExternally" }
                     .joinToString("\n")
             return "external object ${fqn.name}: ${ENUM_TYPE} {\n" +
                     values + "\n\n" +
@@ -1132,7 +1274,6 @@ class FileGenerator(private val types: List<JType>) {
         private val ROUTER_OTHER = "yfiles/router-other"
     }
 }
-*/
 
 object StringUtil {
     fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
