@@ -1,6 +1,5 @@
 import Build_gradle.Hacks.getAdditionalContent
-import Build_gradle.Hacks.isClassParameter
-import Build_gradle.Hacks.validateStaticConstType
+import Build_gradle.Hacks.getParameterType
 import Build_gradle.TypeParser.getGenericString
 import Build_gradle.TypeParser.parseType
 import Build_gradle.Types.BEND_TYPE
@@ -44,8 +43,6 @@ fun generateKotlinWrappers(sourceFile: File) {
     val types = JAPIRoot(source)
             .namespaces.first { it.id == "yfiles" }
             .namespaces.flatMap { it.types }
-
-    // types.removeIf { Hacks.redundantDeclaration(it) }
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
@@ -127,8 +124,8 @@ class JNamespace(source: JSONObject) : JsonWrapper(source) {
 abstract class JType(source: JSONObject) : JDeclaration(source) {
     val fields: List<JField> by ArrayDelegate { JField(this.fqn, it) }
     val properties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
-    val methods: List<JMethod> by ArrayDelegate { JMethod(this.fqn, it) }
-    val staticMethods: List<JMethod> by ArrayDelegate { JMethod(this.fqn, it) }
+    val methods: List<JMethod> by ArrayDelegate({ JMethod(this.fqn, it) }, { !Hacks.redundantMethod(it) })
+    val staticMethods: List<JMethod> by ArrayDelegate({ JMethod(this.fqn, it) }, { !Hacks.redundantMethod(it) })
 
     val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
 
@@ -274,24 +271,24 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 }
 
 abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
-    val parameters: List<JParameter> by ArrayDelegate { JParameter(it) }
+    val parameters: List<JParameter> by ArrayDelegate({ JParameter(this, it) }, { !it.artificial })
 
     val generated = false // TODO: realize
 
     protected fun mapString(parameters: List<JParameter>): String {
         return "mapOf<String, Any?>(\n" +
-                parameters.map { "\"${it.name}\" to ${it.name}" }.joinToString(",\n") +
+                parameters.map { "\"${it.getCorrectedName()}\" to ${it.getCorrectedName()}" }.joinToString(",\n") +
                 "\n)\n"
     }
 
     protected fun parametersString(useDefaultValue: Boolean = true): String {
         return parameters
                 .map {
-                    var str = "${it.name}: "
+                    var str = "${it.getCorrectedName()}: "
                     if (it.vararg) {
                         str = "vararg " + str
                     }
-                    str += it.type
+                    str += getParameterType(this, it) ?: it.type
                     if (it.optional) {
                         // TODO: fix compilation hack
                         val defaultValue = it.defaultValue
@@ -324,7 +321,7 @@ abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, 
     }
 }
 
-class JParameter(source: JSONObject) : JsonWrapper(source) {
+class JParameter(private val method: JMethodBase, source: JSONObject) : JsonWrapper(source) {
     companion object {
         fun create(name: String, type: String): JParameter {
             TODO()
@@ -335,13 +332,18 @@ class JParameter(source: JSONObject) : JsonWrapper(source) {
         }
     }
 
-    val name: String by StringDelegate()
+    private val name: String by StringDelegate()
+    val artificial: Boolean by BooleanDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
     val vararg: Boolean = false // TODO: add reading
     val summary: String by StringDelegate()
     val optional: Boolean by BooleanDelegate()
 
     val defaultValue: String = "" // TODO: add reading
+
+    fun getCorrectedName(): String {
+        return Hacks.fixParameterName(method, name) ?: name
+    }
 }
 
 class JTypeParameter(source: JSONObject) : JsonWrapper(source) {
@@ -350,7 +352,18 @@ class JTypeParameter(source: JSONObject) : JsonWrapper(source) {
 
 class JReturns(val type: String, source: JSONObject) : JsonWrapper(source)
 
-class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
+class ArrayDelegate<T> {
+
+    private val transform: (JSONObject) -> T
+    private val filter: (T) -> Boolean
+
+    constructor(transform: (JSONObject) -> T) : this(transform, { true })
+
+    constructor(transform: (JSONObject) -> T, filter: (T) -> Boolean) {
+        this.transform = transform
+        this.filter = filter
+    }
+
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
         val source = thisRef.source
         val key = property.name
@@ -367,7 +380,10 @@ class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
 
         val list = mutableListOf<T>()
         for (i in 0..length - 1) {
-            list.add(transform(array.getJSONObject(i)))
+            val item = transform(array.getJSONObject(i))
+            if (filter(item)) {
+                list.add(item)
+            }
         }
         return list.toList()
     }
@@ -449,14 +465,10 @@ class ReturnsDelegate {
         val source = thisRef.source
         val key = property.name
 
-        val hackedType = Hacks.getReturnType(thisRef.fqn, thisRef.name)
-        if (hackedType != null) {
-            return JReturns(hackedType, source)
-        }
-
         return if (source.has(key)) {
             val data = source.getJSONObject(key)
-            val type = TypeParser.parse(data.getString("type"))
+            var type = TypeParser.parse(data.getString("type"))
+            type = Hacks.getReturnType(thisRef, type) ?: type
             JReturns(type, data)
         } else {
             null
@@ -1334,11 +1346,7 @@ object Hacks {
     val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
     fun redundantMethod(method: JMethod): Boolean {
-        if (method.fqn == OBJECT_TYPE) {
-            return method.name in SYSTEM_FUNCTIONS
-        }
-
-        return false
+        return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
     fun parseParamLine(line: String, function: String): JParameter? {
@@ -1410,19 +1418,58 @@ object Hacks {
         }
     }
 
-    fun getReturnType(className: String, name: String): String? {
-        return when {
-            className == "yfiles.algorithms.EdgeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
-            className == "yfiles.algorithms.NodeList" && name == "getEnumerator" -> "yfiles.collections.IEnumerator<yfiles.lang.Object>"
+    val LAYOUT_GRAPH_CLASSES = listOf(
+            "yfiles.layout.CopiedLayoutGraph",
+            "yfiles.layout.DefaultLayoutGraph",
+            "yfiles.layout.LayoutGraph"
+    )
 
-            className == "yfiles.input.ConstrainedReshapeHandler" && name == "handleReshape" -> UNIT
-            className == "yfiles.input.ConstrainedDragHandler" && name == "handleMove" -> UNIT
-            className == "yfiles.geometry.MutableSize" && name == "MutableSize" -> ""
-        // TODO: check (in official doc no return type)
-            className == "yfiles.geometry.OrientedRectangle" && name == "moveBy" -> "Boolean"
-            else -> null
+    fun getReturnType(method: JMethod, type: String): String? {
+        val className = method.fqn
+        val methodName = method.name
+
+        when {
+            className == "yfiles.algorithms.EdgeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<$OBJECT_TYPE>"
+            className == "yfiles.algorithms.NodeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<$OBJECT_TYPE>"
         }
+
+        if (type != "Array") {
+            return null
+        }
+
+        val generic = when {
+            className == "yfiles.collections.List" && methodName == "toArray" -> "T"
+            className == "yfiles.algorithms.Dendrogram" && methodName == "getClusterNodes" -> "yfiles.algorithms.NodeList"
+            className == "yfiles.algorithms.EdgeList" && methodName == "toEdgeArray" -> "yfiles.algorithms.Edge"
+            className == "yfiles.algorithms.Graph" && methodName == "getEdgeArray" -> "yfiles.algorithms.Edge"
+            className == "yfiles.algorithms.Graph" && methodName == "getNodeArray" -> "yfiles.algorithms.Node"
+            className == "yfiles.algorithms.NodeList" && methodName == "toNodeArray" -> "yfiles.algorithms.Node"
+            className == "yfiles.algorithms.PlanarEmbedding" && methodName == "getDarts" -> "yfiles.algorithms.Dart"
+            className == "yfiles.algorithms.YList" && methodName == "toArray" -> OBJECT_TYPE
+            className == "yfiles.algorithms.YPointPath" && methodName == "toArray" -> "yfiles.algorithms.YPoint"
+            className == "yfiles.collections.IEnumerable" && methodName == "toArray" -> "T"
+            className == "yfiles.lang.Class" && methodName == "getAttributes" -> "yfiles.lang.Attribute"
+            className == "yfiles.lang.Class" && methodName == "getProperties" -> "yfiles.lang.PropertyInfo"
+            className == "yfiles.lang.PropertyInfo" && methodName == "getAttributes" -> "yfiles.lang.Attribute"
+            className in LAYOUT_GRAPH_CLASSES && methodName == "getLabelLayout" -> {
+                when (method.parameters.first().getCorrectedName()) {
+                    "node" -> "yfiles.algorithms.Node"
+                    "edge" -> "yfiles.algorithms.Edge"
+                    else -> null // TODO: throw error
+                }
+            }
+            className == "yfiles.layout.LayoutGraphAdapter" && methodName == "getEdgeLabelLayout" -> "yfiles.layout.IEdgeLabelLayout"
+            className == "yfiles.layout.LayoutGraphAdapter" && methodName == "getNodeLabelLayout" -> "yfiles.layout.INodeLabelLayout"
+            className == "yfiles.layout.TableLayoutConfigurator" && methodName == "getColumnLayout" -> "Number"
+            className == "yfiles.layout.TableLayoutConfigurator" && methodName == "getRowLayout" -> "Number"
+            className == "yfiles.router.EdgeInfo" && methodName == "calculateLineSegments" -> "yfiles.algorithms.LineSegment"
+            className == "yfiles.tree.TreeLayout" && methodName == "getRootsArray" -> "yfiles.algorithms.Node"
+            else -> throw GradleException("Unable find array generic for className: '$className' and method: '$methodName'")
+        }
+
+        return "Array<$generic>"
     }
+
 
     fun ignoreExtendedType(className: String): Boolean {
         return when (className) {
@@ -1437,6 +1484,32 @@ object Hacks {
             "yfiles.algorithms.NodeList" -> emptyList()
             else -> null
         }
+    }
+
+    fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
+        if (parameter.type != "Array") {
+            return null
+        }
+
+        val className = method.fqn
+        val parameterName = parameter.getCorrectedName()
+
+        var generic = "Any"
+        if (method is JConstructor) {
+            when {
+                className == "yfiles.algorithms.YList" && parameterName == "array" -> generic = OBJECT_TYPE
+            }
+        }
+
+        if (method is JMethod) {
+            val methodName = method.name
+
+            when {
+
+            }
+        }
+
+        return "Array<$generic>"
     }
 
     val CLONE_REQUIRED = listOf(
@@ -1478,42 +1551,15 @@ object Hacks {
     private val CLONE_OVERRIDE = "override fun clone(): $OBJECT_TYPE = definedExternally"
 
     fun getAdditionalContent(className: String, baseClassName: String?): String {
-
         return when {
-            baseClassName == "yfiles.layout.LayoutData"
-            -> "override fun apply(layoutGraphAdapter: yfiles.layout.LayoutGraphAdapter, layout: yfiles.layout.ILayoutAlgorithm, layoutGraph: yfiles.layout.CopiedLayoutGraph): Unit = definedExternally"
-
             className == "yfiles.algorithms.YList"
-            -> lines("override val isReadOnly: Boolean",
-                    "    get() = definedExternally",
+            -> lines("// override val isReadOnly: Boolean",
+                    "//    get() = definedExternally",
                     "override fun add(item: $OBJECT_TYPE) = definedExternally")
+
 
             className in CLONE_REQUIRED
             -> CLONE_OVERRIDE
-
-            baseClassName == "yfiles.tree.RotatableNodePlacerBase"
-            -> lines("override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally",
-                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.RotatedSubtreeShape = definedExternally")
-
-            baseClassName == "yfiles.tree.NodePlacerBase"
-            -> lines("override fun determineChildConnector(child: yfiles.algorithms.Node): yfiles.tree.ParentConnectorDirection = definedExternally",
-                    "override fun placeSubtreeOfNode(localRoot: yfiles.algorithms.Node, parentConnectorDirection: yfiles.tree.ParentConnectorDirection): yfiles.tree.SubtreeShape = definedExternally")
-
-            baseClassName == "yfiles.layout.MultiStageLayout"
-            -> "override fun applyLayoutCore(graph: yfiles.layout.LayoutGraph): Unit = definedExternally"
-
-            baseClassName == "yfiles.view.ModelManager<T>"
-            -> lines("override fun getCanvasObjectGroup(item: T): ICanvasObjectGroup = definedExternally",
-                    "override fun getInstaller(item: T): ICanvasObjectInstaller = definedExternally",
-                    "override fun onDisabled() = definedExternally",
-                    "override fun onEnabled() = definedExternally")
-
-            baseClassName == "yfiles.view.EdgeDecorationInstaller"
-            -> lines("override fun getBendDrawing(canvas: CanvasComponent, edge: yfiles.graph.IEdge): IVisualTemplate = definedExternally",
-                    "override fun getStroke(canvas: CanvasComponent, edge: yfiles.graph.IEdge): Stroke = definedExternally")
-
-            className == "yfiles.view.ColorExtension"
-            -> "override fun provideValue(serviceProvider: yfiles.graph.ILookup): $OBJECT_TYPE = definedExternally"
 
             className == "yfiles.graph.CompositeUndoUnit"
             -> lines("override fun tryMergeUnit(unit: IUndoUnit): Boolean = definedExternally",
@@ -1524,9 +1570,6 @@ object Hacks {
                     "override fun getParameters(label: ILabel, model: ILabelModel): yfiles.collections.IEnumerable<ILabelModelParameter> = definedExternally",
                     "override fun getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle = definedExternally")
 
-            baseClassName == "yfiles.graph.FoldingLabelOwnerState"
-            -> "override fun addLabel(text: String, layoutParameter: ILabelModelParameter, style: yfiles.styles.ILabelStyle, preferredSize: yfiles.geometry.Size, tag: $OBJECT_TYPE): FoldingLabelState = definedExternally"
-
             className == "yfiles.graph.FreeLabelModel"
             -> "override fun findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter = definedExternally"
 
@@ -1536,46 +1579,17 @@ object Hacks {
                     "override fun convert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): yfiles.graphml.MarkupExtension = definedExternally",
                     "override fun getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle = definedExternally")
 
-            className == "yfiles.graphml.MapperOutputHandler"
-            -> lines("override fun getValue(context: IWriteContext, key: TKey): TData = definedExternally",
-                    "override fun writeValueCore(context: IWriteContext, data: TData) = definedExternally")
-
-            className == "yfiles.graphml.MapperInputHandler"
-            -> lines("override fun parseDataCore(context: IParseContext, node: org.w3c.dom.Node): TData = definedExternally",
-                    "override fun setValue(context: IParseContext, key: TKey, data: TData) = definedExternally")
-
             className == "yfiles.graph.GenericPortLocationModel"
             -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): Boolean = definedExternally",
                     "override fun convert(context: yfiles.graphml.IWriteContext, value: $OBJECT_TYPE): yfiles.graphml.MarkupExtension = definedExternally",
                     "override fun getEnumerator(): yfiles.collections.IEnumerator<IPortLocationModelParameter> = definedExternally")
 
-            baseClassName == "yfiles.layout.LayoutGraph"
-            -> lines("override fun createLabelFactory(): ILabelLayoutFactory = definedExternally",
-                    "override fun getLabelLayout(node: yfiles.algorithms.Node): Array<INodeLabelLayout> = definedExternally",
-                    "override fun getLabelLayout(edge: yfiles.algorithms.Edge): Array<IEdgeLabelLayout> = definedExternally",
-                    "override fun getLayout(node: yfiles.algorithms.Node): INodeLayout = definedExternally",
-                    "override fun getLayout(edge: yfiles.algorithms.Edge): IEdgeLayout = definedExternally",
-                    "override fun getOwnerEdge(labelLayout: IEdgeLabelLayout): yfiles.algorithms.Edge = definedExternally",
-                    "override fun getOwnerNode(labelLayout: INodeLabelLayout): yfiles.algorithms.Node = definedExternally")
-
-            className == "yfiles.hierarchic.PortCandidateOptimizer"
-            -> "override fun optimizeAfterSequencingForSingleNode(node: yfiles.algorithms.Node, inEdgeOrder: yfiles.collections.IComparer<$OBJECT_TYPE>, outEdgeOrder: yfiles.collections.IComparer<$OBJECT_TYPE>, graph: yfiles.layout.LayoutGraph, ldp: ILayoutDataProvider, itemFactory: IItemFactory) = definedExternally"
-
-            baseClassName != null && baseClassName.startsWith("yfiles.input.ConstrainedDragHandler<")
-            -> "override fun constrainNewLocation(context: IInputModeContext, originalLocation: yfiles.geometry.Point, newLocation: yfiles.geometry.Point): yfiles.geometry.Point = definedExternally"
-
             className == "yfiles.input.PortRelocationHandleProvider"
             -> "override fun getHandle(context: IInputModeContext, edge: yfiles.graph.IEdge, sourceHandle: Boolean): IHandle = definedExternally"
 
-            baseClassName != null && baseClassName.startsWith("yfiles.styles.PathBasedEdgeStyleRenderer<")
-            -> lines("override fun createPath(): yfiles.geometry.GeneralPath = definedExternally",
-                    "override fun getSourceArrow(): IArrow = definedExternally",
-                    "override fun getStroke(): yfiles.view.Stroke = definedExternally",
-                    "override fun getTargetArrow(): IArrow = definedExternally")
-
             className == "yfiles.styles.Arrow"
-            -> lines("override val length: Number",
-                    "    get() = definedExternally",
+            -> lines("// override val length: Number",
+                    "//    get() = definedExternally",
                     "override fun getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider = definedExternally",
                     "override fun getVisualCreator(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point): yfiles.view.IVisualCreator = definedExternally",
                     CLONE_OVERRIDE)
@@ -1619,6 +1633,11 @@ object Hacks {
 
             ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
 
+            ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
+            ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",
+            ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedNode") to "node",
+            ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedEdge") to "edge",
+
             ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
             ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
             ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "label") to "labelLayout",
@@ -1653,6 +1672,7 @@ object Hacks {
             ParameterData("yfiles.graphml.GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
             ParameterData("yfiles.graphml.GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
+            ParameterData("yfiles.layout.LayoutData", "apply", "layoutGraphAdapter") to "adapter",
             ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
 
             ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
@@ -1662,8 +1682,8 @@ object Hacks {
             ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
-    fun fixParameterName(className: String, functionName: String, parameterName: String): String {
-        return PARAMETERS_CORRECTION[ParameterData(className, functionName, parameterName)] ?: parameterName
+    fun fixParameterName(method: JMethodBase, parameterName: String): String? {
+        return PARAMETERS_CORRECTION[ParameterData(method.fqn, method.name, parameterName)]
     }
 
     private data class ParameterData(val className: String, val functionName: String, val parameterName: String)
