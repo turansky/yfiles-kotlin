@@ -1222,7 +1222,7 @@ object Hacks {
             className == "yfiles.router.EdgeInfo" && methodName == "calculateLineSegments" -> "yfiles.algorithms.LineSegment"
             className == "yfiles.tree.TreeLayout" && methodName == "getRootsArray" -> "yfiles.algorithms.Node"
 
-            className == "yfiles.algorithms.Bfs" && methodName == "getLayers" -> ""
+            className == "yfiles.algorithms.Bfs" && methodName == "getLayers" -> "yfiles.algorithms.NodeList"
             className == "yfiles.algorithms.Cursors" && methodName == "toArray" -> OBJECT_TYPE
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "biconnectedComponents" -> ""
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "connectedComponents" -> ""
@@ -1242,7 +1242,7 @@ object Hacks {
             className == "yfiles.algorithms.Trees" && methodName == "getUndirectedTreeNodes" -> ""
             className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPoints" -> ""
             className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPointsInDouble" -> ""
-            className == "yfiles.lang.delegate" && methodName == "getInvocationList" -> ""
+            className == "yfiles.lang.delegate" && methodName == "getInvocationList" -> "yfiles.lang.delegate"
             className == "yfiles.router.BusRepresentations" && methodName == "toEdgeLists" -> ""
 
             else -> throw GradleException("Unable find array generic for className: '$className' and method: '$methodName'")
@@ -1359,8 +1359,9 @@ object Hacks {
             ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "",
             ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to "",
-            ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "",
-            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to "",
+
+            ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "yfiles.lang.delegate",
+            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
 
             ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "bbox") to "yfiles.algorithms.YRectangle",
             ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "boxes") to "yfiles.algorithms.Rectangle2D",
