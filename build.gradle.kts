@@ -67,7 +67,7 @@ abstract class JDeclaration : JsonWrapper {
 
     val id: String by StringDelegate()
     val name: String by StringDelegate()
-    val modifiers: JModifiers by ModifiersDelegate()
+    protected val modifiers: JModifiers by ModifiersDelegate()
 
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
@@ -336,7 +336,7 @@ class JParameter(private val method: JMethodBase, source: JSONObject) : JsonWrap
     val artificial: Boolean by BooleanDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
     val vararg: Boolean = false // TODO: add reading
-    val summary: String by StringDelegate()
+    val summary: String? by NullableStringDelegate()
     val optional: Boolean by BooleanDelegate()
 
     val defaultValue: String = "" // TODO: add reading
@@ -560,35 +560,6 @@ object TypeParser {
         return if (parameters.isEmpty()) "" else "<${parameters.map { it.name }.joinToString(", ")}> "
     }
 
-    fun parseParamLine(line: String, function: String): JParameter {
-        Hacks.parseParamLine(line, function).apply {
-            if (this != null) {
-                return this
-            }
-        }
-
-        var name = StringUtil.from2(line, "} ").split(" ").get(0)
-        var defaultValue: String? = null
-        if (name.startsWith("[")) {
-            val data = StringUtil.hardBetween(name, "[", "]").split("=")
-            name = data[0]
-            defaultValue = data[1]
-        }
-        var rawType = StringUtil.between(line, " {", "} ", true)
-        val vararg = rawType.startsWith("...")
-        if (vararg) {
-            rawType = rawType.substring(3)
-        }
-        val type = if (rawType.startsWith(FUNCTION_START)) {
-            val parameterTypes = StringUtil.between(rawType, FUNCTION_START, FUNCTION_END).split(", ").map { parseType(it) }
-            val resultType = parseType(StringUtil.from(rawType, FUNCTION_END))
-            "(${parameterTypes.joinToString(", ")}) -> $resultType"
-        } else {
-            parseType(rawType)
-        }
-        return JParameter.create(name, type, defaultValue, vararg)
-    }
-
     fun parseGenericParameters(parameters: String): List<String> {
         // TODO: temp hack for generic, logic check required
         if (!parameters.contains(GENERIC_START)) {
@@ -746,182 +717,6 @@ class Property(lines: List<String>) {
         return str
     }
 }
-
-open class Function {
-    companion object {
-        val START = "function("
-        val END = "){};"
-
-        private fun calculateParameters(lines: List<String>): Parameters {
-            val value = data.value
-            val parameterNames = StringUtil.hardBetween(value, START, END).split(",").map { it.trim() }.filter { it.isNotEmpty() }
-            if (parameterNames.isEmpty()) {
-                return Parameters(emptyList())
-            }
-
-            val parametersMap = lines.filter { it.startsWith(PARAM) }.map { parseParamLine(it, data.name) }.associate { Pair(it.name, it) }
-
-            if (parametersMap.keys.any { it.contains(".") }) {
-                if (parameterNames.size != 1) {
-                    throw GradleException("Options parameter available only if parameter is single.")
-                }
-
-                val parameterName = parameterNames[0]
-                val parameter = parametersMap[parameterName]
-                if (parameter?.type != OBJECT_TYPE) {
-                    throw GradleException("Options parameter must have type $OBJECT_TYPE.")
-                }
-
-                val generatedParameters = parametersMap.values
-                        .filter { it.name != parameterName }
-                        .map {
-                            val name = it.name.split(".")[1]
-                            Parameter(name, it.type, it.defaultValue, it.vararg)
-                        }
-
-                return Parameters(listOf(Parameter(parameterName, "kotlin.collections.Map<String, Any?>", parameter.defaultValue)), generatedParameters)
-            }
-
-            val parameters = parameterNames.map { name ->
-                val parameter = parametersMap.get(name)
-                when {
-                    parameter != null -> parameter
-                    isClassParameter(name) -> Parameter(name, CLASS_TYPE)
-                    else -> throw GradleException("No type info about parameter '$name' in function\n'${data.name}'")
-                }
-            }
-
-            return Parameters(parameters)
-        }
-    }
-
-    val adapter: Function?
-
-    val static: Boolean
-    val protected: Boolean
-    val abstract: Boolean
-    protected val lines: List<String>
-    protected val parameters: List<Parameter>
-    protected val generated: Boolean
-
-    private val returnType: String
-    private val generics: String
-
-    protected constructor(lines: List<String>, parameters: Parameters, generated: Boolean) : super() {
-        this.static = lines.contains(STATIC)
-        this.protected = lines.contains(PROTECTED)
-        this.abstract = lines.contains(ABSTRACT)
-        this.lines = lines
-        this.parameters = parameters.items.map {
-            val newName = Hacks.fixParameterName(className, name, it.name)
-            if (newName == it.name) it else Parameter(newName, it.type, it.defaultValue, it.vararg)
-        }
-        this.generated = generated
-
-        this.generics = Hacks.getFunctionGenerics(className, name) ?: getGenericString(lines)
-        this.returnType = getReturnType(lines, className, name)
-
-        adapter = if (parameters.generatedItems != null) {
-            generateAdapter(parameters.generatedItems)
-        } else {
-            null
-        }
-    }
-
-    constructor(lines: List<String>) : this(lines, calculateParameters(lines), false)
-
-    open fun generateAdapter(parameters: List<Parameter>): Function {
-        return Function(lines, Parameters(parameters), true)
-    }
-
-    protected fun mapString(parameters: List<Parameter>): String {
-        return "mapOf<String, Any?>(\n" +
-                parameters.map { "\"${it.name}\" to ${it.name}" }.joinToString(",\n") +
-                "\n)\n"
-    }
-
-    protected fun parametersString(useDefaultValue: Boolean = true): String {
-        return parameters
-                .map {
-                    var str = "${it.name}: "
-                    if (it.vararg) {
-                        str = "vararg " + str
-                    }
-                    str += it.type
-                    val defaultValue = it.defaultValue
-                    if (defaultValue != null) {
-                        // TODO: fix compilation hack
-                        if (defaultValue == "null") {
-                            str += "?"
-                        }
-                        if (useDefaultValue) {
-                            str += when {
-                                _classRegistry?.functionOverriden(className, name) ?: false -> ""
-                            // generated || classRegistry.isInterface(className) -> " = $defaultValue"
-                                generated -> " = $defaultValue"
-                                else -> " = definedExternally"
-                            }
-                        }
-                    }
-                    str
-                }
-                .joinToString(", ")
-    }
-
-    open protected fun overridden(): Boolean {
-        if (generated) {
-            return false
-        }
-
-        return classRegistry.functionOverriden(className, name)
-    }
-
-    protected fun modificator(canBeOpen: Boolean = true): String {
-        // TODO: add abstract modificator if needed
-        if (overridden()) {
-            return "override "
-        }
-
-        val result = when {
-            abstract -> "abstract "
-            canBeOpen && !static && !classRegistry.isFinalClass(className) -> "open "
-            else -> ""
-        }
-        return result + when {
-            protected -> "protected "
-            else -> ""
-        }
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(className, name, parametersString(false))
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is Function
-                && Objects.equals(className, other.className)
-                && Objects.equals(name, other.name)
-                && Objects.equals(parametersString(false), other.parametersString(false))
-    }
-
-    override fun toString(): String {
-        if (generated) {
-            val instanceName = shortClassName + if (static) ".Companion" else ""
-            return "${modificator()}fun $generics $instanceName.$name(${parametersString()}): $returnType {\n" +
-                    "    return $name(${mapString(parameters)})\n" +
-                    "}\n\n"
-        }
-
-        val body = if (abstract) "" else " = definedExternally"
-        return "    ${modificator()}fun $generics$name(${parametersString()}): $returnType$body"
-    }
-}
-
-class EnumValue(private val lines: List<String>)
-
-class Parameters(val items: List<Parameter>, val generatedItems: List<Parameter>? = null)
-
-data class Parameter(val name: String, val type: String, val defaultValue: String? = null, val vararg: Boolean = false)
 */
 
 class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
@@ -1061,10 +856,6 @@ class FileGenerator(private val types: List<JType>) {
             get() = declaration.fields
                     .sortedBy { it.name }
 
-        val functions: List<JMethod>
-            get() = declaration.methods
-                    .sortedBy { it.name }
-
         val properties: List<JProperty>
             get() = declaration.properties
                     .sortedBy { it.name }
@@ -1076,7 +867,8 @@ class FileGenerator(private val types: List<JType>) {
             get() = properties.filter { it.static }
 
         val staticFunctions: List<JMethod>
-            get() = functions.filter { it.static }
+            get() = declaration.staticMethods
+                    .sortedBy { it.name }
 
         val staticDeclarations: List<JDeclaration>
             get() {
@@ -1094,7 +886,8 @@ class FileGenerator(private val types: List<JType>) {
             get() = properties.filter { !it.static }
 
         val memberFunctions: List<JMethod>
-            get() = functions.filter { !it.static }
+            get() = declaration.methods
+                    .sortedBy { it.name }
 
         val header: String
             get() = "package ${fqn.packageName}\n"
@@ -1147,7 +940,7 @@ class FileGenerator(private val types: List<JType>) {
                     .union(memberConsts)
                     .union(memberProperties)
                     .union(memberFunctions)
-                    .union(listOf(getAdditionalContent(declaration.fqn, declaration.extendedType())))
+                    .union(listOf(getAdditionalContent(declaration.fqn)))
                     .joinToString("\n") + "\n"
         }
     }
@@ -1184,8 +977,7 @@ class FileGenerator(private val types: List<JType>) {
                     declaration.constructors.mapNotNull { it.adapter }
             )
 
-            val staticFunctionAdapters = declaration.methods
-                    .filter { it.static }
+            val staticFunctionAdapters = declaration.staticMethods
                     .mapNotNull { it.adapter }
                     .filterNot { staticFunctions.contains(it) }
 
@@ -1349,41 +1141,6 @@ object Hacks {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
-    fun parseParamLine(line: String, function: String): JParameter? {
-        if (line.startsWith("@param value")) {
-            return when (function) {
-                "yfiles.collections.IList.prototype.set" -> JParameter.create("value", "T")
-                "yfiles.collections.IMapper.prototype.set" -> JParameter.create("value", "V")
-                "yfiles.graphml.CreationProperties.prototype.set" -> JParameter.create("value", OBJECT_TYPE)
-                "yfiles.algorithms.YList.prototype.set" -> JParameter.create("value", OBJECT_TYPE)
-                "yfiles.collections.IMap.prototype.set" -> JParameter.create("value", "TValue")
-                else -> throw GradleException("No hacked parameter value for function $function")
-            }
-        }
-
-        if (line.startsWith("@param options.")) {
-            val name = line.split(" ")[1]
-
-            return when {
-                function == "yfiles.collections.Map" && name == "options.entries" -> JParameter.create(name, "Array<MapEntry<TKey, TValue>>")
-                function == "yfiles.collections.List" && name == "options.items" -> JParameter.create(name, "Array<T>")
-                function == "yfiles.view.LinearGradient" || function == "yfiles.view.RadialGradient"
-                        && name == "options.gradientStops" -> JParameter.create(name, "Array<yfiles.view.GradientStop>")
-                function == "yfiles.graph.IGraph.prototype.createGroupNode" && name == "options.children" -> JParameter.create(name, "Array<$NODE_TYPE>")
-                function == "yfiles.graph.ITable.prototype.createChildRow" && name == "options.childRows" -> JParameter.create(name, "Array<$ROW_TYPE>")
-                function == "yfiles.graph.ITable.prototype.createChildColumn" && name == "options.childColumns" -> JParameter.create(name, "Array<$COLUMN_TYPE>")
-                name == "options.nodes" -> JParameter.create(name, NODE_TYPE)
-                name == "options.edges" -> JParameter.create(name, EDGE_TYPE)
-                name == "options.ports" -> JParameter.create(name, PORT_TYPE)
-                name == "options.labels" -> JParameter.create(name, LABEL_TYPE)
-                name == "options.bends" -> JParameter.create(name, BEND_TYPE)
-                else -> throw GradleException("No hacked parameter '$name' for function $function")
-            }
-        }
-
-        return null
-    }
-
     fun validateStaticConstType(type: String): String {
         // TODO: Check. Quick fix for generics in constants
         // One case - IListEnumerable.EMPTY
@@ -1464,6 +1221,30 @@ object Hacks {
             className == "yfiles.layout.TableLayoutConfigurator" && methodName == "getRowLayout" -> "Number"
             className == "yfiles.router.EdgeInfo" && methodName == "calculateLineSegments" -> "yfiles.algorithms.LineSegment"
             className == "yfiles.tree.TreeLayout" && methodName == "getRootsArray" -> "yfiles.algorithms.Node"
+
+            className == "yfiles.algorithms.Bfs" && methodName == "getLayers" -> ""
+            className == "yfiles.algorithms.Cursors" && methodName == "toArray" -> ""
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "biconnectedComponents" -> ""
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "connectedComponents" -> ""
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "stronglyConnectedComponents" -> ""
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toEdgeListArray" -> ""
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toNodeListArray" -> ""
+            className == "yfiles.algorithms.IndependentSets" && methodName == "getIndependentSets" -> ""
+            className == "yfiles.algorithms.Paths" && methodName == "findAllChains" -> ""
+            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> ""
+            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> ""
+            className == "yfiles.algorithms.ShortestPaths" && methodName == "shortestPair" -> ""
+            className == "yfiles.algorithms.ShortestPaths" && methodName == "uniformCost" -> ""
+            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByDegree" -> ""
+            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByIntKey" -> ""
+            className == "yfiles.algorithms.Trees" && methodName == "getTreeEdges" -> ""
+            className == "yfiles.algorithms.Trees" && methodName == "getTreeNodes" -> ""
+            className == "yfiles.algorithms.Trees" && methodName == "getUndirectedTreeNodes" -> ""
+            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPoints" -> ""
+            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPointsInDouble" -> ""
+            className == "yfiles.lang.delegate" && methodName == "getInvocationList" -> ""
+            className == "yfiles.router.BusRepresentations" && methodName == "toEdgeLists" -> ""
+
             else -> throw GradleException("Unable find array generic for className: '$className' and method: '$methodName'")
         }
 
@@ -1486,29 +1267,134 @@ object Hacks {
         }
     }
 
+    private val ARRAY_GENERIC_CORRECTION = mapOf(
+            ParameterData("yfiles.algorithms.Cursors", "toArray", "dest") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProvider", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "boolData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "doubleData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "intData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "objectData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForBoolean", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForInt", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForNumber", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProvider", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderForBoolean", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderForInt", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderForNumber", "data") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "boolData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "doubleData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "intData") to "",
+            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "objectData") to "",
+            ParameterData("yfiles.algorithms.EdgeList", "constructor", "a") to "",
+            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "forbidden") to "",
+            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "reached") to "",
+            ParameterData("yfiles.algorithms.Groups", "kMeansClustering", "centroids") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMap", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForBoolean", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForInt", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForNumber", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "boolData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "doubleData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "intData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "objectData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMap", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapForBoolean", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapForInt", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapForNumber", "data") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "boolData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "doubleData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "intData") to "",
+            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "objectData") to "",
+            ParameterData("yfiles.algorithms.NodeList", "constructor", "a") to "",
+            ParameterData("yfiles.algorithms.NodeOrders", "dfsCompletion", "order") to "",
+            ParameterData("yfiles.algorithms.NodeOrders", "st", "stOrder") to "",
+            ParameterData("yfiles.algorithms.NodeOrders", "toNodeList", "order") to "",
+            ParameterData("yfiles.algorithms.NodeOrders", "toNodeMap", "order") to "",
+            ParameterData("yfiles.algorithms.NodeOrders", "topological", "order") to "",
+            ParameterData("yfiles.algorithms.RankAssignments", "simple", "minLength") to "",
+            ParameterData("yfiles.algorithms.RankAssignments", "simple", "rank") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "cost") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "dist") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "allPairs", "cost") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "allPairs", "dist") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "bellmanFord", "cost") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "bellmanFord", "dist") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "bellmanFord", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "constructEdgePath", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "constructNodePath", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "dijkstra", "cost") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "dijkstra", "dist") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "dijkstra", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "singleSource", "cost") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "singleSource", "dist") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "singleSource", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "singleSourceSingleSink", "cost") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "singleSourceSingleSink", "pred") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "uniform", "dist") to "",
+            ParameterData("yfiles.algorithms.ShortestPaths", "uniform", "pred") to "",
+            ParameterData("yfiles.algorithms.Trees", "getTreeEdges", "treeNodes") to "",
+            ParameterData("yfiles.algorithms.YList", "constructor", "a") to "",
+            ParameterData("yfiles.algorithms.YList", "copyTo", "array") to "",
+            ParameterData("yfiles.algorithms.YPointPath", "constructor", "path") to "",
+            ParameterData("yfiles.collections.ICollection", "copyTo", "array") to "",
+            ParameterData("yfiles.collections.List", "copyTo", "array") to "",
+            ParameterData("yfiles.collections.List", "fromArray", "array") to "",
+            ParameterData("yfiles.collections.Map", "copyTo", "array") to "",
+            ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to "",
+            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrent", "coordinates") to "",
+            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrentEndPoint", "coordinates") to "",
+            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to "",
+            ParameterData("yfiles.hierarchic.IItemFactory", "createDistanceNode", "edges") to "",
+            ParameterData("yfiles.hierarchic.MultiComponentLayerer", "sort", "nodeLists") to "",
+            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "",
+            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "",
+            ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "",
+            ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "",
+            ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "",
+            ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to "",
+            ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "",
+            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "bbox") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "boxes") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "edges") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "nodes") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "bbox") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "boxes") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "edges") to "",
+            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "nodes") to "",
+            ParameterData("yfiles.layout.DefaultLayoutGraph", "setLabelLayout", "layout") to "",
+            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleGrid", "rectangles") to "",
+            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleMultiRows", "rectangles") to "",
+            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleRows", "rectangles") to "",
+            ParameterData("yfiles.partial.PartialLayout", "placeSubgraphs", "subgraphComponents") to "",
+            ParameterData("yfiles.router.BusRepresentations", "replaceHubsBySubgraph", "hubEdgesLists") to "",
+            ParameterData("yfiles.router.PathSearch", "calculateCosts", "costs") to "",
+            ParameterData("yfiles.router.PathSearch", "calculateCosts", "enterIntervals") to "",
+            ParameterData("yfiles.router.PathSearch", "calculateCosts", "lastEdgeCellInfos") to "",
+            ParameterData("yfiles.router.PathSearch", "calculateCosts", "maxAllowedCosts") to "",
+            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to "",
+            ParameterData("yfiles.view.DashStyle", "constructor", "dashes") to "",
+            ParameterData("yfiles.view.IAnimation", "createEdgeSegmentAnimation", "endBends") to "",
+            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "columnLayout") to "",
+            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "rowLayout") to "",
+            ParameterData("yfiles.view.TableAnimation", "constructor", "columnLayout") to "",
+            ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to ""
+    )
+
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
         if (parameter.type != "Array") {
             return null
         }
 
         val className = method.fqn
+        val methodName = when (method) {
+            is JConstructor -> "constructor"
+            is JMethod -> method.name
+            else -> ""
+        }
         val parameterName = parameter.getCorrectedName()
-
-        var generic = "Any"
-        if (method is JConstructor) {
-            when {
-                className == "yfiles.algorithms.YList" && parameterName == "array" -> generic = OBJECT_TYPE
-            }
-        }
-
-        if (method is JMethod) {
-            val methodName = method.name
-
-            when {
-
-            }
-        }
-
+        val generic = ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)] ?: throw GradleException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
         return "Array<$generic>"
     }
 
@@ -1550,7 +1436,7 @@ object Hacks {
 
     private val CLONE_OVERRIDE = "override fun clone(): $OBJECT_TYPE = definedExternally"
 
-    fun getAdditionalContent(className: String, baseClassName: String?): String {
+    fun getAdditionalContent(className: String): String {
         return when {
             className == "yfiles.algorithms.YList"
             -> lines("// override val isReadOnly: Boolean",
