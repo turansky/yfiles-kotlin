@@ -1210,8 +1210,8 @@ object Hacks {
             className == "yfiles.lang.PropertyInfo" && methodName == "getAttributes" -> "yfiles.lang.Attribute"
             className in LAYOUT_GRAPH_CLASSES && methodName == "getLabelLayout" -> {
                 when (method.parameters.first().getCorrectedName()) {
-                    "node" -> "yfiles.algorithms.Node"
-                    "edge" -> "yfiles.algorithms.Edge"
+                    "node" -> "yfiles.layout.INodeLabelLayout"
+                    "edge" -> "yfiles.layout.IEdgeLabelLayout"
                     else -> null // TODO: throw error
                 }
             }
@@ -1372,10 +1372,10 @@ object Hacks {
             ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "edges") to "yfiles.algorithms.EdgeList",
             ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "nodes") to "yfiles.algorithms.NodeList",
 
-            ParameterData("yfiles.layout.DefaultLayoutGraph", "setLabelLayout", "layout") to "",
-            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleGrid", "rectangles") to "",
-            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleMultiRows", "rectangles") to "",
-            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleRows", "rectangles") to "",
+            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleGrid", "rectangles") to "yfiles.algorithms.Rectangle2D",
+            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleMultiRows", "rectangles") to "yfiles.algorithms.Rectangle2D",
+            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleRows", "rectangles") to "yfiles.algorithms.Rectangle2D",
+
             ParameterData("yfiles.partial.PartialLayout", "placeSubgraphs", "subgraphComponents") to "",
             ParameterData("yfiles.router.BusRepresentations", "replaceHubsBySubgraph", "hubEdgesLists") to "",
 
@@ -1387,12 +1387,12 @@ object Hacks {
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to "",
             ParameterData("yfiles.view.DashStyle", "constructor", "dashes") to "",
 
-            ParameterData("yfiles.view.IAnimation", "createEdgeSegmentAnimation", "endBends") to "",
-            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "columnLayout") to "",
-            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "rowLayout") to "",
+            ParameterData("yfiles.view.IAnimation", "createEdgeSegmentAnimation", "endBends") to "yfiles.geometry.IPoint",
+            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "columnLayout") to "Number",
+            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "rowLayout") to "Number",
 
-            ParameterData("yfiles.view.TableAnimation", "constructor", "columnLayout") to "",
-            ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to ""
+            ParameterData("yfiles.view.TableAnimation", "constructor", "columnLayout") to "Number",
+            ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to "Number"
     )
 
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
@@ -1407,7 +1407,16 @@ object Hacks {
             else -> ""
         }
         val parameterName = parameter.getCorrectedName()
-        val generic = ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)] ?: throw GradleException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
+        val generic = when {
+            className in LAYOUT_GRAPH_CLASSES && methodName == "setLabelLayout" && parameterName == "layout" -> {
+                when (method.parameters.first().getCorrectedName()) {
+                    "node" -> "yfiles.layout.INodeLabelLayout"
+                    "edge" -> "yfiles.layout.IEdgeLabelLayout"
+                    else -> null // TODO: throw error
+                }
+            }
+            else -> ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)] ?: throw GradleException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
+        }
         return "Array<$generic>"
     }
 
