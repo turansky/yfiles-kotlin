@@ -1224,12 +1224,12 @@ object Hacks {
 
             className == "yfiles.algorithms.Bfs" && methodName == "getLayers" -> "yfiles.algorithms.NodeList"
             className == "yfiles.algorithms.Cursors" && methodName == "toArray" -> OBJECT_TYPE
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "biconnectedComponents" -> ""
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "connectedComponents" -> ""
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "stronglyConnectedComponents" -> ""
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toEdgeListArray" -> ""
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toNodeListArray" -> ""
-            className == "yfiles.algorithms.IndependentSets" && methodName == "getIndependentSets" -> ""
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "biconnectedComponents" -> "yfiles.algorithms.EdgeList"
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "connectedComponents" -> "yfiles.algorithms.NodeList"
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "stronglyConnectedComponents" -> "yfiles.algorithms.NodeList"
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toEdgeListArray" -> "yfiles.algorithms.EdgeList"
+            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toNodeListArray" -> "yfiles.algorithms.NodeList"
+            className == "yfiles.algorithms.IndependentSets" && methodName == "getIndependentSets" -> "yfiles.algorithms.NodeList"
             className == "yfiles.algorithms.Paths" && methodName == "findAllChains" -> "yfiles.algorithms.EdgeList"
             className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> "yfiles.algorithms.EdgeList"
             className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> "yfiles.algorithms.EdgeList"
@@ -1288,9 +1288,9 @@ object Hacks {
             ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "objectData") to "Any",
 
             ParameterData("yfiles.algorithms.EdgeList", "constructor", "a") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "forbidden") to "",
-            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "reached") to "",
-            ParameterData("yfiles.algorithms.Groups", "kMeansClustering", "centroids") to "",
+            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "forbidden") to "Boolean",
+            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "reached") to "Boolean",
+            ParameterData("yfiles.algorithms.Groups", "kMeansClustering", "centroids") to "YPoint",
 
             ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMap", "data") to OBJECT_TYPE,
             ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForBoolean", "data") to "Boolean",
@@ -1351,15 +1351,15 @@ object Hacks {
 
             ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrent", "coordinates") to "Number",
             ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrentEndPoint", "coordinates") to "Number",
-            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to "",
-            ParameterData("yfiles.hierarchic.IItemFactory", "createDistanceNode", "edges") to "",
-            ParameterData("yfiles.hierarchic.MultiComponentLayerer", "sort", "nodeLists") to "",
+            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to NODE_TYPE,
+            ParameterData("yfiles.hierarchic.IItemFactory", "createDistanceNode", "edges") to "yfiles.algorithms.Edge",
+            ParameterData("yfiles.hierarchic.MultiComponentLayerer", "sort", "nodeLists") to "yfiles.algorithms.NodeList",
             ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "(yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
             ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "(yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
-            ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "",
-            ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "",
-            ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "",
-            ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to "",
+            ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "yfiles.graph.GraphItemTypes",
+            ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "IPortCandidate",
+            ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "Number",
+            ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to OBJECT_TYPE,
 
             ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "yfiles.lang.delegate",
             ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
@@ -1397,10 +1397,6 @@ object Hacks {
     )
 
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
-        if (parameter.type != "Array") {
-            return null
-        }
-
         val className = method.fqn
         val methodName = when (method) {
             is JConstructor -> "constructor"
@@ -1408,6 +1404,15 @@ object Hacks {
             else -> ""
         }
         val parameterName = parameter.getCorrectedName()
+
+        if (className == "yfiles.view.IAnimation" && methodName == "createGraphAnimation" && parameterName == "targetBendLocations") {
+            return "yfiles.collections.IMapper<yfiles.graph.IEdge,Array<yfiles.geometry.IPoint>>"
+        }
+
+        if (parameter.type != "Array") {
+            return null
+        }
+
         val generic = when {
             className in LAYOUT_GRAPH_CLASSES && methodName == "setLabelLayout" && parameterName == "layout" -> {
                 when (method.parameters.first().getCorrectedName()) {
