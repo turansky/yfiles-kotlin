@@ -40,17 +40,9 @@ task("build") {
 fun generateKotlinWrappers(sourceFile: File) {
     val source = JSONObject(sourceFile.readText(Charset.forName("UTF-8")))
 
-    val apiRoot = JAPIRoot(source)
-
-    val types = apiRoot
+    val types = JAPIRoot(source)
             .namespaces.first { it.id == "yfiles" }
             .namespaces.flatMap { it.types }
-
-    apiRoot.functionSignatures.values.forEach {
-        println(it.fqn)
-        println(it.summary)
-        println()
-    }
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
@@ -69,6 +61,14 @@ fun generateKotlinWrappers(sourceFile: File) {
             .writeText(
                     "package yfiles.input\n" +
                             "typealias EventRecognizer = (yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
+                    Charset.forName("UTF-8")
+            )
+
+    sourceDir.resolve("system").mkdir()
+    sourceDir.resolve("system/Comparison.kt")
+            .writeText(
+                    "package system\n" +
+                            "typealias Comparison<T> = (T, T) -> Number",
                     Charset.forName("UTF-8")
             )
 }
@@ -247,19 +247,47 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 
 class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
     override fun toString(): String {
-        val type = Hacks.correctStaticFieldGeneric(this.type)
+        val type = Hacks.correctStaticFieldGeneric(Hacks.getFieldType(this) ?: this.type)
         return "val $name: $type = definedExternally"
     }
 }
 
 class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
     val static = modifiers.static
+    val protected = modifiers.protected
     val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
 
     override fun toString(): String {
-        return TODO()
+        // val getterSetter = this.getterSetter || classRegistry.isGetterSetter(fqn, name)
+
+        var str = ""
+
+        if (classRegistry.propertyOverriden(fqn, name)) {
+            str += "override "
+        } else {
+            if (protected) {
+                str += "protected "
+            }
+
+            str += when {
+                abstract -> "abstract "
+                !static && !classRegistry.isFinalClass(fqn) -> "open "
+                else -> ""
+            }
+        }
+
+        str += if (getterSetter) "var " else "val "
+
+        str += "$name: $type"
+        if (!abstract) {
+            str += "\n    get() = definedExternally"
+            if (getterSetter) {
+                str += "\n    set(value) = definedExternally"
+            }
+        }
+        return str
     }
 }
 
@@ -717,64 +745,6 @@ interface ClassRegistry {
     fun functionOverriden(className: String, functionName: String): Boolean
     fun propertyOverriden(className: String, functionName: String): Boolean
 }
-
-/*
-class Property(lines: List<String>) {
-    val static: Boolean
-    val protected: Boolean
-    val abstract: Boolean
-
-    val getterSetter: Boolean
-    private val type: String
-
-    init {
-        this.getterSetter = lines.any { it.startsWith(GETS_OR_SETS) }
-        val line = lines.firstOrNull { it.startsWith(TYPE) }
-        if (line != null) {
-            this.type = parseTypeLine(line)
-            this.static = lines.contains(STATIC)
-            this.protected = lines.contains(PROTECTED)
-            this.abstract = lines.contains(ABSTRACT)
-        } else {
-            this.type = className
-            this.static = true
-            this.protected = false
-            this.abstract = false
-        }
-    }
-
-    override fun toString(): String {
-        val getterSetter = this.getterSetter || classRegistry.isGetterSetter(className, name)
-
-        var str = ""
-
-        if (classRegistry.propertyOverriden(className, name)) {
-            str += "override "
-        } else {
-            if (protected) {
-                str += "protected "
-            }
-
-            str += when {
-                abstract -> "abstract "
-                !static && !classRegistry.isFinalClass(className) -> "open "
-                else -> ""
-            }
-        }
-
-        str += if (getterSetter) "var " else "val "
-
-        str += "$name: $type"
-        if (!abstract) {
-            str += "\n    get() = definedExternally"
-            if (getterSetter) {
-                str += "\n    set(value) = definedExternally"
-            }
-        }
-        return str
-    }
-}
-*/
 
 class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
     private val instances = types.associateBy({ it.fqn }, { it })
@@ -1433,6 +1403,13 @@ object Hacks {
             ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to "Number"
     )
 
+    fun getFieldType(field: JField): String? {
+        return when {
+            field.fqn == "yfiles.tree.RootNodeAlignment" && field.name == "ALL" -> "Array<RootNodeAlignment>"
+            else -> null
+        }
+    }
+
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
         val className = method.fqn
         val methodName = when (method) {
@@ -1504,8 +1481,8 @@ object Hacks {
     fun getAdditionalContent(className: String): String {
         return when {
             className == "yfiles.algorithms.YList"
-            -> lines("// override val isReadOnly: Boolean",
-                    "//    get() = definedExternally",
+            -> lines("override val isReadOnly: Boolean",
+                    "    get() = definedExternally",
                     "override fun add(item: $OBJECT_TYPE) = definedExternally")
 
 
@@ -1539,8 +1516,8 @@ object Hacks {
             -> "override fun getHandle(context: IInputModeContext, edge: yfiles.graph.IEdge, sourceHandle: Boolean): IHandle = definedExternally"
 
             className == "yfiles.styles.Arrow"
-            -> lines("// override val length: Number",
-                    "//    get() = definedExternally",
+            -> lines("override val length: Number",
+                    "    get() = definedExternally",
                     "override fun getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider = definedExternally",
                     "override fun getVisualCreator(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point): yfiles.view.IVisualCreator = definedExternally",
                     CLONE_OVERRIDE)
