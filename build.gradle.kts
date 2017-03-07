@@ -1230,20 +1230,20 @@ object Hacks {
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "toEdgeListArray" -> ""
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "toNodeListArray" -> ""
             className == "yfiles.algorithms.IndependentSets" && methodName == "getIndependentSets" -> ""
-            className == "yfiles.algorithms.Paths" && methodName == "findAllChains" -> ""
-            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> ""
-            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> ""
+            className == "yfiles.algorithms.Paths" && methodName == "findAllChains" -> "yfiles.algorithms.EdgeList"
+            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> "yfiles.algorithms.EdgeList"
+            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> "yfiles.algorithms.EdgeList"
             className == "yfiles.algorithms.ShortestPaths" && methodName == "shortestPair" -> "yfiles.algorithms.EdgeList"
             className == "yfiles.algorithms.ShortestPaths" && methodName == "uniformCost" -> "Number"
-            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByDegree" -> ""
-            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByIntKey" -> ""
-            className == "yfiles.algorithms.Trees" && methodName == "getTreeEdges" -> ""
-            className == "yfiles.algorithms.Trees" && methodName == "getTreeNodes" -> ""
-            className == "yfiles.algorithms.Trees" && methodName == "getUndirectedTreeNodes" -> ""
-            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPoints" -> ""
-            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPointsInDouble" -> ""
+            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByDegree" -> "yfiles.algorithms.Node"
+            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByIntKey" -> "yfiles.algorithms.Node"
+            className == "yfiles.algorithms.Trees" && methodName == "getTreeEdges" -> "yfiles.algorithms.EdgeList"
+            className == "yfiles.algorithms.Trees" && methodName == "getTreeNodes" -> "yfiles.algorithms.NodeList"
+            className == "yfiles.algorithms.Trees" && methodName == "getUndirectedTreeNodes" -> "yfiles.algorithms.NodeList"
+            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPoints" -> "YPoint"
+            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPointsInDouble" -> "Number"
             className == "yfiles.lang.delegate" && methodName == "getInvocationList" -> "yfiles.lang.delegate"
-            className == "yfiles.router.BusRepresentations" && methodName == "toEdgeLists" -> ""
+            className == "yfiles.router.BusRepresentations" && methodName == "toEdgeLists" -> "yfiles.algorithms.EdgeList"
 
             else -> throw GradleException("Unable find array generic for className: '$className' and method: '$methodName'")
         }
@@ -1310,13 +1310,13 @@ object Hacks {
             ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "objectData") to OBJECT_TYPE,
 
             ParameterData("yfiles.algorithms.NodeList", "constructor", "a") to "yfiles.algorithms.Node",
-            ParameterData("yfiles.algorithms.NodeOrders", "dfsCompletion", "order") to "",
-            ParameterData("yfiles.algorithms.NodeOrders", "st", "stOrder") to "",
-            ParameterData("yfiles.algorithms.NodeOrders", "toNodeList", "order") to "",
-            ParameterData("yfiles.algorithms.NodeOrders", "toNodeMap", "order") to "",
-            ParameterData("yfiles.algorithms.NodeOrders", "topological", "order") to "",
-            ParameterData("yfiles.algorithms.RankAssignments", "simple", "minLength") to "",
-            ParameterData("yfiles.algorithms.RankAssignments", "simple", "rank") to "",
+            ParameterData("yfiles.algorithms.NodeOrders", "dfsCompletion", "order") to "Number",
+            ParameterData("yfiles.algorithms.NodeOrders", "st", "stOrder") to "Number",
+            ParameterData("yfiles.algorithms.NodeOrders", "toNodeList", "order") to "Number",
+            ParameterData("yfiles.algorithms.NodeOrders", "toNodeMap", "order") to "Number",
+            ParameterData("yfiles.algorithms.NodeOrders", "topological", "order") to "Number",
+            ParameterData("yfiles.algorithms.RankAssignments", "simple", "minLength") to "Number",
+            ParameterData("yfiles.algorithms.RankAssignments", "simple", "rank") to "Number",
 
             ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "cost") to "Number",
             ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "dist") to "Number",
@@ -1339,22 +1339,23 @@ object Hacks {
             ParameterData("yfiles.algorithms.ShortestPaths", "uniform", "dist") to "Number",
             ParameterData("yfiles.algorithms.ShortestPaths", "uniform", "pred") to "yfiles.algorithms.Edge",
 
-            ParameterData("yfiles.algorithms.Trees", "getTreeEdges", "treeNodes") to "",
+            ParameterData("yfiles.algorithms.Trees", "getTreeEdges", "treeNodes") to "yfiles.algorithms.NodeList",
             ParameterData("yfiles.algorithms.YList", "constructor", "a") to OBJECT_TYPE,
             ParameterData("yfiles.algorithms.YList", "copyTo", "array") to OBJECT_TYPE,
-            ParameterData("yfiles.algorithms.YPointPath", "constructor", "path") to "",
+            ParameterData("yfiles.algorithms.YPointPath", "constructor", "path") to "YPoint",
             ParameterData("yfiles.collections.ICollection", "copyTo", "array") to "T",
             ParameterData("yfiles.collections.List", "copyTo", "array") to "T",
             ParameterData("yfiles.collections.List", "fromArray", "array") to "T",
-            ParameterData("yfiles.collections.Map", "copyTo", "array") to "",
-            ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to "",
-            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrent", "coordinates") to "",
-            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrentEndPoint", "coordinates") to "",
+            ParameterData("yfiles.collections.Map", "copyTo", "array") to "MapEntry<TKey, TValue>",
+            ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to "T",
+
+            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrent", "coordinates") to "Number",
+            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrentEndPoint", "coordinates") to "Number",
             ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to "",
             ParameterData("yfiles.hierarchic.IItemFactory", "createDistanceNode", "edges") to "",
             ParameterData("yfiles.hierarchic.MultiComponentLayerer", "sort", "nodeLists") to "",
-            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "",
-            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "",
+            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "(yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
+            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "(yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
             ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "",
@@ -1376,16 +1377,16 @@ object Hacks {
             ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleMultiRows", "rectangles") to "yfiles.algorithms.Rectangle2D",
             ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleRows", "rectangles") to "yfiles.algorithms.Rectangle2D",
 
-            ParameterData("yfiles.partial.PartialLayout", "placeSubgraphs", "subgraphComponents") to "",
-            ParameterData("yfiles.router.BusRepresentations", "replaceHubsBySubgraph", "hubEdgesLists") to "",
+            ParameterData("yfiles.partial.PartialLayout", "placeSubgraphs", "subgraphComponents") to "yfiles.algorithms.NodeList",
+            ParameterData("yfiles.router.BusRepresentations", "replaceHubsBySubgraph", "hubEdgesLists") to "yfiles.algorithms.EdgeList",
 
             ParameterData("yfiles.router.PathSearch", "calculateCosts", "costs") to "Number",
             ParameterData("yfiles.router.PathSearch", "calculateCosts", "enterIntervals") to "yfiles.router.OrthogonalInterval",
             ParameterData("yfiles.router.PathSearch", "calculateCosts", "lastEdgeCellInfos") to "yfiles.router.EdgeCellInfo",
             ParameterData("yfiles.router.PathSearch", "calculateCosts", "maxAllowedCosts") to "Number",
 
-            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to "",
-            ParameterData("yfiles.view.DashStyle", "constructor", "dashes") to "",
+            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE,
+            ParameterData("yfiles.view.DashStyle", "constructor", "dashes") to "Number",
 
             ParameterData("yfiles.view.IAnimation", "createEdgeSegmentAnimation", "endBends") to "yfiles.geometry.IPoint",
             ParameterData("yfiles.view.IAnimation", "createTableAnimation", "columnLayout") to "Number",
