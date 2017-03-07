@@ -1590,7 +1590,9 @@ object Hacks {
             ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
 
             ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
+            ParameterData("yfiles.hierarchic.IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
             ParameterData("yfiles.input.ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
+            ParameterData("yfiles.input.StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
             ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
             ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
             ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
