@@ -200,7 +200,7 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 
     override fun toString(): String {
         if (generated) {
-            val generic = Hacks.getGenerics(fqn)
+            val generic = "" // TODO: realize if needed
             return code(
                     "fun $generic $name.Companion.create(${parametersString()}): $name$generic {",
                     "    return $name(${mapString(parameters)})",
@@ -1139,26 +1139,6 @@ object Hacks {
 
     fun redundantMethod(method: JMethod): Boolean {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
-    }
-
-    fun validateStaticConstType(type: String): String {
-        // TODO: Check. Quick fix for generics in constants
-        // One case - IListEnumerable.EMPTY
-        return type.replace("<T>", "<out Any>")
-    }
-
-    fun isClassParameter(name: String): Boolean {
-        return name.endsWith("Type")
-    }
-
-    // TODO: get generics from class
-    fun getGenerics(className: String): String {
-        return when (className) {
-            "yfiles.collections.List" -> "<T>"
-            "yfiles.collections.Map" -> "<TKey, TValue>"
-            "yfiles.collections.Mapper" -> "<K, V>"
-            else -> ""
-        }
     }
 
     fun getFunctionGenerics(className: String, name: String): String? {
