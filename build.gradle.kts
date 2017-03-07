@@ -40,9 +40,17 @@ task("build") {
 fun generateKotlinWrappers(sourceFile: File) {
     val source = JSONObject(sourceFile.readText(Charset.forName("UTF-8")))
 
-    val types = JAPIRoot(source)
+    val apiRoot = JAPIRoot(source)
+
+    val types = apiRoot
             .namespaces.first { it.id == "yfiles" }
             .namespaces.flatMap { it.types }
+
+    apiRoot.functionSignatures.values.forEach {
+        println(it.fqn)
+        println(it.summary)
+        println()
+    }
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
@@ -55,6 +63,14 @@ fun generateKotlinWrappers(sourceFile: File) {
     sourceDir.resolve("yfiles/lang/Number.kt").delete()
     sourceDir.resolve("yfiles/lang/String.kt").delete()
     sourceDir.resolve("yfiles/lang/Struct.kt").delete()
+
+    // TODO: generate from signatures
+    sourceDir.resolve("yfiles/input/EventRecognizer.kt")
+            .writeText(
+                    "package yfiles.input\n" +
+                            "typealias EventRecognizer = (yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
+                    Charset.forName("UTF-8")
+            )
 }
 
 abstract class JsonWrapper(val source: JSONObject)
@@ -89,16 +105,13 @@ abstract class JDeclaration : JsonWrapper {
     }
 
     override fun toString(): String {
-        return ""
-        // TODO: uncomment
-        // throw Gradle exception("toString() method must be overridden for object " + this)
+        throw GradleException("toString() method must be overridden for object " + this)
     }
 }
 
 class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
     val namespaces: List<JNamespace> by ArrayDelegate { JNamespace(it) }
-
-    val x = 5.apply { }
+    val functionSignatures: Map<String, JSignature> by MapDelegate { name, source -> JSignature(name, source) }
 }
 
 class JNamespace(source: JSONObject) : JsonWrapper(source) {
@@ -121,9 +134,29 @@ class JNamespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<JType> by ArrayDelegate { parseType(it) }
 }
 
+class JSignature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
+    val summary: String by StringDelegate()
+    val parameters: List<JSignatureParameter> by ArrayDelegate { JSignatureParameter(it) }
+    val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
+    val returns: JSignatureReturns? by SignatureReturnsDelegate()
+}
+
+class JSignatureParameter(source: JSONObject) : JsonWrapper(source) {
+    val name: String by StringDelegate()
+    val type: String by TypeDelegate { TypeParser.parse(it) }
+    val summary: String by StringDelegate()
+}
+
+class JSignatureReturns(source: JSONObject) : JsonWrapper(source) {
+    val type: String by StringDelegate()
+}
+
 abstract class JType(source: JSONObject) : JDeclaration(source) {
     val fields: List<JField> by ArrayDelegate { JField(this.fqn, it) }
+
     val properties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
+    val staticProperties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
+
     val methods: List<JMethod> by ArrayDelegate({ JMethod(this.fqn, it) }, { !Hacks.redundantMethod(it) })
     val staticMethods: List<JMethod> by ArrayDelegate({ JMethod(this.fqn, it) }, { !Hacks.redundantMethod(it) })
 
@@ -213,7 +246,10 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 }
 
 class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
-    val static = modifiers.static
+    override fun toString(): String {
+        val type = Hacks.correctStaticFieldGeneric(this.type)
+        return "val $name: $type = definedExternally"
+    }
 }
 
 class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
@@ -221,6 +257,10 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
     val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
+
+    override fun toString(): String {
+        return TODO()
+    }
 }
 
 class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
@@ -418,6 +458,26 @@ class StringArrayDelegate {
     }
 }
 
+class MapDelegate<T>(private val transform: (name: String, source: JSONObject) -> T) {
+
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Map<String, T> {
+        val source = thisRef.source
+        val key = property.name
+
+        if (!source.has(key)) {
+            return emptyMap()
+        }
+
+        val data = source.getJSONObject(key)
+        val keys: List<String> = data.keySet()?.toList() ?: emptyList<String>()
+        if (keys.isEmpty()) {
+            return emptyMap()
+        }
+
+        return keys.associateBy({ it }, { transform(it, data.getJSONObject(it)) })
+    }
+}
+
 class NullableStringDelegate {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String? {
         val source = thisRef.source
@@ -457,6 +517,19 @@ class TypeDelegate(private val parse: (String) -> String) {
 class ModifiersDelegate {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JModifiers {
         return JModifiers(StringArrayDelegate.value(thisRef, property))
+    }
+}
+
+class SignatureReturnsDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JSignatureReturns? {
+        val source = thisRef.source
+        val key = property.name
+
+        return if (source.has(key)) {
+            JSignatureReturns(source.getJSONObject(key))
+        } else {
+            null
+        }
     }
 }
 
@@ -646,22 +719,6 @@ interface ClassRegistry {
 }
 
 /*
-class Const(lines: List<String>) {
-    val static = lines.contains(STATIC)
-    val protected = lines.contains(PROTECTED)
-    val type: String
-
-    init {
-        type = validateStaticConstType(parseTypeLine(lines.first { it.startsWith(TYPE) }))
-    }
-
-    override fun toString(): String {
-        val modifier = if (protected) "protected " else ""
-        val mode = if (static) "" else "get()"
-        return "    ${modifier}val $name: $type $mode = definedExternally"
-    }
-}
-
 class Property(lines: List<String>) {
     val static: Boolean
     val protected: Boolean
@@ -852,19 +909,17 @@ class FileGenerator(private val types: List<JType>) {
         val className = declaration.fqn
         val fqn: FQN = FQN(className)
 
-        val consts: List<JField>
-            get() = declaration.fields
-                    .sortedBy { it.name }
-
         val properties: List<JProperty>
             get() = declaration.properties
                     .sortedBy { it.name }
 
-        val staticConsts: List<JField>
-            get() = consts.filter { it.static }
+        val staticFields: List<JField>
+            get() = declaration.fields
+                    .sortedBy { it.name }
 
         val staticProperties: List<JProperty>
-            get() = properties.filter { it.static }
+            get() = declaration.staticProperties
+                    .sortedBy { it.name }
 
         val staticFunctions: List<JMethod>
             get() = declaration.staticMethods
@@ -873,14 +928,11 @@ class FileGenerator(private val types: List<JType>) {
         val staticDeclarations: List<JDeclaration>
             get() {
                 return mutableListOf<JDeclaration>()
-                        .union(staticConsts)
+                        .union(staticFields)
                         .union(staticProperties)
-                        .union(staticFunctions.toSet())
+                        .union(staticFunctions)
                         .toList()
             }
-
-        val memberConsts: List<JField>
-            get() = consts.filter { !it.static }
 
         val memberProperties: List<JProperty>
             get() = properties.filter { !it.static }
@@ -937,7 +989,6 @@ class FileGenerator(private val types: List<JType>) {
 
         open fun content(): String {
             return listOf<JDeclaration>()
-                    .union(memberConsts)
                     .union(memberProperties)
                     .union(memberFunctions)
                     .union(listOf(getAdditionalContent(declaration.fqn)))
@@ -1141,6 +1192,12 @@ object Hacks {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
+    fun correctStaticFieldGeneric(type: String): String {
+        // TODO: Check. Quick fix for generics in constants
+        // One case - IListEnumerable.EMPTY
+        return type.replace("<T>", "<out Any>")
+    }
+
     fun getFunctionGenerics(className: String, name: String): String? {
         return when {
             className == "yfiles.collections.List" && name == "fromArray" -> "<T>"
@@ -1334,8 +1391,8 @@ object Hacks {
             ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to NODE_TYPE,
             ParameterData("yfiles.hierarchic.IItemFactory", "createDistanceNode", "edges") to "yfiles.algorithms.Edge",
             ParameterData("yfiles.hierarchic.MultiComponentLayerer", "sort", "nodeLists") to "yfiles.algorithms.NodeList",
-            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "(yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
-            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "(yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
+            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
+            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
             ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "yfiles.graph.GraphItemTypes",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "IPortCandidate",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "Number",
