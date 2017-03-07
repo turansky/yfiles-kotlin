@@ -260,8 +260,6 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
     val abstract = modifiers.abstract
 
     override fun toString(): String {
-        // val getterSetter = this.getterSetter || classRegistry.isGetterSetter(fqn, name)
-
         var str = ""
 
         if (classRegistry.propertyOverriden(fqn, name)) {
@@ -280,6 +278,7 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
 
         str += if (getterSetter) "var " else "val "
 
+        val type = Hacks.getPropertyType(this) ?: this.type
         str += "$name: $type"
         if (!abstract) {
             str += "\n    get() = definedExternally"
@@ -741,7 +740,6 @@ interface ClassRegistry {
 
     fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
-    fun isGetterSetter(className: String, propertyName: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
     fun propertyOverriden(className: String, functionName: String): Boolean
 }
@@ -772,18 +770,6 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
                 .union(instance.implementedTypes())
                 .map { if (it.contains("<")) StringUtil.till(it, "<") else it }
                 .toList()
-    }
-
-    private fun isGetterSetter(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
-        if (checkCurrentClass) {
-            val props = propertiesMap2[className] ?: throw GradleException("No properties found for type: $className")
-            if (props[propertyName] ?: false) {
-                return true
-            }
-        }
-        return getParents(className).any {
-            propertyOverriden(it, propertyName, true)
-        }
     }
 
     private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {
@@ -817,10 +803,6 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
     override fun isFinalClass(className: String): Boolean {
         val instance = instances[className]
         return instance is JClass && instance.final
-    }
-
-    override fun isGetterSetter(className: String, propertyName: String): Boolean {
-        return isGetterSetter(className, propertyName, false)
     }
 
     override fun functionOverriden(className: String, functionName: String): Boolean {
@@ -1408,6 +1390,29 @@ object Hacks {
             field.fqn == "yfiles.tree.RootNodeAlignment" && field.name == "ALL" -> "Array<RootNodeAlignment>"
             else -> null
         }
+    }
+
+    fun getPropertyType(property: JProperty): String? {
+        if (property.type != "Array") {
+            return null
+        }
+
+        val className = property.fqn
+        val name = property.name
+        val generic = when {
+            className == "yfiles.algorithms.Graph" && name == "dataProviderKeys" -> OBJECT_TYPE
+            className == "yfiles.algorithms.Graph" && name == "registeredEdgeMaps" -> "yfiles.algorithms.IEdgeMap"
+            className == "yfiles.algorithms.Graph" && name == "registeredNodeMaps" -> "yfiles.algorithms.INodeMap"
+            className == "yfiles.geometry.Matrix" && name == "elements" -> "Number"
+            className == "yfiles.graphml.GraphMLAttribute" && name == "singletonContainers" -> CLASS_TYPE
+            className == "yfiles.input.GraphInputMode" && name == "clickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
+            className == "yfiles.input.GraphInputMode" && name == "doubleClickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
+            className == "yfiles.layout.LayoutGraphAdapter" && name == "dataProviderKeys" -> OBJECT_TYPE
+            className == "yfiles.view.DragDropItem" && name == "types" -> "String"
+            else -> throw GradleException("Unable find array generic for className: '$className' and property: '$name'")
+        }
+
+        return "Array<$generic>"
     }
 
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
