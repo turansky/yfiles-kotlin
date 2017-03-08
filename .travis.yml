@@ -6,4 +6,4 @@ addons:
     packages:
       - oracle-java8-installer
 script:
-  - 'gradle build'
+  - './gradlew build'
