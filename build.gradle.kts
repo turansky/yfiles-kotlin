@@ -16,6 +16,7 @@ import Build_gradle.Types.UNIT
 import org.gradle.api.GradleException
 import org.json.JSONObject
 import java.io.File
+import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.reflect.KProperty
@@ -31,14 +32,18 @@ buildscript {
 }
 
 task("build") {
-    // val source = project.properties["apiFile"] ?: throw GradleException("Invalid 'apiFile' parameter value!")
-    val source = "descriptors/yfiles/2.0.0.1/api.json"
-    val file = file(source) ?: throw GradleException("No file located in '$source'")
-    generateKotlinWrappers(file)
+    // val source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
+    val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.e44e285a.js"
+    generateKotlinWrappers(loadPath(apiPath))
 }
 
-fun generateKotlinWrappers(sourceFile: File) {
-    val source = JSONObject(sourceFile.readText(Charset.forName("UTF-8")))
+fun loadPath(path: String): String {
+    val start = "var apiData="
+    return URL(path).readText(Charset.forName("UTF-8")).substring(start.length)
+}
+
+fun generateKotlinWrappers(sourceData: String) {
+    val source = JSONObject(sourceData)
 
     val types = JAPIRoot(source)
             .namespaces.first { it.id == "yfiles" }
@@ -232,15 +237,6 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
     }
 
     override fun toString(): String {
-        if (generated) {
-            val generic = "" // TODO: realize if needed
-            return code(
-                    "fun $generic $name.Companion.create(${parametersString()}): $name$generic {",
-                    "    return $name(${mapString(parameters)})",
-                    "}"
-            )
-        }
-
         return "${modificator}constructor(${parametersString()})"
     }
 }
@@ -305,7 +301,7 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 
     private fun modificator(canBeOpen: Boolean = true): String {
         // TODO: add abstract modificator if needed
-        if (!generated && classRegistry.functionOverriden(fqn, name)) {
+        if (classRegistry.functionOverriden(fqn, name)) {
             return "override "
         }
 
@@ -322,16 +318,6 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 
     override fun toString(): String {
         val returnType = returns?.type ?: UNIT
-
-        if (generated) {
-            val instanceName = nameOfClass + if (static) ".Companion" else ""
-            return code(
-                    "${modificator()}fun $generics $instanceName.$name(${parametersString()}): $returnType {",
-                    "    return $name(${mapString(parameters)})",
-                    "}"
-            )
-        }
-
         val body = if (abstract) "" else " = definedExternally"
         return "${modificator()}fun $generics$name(${parametersString()}): $returnType$body"
     }
@@ -339,8 +325,6 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 
 abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
     val parameters: List<JParameter> by ArrayDelegate({ JParameter(this, it) }, { !it.artificial })
-
-    val generated = false // TODO: realize
 
     protected fun mapString(parameters: List<JParameter>): String {
         return "mapOf<String, Any?>(\n" +
@@ -351,27 +335,12 @@ abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, 
     protected fun parametersString(useDefaultValue: Boolean = true): String {
         return parameters
                 .map {
-                    var str = "${it.getCorrectedName()}: "
-                    if (it.vararg) {
-                        str = "vararg " + str
-                    }
-                    str += getParameterType(this, it) ?: it.type
-                    if (it.optional) {
-                        // TODO: fix compilation hack
-                        val defaultValue = it.defaultValue
-                        if (defaultValue == "null") {
-                            str += "?"
-                        }
-                        if (useDefaultValue) {
-                            str += when {
-                                classRegistry.functionOverriden(fqn, name) -> ""
-                            // generated || classRegistry.isInterface(className) -> " = $defaultValue"
-                                generated -> " = $defaultValue"
-                                else -> " = definedExternally"
+                    "${it.getCorrectedName()}: ${getParameterType(this, it) ?: it.type}" +
+                            if (it.optional && useDefaultValue && !classRegistry.functionOverriden(fqn, name)) {
+                                " = definedExternally"
+                            } else {
+                                ""
                             }
-                        }
-                    }
-                    str
                 }
                 .joinToString(", ")
     }
@@ -389,24 +358,11 @@ abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, 
 }
 
 class JParameter(private val method: JMethodBase, source: JSONObject) : JsonWrapper(source) {
-    companion object {
-        fun create(name: String, type: String): JParameter {
-            TODO()
-        }
-
-        fun create(name: String, type: String, defaultValue: String?, vararg: Boolean): JParameter {
-            TODO()
-        }
-    }
-
     private val name: String by StringDelegate()
     val artificial: Boolean by BooleanDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
-    val vararg: Boolean = false // TODO: add reading
     val summary: String? by NullableStringDelegate()
     val optional: Boolean by BooleanDelegate()
-
-    val defaultValue: String = "" // TODO: add reading
 
     fun getCorrectedName(): String {
         return Hacks.fixParameterName(method, name) ?: name
@@ -531,7 +487,16 @@ class BooleanDelegate {
         val source = thisRef.source
         val key = property.name
 
-        return if (source.has(key)) source.getBoolean(key) else false
+        if (!source.has(key)) {
+            return false
+        }
+
+        val value = source.getString(key)
+        return when (value) {
+            "!0" -> true
+            "!1" -> false
+            else -> source.getBoolean(key)
+        }
     }
 }
 
