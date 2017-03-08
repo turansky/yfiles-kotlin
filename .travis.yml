@@ -1,6 +1,6 @@
 jdk:
   - oraclejdk8
-sudo: false
+sudo: true
 addons:
   apt:
     packages:
