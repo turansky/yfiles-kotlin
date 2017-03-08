@@ -1,5 +1,6 @@
+before_install:
+  - chmod +x gradlew
 script:
-  - chmod ugo+x gradlew
-  - ./gradlew build
+  - './gradlew build'
 notifications:
   email: false
