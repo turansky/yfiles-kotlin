@@ -1,10 +1,6 @@
-jdk:
-  - oraclejdk8
-sudo: false
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
+before_install:
+  - chmod +x gradlew
 script:
-  - chmod +x ./gradlew
-  - ./gradlew build
+  - './gradlew build'
+notifications:
+  email: false
