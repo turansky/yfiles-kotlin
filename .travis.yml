@@ -8,3 +8,5 @@ addons:
 script:
   - chmod +x ./gradlew
   - ./gradlew build
+notifications:
+  email: false
