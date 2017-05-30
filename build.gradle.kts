@@ -33,7 +33,7 @@ buildscript {
 
 task("build") {
     // val source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
-    val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.e44e285a.js"
+    val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.bd7ef718.js"
     generateKotlinWrappers(loadPath(apiPath))
 }
 
@@ -95,9 +95,6 @@ abstract class JDeclaration : JsonWrapper {
 
     val fqn: String
     val nameOfClass: String
-
-    val classRegistry: ClassRegistry
-        get() = ClassRegistry.instance
 
     constructor(source: JSONObject) : super(source) {
         this.fqn = id
@@ -228,7 +225,6 @@ abstract class JTypedDeclaration(fqn: String, source: JSONObject) : JDeclaration
 }
 
 class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
-    val adapter: JConstructor? = null // TODO: implement
     val protected = modifiers.protected
 
     val modificator: String = when {
@@ -257,6 +253,7 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
 
     override fun toString(): String {
         var str = ""
+        val classRegistry: ClassRegistry = ClassRegistry.instance
 
         if (classRegistry.propertyOverriden(fqn, name)) {
             str += "override "
@@ -287,8 +284,6 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
 }
 
 class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
-    val adapter: JMethod? = null // TODO: implement
-
     val abstract = modifiers.abstract
     val static = modifiers.static
     val protected = modifiers.protected
@@ -300,6 +295,8 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
         get() = Hacks.getFunctionGenerics(fqn, name) ?: getGenericString(typeparameters)
 
     private fun modificator(canBeOpen: Boolean = true): String {
+        val classRegistry: ClassRegistry = ClassRegistry.instance
+
         // TODO: add abstract modificator if needed
         if (classRegistry.functionOverriden(fqn, name)) {
             return "override "
@@ -332,16 +329,19 @@ abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, 
                 "\n)\n"
     }
 
-    protected fun parametersString(useDefaultValue: Boolean = true): String {
-        return parameters
-                .map {
-                    "${it.getCorrectedName()}: ${getParameterType(this, it) ?: it.type}" +
-                            if (it.optional && useDefaultValue && !classRegistry.functionOverriden(fqn, name)) {
-                                " = definedExternally"
-                            } else {
-                                ""
-                            }
+    protected fun parametersString(checkOverriding: Boolean = true): String {
+        val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
+        return parameters.map {
+            if (overridden) {
+                if (it.optional && !overridden) {
+                    println("Optional - ${fqn}.${name} -  ${it.getCorrectedName()}")
                 }
+            }
+
+            val body = if (it.optional && !overridden) " = definedExternally" else ""
+            "${it.getCorrectedName()}: ${getParameterType(this, it) ?: it.type}" + body
+
+        }
                 .joinToString(", ")
     }
 
@@ -692,11 +692,11 @@ object TypeParser {
 
 interface ClassRegistry {
     companion object {
-        private var _instance: ClassRegistry? = null
+        private var _instance: ClassRegistry = EmptyClassRegistry()
 
         var instance: ClassRegistry
             get() {
-                return _instance ?: throw GradleException("ClassRegistry instance not initialized!")
+                return _instance
             }
             set(value) {
                 _instance = value
@@ -707,6 +707,25 @@ interface ClassRegistry {
     fun isFinalClass(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
     fun propertyOverriden(className: String, functionName: String): Boolean
+
+    private class EmptyClassRegistry : ClassRegistry {
+        override fun isInterface(className: String): Boolean {
+            return false
+        }
+
+        override fun isFinalClass(className: String): Boolean {
+            return false
+        }
+
+        override fun functionOverriden(className: String, functionName: String): Boolean {
+            return false
+        }
+
+        override fun propertyOverriden(className: String, functionName: String): Boolean {
+            return false
+        }
+
+    }
 }
 
 class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
@@ -939,29 +958,6 @@ class FileGenerator(private val types: List<JType>) {
             }.joinToString("\n") + "\n"
         }
 
-        private fun adapters(): String {
-            val constructorAdapters = Hacks.filterConstructorAdapters(
-                    className,
-                    declaration.constructors.mapNotNull { it.adapter }
-            )
-
-            val staticFunctionAdapters = declaration.staticMethods
-                    .mapNotNull { it.adapter }
-                    .filterNot { staticFunctions.contains(it) }
-
-            val adapters = mutableListOf<JDeclaration>()
-                    .union(constructorAdapters)
-                    .union(staticFunctionAdapters)
-                    .toList()
-            return adapters.map {
-                var text = it.toString()
-                if (isStatic()) {
-                    text = text.replace(".Companion.", ".")
-                }
-                text
-            }.joinToString("\n") + "\n"
-        }
-
         override fun parentTypes(): List<String> {
             val extendedType = declaration.extendedType()
             if (extendedType == null) {
@@ -978,8 +974,7 @@ class FileGenerator(private val types: List<JType>) {
                     companionContent() +
                     constructors() +
                     super.content() + "\n" +
-                    "}\n\n" +
-                    adapters()
+                    "}"
         }
     }
 
@@ -1311,12 +1306,15 @@ object Hacks {
             ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
             ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
             ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "yfiles.graph.GraphItemTypes",
+            ParameterData("yfiles.input.IPortCandidateProvider", "combine", "providers") to "IPortCandidateProvider",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "IPortCandidate",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "Number",
             ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to OBJECT_TYPE,
 
             ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "yfiles.lang.delegate",
             ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
+
+            ParameterData("yfiles.lang.Class", "injectInterfaces", "interfaces") to "Interface",
 
             ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "bbox") to "yfiles.algorithms.YRectangle",
             ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "boxes") to "yfiles.algorithms.Rectangle2D",
