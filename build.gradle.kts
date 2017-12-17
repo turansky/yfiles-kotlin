@@ -33,7 +33,7 @@ buildscript {
 
 task("build") {
     // val source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
-    val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.bd7ef718.js"
+    val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
     generateKotlinWrappers(loadPath(apiPath))
 }
 
@@ -1528,6 +1528,12 @@ object Hacks {
             ParameterData("yfiles.algorithms.YList", "remove", "o") to "item",
 
             ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
+
+            ParameterData("yfiles.input.GroupingNodePositionHandler", "cancelDrag", "inputModeContext") to "context",
+            ParameterData("yfiles.input.GroupingNodePositionHandler", "dragFinished", "inputModeContext") to "context",
+            ParameterData("yfiles.input.GroupingNodePositionHandler", "handleMove", "inputModeContext") to "context",
+            ParameterData("yfiles.input.GroupingNodePositionHandler", "initializeDrag", "inputModeContext") to "context",
+            ParameterData("yfiles.input.GroupingNodePositionHandler", "setCurrentParent", "inputModeContext") to "context",
 
             ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
             ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",
