@@ -112,11 +112,7 @@ private abstract class GeneratedFile(private val declaration: JType) {
         }
 
         if (items.isEmpty()) {
-            return when {
-                isStatic() -> ""
-            // TODO: add companion only if needed
-                else -> "    companion object {} \n\n"
-            }
+            return ""
         }
 
         val result = items.joinToString("\n") + "\n"
