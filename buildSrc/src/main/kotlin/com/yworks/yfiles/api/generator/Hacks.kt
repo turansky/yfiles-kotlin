@@ -22,13 +22,6 @@ internal object Hacks {
         }
     }
 
-    fun filterConstructorAdapters(className: String, adapters: List<JConstructor>): List<JConstructor> {
-        return when (className) {
-            "yfiles.styles.NodeStylePortStyleAdapter" -> adapters.toSet().toList()
-            else -> adapters
-        }
-    }
-
     val LAYOUT_GRAPH_CLASSES = listOf(
             "yfiles.layout.CopiedLayoutGraph",
             "yfiles.layout.DefaultLayoutGraph",

@@ -1,5 +1,8 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
+import com.yworks.yfiles.api.generator.Types.UNIT
+
 internal object TypeParser {
     private val FUNCTION_START = "function("
     private val FUNCTION_END = "):"
@@ -9,14 +12,14 @@ internal object TypeParser {
     private val GENERIC_END = ">"
 
     private val STANDARD_TYPE_MAP = mapOf(
-            "Object" to Types.OBJECT_TYPE,
-            "object" to Types.OBJECT_TYPE,
+            "Object" to OBJECT_TYPE,
+            "object" to OBJECT_TYPE,
             "boolean" to "Boolean",
             "string" to "String",
             "number" to "Number",
             "Date" to "kotlin.js.Date",
-            "void" to Types.UNIT,
-            "Function" to "() -> ${Types.UNIT}",
+            "void" to UNIT,
+            "Function" to "() -> ${UNIT}",
 
             "Event" to "org.w3c.dom.events.Event",
             "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
@@ -74,7 +77,7 @@ internal object TypeParser {
         if (!parameters.contains(GENERIC_START)) {
             return if (parameters.contains(FUNCTION_START)) {
                 // TODO: realize full logic if needed
-                parameters.split(delimiters = ",", limit = 2).map {
+                parameters.split(delimiters = *arrayOf(","), limit = 2).map {
                     if (it.startsWith(FUNCTION_START)) parseFunctionType(it) else parseType(it)
                 }
             } else {
@@ -129,7 +132,7 @@ internal object TypeParser {
         val functionEnd = if (voidResult) FUNCTION_END_VOID else FUNCTION_END
         val parameterTypes = between(type, FUNCTION_START, functionEnd)
                 .split(",").map({ parseType(it) })
-        val resultType = if (voidResult) Types.UNIT else parseType(from(type, FUNCTION_END))
+        val resultType = if (voidResult) UNIT else parseType(from(type, FUNCTION_END))
         return "(${parameterTypes.joinToString(", ")}) -> $resultType"
     }
 }
