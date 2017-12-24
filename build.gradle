@@ -4,7 +4,7 @@ group 'com.yworks.yfiles'
 version '0.1-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.1.1'
+    ext.kotlin_version = '1.2.10'
     repositories {
         mavenCentral()
     }
@@ -15,10 +15,18 @@ buildscript {
 
 apply plugin: 'kotlin2js'
 
-def defaultOutputDir = 'out';
+def defaultOutputDir = 'out'
 
 clean.doFirst {
+    delete 'src/main/kotlin'
     delete defaultOutputDir
+}
+
+// TODO: set depend on compileKotlin2Js
+clean.doLast {
+  // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
+  def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
+  generateKotlinWrappers(loadPath(apiPath), new File(projectDir, 'src/main/kotlin'))
 }
 
 compileKotlin2Js {
@@ -42,13 +50,6 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
-}
-
-build.doFirst {
-  // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
-  def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
-  generateKotlinWrappers(loadPath(apiPath), new File(projectDir, "src/main/kotlin"))
-
 }
 
 build.doLast {

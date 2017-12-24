@@ -25,31 +25,36 @@ class FileGenerator(private val types: List<JType>) {
         val dir = directory.resolve(fqn.path)
         dir.mkdirs()
 
+        val redundantPackageDeclaration = fqn.packageName + "."
+
         val file = dir.resolve("${fqn.name}.kt")
-        file.writeText("${generatedFile.header}\n${generatedFile.content()}")
+        val header = generatedFile.header
+        val content = generatedFile.content()
+                .replace(redundantPackageDeclaration, "")
+        file.writeText("$header\n$content")
+    }
+}
+
+private class FQN(val fqn: String) {
+    private val names = fqn.split(".")
+    private val packageNames = names.subList(0, names.size - 1)
+
+    val name = names.last()
+    val packageName = packageNames.joinToString(separator = ".")
+    val path = packageNames.joinToString(separator = "/")
+
+    override fun equals(other: Any?): Boolean {
+        return other is FQN && other.fqn == fqn
     }
 
-    class FQN(val fqn: String) {
-        private val names = fqn.split(".")
-        private val packageNames = names.subList(0, names.size - 1)
-
-        val name = names.last()
-        val packageName = packageNames.joinToString(separator = ".")
-        val path = packageNames.joinToString(separator = "/")
-
-        override fun equals(other: Any?): Boolean {
-            return other is FQN && other.fqn == fqn
-        }
-
-        override fun hashCode(): Int {
-            return fqn.hashCode()
-        }
+    override fun hashCode(): Int {
+        return fqn.hashCode()
     }
 }
 
 private abstract class GeneratedFile(private val declaration: JType) {
     val className = declaration.fqn
-    val fqn: FileGenerator.FQN = FileGenerator.FQN(className)
+    val fqn: FQN = FQN(className)
 
     val properties: List<JProperty>
         get() = declaration.properties
@@ -125,6 +130,20 @@ private abstract class GeneratedFile(private val declaration: JType) {
                 "    }\n"
     }
 
+    protected fun utilContent(): String {
+        val items = staticDeclarations.map {
+            it.toString()
+        }
+
+        if (items.isEmpty()) {
+            return ""
+        }
+
+        return "external object ${className}Util {\n" +
+                items.joinToString("\n") +
+                "}"
+    }
+
     open fun content(): String {
         return listOf<JDeclaration>()
                 .union(memberProperties)
@@ -194,9 +213,9 @@ private class InterfaceFile(declaration: JInterface) : GeneratedFile(declaration
 
         val type = if (likeAbstractClass) "abstract class" else "interface"
         return "external $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
-                companionContent() +
                 content + "\n" +
-                "}\n"
+                "}\n\n" +
+                utilContent()
     }
 }
 
