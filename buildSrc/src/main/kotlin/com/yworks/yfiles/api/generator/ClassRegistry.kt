@@ -64,7 +64,7 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
         return mutableListOf<String>()
                 .union(listOf(instance.extendedType()).filterNotNull())
                 .union(instance.implementedTypes())
-                .map { if (it.contains("<")) StringUtil.till(it, "<") else it }
+                .map { if (it.contains("<")) till(it, "<") else it }
                 .toList()
     }
 

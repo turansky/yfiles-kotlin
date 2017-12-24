@@ -60,8 +60,8 @@ internal object TypeParser {
             return type
         }
 
-        val mainType = parseType(StringUtil.till(type, GENERIC_START))
-        val parametrizedTypes = parseGenericParameters(StringUtil.between(type, GENERIC_START, GENERIC_END))
+        val mainType = parseType(till(type, GENERIC_START))
+        val parametrizedTypes = parseGenericParameters(between(type, GENERIC_START, GENERIC_END))
         return "$mainType<${parametrizedTypes.joinToString(", ")}>"
     }
 
@@ -127,9 +127,9 @@ internal object TypeParser {
     fun parseFunctionType(type: String): String {
         val voidResult = type.endsWith(FUNCTION_END_VOID)
         val functionEnd = if (voidResult) FUNCTION_END_VOID else FUNCTION_END
-        val parameterTypes = StringUtil.between(type, FUNCTION_START, functionEnd)
+        val parameterTypes = between(type, FUNCTION_START, functionEnd)
                 .split(",").map({ parseType(it) })
-        val resultType = if (voidResult) Types.UNIT else parseType(StringUtil.from(type, FUNCTION_END))
+        val resultType = if (voidResult) Types.UNIT else parseType(from(type, FUNCTION_END))
         return "(${parameterTypes.joinToString(", ")}) -> $resultType"
     }
 }
