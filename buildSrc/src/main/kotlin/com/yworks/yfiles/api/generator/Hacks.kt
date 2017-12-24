@@ -319,36 +319,6 @@ internal object Hacks {
             "yfiles.geometry.MutableSize"
     )
 
-    val INVALID_PLACERS = listOf(
-            "yfiles.tree.AssistantNodePlacer",
-            "yfiles.tree.BusNodePlacer",
-            "yfiles.tree.DelegatingNodePlacer",
-            "yfiles.tree.DoubleLineNodePlacer",
-            "yfiles.tree.FreeNodePlacer",
-            "yfiles.tree.GridNodePlacer",
-            "yfiles.tree.LayeredNodePlacer",
-            "yfiles.tree.LeftRightNodePlacer",
-            "yfiles.tree.SimpleNodePlacer"
-    )
-
-    val MULTI_STAGE_LAYOUT_CLASSES = listOf(
-            "yfiles.layout.GraphTransformer",
-            "yfiles.tree.BalloonLayout",
-            "yfiles.genealogy.FamilyTreeLayout",
-            "yfiles.hierarchic.HierarchicLayout",
-            "yfiles.hierarchic.HierarchicLayoutCore",
-            "yfiles.circular.CircularLayout",
-            "yfiles.circular.SingleCycleLayout",
-            "yfiles.organic.ClassicOrganicLayout",
-            "yfiles.organic.OrganicLayout",
-            "yfiles.orthogonal.OrthogonalLayout",
-            "yfiles.radial.RadialLayout",
-            "yfiles.seriesparallel.SeriesParallelLayout",
-            "yfiles.tree.AspectRatioTreeLayout",
-            "yfiles.tree.ClassicTreeLayout",
-            "yfiles.tree.TreeLayout"
-    )
-
     private val CLONE_OVERRIDE = "override fun clone(): ${Types.OBJECT_TYPE} = definedExternally"
 
     fun getAdditionalContent(className: String): String {

@@ -7,12 +7,6 @@ import kotlin.reflect.KProperty
 
 abstract class JsonWrapper(val source: JSONObject)
 abstract class JDeclaration : JsonWrapper {
-    companion object {
-        fun code(vararg lines: String): String {
-            return lines.joinToString("\n")
-        }
-    }
-
     val id: String by StringDelegate()
     val name: String by StringDelegate()
     protected val modifiers: JModifiers by ModifiersDelegate()
