@@ -1,3 +1,5 @@
+@file:JvmName("Generator")
+
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.Hacks.getAdditionalContent

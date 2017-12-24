@@ -1,4 +1,8 @@
-group 'com.test.kotlin.wrapper'
+import java.nio.file.Files
+
+import static com.yworks.yfiles.api.generator.Generator.generateKotlinWrappers
+
+group 'com.yworks.yfiles'
 version '0.1-SNAPSHOT'
 
 buildscript {
@@ -42,6 +46,13 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
 }
 
+build.doFirst {
+  // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
+  def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
+  generateKotlinWrappers(loadPath(apiPath), new File(projectDir, "src/main/kotlin"))
+
+}
+
 build.doLast {
     configurations.compile.each { File file ->
         copy {
@@ -55,4 +66,9 @@ build.doLast {
             }
         }
     }
+}
+
+def loadPath(path) {
+  def start = "var apiData="
+  return new URL(path).getText("UTF-8").substring(start.length())
 }
