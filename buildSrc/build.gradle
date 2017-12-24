@@ -1,0 +1,21 @@
+repositories {
+  mavenCentral()
+}
+buildscript {
+  ext.kotlin_version = '1.2.10'
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
+}
+apply plugin: 'kotlin'
+dependencies {
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  compile "org.json:json:20160810"
+}
+
+sourceSets {
+  main.kotlin.srcDirs += 'src/main/kotlin'
+}
