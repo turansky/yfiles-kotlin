@@ -452,8 +452,8 @@ private class ReturnsDelegate {
 
         return if (source.has(key)) {
             val data = source.getJSONObject(key)
-            var type = TypeParser.parse(data.getString("type"))
-            type = Hacks.getReturnType(thisRef, type) ?: type
+            val type = Hacks.getReturnType(thisRef)
+                    ?: TypeParser.parse(data.getString("type"))
             JReturns(type, data)
         } else {
             null
