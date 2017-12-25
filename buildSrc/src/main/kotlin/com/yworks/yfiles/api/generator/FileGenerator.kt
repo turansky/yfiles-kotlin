@@ -59,8 +59,8 @@ private abstract class GeneratedFile(private val declaration: JType) {
         get() = declaration.properties
                 .sortedBy { it.name }
 
-    val staticFields: List<JField>
-        get() = declaration.fields
+    val staticConstants: List<JConstant>
+        get() = declaration.constants
                 .sortedBy { it.name }
 
     val staticProperties: List<JProperty>
@@ -74,7 +74,7 @@ private abstract class GeneratedFile(private val declaration: JType) {
     val staticDeclarations: List<JDeclaration>
         get() {
             return mutableListOf<JDeclaration>()
-                    .union(staticFields)
+                    .union(staticConstants)
                     .union(staticProperties)
                     .union(staticFunctions)
                     .toList()
@@ -220,7 +220,7 @@ private class InterfaceFile(declaration: JInterface) : GeneratedFile(declaration
 
 private class EnumFile(private val declaration: JEnum) : GeneratedFile(declaration) {
     override fun content(): String {
-        val values = declaration.fields
+        val values = declaration.constants
                 .map { "    val ${it.name}: ${it.nameOfClass} = definedExternally" }
                 .joinToString("\n")
         return "external object ${fqn.name}: ${Types.ENUM_TYPE} {\n" +

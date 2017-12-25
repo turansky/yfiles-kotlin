@@ -74,7 +74,7 @@ class JSignatureReturns(source: JSONObject) : JsonWrapper(source) {
 }
 
 abstract class JType(source: JSONObject) : JDeclaration(source) {
-    val fields: List<JField> by ArrayDelegate { JField(this.fqn, it) }
+    val constants: List<JConstant> by ArrayDelegate { JConstant(this.fqn, it) }
 
     val properties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
     val staticProperties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
@@ -157,7 +157,7 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
     }
 }
 
-class JField(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
+class JConstant(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
     override fun toString(): String {
         val type = Hacks.correctStaticFieldGeneric(Hacks.getFieldType(this) ?: this.type)
         return "val $name: $type = definedExternally"

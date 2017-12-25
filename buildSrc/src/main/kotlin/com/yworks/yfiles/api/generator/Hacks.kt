@@ -244,9 +244,9 @@ internal object Hacks {
             ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to "Number"
     )
 
-    fun getFieldType(field: JField): String? {
+    fun getFieldType(constant: JConstant): String? {
         return when {
-            field.fqn == "yfiles.tree.RootNodeAlignment" && field.name == "ALL" -> "Array<RootNodeAlignment>"
+            constant.fqn == "yfiles.tree.RootNodeAlignment" && constant.name == "ALL" -> "Array<RootNodeAlignment>"
             else -> null
         }
     }
@@ -309,7 +309,6 @@ internal object Hacks {
             "yfiles.geometry.MutablePoint",
             "yfiles.geometry.MutableSize"
     )
-
     private val CLONE_OVERRIDE = "override fun clone(): ${Types.OBJECT_TYPE} = definedExternally"
 
     fun getAdditionalContent(className: String): String {
