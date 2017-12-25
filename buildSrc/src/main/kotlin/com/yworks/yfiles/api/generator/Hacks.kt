@@ -88,28 +88,17 @@ internal object Hacks {
         }
         val parameterName = parameter.getCorrectedName()
 
-        if (className == "yfiles.view.IAnimation" && methodName == "createGraphAnimation" && parameterName == "targetBendLocations") {
-            return "yfiles.collections.IMapper<yfiles.graph.IEdge,Array<yfiles.geometry.IPoint>>"
-        }
-
         if (parameter.type != "Array") {
             return null
         }
 
-        val generic = when {
-            className in LAYOUT_GRAPH_CLASSES && methodName == "setLabelLayout" && parameterName == "layout" -> {
-                when (method.parameters.first().getCorrectedName()) {
-                    "node" -> "yfiles.layout.INodeLabelLayout"
-                    "edge" -> "yfiles.layout.IEdgeLabelLayout"
-                    else -> null // TODO: throw error
-                }
-            }
-            else -> ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)] ?: throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
-        }
+        val generic = ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)]
+                ?: throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
+
         return "Array<$generic>"
     }
 
-    val CLONE_REQUIRED = listOf(
+    private val CLONE_REQUIRED = listOf(
             "yfiles.geometry.Matrix",
             "yfiles.geometry.MutablePoint",
             "yfiles.geometry.MutableSize"
