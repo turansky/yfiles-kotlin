@@ -22,12 +22,6 @@ internal object Hacks {
         }
     }
 
-    val LAYOUT_GRAPH_CLASSES = listOf(
-            "yfiles.layout.CopiedLayoutGraph",
-            "yfiles.layout.DefaultLayoutGraph",
-            "yfiles.layout.LayoutGraph"
-    )
-
     fun getReturnType(method: JMethod): String? {
         val className = method.fqn
         val methodName = method.name
