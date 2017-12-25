@@ -15,33 +15,31 @@ buildscript {
 
 apply plugin: 'kotlin2js'
 
-def defaultOutputDir = 'out'
-
 clean.doFirst {
     delete 'src/main/kotlin'
-    delete defaultOutputDir
-}
 
-// TODO: set depend on compileKotlin2Js
-clean.doLast {
-  // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
-  def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
-  generateKotlinWrappers(loadPath(apiPath), new File(projectDir, 'src/main/kotlin'))
+    delete 'web'
 }
 
 compileKotlin2Js {
     kotlinOptions {
-        outputFile = "$defaultOutputDir/test.js"
+        outputFile = "${projectDir}/web/index.js"
         moduleKind = 'amd'
         metaInfo = false
         sourceMap = false
     }
 }
 
+task generateSources() {
+    // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
+    def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
+    generateKotlinWrappers(loadPath(apiPath), new File(projectDir, 'src/main/kotlin'))
+}
+
+compileKotlin2Js.dependsOn generateSources
+
 sourceSets {
     main.kotlin.srcDirs += 'src/main/kotlin'
-
-    main.output.resourcesDir = defaultOutputDir
 }
 
 repositories {
@@ -52,22 +50,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
 }
 
-build.doLast {
-    configurations.compile.each { File file ->
-        copy {
-            includeEmptyDirs = false
-
-            from zipTree(file.absolutePath)
-            into "${defaultOutputDir}/lib"
-            include { fileTreeElement ->
-                def path = fileTreeElement.path
-                path.endsWith('.js') && !path.endsWith('.meta.js') && (path.startsWith('META-INF/resources/') || !path.startsWith('META-INF/'))
-            }
-        }
-    }
-}
-
 def loadPath(path) {
-  def start = "var apiData="
-  return new URL(path).getText("UTF-8").substring(start.length())
+    def start = "var apiData="
+    return new URL(path).getText("UTF-8").substring(start.length())
 }
