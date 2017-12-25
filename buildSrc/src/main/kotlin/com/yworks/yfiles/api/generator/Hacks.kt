@@ -1,5 +1,7 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
+
 internal object Hacks {
     val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
@@ -31,8 +33,8 @@ internal object Hacks {
         val methodName = method.name
 
         when {
-            className == "yfiles.algorithms.EdgeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<${Types.OBJECT_TYPE}>"
-            className == "yfiles.algorithms.NodeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<${Types.OBJECT_TYPE}>"
+            className == "yfiles.algorithms.EdgeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
+            className == "yfiles.algorithms.NodeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
         }
 
         if (type != "Array") {
@@ -47,7 +49,7 @@ internal object Hacks {
             className == "yfiles.algorithms.Graph" && methodName == "getNodeArray" -> "yfiles.algorithms.Node"
             className == "yfiles.algorithms.NodeList" && methodName == "toNodeArray" -> "yfiles.algorithms.Node"
             className == "yfiles.algorithms.PlanarEmbedding" && methodName == "getDarts" -> "yfiles.algorithms.Dart"
-            className == "yfiles.algorithms.YList" && methodName == "toArray" -> Types.OBJECT_TYPE
+            className == "yfiles.algorithms.YList" && methodName == "toArray" -> OBJECT_TYPE
             className == "yfiles.algorithms.YPointPath" && methodName == "toArray" -> "yfiles.algorithms.YPoint"
             className == "yfiles.collections.IEnumerable" && methodName == "toArray" -> "T"
             className == "yfiles.lang.Class" && methodName == "getAttributes" -> "yfiles.lang.Attribute"
@@ -68,7 +70,7 @@ internal object Hacks {
             className == "yfiles.tree.TreeLayout" && methodName == "getRootsArray" -> "yfiles.algorithms.Node"
 
             className == "yfiles.algorithms.Bfs" && methodName == "getLayers" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.Cursors" && methodName == "toArray" -> Types.OBJECT_TYPE
+            className == "yfiles.algorithms.Cursors" && methodName == "toArray" -> OBJECT_TYPE
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "biconnectedComponents" -> "yfiles.algorithms.EdgeList"
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "connectedComponents" -> "yfiles.algorithms.NodeList"
             className == "yfiles.algorithms.GraphConnectivity" && methodName == "stronglyConnectedComponents" -> "yfiles.algorithms.NodeList"
@@ -113,135 +115,23 @@ internal object Hacks {
     }
 
     private val ARRAY_GENERIC_CORRECTION = mapOf(
-            ParameterData("yfiles.algorithms.Cursors", "toArray", "dest") to Types.OBJECT_TYPE,
-
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProvider", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "boolData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "doubleData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "intData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForArrays", "objectData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForBoolean", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForInt", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createEdgeDataProviderForNumber", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProvider", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderForBoolean", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderForInt", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderForNumber", "data") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "boolData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "doubleData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "intData") to "Any",
-            ParameterData("yfiles.algorithms.DataProviders", "createNodeDataProviderWithArrays", "objectData") to "Any",
-
-            ParameterData("yfiles.algorithms.EdgeList", "constructor", "a") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "forbidden") to "Boolean",
-            ParameterData("yfiles.algorithms.GraphConnectivity", "reachable", "reached") to "Boolean",
-            ParameterData("yfiles.algorithms.Groups", "kMeansClustering", "centroids") to "YPoint",
-
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMap", "data") to Types.OBJECT_TYPE,
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForBoolean", "data") to "Boolean",
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForInt", "data") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapForNumber", "data") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "boolData") to "Boolean",
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "doubleData") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "intData") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexEdgeMapFromArrays", "objectData") to Types.OBJECT_TYPE,
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMap", "data") to Types.OBJECT_TYPE,
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapForBoolean", "data") to "Boolean",
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapForInt", "data") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapForNumber", "data") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "boolData") to "Boolean",
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "doubleData") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "intData") to "Number",
-            ParameterData("yfiles.algorithms.Maps", "createIndexNodeMapFromArrays", "objectData") to Types.OBJECT_TYPE,
-
-            ParameterData("yfiles.algorithms.NodeList", "constructor", "a") to "yfiles.algorithms.Node",
-            ParameterData("yfiles.algorithms.NodeOrders", "dfsCompletion", "order") to "Number",
-            ParameterData("yfiles.algorithms.NodeOrders", "st", "stOrder") to "Number",
-            ParameterData("yfiles.algorithms.NodeOrders", "toNodeList", "order") to "Number",
-            ParameterData("yfiles.algorithms.NodeOrders", "toNodeMap", "order") to "Number",
-            ParameterData("yfiles.algorithms.NodeOrders", "topological", "order") to "Number",
-            ParameterData("yfiles.algorithms.RankAssignments", "simple", "minLength") to "Number",
-            ParameterData("yfiles.algorithms.RankAssignments", "simple", "rank") to "Number",
-
-            ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "cost") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "dist") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "acyclic", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "allPairs", "cost") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "allPairs", "dist") to "Array<Number>",
-            ParameterData("yfiles.algorithms.ShortestPaths", "bellmanFord", "cost") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "bellmanFord", "dist") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "bellmanFord", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "constructEdgePath", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "constructNodePath", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "dijkstra", "cost") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "dijkstra", "dist") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "dijkstra", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "singleSource", "cost") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "singleSource", "dist") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "singleSource", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "singleSourceSingleSink", "cost") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "singleSourceSingleSink", "pred") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.algorithms.ShortestPaths", "uniform", "dist") to "Number",
-            ParameterData("yfiles.algorithms.ShortestPaths", "uniform", "pred") to "yfiles.algorithms.Edge",
-
-            ParameterData("yfiles.algorithms.Trees", "getTreeEdges", "treeNodes") to "yfiles.algorithms.NodeList",
-            ParameterData("yfiles.algorithms.YList", "constructor", "a") to Types.OBJECT_TYPE,
-            ParameterData("yfiles.algorithms.YList", "copyTo", "array") to Types.OBJECT_TYPE,
-            ParameterData("yfiles.algorithms.YPointPath", "constructor", "path") to "YPoint",
-            ParameterData("yfiles.collections.ICollection", "copyTo", "array") to "T",
-            ParameterData("yfiles.collections.List", "copyTo", "array") to "T",
-            ParameterData("yfiles.collections.List", "fromArray", "array") to "T",
-            ParameterData("yfiles.collections.Map", "copyTo", "array") to "MapEntry<TKey, TValue>",
-            ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to "T",
-
-            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrent", "coordinates") to "Number",
-            ParameterData("yfiles.geometry.GeneralPathCursor", "getCurrentEndPoint", "coordinates") to "Number",
             ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to Types.NODE_TYPE,
-            ParameterData("yfiles.hierarchic.IItemFactory", "createDistanceNode", "edges") to "yfiles.algorithms.Edge",
-            ParameterData("yfiles.hierarchic.MultiComponentLayerer", "sort", "nodeLists") to "yfiles.algorithms.NodeList",
+
             ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
             ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
-            ParameterData("yfiles.input.GraphInputMode", "findItems", "tests") to "yfiles.graph.GraphItemTypes",
+
             ParameterData("yfiles.input.IPortCandidateProvider", "combine", "providers") to "IPortCandidateProvider",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "IPortCandidate",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "Number",
-            ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to Types.OBJECT_TYPE,
+
+            ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to OBJECT_TYPE,
 
             ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "yfiles.lang.delegate",
-            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to Types.OBJECT_TYPE,
+            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
 
             ParameterData("yfiles.lang.Class", "injectInterfaces", "interfaces") to "Interface",
 
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "bbox") to "yfiles.algorithms.YRectangle",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "boxes") to "yfiles.algorithms.Rectangle2D",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "edges") to "yfiles.algorithms.EdgeList",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeComponents", "nodes") to "yfiles.algorithms.NodeList",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "bbox") to "yfiles.algorithms.YRectangle",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "boxes") to "yfiles.algorithms.Rectangle2D",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "edges") to "yfiles.algorithms.EdgeList",
-            ParameterData("yfiles.layout.ComponentLayout", "arrangeFields", "nodes") to "yfiles.algorithms.NodeList",
-
-            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleGrid", "rectangles") to "yfiles.algorithms.Rectangle2D",
-            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleMultiRows", "rectangles") to "yfiles.algorithms.Rectangle2D",
-            ParameterData("yfiles.layout.LayoutGraphUtilities", "arrangeRectangleRows", "rectangles") to "yfiles.algorithms.Rectangle2D",
-
-            ParameterData("yfiles.partial.PartialLayout", "placeSubgraphs", "subgraphComponents") to "yfiles.algorithms.NodeList",
-            ParameterData("yfiles.router.BusRepresentations", "replaceHubsBySubgraph", "hubEdgesLists") to "yfiles.algorithms.EdgeList",
-
-            ParameterData("yfiles.router.PathSearch", "calculateCosts", "costs") to "Number",
-            ParameterData("yfiles.router.PathSearch", "calculateCosts", "enterIntervals") to "yfiles.router.OrthogonalInterval",
-            ParameterData("yfiles.router.PathSearch", "calculateCosts", "lastEdgeCellInfos") to "yfiles.router.EdgeCellInfo",
-            ParameterData("yfiles.router.PathSearch", "calculateCosts", "maxAllowedCosts") to "Number",
-
-            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to Types.OBJECT_TYPE,
-            ParameterData("yfiles.view.DashStyle", "constructor", "dashes") to "Number",
-
-            ParameterData("yfiles.view.IAnimation", "createEdgeSegmentAnimation", "endBends") to "yfiles.geometry.IPoint",
-            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "columnLayout") to "Number",
-            ParameterData("yfiles.view.IAnimation", "createTableAnimation", "rowLayout") to "Number",
-
-            ParameterData("yfiles.view.TableAnimation", "constructor", "columnLayout") to "Number",
-            ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to "Number"
+            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
 
     fun getPropertyType(property: JProperty): String? {
@@ -252,14 +142,14 @@ internal object Hacks {
         val className = property.fqn
         val name = property.name
         val generic = when {
-            className == "yfiles.algorithms.Graph" && name == "dataProviderKeys" -> Types.OBJECT_TYPE
+            className == "yfiles.algorithms.Graph" && name == "dataProviderKeys" -> OBJECT_TYPE
             className == "yfiles.algorithms.Graph" && name == "registeredEdgeMaps" -> "yfiles.algorithms.IEdgeMap"
             className == "yfiles.algorithms.Graph" && name == "registeredNodeMaps" -> "yfiles.algorithms.INodeMap"
             className == "yfiles.geometry.Matrix" && name == "elements" -> "Number"
             className == "yfiles.graphml.GraphMLAttribute" && name == "singletonContainers" -> Types.CLASS_TYPE
             className == "yfiles.input.GraphInputMode" && name == "clickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
             className == "yfiles.input.GraphInputMode" && name == "doubleClickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
-            className == "yfiles.layout.LayoutGraphAdapter" && name == "dataProviderKeys" -> Types.OBJECT_TYPE
+            className == "yfiles.layout.LayoutGraphAdapter" && name == "dataProviderKeys" -> OBJECT_TYPE
             className == "yfiles.view.DragDropItem" && name == "types" -> "String"
             else -> throw IllegalArgumentException("Unable find array generic for className: '$className' and property: '$name'")
         }
@@ -302,14 +192,14 @@ internal object Hacks {
             "yfiles.geometry.MutablePoint",
             "yfiles.geometry.MutableSize"
     )
-    private val CLONE_OVERRIDE = "override fun clone(): ${Types.OBJECT_TYPE} = definedExternally"
+    private val CLONE_OVERRIDE = "override fun clone(): ${OBJECT_TYPE} = definedExternally"
 
     fun getAdditionalContent(className: String): String {
         return when {
             className == "yfiles.algorithms.YList"
             -> lines("override val isReadOnly: Boolean",
                     "    get() = definedExternally",
-                    "override fun add(item: ${Types.OBJECT_TYPE}) = definedExternally")
+                    "override fun add(item: ${OBJECT_TYPE}) = definedExternally")
 
 
             className in CLONE_REQUIRED
@@ -328,14 +218,14 @@ internal object Hacks {
             -> "override fun findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter = definedExternally"
 
             className == "yfiles.graph.GenericLabelModel"
-            -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: ${Types.OBJECT_TYPE}): Boolean = definedExternally",
+            -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): Boolean = definedExternally",
                     "override fun getParameters(label: ILabel, model: ILabelModel): yfiles.collections.IEnumerable<ILabelModelParameter> = definedExternally",
-                    "override fun convert(context: yfiles.graphml.IWriteContext, value: ${Types.OBJECT_TYPE}): yfiles.graphml.MarkupExtension = definedExternally",
+                    "override fun convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): yfiles.graphml.MarkupExtension = definedExternally",
                     "override fun getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle = definedExternally")
 
             className == "yfiles.graph.GenericPortLocationModel"
-            -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: ${Types.OBJECT_TYPE}): Boolean = definedExternally",
-                    "override fun convert(context: yfiles.graphml.IWriteContext, value: ${Types.OBJECT_TYPE}): yfiles.graphml.MarkupExtension = definedExternally",
+            -> lines("override fun canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): Boolean = definedExternally",
+                    "override fun convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): yfiles.graphml.MarkupExtension = definedExternally",
                     "override fun getEnumerator(): yfiles.collections.IEnumerator<IPortLocationModelParameter> = definedExternally")
 
             className == "yfiles.input.PortRelocationHandleProvider"
