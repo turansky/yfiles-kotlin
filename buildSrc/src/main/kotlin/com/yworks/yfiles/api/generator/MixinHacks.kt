@@ -21,7 +21,7 @@ internal object MixinHacks {
         throw IllegalArgumentException("Item '$item' not contains in item list '$items'")
     }
 
-    val MUST_BE_ABSTRACT_CLASSES = listOf(
+    private val MUST_BE_ABSTRACT_CLASSES = listOf(
             "yfiles.collections.ICollection",
             "yfiles.collections.IList",
             "yfiles.collections.IMap",
