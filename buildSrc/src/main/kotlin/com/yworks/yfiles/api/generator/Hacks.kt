@@ -1,7 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import org.gradle.api.GradleException
-
 internal object Hacks {
     val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
@@ -92,7 +90,7 @@ internal object Hacks {
             className == "yfiles.lang.delegate" && methodName == "getInvocationList" -> "yfiles.lang.delegate"
             className == "yfiles.router.BusRepresentations" && methodName == "toEdgeLists" -> "yfiles.algorithms.EdgeList"
 
-            else -> throw GradleException("Unable find array generic for className: '$className' and method: '$methodName'")
+            else -> throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName'")
         }
 
         return "Array<$generic>"
@@ -270,7 +268,7 @@ internal object Hacks {
             className == "yfiles.input.GraphInputMode" && name == "doubleClickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
             className == "yfiles.layout.LayoutGraphAdapter" && name == "dataProviderKeys" -> Types.OBJECT_TYPE
             className == "yfiles.view.DragDropItem" && name == "types" -> "String"
-            else -> throw GradleException("Unable find array generic for className: '$className' and property: '$name'")
+            else -> throw IllegalArgumentException("Unable find array generic for className: '$className' and property: '$name'")
         }
 
         return "Array<$generic>"
@@ -301,7 +299,7 @@ internal object Hacks {
                     else -> null // TODO: throw error
                 }
             }
-            else -> ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)] ?: throw GradleException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
+            else -> ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)] ?: throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
         }
         return "Array<$generic>"
     }

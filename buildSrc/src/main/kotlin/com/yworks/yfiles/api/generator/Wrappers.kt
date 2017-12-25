@@ -1,6 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import org.gradle.api.GradleException
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -28,7 +27,7 @@ abstract class JDeclaration : JsonWrapper {
     }
 
     override fun toString(): String {
-        throw GradleException("toString() method must be overridden for object " + this)
+        throw IllegalStateException("toString() method must be overridden for object " + this)
     }
 }
 
@@ -45,7 +44,7 @@ class JNamespace(source: JSONObject) : JsonWrapper(source) {
                 "class" -> JClass(source)
                 "interface" -> JInterface(source)
                 "enum" -> JEnum(source)
-                else -> throw GradleException("Undefined type group '$group'")
+                else -> throw IllegalArgumentException("Undefined type group '$group'")
             }
         }
     }

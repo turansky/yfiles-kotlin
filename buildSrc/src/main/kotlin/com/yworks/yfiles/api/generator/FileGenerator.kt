@@ -1,6 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import org.gradle.api.GradleException
 import java.io.File
 
 class FileGenerator(private val types: List<JType>) {
@@ -13,7 +12,7 @@ class FileGenerator(private val types: List<JType>) {
                 is JClass -> ClassFile(it)
                 is JInterface -> InterfaceFile(it)
                 is JEnum -> EnumFile(it)
-                else -> throw GradleException("Undefined type for generation: " + it)
+                else -> throw IllegalStateException("Undefined type for generation: " + it)
             }
 
             generate(directory, generatedFile)

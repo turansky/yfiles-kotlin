@@ -1,7 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import org.gradle.api.GradleException
-
 interface ClassRegistry {
     companion object {
         private var _instance: ClassRegistry = EmptyClassRegistry()
@@ -53,13 +51,8 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
             { it.properties.map { it.name } }
     )
 
-    private val propertiesMap2 = types.associateBy(
-            { it.fqn },
-            { it.properties.associateBy({ it.name }, { it.getterSetter }) }
-    )
-
     private fun getParents(className: String): List<String> {
-        val instance = instances[className] ?: throw GradleException("Unknown instance type: $className")
+        val instance = instances[className] ?: throw IllegalArgumentException("Unknown instance type: $className")
 
         return mutableListOf<String>()
                 .union(listOf(instance.extendedType()).filterNotNull())
@@ -70,7 +63,7 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
 
     private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {
         if (checkCurrentClass) {
-            val funs = functionsMap[className] ?: throw GradleException("No functions found for type: $className")
+            val funs = functionsMap[className] ?: throw IllegalArgumentException("No functions found for type: $className")
             if (funs.contains(functionName)) {
                 return true
             }
@@ -82,7 +75,7 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
 
     private fun propertyOverriden(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
         if (checkCurrentClass) {
-            val props = propertiesMap[className] ?: throw GradleException("No properties found for type: $className")
+            val props = propertiesMap[className] ?: throw IllegalArgumentException("No properties found for type: $className")
             if (props.contains(propertyName)) {
                 return true
             }

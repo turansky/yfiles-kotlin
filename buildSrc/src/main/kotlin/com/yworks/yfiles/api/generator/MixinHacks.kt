@@ -1,7 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import org.gradle.api.GradleException
-
 internal object MixinHacks {
     fun getImplementedTypes(className: String, implementedTypes: List<String>): List<String> {
         return when (className) {
@@ -20,7 +18,7 @@ internal object MixinHacks {
             return listOf(item)
         }
 
-        throw GradleException("Item '$item' not contains in item list '$items'")
+        throw IllegalArgumentException("Item '$item' not contains in item list '$items'")
     }
 
     val MUST_BE_ABSTRACT_CLASSES = listOf(
