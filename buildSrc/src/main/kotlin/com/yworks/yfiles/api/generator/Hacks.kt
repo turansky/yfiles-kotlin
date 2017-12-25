@@ -79,29 +79,6 @@ internal object Hacks {
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
 
-    fun getPropertyType(property: JProperty): String? {
-        if (property.type != "Array") {
-            return null
-        }
-
-        val className = property.fqn
-        val name = property.name
-        val generic = when {
-            className == "yfiles.algorithms.Graph" && name == "dataProviderKeys" -> OBJECT_TYPE
-            className == "yfiles.algorithms.Graph" && name == "registeredEdgeMaps" -> "yfiles.algorithms.IEdgeMap"
-            className == "yfiles.algorithms.Graph" && name == "registeredNodeMaps" -> "yfiles.algorithms.INodeMap"
-            className == "yfiles.geometry.Matrix" && name == "elements" -> "Number"
-            className == "yfiles.graphml.GraphMLAttribute" && name == "singletonContainers" -> Types.CLASS_TYPE
-            className == "yfiles.input.GraphInputMode" && name == "clickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
-            className == "yfiles.input.GraphInputMode" && name == "doubleClickHitTestOrder" -> "yfiles.graph.GraphItemTypes"
-            className == "yfiles.layout.LayoutGraphAdapter" && name == "dataProviderKeys" -> OBJECT_TYPE
-            className == "yfiles.view.DragDropItem" && name == "types" -> "String"
-            else -> throw IllegalArgumentException("Unable find array generic for className: '$className' and property: '$name'")
-        }
-
-        return "Array<$generic>"
-    }
-
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
         val className = method.fqn
         val methodName = when (method) {

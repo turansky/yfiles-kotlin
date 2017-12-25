@@ -191,7 +191,6 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
 
         str += if (getterSetter) "var " else "val "
 
-        val type = Hacks.getPropertyType(this) ?: this.type
         str += "$name: $type"
         if (!abstract) {
             str += "\n    get() = definedExternally"
