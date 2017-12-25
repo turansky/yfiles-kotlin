@@ -244,13 +244,6 @@ internal object Hacks {
             ParameterData("yfiles.view.TableAnimation", "constructor", "rowLayout") to "Number"
     )
 
-    fun getFieldType(constant: JConstant): String? {
-        return when {
-            constant.fqn == "yfiles.tree.RootNodeAlignment" && constant.name == "ALL" -> "Array<RootNodeAlignment>"
-            else -> null
-        }
-    }
-
     fun getPropertyType(property: JProperty): String? {
         if (property.type != "Array") {
             return null

@@ -159,7 +159,7 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 
 class JConstant(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
     override fun toString(): String {
-        val type = Hacks.correctStaticFieldGeneric(Hacks.getFieldType(this) ?: this.type)
+        val type = Hacks.correctStaticFieldGeneric(this.type)
         return "val $name: $type = definedExternally"
     }
 }
