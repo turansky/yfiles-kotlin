@@ -5,11 +5,10 @@ package com.yworks.yfiles.api.generator
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
-import java.nio.charset.Charset
 
 private fun loadApiJson(path: String): String {
     return URL(path)
-            .readText(Charset.forName("UTF-8"))
+            .readText(DEFAULT_CHARSET)
             .removePrefix("var apiData=")
 }
 
@@ -35,7 +34,7 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
             .writeText(
                     "package yfiles.input\n" +
                             "typealias EventRecognizer = (yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
-                    Charset.forName("UTF-8")
+                    DEFAULT_CHARSET
             )
 
     sourceDir.resolve("system").mkdir()
@@ -43,6 +42,6 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
             .writeText(
                     "package system\n" +
                             "typealias Comparison<T> = (T, T) -> Number",
-                    Charset.forName("UTF-8")
+                    DEFAULT_CHARSET
             )
 }
