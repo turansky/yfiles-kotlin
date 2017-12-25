@@ -28,74 +28,19 @@ internal object Hacks {
             "yfiles.layout.LayoutGraph"
     )
 
-    fun getReturnType(method: JMethod, type: String): String? {
+    fun getReturnType(method: JMethod): String? {
         val className = method.fqn
         val methodName = method.name
 
-        when {
-            className == "yfiles.algorithms.EdgeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
-            className == "yfiles.algorithms.NodeList" && methodName == "getEnumerator" -> return "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
+        return when {
+            className == "yfiles.algorithms.EdgeList" && methodName == "getEnumerator"
+            -> "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
+
+            className == "yfiles.algorithms.NodeList" && methodName == "getEnumerator"
+            -> "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
+
+            else -> null
         }
-
-        if (type != "Array") {
-            return null
-        }
-
-        val generic = when {
-            className == "yfiles.collections.List" && methodName == "toArray" -> "T"
-            className == "yfiles.algorithms.Dendrogram" && methodName == "getClusterNodes" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.EdgeList" && methodName == "toEdgeArray" -> "yfiles.algorithms.Edge"
-            className == "yfiles.algorithms.Graph" && methodName == "getEdgeArray" -> "yfiles.algorithms.Edge"
-            className == "yfiles.algorithms.Graph" && methodName == "getNodeArray" -> "yfiles.algorithms.Node"
-            className == "yfiles.algorithms.NodeList" && methodName == "toNodeArray" -> "yfiles.algorithms.Node"
-            className == "yfiles.algorithms.PlanarEmbedding" && methodName == "getDarts" -> "yfiles.algorithms.Dart"
-            className == "yfiles.algorithms.YList" && methodName == "toArray" -> OBJECT_TYPE
-            className == "yfiles.algorithms.YPointPath" && methodName == "toArray" -> "yfiles.algorithms.YPoint"
-            className == "yfiles.collections.IEnumerable" && methodName == "toArray" -> "T"
-            className == "yfiles.lang.Class" && methodName == "getAttributes" -> "yfiles.lang.Attribute"
-            className == "yfiles.lang.Class" && methodName == "getProperties" -> "yfiles.lang.PropertyInfo"
-            className == "yfiles.lang.PropertyInfo" && methodName == "getAttributes" -> "yfiles.lang.Attribute"
-            className in LAYOUT_GRAPH_CLASSES && methodName == "getLabelLayout" -> {
-                when (method.parameters.first().getCorrectedName()) {
-                    "node" -> "yfiles.layout.INodeLabelLayout"
-                    "edge" -> "yfiles.layout.IEdgeLabelLayout"
-                    else -> null // TODO: throw error
-                }
-            }
-            className == "yfiles.layout.LayoutGraphAdapter" && methodName == "getEdgeLabelLayout" -> "yfiles.layout.IEdgeLabelLayout"
-            className == "yfiles.layout.LayoutGraphAdapter" && methodName == "getNodeLabelLayout" -> "yfiles.layout.INodeLabelLayout"
-            className == "yfiles.layout.TableLayoutConfigurator" && methodName == "getColumnLayout" -> "Number"
-            className == "yfiles.layout.TableLayoutConfigurator" && methodName == "getRowLayout" -> "Number"
-            className == "yfiles.router.EdgeInfo" && methodName == "calculateLineSegments" -> "yfiles.algorithms.LineSegment"
-            className == "yfiles.tree.TreeLayout" && methodName == "getRootsArray" -> "yfiles.algorithms.Node"
-
-            className == "yfiles.algorithms.Bfs" && methodName == "getLayers" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.Cursors" && methodName == "toArray" -> OBJECT_TYPE
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "biconnectedComponents" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "connectedComponents" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "stronglyConnectedComponents" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toEdgeListArray" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.GraphConnectivity" && methodName == "toNodeListArray" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.IndependentSets" && methodName == "getIndependentSets" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.Paths" && methodName == "findAllChains" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.Paths" && methodName == "findAllPaths" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.ShortestPaths" && methodName == "shortestPair" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.ShortestPaths" && methodName == "uniformCost" -> "Number"
-            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByDegree" -> "yfiles.algorithms.Node"
-            className == "yfiles.algorithms.Sorting" && methodName == "sortNodesByIntKey" -> "yfiles.algorithms.Node"
-            className == "yfiles.algorithms.Trees" && methodName == "getTreeEdges" -> "yfiles.algorithms.EdgeList"
-            className == "yfiles.algorithms.Trees" && methodName == "getTreeNodes" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.Trees" && methodName == "getUndirectedTreeNodes" -> "yfiles.algorithms.NodeList"
-            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPoints" -> "YPoint"
-            className == "yfiles.algorithms.YOrientedRectangle" && methodName == "calcPointsInDouble" -> "Number"
-            className == "yfiles.lang.delegate" && methodName == "getInvocationList" -> "yfiles.lang.delegate"
-            className == "yfiles.router.BusRepresentations" && methodName == "toEdgeLists" -> "yfiles.algorithms.EdgeList"
-
-            else -> throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName'")
-        }
-
-        return "Array<$generic>"
     }
 
 
