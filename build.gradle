@@ -15,9 +15,7 @@ buildscript {
 
 apply plugin: 'kotlin2js'
 
-clean.doFirst {
-    delete 'src/main/kotlin'
-
+clean.doLast {
     delete 'web'
 }
 
@@ -31,9 +29,11 @@ compileKotlin2Js {
 }
 
 task generateSources() {
+    delete 'src/main/kotlin'
+
     // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
     def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
-    generateKotlinWrappers(loadPath(apiPath), new File(projectDir, 'src/main/kotlin'))
+    generateKotlinWrappers(apiPath, new File(projectDir, 'src/main/kotlin'))
 }
 
 compileKotlin2Js.dependsOn generateSources
@@ -48,9 +48,4 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
-}
-
-def loadPath(path) {
-    def start = "var apiData="
-    return new URL(path).getText("UTF-8").substring(start.length())
 }

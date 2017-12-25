@@ -4,10 +4,17 @@ package com.yworks.yfiles.api.generator
 
 import org.json.JSONObject
 import java.io.File
+import java.net.URL
 import java.nio.charset.Charset
 
-fun generateKotlinWrappers(sourceData: String, sourceDir: File) {
-    val source = JSONObject(sourceData)
+private fun loadApiJson(path: String): String {
+    return URL(path)
+            .readText(Charset.forName("UTF-8"))
+            .removePrefix("var apiData=")
+}
+
+fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
+    val source = JSONObject(loadApiJson(apiPath))
 
     val types = JAPIRoot(source)
             .namespaces.first { it.id == "yfiles" }
