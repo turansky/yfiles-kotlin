@@ -242,12 +242,6 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
 abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
     val parameters: List<JParameter> by ArrayDelegate({ JParameter(this, it) }, { !it.artificial })
 
-    protected fun mapString(parameters: List<JParameter>): String {
-        return "mapOf<String, Any?>(\n" +
-                parameters.map { "\"${it.getCorrectedName()}\" to ${it.getCorrectedName()}" }.joinToString(",\n") +
-                "\n)\n"
-    }
-
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters.map {

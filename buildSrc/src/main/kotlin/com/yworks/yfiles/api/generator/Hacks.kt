@@ -74,18 +74,17 @@ internal object Hacks {
     )
 
     fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
-        val className = method.fqn
-        val methodName = when (method) {
-            is JConstructor -> "constructor"
-            is JMethod -> method.name
-            else -> ""
-        }
-        val parameterName = parameter.getCorrectedName()
-
         if (parameter.type != "Array") {
             return null
         }
 
+        val className = method.fqn
+        val methodName = when (method) {
+            is JMethod -> method.name
+            else -> ""
+        }
+
+        val parameterName = parameter.getCorrectedName()
         val generic = ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)]
                 ?: throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
 
