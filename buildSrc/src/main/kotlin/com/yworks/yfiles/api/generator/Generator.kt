@@ -24,10 +24,8 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     val fileGenerator = FileGenerator(types)
     fileGenerator.generate(sourceDir)
 
-    sourceDir.resolve("yfiles/lang/Boolean.kt").delete()
-    sourceDir.resolve("yfiles/lang/Number.kt").delete()
-    sourceDir.resolve("yfiles/lang/String.kt").delete()
-    sourceDir.resolve("yfiles/lang/Struct.kt").delete()
+    listOf("Boolean", "Number", "String", "Struct")
+            .forEach { baseType -> sourceDir.resolve("yfiles/lang/${baseType}.kt").delete() }
 
     // TODO: generate from signatures
     sourceDir.resolve("yfiles/input/EventRecognizer.kt")
