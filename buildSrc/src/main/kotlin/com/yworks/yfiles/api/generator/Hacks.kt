@@ -1,6 +1,7 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
+import java.io.File
 
 internal object Hacks {
     val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
@@ -72,6 +73,12 @@ internal object Hacks {
 
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
+
+    fun addComparisonClass(sourceDir: File) {
+        sourceDir.resolve("system").mkdir()
+        sourceDir.resolve("system/Comparison.kt")
+                .writeText("package system\n\ntypealias Comparison<T> = (T, T) -> Number", DEFAULT_CHARSET)
+    }
 
     fun getPropertyType(className: String, propertyName: String): String? {
         return when {

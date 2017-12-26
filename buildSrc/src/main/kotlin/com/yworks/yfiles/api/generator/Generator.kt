@@ -28,4 +28,7 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
 
     listOf("Boolean", "Number", "String", "Struct")
             .forEach { baseType -> sourceDir.resolve("yfiles/lang/${baseType}.kt").delete() }
+
+
+    Hacks.addComparisonClass(sourceDir)
 }

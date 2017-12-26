@@ -38,12 +38,6 @@ internal object TypeParser {
     )
 
     fun parse(type: String, signature: String?): String {
-        if (signature != null) {
-            println("Parse:")
-            println("Type: $type")
-            println("Signature: $signature")
-        }
-
         return parseType(signature ?: type)
     }
 
