@@ -33,7 +33,7 @@ internal abstract class Declaration : JsonWrapper {
 }
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
-    val namespaces: List<Namespace> by ArrayDelegate { Namespace(it) }
+    val namespaces: List<Namespace> by ArrayDelegate(::Namespace)
     val functionSignatures: Map<String, Signature> by MapDelegate { name, source -> Signature(name, source) }
 }
 
@@ -59,8 +59,8 @@ internal class Namespace(source: JSONObject) : JsonWrapper(source) {
 
 internal class Signature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
     val summary: String by StringDelegate()
-    val parameters: List<SignatureParameter> by ArrayDelegate { SignatureParameter(it) }
-    val typeparameters: List<TypeParameter> by ArrayDelegate { TypeParameter(it) }
+    val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
+    val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val returns: SignatureReturns? by SignatureReturnsDelegate()
 }
 
@@ -75,6 +75,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal abstract class Type(source: JSONObject) : Declaration(source) {
+    val modules: List<Module> by ArrayDelegate(::Module)
     val constants: List<Constant> by ArrayDelegate { Constant(this.fqn, it) }
 
     val properties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
@@ -83,7 +84,7 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
     val methods: List<Method> by ArrayDelegate({ Method(this.fqn, it) }, { !Hacks.redundantMethod(it) })
     val staticMethods: List<Method> by ArrayDelegate({ Method(this.fqn, it) }, { !Hacks.redundantMethod(it) })
 
-    val typeparameters: List<TypeParameter> by ArrayDelegate { TypeParameter(it) }
+    val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
 
     val extends: String? by NullableStringDelegate()
     val implements: List<String> by StringArrayDelegate()
@@ -137,6 +138,11 @@ internal class Modifiers(flags: List<String>) {
 
 internal class Interface(source: JSONObject) : Type(source)
 internal class Enum(source: JSONObject) : Type(source)
+
+internal class Module(source: JSONObject) : JsonWrapper(source) {
+    val text: String? by NullableStringDelegate()
+    val moduleId: String? by NullableStringDelegate()
+}
 
 internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
     val type: String by TypeDelegate { TypeParser.parse(it) }
@@ -205,7 +211,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val static = modifiers.static
     val protected = modifiers.protected
 
-    val typeparameters: List<TypeParameter> by ArrayDelegate { TypeParameter(it) }
+    val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val returns: Returns? by ReturnsDelegate()
 
     val generics: String
