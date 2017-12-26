@@ -15,23 +15,17 @@ private fun loadApiJson(path: String): String {
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     val source = JSONObject(loadApiJson(apiPath))
 
-    val types = ApiRoot(source)
+    val apiRoot = ApiRoot(source)
+    val types = apiRoot
             .namespaces.first { it.id == "yfiles" }
             .namespaces.flatMap { it.types }
+    val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
-    val fileGenerator = FileGenerator(types)
+    val fileGenerator = FileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 
     listOf("Boolean", "Number", "String", "Struct")
             .forEach { baseType -> sourceDir.resolve("yfiles/lang/${baseType}.kt").delete() }
-
-    // TODO: generate from signatures
-    sourceDir.resolve("yfiles/input/EventRecognizer.kt")
-            .writeText(
-                    "package yfiles.input\n" +
-                            "typealias EventRecognizer = (yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
-                    DEFAULT_CHARSET
-            )
 }

@@ -68,10 +68,14 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
     val summary: String by StringDelegate()
+
+    override fun toString(): String {
+        return "$name: $type"
+    }
 }
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
-    val type: String by StringDelegate()
+    val type: String by TypeDelegate { TypeParser.parse(it) }
 }
 
 internal abstract class Type(source: JSONObject) : Declaration(source) {

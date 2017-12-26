@@ -1,8 +1,10 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.Types.UNIT
 import java.io.File
 
-internal class FileGenerator(private val types: List<Type>) {
+internal class FileGenerator(private val types: Iterable<Type>,
+                             private val functionSignatures: Iterable<FunctionSignature>) {
     fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
@@ -17,6 +19,10 @@ internal class FileGenerator(private val types: List<Type>) {
 
             generate(directory, generatedFile)
         }
+
+        functionSignatures.forEach {
+            generate(directory, it)
+        }
     }
 
     private fun generate(directory: File, generatedFile: GeneratedFile) {
@@ -30,7 +36,34 @@ internal class FileGenerator(private val types: List<Type>) {
         val header = generatedFile.header
         val content = generatedFile.content()
                 .replace(redundantPackageDeclaration, "")
-        file.writeText("$header\n$content")
+        file.writeText("$header\n\n$content")
+    }
+
+    private fun generate(directory: File, functionSignature: FunctionSignature) {
+        val fqn = FQN(functionSignature.fqn)
+        val dir = directory.resolve(fqn.path)
+        dir.mkdirs()
+
+        val packageName = fqn.packageName
+        val redundantPackageDeclaration = packageName + "."
+
+        val file = dir.resolve("${fqn.name}.kt")
+        val header = "package $packageName"
+
+        val typeparameters = functionSignature.typeparameters
+        val generics = if (typeparameters.isNotEmpty()) {
+            "<${typeparameters.map { it.name }.joinToString(", ")}>"
+        } else {
+            ""
+        }
+        val parameters = functionSignature.parameters
+                .joinToString(", ")
+        val returns = functionSignature.returns?.type ?: UNIT
+
+        val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
+                .replace(redundantPackageDeclaration, "")
+
+        file.writeText("$header\n\n$content")
     }
 }
 
@@ -88,7 +121,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
                 .sortedBy { it.name }
 
     val header: String
-        get() = "package ${fqn.packageName}\n"
+        get() = "package ${fqn.packageName}"
 
     open protected fun parentTypes(): List<String> {
         return declaration.implementedTypes()
