@@ -73,6 +73,18 @@ internal object Hacks {
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
 
+    fun getPropertyType(className: String, propertyName: String): String? {
+        return when {
+            className == "yfiles.seriesparallel.SeriesParallelLayoutData" && propertyName == "outEdgeComparers"
+            -> "yfiles.layout.ItemMapping<yfiles.graph.INode, system.Comparison<yfiles.graph.IEdge>>"
+
+            className == "yfiles.tree.TreeLayoutData" && propertyName == "outEdgeComparers"
+            -> "yfiles.layout.ItemMapping<yfiles.graph.INode, system.Comparison<yfiles.graph.IEdge>>"
+
+            else -> null
+        }
+    }
+
     fun getParameterType(method: MethodBase, parameter: Parameter): String? {
         if (parameter.type != "Array") {
             return null

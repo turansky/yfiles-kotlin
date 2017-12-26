@@ -66,7 +66,7 @@ internal class FunctionSignature(val fqn: String, source: JSONObject) : JsonWrap
 
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val type: String by TypeDelegate { TypeParser.parse(it) }
+    val type: String by TypeDelegate { TypeParser.parseType(it) }
     val summary: String by StringDelegate()
 
     override fun toString(): String {
@@ -75,7 +75,7 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
-    val type: String by TypeDelegate { TypeParser.parse(it) }
+    val type: String by TypeDelegate { TypeParser.parseType(it) }
 }
 
 internal abstract class Type(source: JSONObject) : Declaration(source) {
@@ -149,7 +149,8 @@ internal class Module(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
-    val type: String by TypeDelegate { TypeParser.parse(it) }
+    private val signature: String? by NullableStringDelegate()
+    open val type: String by TypeDelegate { TypeParser.parse(it, signature) }
 }
 
 internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
@@ -178,6 +179,9 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
+
+    override val type: String
+        get() = Hacks.getPropertyType(fqn, name) ?: super.type
 
     override fun toString(): String {
         var str = ""
@@ -289,7 +293,8 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 internal class Parameter(private val method: MethodBase, source: JSONObject) : JsonWrapper(source) {
     private val name: String by StringDelegate()
     val artificial: Boolean by BooleanDelegate()
-    val type: String by TypeDelegate { TypeParser.parse(it) }
+    private val signature: String? by NullableStringDelegate()
+    val type: String by TypeDelegate { TypeParser.parse(it, signature) }
     val summary: String? by NullableStringDelegate()
     val optional: Boolean by BooleanDelegate()
 
@@ -302,7 +307,10 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
 }
 
-internal class Returns(val type: String, source: JSONObject) : JsonWrapper(source)
+internal class Returns(source: JSONObject, private val predefinedType: String?) : JsonWrapper(source) {
+    private val signature: String? by NullableStringDelegate()
+    val type: String by TypeDelegate { predefinedType ?: TypeParser.parse(it, signature) }
+}
 
 private class ArrayDelegate<T> {
 
@@ -459,13 +467,10 @@ private class ReturnsDelegate {
         val source = thisRef.source
         val key = property.name
 
-        return if (source.has(key)) {
-            val data = source.getJSONObject(key)
-            val type = Hacks.getReturnType(thisRef)
-                    ?: TypeParser.parse(data.getString("type"))
-            Returns(type, data)
-        } else {
-            null
+        if (!source.has(key)) {
+            return null
         }
+
+        return Returns(source.getJSONObject(key), Hacks.getReturnType(thisRef))
     }
 }

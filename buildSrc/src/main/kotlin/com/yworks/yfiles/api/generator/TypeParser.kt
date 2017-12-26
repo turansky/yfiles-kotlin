@@ -4,10 +4,6 @@ import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
 import com.yworks.yfiles.api.generator.Types.UNIT
 
 internal object TypeParser {
-    private val FUNCTION_START = "function("
-    private val FUNCTION_END = "):"
-    private val FUNCTION_END_VOID = ")"
-
     private val GENERIC_START = "<"
     private val GENERIC_END = ">"
 
@@ -41,11 +37,14 @@ internal object TypeParser {
             "Promise" to "kotlin.js.Promise"
     )
 
-    fun parse(type: String): String {
-        if (type.startsWith(FUNCTION_START)) {
-            return parseFunctionType(type)
+    fun parse(type: String, signature: String?): String {
+        if (signature != null) {
+            println("Parse:")
+            println("Type: $type")
+            println("Signature: $signature")
         }
-        return parseType(type)
+
+        return parseType(signature ?: type)
     }
 
     fun parseType(type: String): String {
@@ -69,70 +68,32 @@ internal object TypeParser {
     }
 
     fun getGenericString(parameters: List<TypeParameter>): String {
-        return if (parameters.isEmpty()) "" else "<${parameters.map { it.name }.joinToString(", ")}> "
+        return if (parameters.isNotEmpty()) {
+            "<${parameters.map { it.name }.joinToString(", ")}> "
+        } else {
+            ""
+        }
     }
 
-    fun parseGenericParameters(parameters: String): List<String> {
-        // TODO: temp hack for generic, logic check required
+    // TODO: optimize calculation
+    private fun parseGenericParameters(parameters: String): List<String> {
         if (!parameters.contains(GENERIC_START)) {
-            return if (parameters.contains(FUNCTION_START)) {
-                // TODO: realize full logic if needed
-                parameters.split(delimiters = *arrayOf(","), limit = 2).map {
-                    if (it.startsWith(FUNCTION_START)) parseFunctionType(it) else parseType(it)
-                }
-            } else {
-                parameters.split(",").map { parseType(it) }
+            return parameters.split(",")
+                    .map { parseType(it) }
+        }
+
+        val result = mutableListOf<String>()
+
+        var items = emptyList<String>()
+        parameters.split(",").forEach { part ->
+            items += part
+            val str = items.joinToString(",")
+            if (str.count { it.equals('<') } == str.count { it.equals('>') }) {
+                result.add(parseType(str))
+                items = emptyList()
             }
         }
 
-        val firstType = firstGenericType(parameters)
-        if (firstType == parameters) {
-            return listOf(parseType(firstType))
-        }
-
-        val types = mutableListOf(firstType)
-        types.addAll(parseGenericParameters(parameters.substring(firstType.length + 1)))
-        return types.toList()
-    }
-
-    fun firstGenericType(parameters: String): String {
-        var semafor = 0
-        var index = 0
-
-        while (true) {
-            val indexes = listOf(
-                    parameters.indexOf(",", index),
-                    parameters.indexOf("<", index),
-                    parameters.indexOf(">", index)
-            )
-
-            if (indexes.all { it == -1 }) {
-                return parameters
-            }
-
-            // TODO: check calculation
-            index = indexes.map({ if (it == -1) 100000 else it })
-                    .minWith(Comparator { o1, o2 -> Math.min(o1, o2) }) ?: -1
-
-            if (index == -1 || index == parameters.lastIndex) {
-                return parameters
-            }
-
-            when (indexes.indexOf(index)) {
-                0 -> if (semafor == 0) return parameters.substring(0, index)
-                1 -> semafor++
-                2 -> semafor--
-            }
-            index++
-        }
-    }
-
-    fun parseFunctionType(type: String): String {
-        val voidResult = type.endsWith(FUNCTION_END_VOID)
-        val functionEnd = if (voidResult) FUNCTION_END_VOID else FUNCTION_END
-        val parameterTypes = between(type, FUNCTION_START, functionEnd)
-                .split(",").map({ parseType(it) })
-        val resultType = if (voidResult) UNIT else parseType(from(type, FUNCTION_END))
-        return "(${parameterTypes.joinToString(", ")}) -> $resultType"
+        return result.toList()
     }
 }
