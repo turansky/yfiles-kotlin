@@ -1,5 +1,6 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.Types.UNIT
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -233,9 +234,17 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
     }
 
     override fun toString(): String {
-        val returnType = returns?.type ?: Types.UNIT
-        val body = if (abstract) "" else " = definedExternally"
-        return "${modificator()}fun $generics$name(${parametersString()}): $returnType$body"
+        val returnType = returns?.type
+        val returnSignature = if (abstract) {
+            if (returnType != null) {
+                ":" + returnType
+            } else {
+                ""
+            }
+        } else {
+            ":" + (returnType ?: UNIT) + " = definedExternally"
+        }
+        return "${modificator()}fun $generics$name(${parametersString()})$returnSignature"
     }
 }
 
