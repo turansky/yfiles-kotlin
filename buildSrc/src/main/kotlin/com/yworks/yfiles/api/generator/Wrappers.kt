@@ -34,7 +34,7 @@ internal abstract class Declaration : JsonWrapper {
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
     val namespaces: List<Namespace> by ArrayDelegate(::Namespace)
-    val functionSignatures: Map<String, Signature> by MapDelegate { name, source -> Signature(name, source) }
+    val functionSignatures: Map<String, FunctionSignature> by MapDelegate { name, source -> FunctionSignature(name, source) }
 }
 
 internal class Namespace(source: JSONObject) : JsonWrapper(source) {
@@ -57,7 +57,7 @@ internal class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-internal class Signature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
+internal class FunctionSignature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
     val summary: String by StringDelegate()
     val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
