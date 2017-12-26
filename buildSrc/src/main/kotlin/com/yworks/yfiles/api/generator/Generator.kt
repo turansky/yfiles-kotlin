@@ -15,7 +15,7 @@ private fun loadApiJson(path: String): String {
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     val source = JSONObject(loadApiJson(apiPath))
 
-    val types = JAPIRoot(source)
+    val types = ApiRoot(source)
             .namespaces.first { it.id == "yfiles" }
             .namespaces.flatMap { it.types }
 

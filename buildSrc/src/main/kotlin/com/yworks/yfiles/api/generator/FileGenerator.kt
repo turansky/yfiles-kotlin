@@ -2,16 +2,16 @@ package com.yworks.yfiles.api.generator
 
 import java.io.File
 
-class FileGenerator(private val types: List<JType>) {
+internal class FileGenerator(private val types: List<Type>) {
     fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
 
         types.forEach {
             val generatedFile = when (it) {
-                is JClass -> ClassFile(it)
-                is JInterface -> InterfaceFile(it)
-                is JEnum -> EnumFile(it)
+                is Class -> ClassFile(it)
+                is Interface -> InterfaceFile(it)
+                is Enum -> EnumFile(it)
                 else -> throw IllegalStateException("Undefined type for generation: " + it)
             }
 
@@ -51,39 +51,39 @@ private class FQN(val fqn: String) {
     }
 }
 
-private abstract class GeneratedFile(private val declaration: JType) {
+private abstract class GeneratedFile(private val declaration: Type) {
     val className = declaration.fqn
     val fqn: FQN = FQN(className)
 
-    val properties: List<JProperty>
+    val properties: List<Property>
         get() = declaration.properties
                 .sortedBy { it.name }
 
-    val staticConstants: List<JConstant>
+    val staticConstants: List<Constant>
         get() = declaration.constants
                 .sortedBy { it.name }
 
-    val staticProperties: List<JProperty>
+    val staticProperties: List<Property>
         get() = declaration.staticProperties
                 .sortedBy { it.name }
 
-    val staticFunctions: List<JMethod>
+    val staticFunctions: List<Method>
         get() = declaration.staticMethods
                 .sortedBy { it.name }
 
-    val staticDeclarations: List<JDeclaration>
+    val staticDeclarations: List<Declaration>
         get() {
-            return mutableListOf<JDeclaration>()
+            return mutableListOf<Declaration>()
                     .union(staticConstants)
                     .union(staticProperties)
                     .union(staticFunctions)
                     .toList()
         }
 
-    val memberProperties: List<JProperty>
+    val memberProperties: List<Property>
         get() = properties.filter { !it.static }
 
-    val memberFunctions: List<JMethod>
+    val memberFunctions: List<Method>
         get() = declaration.methods
                 .sortedBy { it.name }
 
@@ -144,7 +144,7 @@ private abstract class GeneratedFile(private val declaration: JType) {
     }
 
     open fun content(): String {
-        return listOf<JDeclaration>()
+        return listOf<Declaration>()
                 .union(memberProperties)
                 .union(memberFunctions)
                 .union(listOf(Hacks.getAdditionalContent(declaration.fqn)))
@@ -152,7 +152,7 @@ private abstract class GeneratedFile(private val declaration: JType) {
     }
 }
 
-private class ClassFile(private val declaration: JClass) : GeneratedFile(declaration) {
+private class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
     override fun isStatic(): Boolean {
         return declaration.static
     }
@@ -180,9 +180,7 @@ private class ClassFile(private val declaration: JClass) : GeneratedFile(declara
 
     override fun parentTypes(): List<String> {
         val extendedType = declaration.extendedType()
-        if (extendedType == null) {
-            return super.parentTypes()
-        }
+                ?: return super.parentTypes()
 
         return listOf(extendedType)
                 .union(super.parentTypes())
@@ -198,7 +196,7 @@ private class ClassFile(private val declaration: JClass) : GeneratedFile(declara
     }
 }
 
-private class InterfaceFile(declaration: JInterface) : GeneratedFile(declaration) {
+private class InterfaceFile(declaration: Interface) : GeneratedFile(declaration) {
     override fun content(): String {
         var content = super.content()
         val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
@@ -218,7 +216,7 @@ private class InterfaceFile(declaration: JInterface) : GeneratedFile(declaration
     }
 }
 
-private class EnumFile(private val declaration: JEnum) : GeneratedFile(declaration) {
+private class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
     override fun content(): String {
         val values = declaration.constants
                 .map { "    val ${it.name}: ${it.nameOfClass} = definedExternally" }

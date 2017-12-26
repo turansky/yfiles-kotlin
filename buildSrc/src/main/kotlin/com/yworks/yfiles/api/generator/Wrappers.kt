@@ -5,11 +5,11 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
 
-abstract class JsonWrapper(val source: JSONObject)
-abstract class JDeclaration : JsonWrapper {
+internal abstract class JsonWrapper(val source: JSONObject)
+internal abstract class Declaration : JsonWrapper {
     val id: String by StringDelegate()
     val name: String by StringDelegate()
-    protected val modifiers: JModifiers by ModifiersDelegate()
+    protected val modifiers: Modifiers by ModifiersDelegate()
 
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
@@ -32,19 +32,19 @@ abstract class JDeclaration : JsonWrapper {
     }
 }
 
-class JAPIRoot(source: JSONObject) : JsonWrapper(source) {
-    val namespaces: List<JNamespace> by ArrayDelegate { JNamespace(it) }
-    val functionSignatures: Map<String, JSignature> by MapDelegate { name, source -> JSignature(name, source) }
+internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
+    val namespaces: List<Namespace> by ArrayDelegate { Namespace(it) }
+    val functionSignatures: Map<String, Signature> by MapDelegate { name, source -> Signature(name, source) }
 }
 
-class JNamespace(source: JSONObject) : JsonWrapper(source) {
+internal class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
-        fun parseType(source: JSONObject): JType {
+        fun parseType(source: JSONObject): Type {
             val group = source.getString("group")
             return when (group) {
-                "class" -> JClass(source)
-                "interface" -> JInterface(source)
-                "enum" -> JEnum(source)
+                "class" -> Class(source)
+                "interface" -> Interface(source)
+                "enum" -> Enum(source)
                 else -> throw IllegalArgumentException("Undefined type group '$group'")
             }
         }
@@ -53,37 +53,37 @@ class JNamespace(source: JSONObject) : JsonWrapper(source) {
     val id: String by StringDelegate()
     val name: String by StringDelegate()
 
-    val namespaces: List<JNamespace> by ArrayDelegate { JNamespace(it) }
-    val types: List<JType> by ArrayDelegate { parseType(it) }
+    val namespaces: List<Namespace> by ArrayDelegate { Namespace(it) }
+    val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-class JSignature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
+internal class Signature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
     val summary: String by StringDelegate()
-    val parameters: List<JSignatureParameter> by ArrayDelegate { JSignatureParameter(it) }
-    val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
-    val returns: JSignatureReturns? by SignatureReturnsDelegate()
+    val parameters: List<SignatureParameter> by ArrayDelegate { SignatureParameter(it) }
+    val typeparameters: List<TypeParameter> by ArrayDelegate { TypeParameter(it) }
+    val returns: SignatureReturns? by SignatureReturnsDelegate()
 }
 
-class JSignatureParameter(source: JSONObject) : JsonWrapper(source) {
+internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
     val summary: String by StringDelegate()
 }
 
-class JSignatureReturns(source: JSONObject) : JsonWrapper(source) {
+internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     val type: String by StringDelegate()
 }
 
-abstract class JType(source: JSONObject) : JDeclaration(source) {
-    val constants: List<JConstant> by ArrayDelegate { JConstant(this.fqn, it) }
+internal abstract class Type(source: JSONObject) : Declaration(source) {
+    val constants: List<Constant> by ArrayDelegate { Constant(this.fqn, it) }
 
-    val properties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
-    val staticProperties: List<JProperty> by ArrayDelegate { JProperty(this.fqn, it) }
+    val properties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
+    val staticProperties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
 
-    val methods: List<JMethod> by ArrayDelegate({ JMethod(this.fqn, it) }, { !Hacks.redundantMethod(it) })
-    val staticMethods: List<JMethod> by ArrayDelegate({ JMethod(this.fqn, it) }, { !Hacks.redundantMethod(it) })
+    val methods: List<Method> by ArrayDelegate({ Method(this.fqn, it) }, { !Hacks.redundantMethod(it) })
+    val staticMethods: List<Method> by ArrayDelegate({ Method(this.fqn, it) }, { !Hacks.redundantMethod(it) })
 
-    val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
+    val typeparameters: List<TypeParameter> by ArrayDelegate { TypeParameter(it) }
 
     val extends: String? by NullableStringDelegate()
     val implements: List<String> by StringArrayDelegate()
@@ -112,7 +112,7 @@ abstract class JType(source: JSONObject) : JDeclaration(source) {
     }
 }
 
-class JClass(source: JSONObject) : JType(source) {
+internal class Class(source: JSONObject) : Type(source) {
     val static = modifiers.static
     val final = modifiers.final
     val open = !final
@@ -124,10 +124,10 @@ class JClass(source: JSONObject) : JType(source) {
         else -> ""
     }
 
-    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(this.fqn, it) }
+    val constructors: List<Constructor> by ArrayDelegate { Constructor(this.fqn, it) }
 }
 
-class JModifiers(flags: List<String>) {
+internal class Modifiers(flags: List<String>) {
     val static = flags.contains("static")
     val final = flags.contains("final")
     val readOnly = flags.contains("ro")
@@ -135,17 +135,14 @@ class JModifiers(flags: List<String>) {
     val protected = flags.contains("protected")
 }
 
-class JInterface(source: JSONObject) : JType(source)
+internal class Interface(source: JSONObject) : Type(source)
+internal class Enum(source: JSONObject) : Type(source)
 
-class JEnum(source: JSONObject) : JType(source) {
-    val constructors: List<JConstructor> by ArrayDelegate { JConstructor(this.fqn, it) }
-}
-
-abstract class JTypedDeclaration(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
+internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
     val type: String by TypeDelegate { TypeParser.parse(it) }
 }
 
-class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
+internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
     val protected = modifiers.protected
 
     val modificator: String = when {
@@ -158,14 +155,14 @@ class JConstructor(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
     }
 }
 
-class JConstant(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
+internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
     override fun toString(): String {
         val type = Hacks.correctStaticFieldGeneric(this.type)
         return "val $name: $type = definedExternally"
     }
 }
 
-class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source) {
+internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
     val static = modifiers.static
     val protected = modifiers.protected
     val getterSetter = !modifiers.readOnly
@@ -203,13 +200,13 @@ class JProperty(fqn: String, source: JSONObject) : JTypedDeclaration(fqn, source
     }
 }
 
-class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
+internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
     val abstract = modifiers.abstract
     val static = modifiers.static
     val protected = modifiers.protected
 
-    val typeparameters: List<JTypeParameter> by ArrayDelegate { JTypeParameter(it) }
-    val returns: JReturns? by ReturnsDelegate()
+    val typeparameters: List<TypeParameter> by ArrayDelegate { TypeParameter(it) }
+    val returns: Returns? by ReturnsDelegate()
 
     val generics: String
         get() = Hacks.getFunctionGenerics(fqn, name) ?: TypeParser.getGenericString(typeparameters)
@@ -248,8 +245,8 @@ class JMethod(fqn: String, source: JSONObject) : JMethodBase(fqn, source) {
     }
 }
 
-abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, source) {
-    val parameters: List<JParameter> by ArrayDelegate({ JParameter(this, it) }, { !it.artificial })
+internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
+    val parameters: List<Parameter> by ArrayDelegate({ Parameter(this, it) }, { !it.artificial })
 
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
@@ -272,14 +269,14 @@ abstract class JMethodBase(fqn: String, source: JSONObject) : JDeclaration(fqn, 
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is JMethodBase
+        return other is MethodBase
                 && Objects.equals(fqn, other.fqn)
                 && Objects.equals(name, other.name)
                 && Objects.equals(parametersString(false), other.parametersString(false))
     }
 }
 
-class JParameter(private val method: JMethodBase, source: JSONObject) : JsonWrapper(source) {
+internal class Parameter(private val method: MethodBase, source: JSONObject) : JsonWrapper(source) {
     private val name: String by StringDelegate()
     val artificial: Boolean by BooleanDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
@@ -291,11 +288,11 @@ class JParameter(private val method: JMethodBase, source: JSONObject) : JsonWrap
     }
 }
 
-class JTypeParameter(source: JSONObject) : JsonWrapper(source) {
+internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
 }
 
-class JReturns(val type: String, source: JSONObject) : JsonWrapper(source)
+internal class Returns(val type: String, source: JSONObject) : JsonWrapper(source)
 
 private class ArrayDelegate<T> {
 
@@ -429,18 +426,18 @@ private class TypeDelegate(private val parse: (String) -> String) {
 }
 
 private class ModifiersDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JModifiers {
-        return JModifiers(StringArrayDelegate.value(thisRef, property))
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Modifiers {
+        return Modifiers(StringArrayDelegate.value(thisRef, property))
     }
 }
 
 private class SignatureReturnsDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): JSignatureReturns? {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): SignatureReturns? {
         val source = thisRef.source
         val key = property.name
 
         return if (source.has(key)) {
-            JSignatureReturns(source.getJSONObject(key))
+            SignatureReturns(source.getJSONObject(key))
         } else {
             null
         }
@@ -448,7 +445,7 @@ private class SignatureReturnsDelegate {
 }
 
 private class ReturnsDelegate {
-    operator fun getValue(thisRef: JMethod, property: KProperty<*>): JReturns? {
+    operator fun getValue(thisRef: Method, property: KProperty<*>): Returns? {
         val source = thisRef.source
         val key = property.name
 
@@ -456,7 +453,7 @@ private class ReturnsDelegate {
             val data = source.getJSONObject(key)
             val type = Hacks.getReturnType(thisRef)
                     ?: TypeParser.parse(data.getString("type"))
-            JReturns(type, data)
+            Returns(type, data)
         } else {
             null
         }

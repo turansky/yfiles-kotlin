@@ -1,6 +1,6 @@
 package com.yworks.yfiles.api.generator
 
-interface ClassRegistry {
+internal interface ClassRegistry {
     companion object {
         private var _instance: ClassRegistry = EmptyClassRegistry()
 
@@ -38,7 +38,7 @@ private class EmptyClassRegistry : ClassRegistry {
 
 }
 
-class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
+internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
     private val instances = types.associateBy({ it.fqn }, { it })
 
     private val functionsMap = types.associateBy(
@@ -86,12 +86,12 @@ class ClassRegistryImpl(types: List<JType>) : ClassRegistry {
     }
 
     override fun isInterface(className: String): Boolean {
-        return instances[className] is JInterface
+        return instances[className] is Interface
     }
 
     override fun isFinalClass(className: String): Boolean {
         val instance = instances[className]
-        return instance is JClass && instance.final
+        return instance is Class && instance.final
     }
 
     override fun functionOverriden(className: String, functionName: String): Boolean {

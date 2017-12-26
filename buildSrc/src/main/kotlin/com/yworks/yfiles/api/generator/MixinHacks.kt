@@ -36,7 +36,7 @@ internal object MixinHacks {
             "yfiles.graph.IRow"
     )
 
-    fun defineLikeAbstractClass(className: String, functions: List<JMethod>, properties: List<JProperty>): Boolean {
+    fun defineLikeAbstractClass(className: String, functions: List<Method>, properties: List<Property>): Boolean {
         if (className in MUST_BE_ABSTRACT_CLASSES) {
             return true
         }

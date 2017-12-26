@@ -68,7 +68,7 @@ internal object TypeParser {
         return "$mainType<${parametrizedTypes.joinToString(", ")}>"
     }
 
-    fun getGenericString(parameters: List<JTypeParameter>): String {
+    fun getGenericString(parameters: List<TypeParameter>): String {
         return if (parameters.isEmpty()) "" else "<${parameters.map { it.name }.joinToString(", ")}> "
     }
 

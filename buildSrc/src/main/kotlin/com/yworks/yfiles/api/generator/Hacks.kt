@@ -5,7 +5,7 @@ import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
 internal object Hacks {
     val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
-    fun redundantMethod(method: JMethod): Boolean {
+    fun redundantMethod(method: Method): Boolean {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
@@ -22,7 +22,7 @@ internal object Hacks {
         }
     }
 
-    fun getReturnType(method: JMethod): String? {
+    fun getReturnType(method: Method): String? {
         val className = method.fqn
         val methodName = method.name
 
@@ -73,14 +73,14 @@ internal object Hacks {
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
 
-    fun getParameterType(method: JMethodBase, parameter: JParameter): String? {
+    fun getParameterType(method: MethodBase, parameter: Parameter): String? {
         if (parameter.type != "Array") {
             return null
         }
 
         val className = method.fqn
         val methodName = when (method) {
-            is JMethod -> method.name
+            is Method -> method.name
             else -> ""
         }
 
@@ -238,7 +238,7 @@ internal object Hacks {
             ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
-    fun fixParameterName(method: JMethodBase, parameterName: String): String? {
+    fun fixParameterName(method: MethodBase, parameterName: String): String? {
         return PARAMETERS_CORRECTION[ParameterData(method.fqn, method.name, parameterName)]
     }
 }
