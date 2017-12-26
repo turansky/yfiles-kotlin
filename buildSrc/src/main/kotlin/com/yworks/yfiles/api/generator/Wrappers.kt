@@ -252,7 +252,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 }
 
 internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
-    val parameters: List<Parameter> by ArrayDelegate({ Parameter(this, it) }, { !it.artificial })
+    val parameters: List<Parameter> by ArrayDelegate({ Parameter(this, it) })
 
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
@@ -284,7 +284,6 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 
 internal class Parameter(private val method: MethodBase, source: JSONObject) : JsonWrapper(source) {
     private val name: String by StringDelegate()
-    val artificial: Boolean by BooleanDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it) }
     val summary: String? by NullableStringDelegate()
     val optional: Boolean by BooleanDelegate()
