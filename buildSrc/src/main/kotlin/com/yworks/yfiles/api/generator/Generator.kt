@@ -36,12 +36,4 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
                             "typealias EventRecognizer = (yfiles.lang.Object, yfiles.lang.EventArgs) -> Boolean",
                     DEFAULT_CHARSET
             )
-
-    sourceDir.resolve("system").mkdir()
-    sourceDir.resolve("system/Comparison.kt")
-            .writeText(
-                    "package system\n" +
-                            "typealias Comparison<T> = (T, T) -> Number",
-                    DEFAULT_CHARSET
-            )
 }
