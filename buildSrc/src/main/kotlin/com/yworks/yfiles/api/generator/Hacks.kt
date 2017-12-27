@@ -4,18 +4,20 @@ import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
 import java.io.File
 
 internal object Hacks {
-    val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
+    private val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
     fun redundantMethod(method: Method): Boolean {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
+    // yfiles.api.json correction required
     fun correctStaticFieldGeneric(type: String): String {
         // TODO: Check. Quick fix for generics in constants
         // One case - IListEnumerable.EMPTY
         return type.replace("<T>", "<out Any>")
     }
 
+    // yfiles.api.json correction required
     fun getFunctionGenerics(className: String, name: String): String? {
         return when {
             className == "yfiles.collections.List" && name == "fromArray" -> "<T>"
@@ -23,6 +25,7 @@ internal object Hacks {
         }
     }
 
+    // yfiles.api.json correction required
     fun getReturnType(method: Method): String? {
         val className = method.fqn
         val methodName = method.name
@@ -38,7 +41,6 @@ internal object Hacks {
         }
     }
 
-
     fun ignoreExtendedType(className: String): Boolean {
         return when (className) {
             "yfiles.lang.Exception" -> true
@@ -46,6 +48,7 @@ internal object Hacks {
         }
     }
 
+    // yfiles.api.json correction required
     fun getImplementedTypes(className: String): List<String>? {
         return when (className) {
             "yfiles.algorithms.EdgeList" -> emptyList()
@@ -54,6 +57,7 @@ internal object Hacks {
         }
     }
 
+    // yfiles.api.json correction required
     private val ARRAY_GENERIC_CORRECTION = mapOf(
             ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to Types.NODE_TYPE,
 
@@ -74,12 +78,14 @@ internal object Hacks {
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
 
+    // yfiles.api.json correction required
     fun addComparisonClass(sourceDir: File) {
         sourceDir.resolve("system").mkdir()
         sourceDir.resolve("system/Comparison.kt")
                 .writeText("package system\n\ntypealias Comparison<T> = (T, T) -> Number", DEFAULT_CHARSET)
     }
 
+    // yfiles.api.json correction required
     fun getPropertyType(className: String, propertyName: String): String? {
         return when {
             className == "yfiles.seriesparallel.SeriesParallelLayoutData" && propertyName == "outEdgeComparers"
@@ -92,6 +98,7 @@ internal object Hacks {
         }
     }
 
+    // yfiles.api.json correction required
     fun getParameterType(method: MethodBase, parameter: Parameter): String? {
         if (parameter.type != "Array") {
             return null
@@ -110,13 +117,16 @@ internal object Hacks {
         return "Array<$generic>"
     }
 
+    // yfiles.api.json correction required
     private val CLONE_REQUIRED = listOf(
             "yfiles.geometry.Matrix",
             "yfiles.geometry.MutablePoint",
             "yfiles.geometry.MutableSize"
     )
+
     private val CLONE_OVERRIDE = "override fun clone(): ${OBJECT_TYPE} = definedExternally"
 
+    // yfiles.api.json correction required
     fun getAdditionalContent(className: String): String {
         return when {
             className == "yfiles.algorithms.YList"
@@ -187,6 +197,7 @@ internal object Hacks {
         return lines.joinToString("\n")
     }
 
+    // yfiles.api.json correction required
     private val PARAMETERS_CORRECTION = mapOf(
             ParameterData("yfiles.lang.IComparable", "compareTo", "obj") to "o",
             ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
@@ -257,6 +268,7 @@ internal object Hacks {
             ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
+    // yfiles.api.json correction required
     fun fixParameterName(method: MethodBase, parameterName: String): String? {
         return PARAMETERS_CORRECTION[ParameterData(method.fqn, method.name, parameterName)]
     }
