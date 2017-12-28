@@ -68,12 +68,9 @@ internal object Hacks {
             ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "IPortCandidate",
             ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "Number",
 
-            ParameterData("yfiles.lang.Class", "injectInterfaces", "traits") to OBJECT_TYPE,
-
-            ParameterData("yfiles.lang.delegate", "createDelegate", "functions") to "yfiles.lang.delegate",
-            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
-
             ParameterData("yfiles.lang.Class", "injectInterfaces", "interfaces") to "Interface",
+
+            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
 
             ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
     )
