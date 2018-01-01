@@ -1,7 +1,7 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
-import java.io.File
+import org.json.JSONObject
 
 internal object Hacks {
     private val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
@@ -76,10 +76,21 @@ internal object Hacks {
     )
 
     // yfiles.api.json correction required
-    fun addComparisonClass(sourceDir: File) {
-        sourceDir.resolve("system").mkdir()
-        sourceDir.resolve("system/Comparison.kt")
-                .writeText("package system\n\ntypealias Comparison<T> = (T, T) -> Number", DEFAULT_CHARSET)
+    fun addComparisonClass(source: JSONObject) {
+        source.getJSONObject("functionSignatures")
+                .put(
+                        "system.Comparison",
+                        jObject(
+                                "parameters" to jArray(
+                                        jObject("name" to "o1", "type" to "T"),
+                                        jObject("name" to "o2", "type" to "T")
+                                ),
+                                "typeparameters" to jArray(
+                                        jObject("name" to "T")
+                                ),
+                                "returns" to jObject("type" to "number")
+                        )
+                )
     }
 
     // yfiles.api.json correction required

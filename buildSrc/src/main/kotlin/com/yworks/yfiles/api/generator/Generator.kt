@@ -24,6 +24,8 @@ private fun loadApiJson(path: String): String {
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     val source = JSONObject(loadApiJson(apiPath))
 
+    Hacks.addComparisonClass(source)
+
     val apiRoot = ApiRoot(source)
     val types = apiRoot
             .namespaces.first { it.id == YFILES_NAMESPACE }
@@ -36,6 +38,4 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
 
     val fileGenerator = FileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
-
-    Hacks.addComparisonClass(sourceDir)
 }
