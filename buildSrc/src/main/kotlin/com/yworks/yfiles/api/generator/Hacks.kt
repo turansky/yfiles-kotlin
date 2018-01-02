@@ -10,14 +10,18 @@ internal object Hacks {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
+    private fun JSONObject.type(id: String): JSONObject {
+        return this.getJSONArray("namespaces")
+                .firstObject { it.getString("id") == id.substring(0, id.indexOf(".")) }
+                .getJSONArray("namespaces")
+                .firstObject { it.getString("id") == id.substring(0, id.lastIndexOf(".")) }
+                .getJSONArray("types")
+                .firstObject { it.getString("id") == id }
+    }
+
     // yfiles.api.json correction required
     fun fixConstantGenerics(source: JSONObject) {
-        source.getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles" }
-                .getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles.collections" }
-                .getJSONArray("types")
-                .firstObject { it.getString("id") == "yfiles.collections.IListEnumerable" }
+        source.type("yfiles.collections.IListEnumerable")
                 .getJSONArray("constants")
                 .firstObject { it.getString("name") == "EMPTY" }
                 .also {
@@ -29,12 +33,7 @@ internal object Hacks {
 
     // yfiles.api.json correction required
     fun fixFunctionGenerics(source: JSONObject) {
-        source.getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles" }
-                .getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles.collections" }
-                .getJSONArray("types")
-                .firstObject { it.getString("id") == "yfiles.collections.List" }
+        source.type("yfiles.collections.List")
                 .getJSONArray("staticMethods")
                 .firstObject { it.getString("name") == "fromArray" }
                 .also {
@@ -46,12 +45,8 @@ internal object Hacks {
 
     // yfiles.api.json correction required
     fun fixReturnType(source: JSONObject) {
-        source.getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles" }
-                .getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles.algorithms" }
-                .getJSONArray("types")
-                .objects { it.getString("id") in listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList") }
+        listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+                .map { source.type(it) }
                 .forEach {
                     it.getJSONArray("methods")
                             .firstObject { it.get("name") == "getEnumerator" }
@@ -61,23 +56,14 @@ internal object Hacks {
     }
 
     fun fixExtendedType(source: JSONObject) {
-        source.getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles" }
-                .getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles.lang" }
-                .getJSONArray("types")
-                .firstObject { it.getString("id") == "yfiles.lang.Exception" }
+        source.type("yfiles.lang.Exception")
                 .remove("extends")
     }
 
     // yfiles.api.json correction required
     fun fixImplementedTypes(source: JSONObject) {
-        source.getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles" }
-                .getJSONArray("namespaces")
-                .firstObject { it.getString("id") == "yfiles.algorithms" }
-                .getJSONArray("types")
-                .objects { it.getString("id") in listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList") }
+        listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+                .map { source.type(it) }
                 .forEach { it.remove("implements") }
     }
 

@@ -18,9 +18,3 @@ internal fun JSONArray.firstObject(predicate: (JSONObject) -> Boolean): JSONObje
             .filter(predicate)
             .first()
 }
-
-internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSONObject> {
-    return (0 until this.length())
-            .map(this::getJSONObject)
-            .filter(predicate)
-}
