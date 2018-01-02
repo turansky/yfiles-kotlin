@@ -10,19 +10,37 @@ internal object Hacks {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
-    // yfiles.api.json correction required
-    fun correctStaticFieldGeneric(type: String): String {
-        // TODO: Check. Quick fix for generics in constants
-        // One case - IListEnumerable.EMPTY
-        return type.replace("<T>", "<out Any>")
+    fun fixConstantGenerics(source: JSONObject) {
+        source.getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles" }
+                .getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles.collections" }
+                .getJSONArray("types")
+                .firstObject { it.getString("id") == "yfiles.collections.IListEnumerable" }
+                .getJSONArray("constants")
+                .firstObject { it.getString("name") == "EMPTY" }
+                .also {
+                    val type = it.getString("type")
+                            .replace("<T>", "<Object>")
+                    it.put("type", type)
+                }
     }
 
     // yfiles.api.json correction required
-    fun getFunctionGenerics(className: String, name: String): String? {
-        return when {
-            className == "yfiles.collections.List" && name == "fromArray" -> "<T>"
-            else -> null
-        }
+    fun fixFunctionGenerics(source: JSONObject) {
+        source.getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles" }
+                .getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles.collections" }
+                .getJSONArray("types")
+                .firstObject { it.getString("id") == "yfiles.collections.List" }
+                .getJSONArray("staticMethods")
+                .firstObject { it.getString("name") == "fromArray" }
+                .also {
+                    it.put("typeparameters", jArray(
+                            jObject("name" to "T")
+                    ))
+                }
     }
 
     // yfiles.api.json correction required

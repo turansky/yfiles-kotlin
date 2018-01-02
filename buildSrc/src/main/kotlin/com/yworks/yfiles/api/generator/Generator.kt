@@ -25,6 +25,8 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     val source = JSONObject(loadApiJson(apiPath))
 
     Hacks.addComparisonClass(source)
+    Hacks.fixConstantGenerics(source)
+    Hacks.fixFunctionGenerics(source)
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot

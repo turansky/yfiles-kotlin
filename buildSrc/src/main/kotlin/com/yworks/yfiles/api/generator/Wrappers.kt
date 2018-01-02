@@ -168,7 +168,6 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
     override fun toString(): String {
-        val type = Hacks.correctStaticFieldGeneric(this.type)
         return "val $name: $type = definedExternally"
     }
 }
@@ -223,7 +222,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val returns: Returns? by ReturnsDelegate()
 
     val generics: String
-        get() = Hacks.getFunctionGenerics(fqn, name) ?: TypeParser.getGenericString(typeparameters)
+        get() = TypeParser.getGenericString(typeparameters)
 
     private fun modificator(canBeOpen: Boolean = true): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance

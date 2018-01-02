@@ -11,3 +11,10 @@ internal fun jArray(vararg items: JSONObject): JSONArray {
 internal fun jObject(vararg items: Pair<String, Any>): JSONObject {
     return JSONObject(mapOf(*items))
 }
+
+internal fun JSONArray.firstObject(predicate: (JSONObject) -> Boolean): JSONObject {
+    return (0 until this.length())
+            .map(this::getJSONObject)
+            .filter(predicate)
+            .first()
+}
