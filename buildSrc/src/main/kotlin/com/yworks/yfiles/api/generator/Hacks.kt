@@ -10,6 +10,7 @@ internal object Hacks {
         return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
     }
 
+    // yfiles.api.json correction required
     fun fixConstantGenerics(source: JSONObject) {
         source.getJSONArray("namespaces")
                 .firstObject { it.getString("id") == "yfiles" }
@@ -44,35 +45,40 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    fun getReturnType(method: Method): String? {
-        val className = method.fqn
-        val methodName = method.name
-
-        return when {
-            className == "yfiles.algorithms.EdgeList" && methodName == "getEnumerator"
-            -> "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
-
-            className == "yfiles.algorithms.NodeList" && methodName == "getEnumerator"
-            -> "yfiles.collections.IEnumerator<${OBJECT_TYPE}>"
-
-            else -> null
-        }
+    fun fixReturnType(source: JSONObject) {
+        source.getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles" }
+                .getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles.algorithms" }
+                .getJSONArray("types")
+                .objects { it.getString("id") in listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList") }
+                .forEach {
+                    it.getJSONArray("methods")
+                            .firstObject { it.get("name") == "getEnumerator" }
+                            .getJSONObject("returns")
+                            .put("type", "yfiles.collections.IEnumerator<${OBJECT_TYPE}>")
+                }
     }
 
-    fun ignoreExtendedType(className: String): Boolean {
-        return when (className) {
-            "yfiles.lang.Exception" -> true
-            else -> false
-        }
+    fun fixExtendedType(source: JSONObject) {
+        source.getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles" }
+                .getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles.lang" }
+                .getJSONArray("types")
+                .firstObject { it.getString("id") == "yfiles.lang.Exception" }
+                .remove("extends")
     }
 
     // yfiles.api.json correction required
-    fun getImplementedTypes(className: String): List<String>? {
-        return when (className) {
-            "yfiles.algorithms.EdgeList" -> emptyList()
-            "yfiles.algorithms.NodeList" -> emptyList()
-            else -> null
-        }
+    fun fixImplementedTypes(source: JSONObject) {
+        source.getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles" }
+                .getJSONArray("namespaces")
+                .firstObject { it.getString("id") == "yfiles.algorithms" }
+                .getJSONArray("types")
+                .objects { it.getString("id") in listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList") }
+                .forEach { it.remove("implements") }
     }
 
     // yfiles.api.json correction required

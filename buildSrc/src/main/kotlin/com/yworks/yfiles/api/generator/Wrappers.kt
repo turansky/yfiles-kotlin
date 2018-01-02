@@ -90,29 +90,20 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
 
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
 
-    val extends: String? by NullableStringDelegate()
-    val implements: List<String> by StringArrayDelegate()
+    private val extends: String? by NullableStringDelegate()
+    private val implements: List<String> by StringArrayDelegate()
 
     fun genericParameters(): String {
         return TypeParser.getGenericString(typeparameters)
     }
 
     fun extendedType(): String? {
-        if (Hacks.ignoreExtendedType(fqn)) {
-            return null
-        }
-
         val type = extends ?: return null
         return TypeParser.parseType(type)
     }
 
     fun implementedTypes(): List<String> {
-        var types = Hacks.getImplementedTypes(fqn)
-        if (types != null) {
-            return types
-        }
-
-        types = implements.map { TypeParser.parseType(it) }
+        val types = implements.map { TypeParser.parseType(it) }
         return MixinHacks.getImplementedTypes(fqn, types)
     }
 }
@@ -306,9 +297,9 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
 }
 
-internal class Returns(source: JSONObject, private val predefinedType: String?) : JsonWrapper(source) {
+internal class Returns(source: JSONObject) : JsonWrapper(source) {
     private val signature: String? by NullableStringDelegate()
-    val type: String by TypeDelegate { predefinedType ?: TypeParser.parse(it, signature) }
+    val type: String by TypeDelegate { TypeParser.parse(it, signature) }
 }
 
 private class ArrayDelegate<T> {
@@ -466,10 +457,10 @@ private class ReturnsDelegate {
         val source = thisRef.source
         val key = property.name
 
-        if (!source.has(key)) {
-            return null
+        return if (source.has(key)) {
+            Returns(source.getJSONObject(key))
+        } else {
+            null
         }
-
-        return Returns(source.getJSONObject(key), Hacks.getReturnType(thisRef))
     }
 }
