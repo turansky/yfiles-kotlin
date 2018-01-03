@@ -70,24 +70,6 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    private val ARRAY_GENERIC_CORRECTION = mapOf(
-            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to Types.NODE_TYPE,
-
-            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
-            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers") to "yfiles.input.EventRecognizer",
-
-            ParameterData("yfiles.input.IPortCandidateProvider", "combine", "providers") to "IPortCandidateProvider",
-            ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates") to "IPortCandidate",
-            ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios") to "Number",
-
-            ParameterData("yfiles.lang.Class", "injectInterfaces", "interfaces") to "Interface",
-
-            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args") to OBJECT_TYPE,
-
-            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to OBJECT_TYPE
-    )
-
-    // yfiles.api.json correction required
     fun addComparisonClass(source: JSONObject) {
         source.getJSONObject("functionSignatures")
                 .put(
@@ -117,22 +99,39 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    fun getParameterType(method: MethodBase, parameter: Parameter): String? {
-        if (parameter.type != "Array") {
-            return null
+    private val ARRAY_GENERIC_CORRECTION = mapOf(
+            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to Types.NODE_TYPE,
+
+            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers", true) to "yfiles.input.EventRecognizer",
+            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers", true) to "yfiles.input.EventRecognizer",
+
+            ParameterData("yfiles.input.IPortCandidateProvider", "combine", "providers", true) to "yfiles.input.IPortCandidateProvider",
+            ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates", true) to "yfiles.input.IPortCandidate",
+            ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios", true) to "number",
+
+            ParameterData("yfiles.lang.Class", "injectInterfaces", "interfaces", true) to "yfiles.lang.Interface",
+
+            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args", true) to "object",
+
+            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to "object"
+    )
+
+    // yfiles.api.json correction required
+    fun fixMethodParameterType(source: JSONObject) {
+        ARRAY_GENERIC_CORRECTION.forEach { data, arrayGeneric ->
+            source.type(data.className)
+                    .getJSONArray(if (data.staticFunction) "staticMethods" else "methods")
+                    .objects { it.getString("name") == data.functionName }
+                    .forEach {
+                        it.getJSONArray("parameters")
+                                .first { it.getString("name") == data.parameterName }
+                                .also {
+                                    if (it.getString("type") == "Array") {
+                                        it.put("type", "Array<$arrayGeneric>")
+                                    }
+                                }
+                    }
         }
-
-        val className = method.fqn
-        val methodName = when (method) {
-            is Method -> method.name
-            else -> ""
-        }
-
-        val parameterName = parameter.getCorrectedName()
-        val generic = ARRAY_GENERIC_CORRECTION[ParameterData(className, methodName, parameterName)]
-                ?: throw IllegalArgumentException("Unable find array generic for className: '$className' and method: '$methodName' and parameter '$parameterName'")
-
-        return "Array<$generic>"
     }
 
     // yfiles.api.json correction required
@@ -295,5 +294,6 @@ internal object Hacks {
 private data class ParameterData(
         val className: String,
         val functionName: String,
-        val parameterName: String
+        val parameterName: String,
+        val staticFunction: Boolean = false
 )

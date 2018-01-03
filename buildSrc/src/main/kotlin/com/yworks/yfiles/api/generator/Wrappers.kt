@@ -252,17 +252,9 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters.map {
-            if (overridden) {
-                if (it.optional && !overridden) {
-                    println("Optional - ${fqn}.${name} -  ${it.getCorrectedName()}")
-                }
-            }
-
             val body = if (it.optional && !overridden) " = definedExternally" else ""
-            "${it.getCorrectedName()}: ${Hacks.getParameterType(this, it) ?: it.type}" + body
-
-        }
-                .joinToString(", ")
+            "${it.getCorrectedName()}: ${it.type}" + body
+        }.joinToString(", ")
     }
 
     override fun hashCode(): Int {
