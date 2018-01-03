@@ -106,16 +106,14 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    fun getPropertyType(className: String, propertyName: String): String? {
-        return when {
-            className == "yfiles.seriesparallel.SeriesParallelLayoutData" && propertyName == "outEdgeComparers"
-            -> "yfiles.layout.ItemMapping<yfiles.graph.INode, system.Comparison<yfiles.graph.IEdge>>"
-
-            className == "yfiles.tree.TreeLayoutData" && propertyName == "outEdgeComparers"
-            -> "yfiles.layout.ItemMapping<yfiles.graph.INode, system.Comparison<yfiles.graph.IEdge>>"
-
-            else -> null
-        }
+    fun fixPropertyType(source: JSONObject) {
+        listOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
+                .map { source.type(it) }
+                .forEach {
+                    it.getJSONArray("properties")
+                            .first { it.getString("name") == "outEdgeComparers" }
+                            .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,system.Comparison<yfiles.graph.IEdge>>")
+                }
     }
 
     // yfiles.api.json correction required

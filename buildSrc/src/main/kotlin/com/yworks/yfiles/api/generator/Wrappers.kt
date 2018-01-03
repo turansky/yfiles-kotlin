@@ -141,7 +141,7 @@ internal class Module(source: JSONObject) : JsonWrapper(source) {
 
 internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
     private val signature: String? by NullableStringDelegate()
-    open val type: String by TypeDelegate { TypeParser.parse(it, signature) }
+    protected val type: String by TypeDelegate { TypeParser.parse(it, signature) }
 }
 
 internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
@@ -169,9 +169,6 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
-
-    override val type: String
-        get() = Hacks.getPropertyType(fqn, name) ?: super.type
 
     override fun toString(): String {
         var str = ""

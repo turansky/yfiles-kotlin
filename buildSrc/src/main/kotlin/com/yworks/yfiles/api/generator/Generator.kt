@@ -32,6 +32,7 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     Hacks.fixReturnType(source)
     Hacks.fixExtendedType(source)
     Hacks.fixImplementedTypes(source)
+    Hacks.fixPropertyType(source)
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot
