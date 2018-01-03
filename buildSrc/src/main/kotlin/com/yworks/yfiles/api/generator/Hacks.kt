@@ -21,6 +21,25 @@ internal object Hacks {
                 .first { it.getString("id") == id }
     }
 
+    private fun JSONObject.methodParameters(methodName: String,
+                                            parameterName: String,
+                                            staticMethod: Boolean,
+                                            parameterFilter: (JSONObject) -> Boolean): Iterable<JSONObject> {
+        val result = getJSONArray(if (staticMethod) "staticMethods" else "methods")
+                .objects { it.getString("name") == methodName }
+                .flatMap {
+                    it.getJSONArray("parameters")
+                            .objects { it.getString("name") == parameterName }
+                            .filter(parameterFilter)
+                }
+
+        if (result.isEmpty()) {
+            throw IllegalArgumentException("No method parameters found for object: $this, method: $methodName, parameter: $parameterName")
+        }
+
+        return result
+    }
+
     // yfiles.api.json correction required
     fun fixConstantGenerics(source: JSONObject) {
         source.type("yfiles.collections.IListEnumerable")
@@ -120,17 +139,8 @@ internal object Hacks {
     fun fixMethodParameterType(source: JSONObject) {
         ARRAY_GENERIC_CORRECTION.forEach { data, arrayGeneric ->
             source.type(data.className)
-                    .getJSONArray(if (data.staticFunction) "staticMethods" else "methods")
-                    .objects { it.getString("name") == data.functionName }
-                    .forEach {
-                        it.getJSONArray("parameters")
-                                .first { it.getString("name") == data.parameterName }
-                                .also {
-                                    if (it.getString("type") == "Array") {
-                                        it.put("type", "Array<$arrayGeneric>")
-                                    }
-                                }
-                    }
+                    .methodParameters(data.functionName, data.parameterName, data.staticFunction, { it.getString("type") == "Array" })
+                    .forEach { it.put("type", "Array<$arrayGeneric>") }
         }
     }
 
@@ -286,8 +296,12 @@ internal object Hacks {
     )
 
     // yfiles.api.json correction required
-    fun fixParameterName(method: MethodBase, parameterName: String): String? {
-        return PARAMETERS_CORRECTION[ParameterData(method.fqn, method.name, parameterName)]
+    fun fixMethodParameterName(source: JSONObject) {
+        PARAMETERS_CORRECTION.forEach { data, fixedName ->
+            source.type(data.className)
+                    .methodParameters(data.functionName, data.parameterName, false, { it.getString("name") != fixedName })
+                    .forEach { it.put("name", fixedName) }
+        }
     }
 }
 

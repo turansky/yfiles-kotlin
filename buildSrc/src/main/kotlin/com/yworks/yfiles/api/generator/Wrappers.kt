@@ -253,7 +253,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters.map {
             val body = if (it.optional && !overridden) " = definedExternally" else ""
-            "${it.getCorrectedName()}: ${it.type}" + body
+            "${it.name}: ${it.type}" + body
         }.joinToString(", ")
     }
 
@@ -270,16 +270,12 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 }
 
 internal class Parameter(private val method: MethodBase, source: JSONObject) : JsonWrapper(source) {
-    private val name: String by StringDelegate()
+    val name: String by StringDelegate()
     val artificial: Boolean by BooleanDelegate()
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it, signature) }
     val summary: String? by NullableStringDelegate()
     val optional: Boolean by BooleanDelegate()
-
-    fun getCorrectedName(): String {
-        return Hacks.fixParameterName(method, name) ?: name
-    }
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
@@ -318,7 +314,7 @@ private class ArrayDelegate<T> {
         }
 
         val list = mutableListOf<T>()
-        for (i in 0..length - 1) {
+        for (i in 0 until length) {
             val item = transform(array.getJSONObject(i))
             if (filter(item)) {
                 list.add(item)
