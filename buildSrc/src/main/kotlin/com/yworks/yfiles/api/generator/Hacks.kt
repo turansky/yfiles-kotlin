@@ -100,7 +100,7 @@ internal object Hacks {
 
     // yfiles.api.json correction required
     private val ARRAY_GENERIC_CORRECTION = mapOf(
-            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to Types.NODE_TYPE,
+            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to "yfiles.graph.INode",
 
             ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers", true) to "yfiles.input.EventRecognizer",
             ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers", true) to "yfiles.input.EventRecognizer",
