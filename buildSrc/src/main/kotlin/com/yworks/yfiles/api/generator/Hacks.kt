@@ -11,19 +11,21 @@ internal object Hacks {
     }
 
     private fun JSONObject.type(id: String): JSONObject {
+        val rootPackage = id.substring(0, id.indexOf("."))
+        val typePackage = id.substring(0, id.lastIndexOf("."))
         return this.getJSONArray("namespaces")
-                .firstObject { it.getString("id") == id.substring(0, id.indexOf(".")) }
+                .first { it.getString("id") == rootPackage }
                 .getJSONArray("namespaces")
-                .firstObject { it.getString("id") == id.substring(0, id.lastIndexOf(".")) }
+                .first { it.getString("id") == typePackage }
                 .getJSONArray("types")
-                .firstObject { it.getString("id") == id }
+                .first { it.getString("id") == id }
     }
 
     // yfiles.api.json correction required
     fun fixConstantGenerics(source: JSONObject) {
         source.type("yfiles.collections.IListEnumerable")
                 .getJSONArray("constants")
-                .firstObject { it.getString("name") == "EMPTY" }
+                .first { it.getString("name") == "EMPTY" }
                 .also {
                     val type = it.getString("type")
                             .replace("<T>", "<Object>")
@@ -35,7 +37,7 @@ internal object Hacks {
     fun fixFunctionGenerics(source: JSONObject) {
         source.type("yfiles.collections.List")
                 .getJSONArray("staticMethods")
-                .firstObject { it.getString("name") == "fromArray" }
+                .first { it.getString("name") == "fromArray" }
                 .also {
                     it.put("typeparameters", jArray(
                             jObject("name" to "T")
@@ -49,7 +51,7 @@ internal object Hacks {
                 .map { source.type(it) }
                 .forEach {
                     it.getJSONArray("methods")
-                            .firstObject { it.get("name") == "getEnumerator" }
+                            .first { it.get("name") == "getEnumerator" }
                             .getJSONObject("returns")
                             .put("type", "yfiles.collections.IEnumerator<${OBJECT_TYPE}>")
                 }
