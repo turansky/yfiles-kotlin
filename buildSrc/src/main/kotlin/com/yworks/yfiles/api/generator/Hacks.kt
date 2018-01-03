@@ -40,8 +40,22 @@ internal object Hacks {
         return result
     }
 
+    fun applyHacks(source: JSONObject) {
+        addComparisonClass(source)
+
+        fixConstantGenerics(source)
+        fixFunctionGenerics(source)
+
+        fixReturnType(source)
+        fixExtendedType(source)
+        fixImplementedTypes(source)
+        fixPropertyType(source)
+        fixMethodParameterType(source)
+        fixMethodParameterName(source)
+    }
+
     // yfiles.api.json correction required
-    fun fixConstantGenerics(source: JSONObject) {
+    private fun fixConstantGenerics(source: JSONObject) {
         source.type("yfiles.collections.IListEnumerable")
                 .getJSONArray("constants")
                 .first { it.getString("name") == "EMPTY" }
@@ -53,7 +67,7 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    fun fixFunctionGenerics(source: JSONObject) {
+    private fun fixFunctionGenerics(source: JSONObject) {
         source.type("yfiles.collections.List")
                 .getJSONArray("staticMethods")
                 .first { it.getString("name") == "fromArray" }
@@ -65,7 +79,7 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    fun fixReturnType(source: JSONObject) {
+    private fun fixReturnType(source: JSONObject) {
         listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
                 .map { source.type(it) }
                 .forEach {
@@ -76,20 +90,20 @@ internal object Hacks {
                 }
     }
 
-    fun fixExtendedType(source: JSONObject) {
+    private fun fixExtendedType(source: JSONObject) {
         source.type("yfiles.lang.Exception")
                 .remove("extends")
     }
 
     // yfiles.api.json correction required
-    fun fixImplementedTypes(source: JSONObject) {
+    private fun fixImplementedTypes(source: JSONObject) {
         listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
                 .map { source.type(it) }
                 .forEach { it.remove("implements") }
     }
 
     // yfiles.api.json correction required
-    fun addComparisonClass(source: JSONObject) {
+    private fun addComparisonClass(source: JSONObject) {
         source.getJSONObject("functionSignatures")
                 .put(
                         "system.Comparison",
@@ -107,7 +121,7 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    fun fixPropertyType(source: JSONObject) {
+    private fun fixPropertyType(source: JSONObject) {
         listOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
                 .map { source.type(it) }
                 .forEach {
@@ -136,7 +150,7 @@ internal object Hacks {
     )
 
     // yfiles.api.json correction required
-    fun fixMethodParameterType(source: JSONObject) {
+    private fun fixMethodParameterType(source: JSONObject) {
         ARRAY_GENERIC_CORRECTION.forEach { data, arrayGeneric ->
             source.type(data.className)
                     .methodParameters(data.functionName, data.parameterName, data.staticFunction, { it.getString("type") == "Array" })
@@ -296,7 +310,7 @@ internal object Hacks {
     )
 
     // yfiles.api.json correction required
-    fun fixMethodParameterName(source: JSONObject) {
+    private fun fixMethodParameterName(source: JSONObject) {
         PARAMETERS_CORRECTION.forEach { data, fixedName ->
             source.type(data.className)
                     .methodParameters(data.functionName, data.parameterName, false, { it.getString("name") != fixedName })
