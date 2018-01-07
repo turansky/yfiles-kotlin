@@ -1,7 +1,7 @@
 import static com.yworks.yfiles.api.generator.Generator.generateKotlinWrappers
 
 group 'com.yworks.yfiles'
-version '2.0.1.3-SNAPSHOT'
+version '2.0.1.4-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.2.10'
@@ -29,8 +29,7 @@ compileKotlin2Js {
 }
 
 task generateSources() {
-    // def source = project.properties["apiPath"] ?: throw GradleException("Invalid 'apiPath' parameter value!")
-    def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
+    def apiPath = "https://docs.yworks.com/yfileshtml/assets/api.04860ba1.js"
     generateKotlinWrappers(apiPath, new File(projectDir, 'src/main/kotlin'))
 }
 
