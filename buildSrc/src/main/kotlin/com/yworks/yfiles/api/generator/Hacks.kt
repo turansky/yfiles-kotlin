@@ -255,6 +255,8 @@ internal object Hacks {
 
             ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge1") to "x",
             ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge2") to "y",
+            ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o1") to "x",
+            ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o2") to "y",
 
             ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o1") to "x",
             ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o2") to "y",
@@ -270,10 +272,15 @@ internal object Hacks {
 
             ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
             ParameterData("yfiles.hierarchic.IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
+            ParameterData("yfiles.hierarchic.LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
+            ParameterData("yfiles.hierarchic.SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
+
             ParameterData("yfiles.input.ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
             ParameterData("yfiles.input.StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
+
             ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
             ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
+            ParameterData("yfiles.styles.PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
             ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
