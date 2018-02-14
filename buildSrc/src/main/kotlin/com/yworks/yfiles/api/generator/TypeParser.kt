@@ -33,6 +33,9 @@ internal object TypeParser {
             "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
             "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
 
+            "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
+            "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
+
             // TODO: check if Kotlin promises is what we need in yFiles
             "Promise" to "kotlin.js.Promise"
     )

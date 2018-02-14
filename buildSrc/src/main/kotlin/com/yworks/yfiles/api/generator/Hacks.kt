@@ -50,7 +50,6 @@ internal object Hacks {
         fixExtendedType(source)
         fixImplementedTypes(source)
         fixPropertyType(source)
-        fixMethodParameterType(source)
         fixMethodParameterName(source)
     }
 
@@ -132,33 +131,6 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    private val ARRAY_GENERIC_CORRECTION = mapOf(
-            ParameterData("yfiles.graph.GroupingSupport", "getNearestCommonAncestor", "nodes") to "yfiles.graph.INode",
-
-            ParameterData("yfiles.input.EventRecognizers", "createAndRecognizer", "recognizers", true) to "yfiles.input.EventRecognizer",
-            ParameterData("yfiles.input.EventRecognizers", "createOrRecognizer", "recognizers", true) to "yfiles.input.EventRecognizer",
-
-            ParameterData("yfiles.input.IPortCandidateProvider", "combine", "providers", true) to "yfiles.input.IPortCandidateProvider",
-            ParameterData("yfiles.input.IPortCandidateProvider", "fromCandidates", "candidates", true) to "yfiles.input.IPortCandidate",
-            ParameterData("yfiles.input.IPortCandidateProvider", "fromShapeGeometry", "ratios", true) to "number",
-
-            ParameterData("yfiles.lang.Class", "injectInterfaces", "interfaces", true) to "yfiles.lang.Interface",
-
-            ParameterData("yfiles.lang.delegate", "dynamicInvoke", "args", true) to "object",
-
-            ParameterData("yfiles.view.CanvasComponent", "schedule", "args") to "object"
-    )
-
-    // yfiles.api.json correction required
-    private fun fixMethodParameterType(source: JSONObject) {
-        ARRAY_GENERIC_CORRECTION.forEach { data, arrayGeneric ->
-            source.type(data.className)
-                    .methodParameters(data.functionName, data.parameterName, data.staticFunction, { it.getString("type") == "Array" })
-                    .forEach { it.put("type", "Array<$arrayGeneric>") }
-        }
-    }
-
-    // yfiles.api.json correction required
     private val CLONE_REQUIRED = listOf(
             "yfiles.geometry.Matrix",
             "yfiles.geometry.MutablePoint",
@@ -222,7 +194,9 @@ internal object Hacks {
                     "override fun isInBox(context: yfiles.input.IInputModeContext, rectangle: yfiles.geometry.Rect): Boolean = definedExternally",
                     "override fun isVisible(context: ICanvasContext, rectangle: yfiles.geometry.Rect): Boolean = definedExternally",
                     "override fun getBounds(context: ICanvasContext): yfiles.geometry.Rect = definedExternally",
-                    "override fun isHit(context: yfiles.input.IInputModeContext, location: yfiles.geometry.Point): Boolean = definedExternally")
+                    "override fun isHit(context: yfiles.input.IInputModeContext, location: yfiles.geometry.Point): Boolean = definedExternally",
+                    "override fun isInPath(context: yfiles.input.IInputModeContext, lassoPath: yfiles.geometry.GeneralPath): Boolean = definedExternally"
+            )
 
             className == "yfiles.styles.VoidPathGeometry"
             -> lines("override fun getPath(): yfiles.geometry.GeneralPath = definedExternally",
@@ -251,12 +225,6 @@ internal object Hacks {
             ParameterData("yfiles.algorithms.YList", "remove", "o") to "item",
 
             ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
-
-            ParameterData("yfiles.input.GroupingNodePositionHandler", "cancelDrag", "inputModeContext") to "context",
-            ParameterData("yfiles.input.GroupingNodePositionHandler", "dragFinished", "inputModeContext") to "context",
-            ParameterData("yfiles.input.GroupingNodePositionHandler", "handleMove", "inputModeContext") to "context",
-            ParameterData("yfiles.input.GroupingNodePositionHandler", "initializeDrag", "inputModeContext") to "context",
-            ParameterData("yfiles.input.GroupingNodePositionHandler", "setCurrentParent", "inputModeContext") to "context",
 
             ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
             ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",

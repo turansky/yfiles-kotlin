@@ -246,14 +246,16 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     }
 }
 
+// TODO: support artificial parameters
 internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
-    val parameters: List<Parameter> by ArrayDelegate({ Parameter(this, it) }, { !it.artificial })
+    val parameters: List<Parameter> by ArrayDelegate({ Parameter(this, it) }, { !it.modifiers.artificial })
 
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters.map {
+            val modifiers = if (it.modifiers.vararg) "vararg " else ""
             val body = if (it.optional && !overridden) " = definedExternally" else ""
-            "${it.name}: ${it.type}" + body
+            "$modifiers ${it.name}: ${it.type}" + body
         }.joinToString(", ")
     }
 
@@ -269,13 +271,19 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     }
 }
 
+internal class ParameterModifiers(flags: List<String>) {
+    val artificial = flags.contains("artificial")
+    val vararg = flags.contains("vararg")
+    val conversion = flags.contains("conversion")
+}
+
 internal class Parameter(private val method: MethodBase, source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val artificial: Boolean by BooleanDelegate()
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it, signature) }
     val summary: String? by NullableStringDelegate()
     val optional: Boolean by BooleanDelegate()
+    val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
@@ -421,6 +429,12 @@ private class TypeDelegate(private val parse: (String) -> String) {
 private class ModifiersDelegate {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Modifiers {
         return Modifiers(StringArrayDelegate.value(thisRef, property))
+    }
+}
+
+private class ParameterModifiersDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): ParameterModifiers {
+        return ParameterModifiers(StringArrayDelegate.value(thisRef, property))
     }
 }
 
