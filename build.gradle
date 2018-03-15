@@ -1,10 +1,10 @@
 import static com.yworks.yfiles.api.generator.Generator.generateKotlinWrappers
 
 group 'com.yworks.yfiles'
-version '2.1-SNAPSHOT'
+version '2.1.0.1-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.30'
     repositories {
         mavenCentral()
     }
@@ -29,7 +29,7 @@ compileKotlin2Js {
 }
 
 task generateSources() {
-    def apiPath = "https://docs.yworks.com/yfileshtml/assets/api.348c3887.js"
+    def apiPath = "http://docs.yworks.com/yfileshtml/assets/api.36b655db.js"
     generateKotlinWrappers(apiPath, new File(projectDir, 'src/main/kotlin'))
 }
 
