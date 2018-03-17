@@ -14,16 +14,17 @@ buildscript {
 }
 
 apply plugin: 'kotlin2js'
+apply plugin: 'maven-publish'
 
 clean.doLast {
-    delete 'web'
+    delete 'out'
 }
 
 compileKotlin2Js {
     kotlinOptions {
-        outputFile = "${projectDir}/web/index.js"
+        outputFile = "${projectDir}/out/lib.js"
         moduleKind = 'amd'
-        metaInfo = false
+        metaInfo = true
         sourceMap = false
     }
 }
@@ -45,4 +46,16 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
+}
+
+task libJar(type: Jar) {
+    from "$projectDir/out"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact libJar
+        }
+    }
 }
