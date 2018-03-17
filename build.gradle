@@ -25,7 +25,6 @@ compileKotlin2Js {
         outputFile = "${projectDir}/out/lib.js"
         moduleKind = 'amd'
         metaInfo = true
-        sourceMap = false
     }
 }
 
@@ -48,14 +47,22 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
 }
 
-task libJar(type: Jar) {
+task mainJar(type: Jar) {
     from "$projectDir/out"
+}
+
+task sourceJar(type: Jar) {
+    from "$projectDir/src/main/kotlin"
 }
 
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact libJar
+            artifact mainJar
+
+            artifact sourceJar {
+                classifier "sources"
+            }
         }
     }
 }
