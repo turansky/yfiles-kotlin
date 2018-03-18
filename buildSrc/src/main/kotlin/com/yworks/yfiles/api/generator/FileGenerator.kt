@@ -1,6 +1,8 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.Types.UNIT
+import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
+import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
 import java.io.File
 
 internal class FileGenerator(private val types: Iterable<Type>,
@@ -121,9 +123,11 @@ private abstract class GeneratedFile(private val declaration: Type) {
                 .sortedBy { it.name }
 
     val header: String
-        get() = "package ${fqn.packageName}"
+        get() = "@file:JsModule(\"${findModule(fqn.packageName)}\")\n" +
+                "@file:JsQualifier(\"${getQualifier(fqn.packageName)}\")\n" +
+                "package ${fqn.packageName}\n"
 
-    open protected fun parentTypes(): List<String> {
+    protected open fun parentTypes(): List<String> {
         return declaration.implementedTypes()
     }
 
@@ -139,7 +143,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
         return declaration.genericParameters()
     }
 
-    open protected fun isStatic(): Boolean {
+    protected open fun isStatic(): Boolean {
         return false
     }
 
@@ -171,7 +175,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
             return ""
         }
 
-        return "external object ${className}Util {\n" +
+        return "external object ${className}s {\n" +
                 items.joinToString("\n") +
                 "}"
     }
@@ -259,31 +263,4 @@ private class EnumFile(private val declaration: Enum) : GeneratedFile(declaratio
                 super.content() + "\n" +
                 "}\n"
     }
-}
-
-private class JsInfo {
-    private val COMPLETE = "yfiles/complete"
-    private val VIEW = "yfiles/view"
-    private val LAYOUT = "yfiles/layout"
-
-    private val LANG = "yfiles/lang"
-
-    private val VIEW_COMPONENT = "yfiles/view-component"
-    private val VIEW_EDITOR = "yfiles/view-editor"
-    private val VIEW_FOLDING = "yfiles/view-folding"
-    private val VIEW_TABLE = "yfiles/view-table"
-    private val VIEW_GRAPHML = "yfiles/view-graphml"
-    private val VIEW_LAYOUT_BRIDGE = "yfiles/view-layout-bridge"
-    private val ALGORITHMS = "yfiles/algorithms"
-    private val LAYOUT_TREE = "yfiles/layout-tree"
-    private val LAYOUT_ORGANIC = "yfiles/layout-organic"
-    private val LAYOUT_HIERARCHIC = "yfiles/layout-hierarchic"
-    private val LAYOUT_ORTHOGONAL = "yfiles/layout-orthogonal"
-    private val LAYOUT_ORTHOGONAL_COMPACT = "yfiles/layout-orthogonal-compact"
-    private val LAYOUT_FAMILYTREE = "yfiles/layout-familytree"
-    private val LAYOUT_MULTIPAGE = "yfiles/layout-multipage"
-    private val LAYOUT_RADIAL = "yfiles/layout-radial"
-    private val LAYOUT_SERIESPARALLEL = "yfiles/layout-seriesparallel"
-    private val ROUTER_POLYLINE = "yfiles/router-polyline"
-    private val ROUTER_OTHER = "yfiles/router-other"
 }

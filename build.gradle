@@ -22,7 +22,7 @@ clean.doLast {
 
 compileKotlin2Js {
     kotlinOptions {
-        outputFile = "${projectDir}/out/lib.js"
+        outputFile = "${projectDir}/out/yfiles-kotlin.js"
         moduleKind = 'amd'
         metaInfo = true
     }
