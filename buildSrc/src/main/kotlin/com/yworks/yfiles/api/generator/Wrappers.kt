@@ -255,7 +255,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters.map {
             val modifiers = if (it.modifiers.vararg) "vararg " else ""
-            val body = if (it.optional && !overridden) " = definedExternally" else ""
+            val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
             "$modifiers ${it.name}: ${it.type}" + body
         }.joinToString(", ")
     }
@@ -275,6 +275,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 internal class ParameterModifiers(flags: List<String>) {
     val artificial = flags.contains("artificial")
     val vararg = flags.contains("vararg")
+    val optional = flags.contains("optional")
     val conversion = flags.contains("conversion")
 }
 
@@ -283,7 +284,6 @@ internal class Parameter(private val method: MethodBase, source: JSONObject) : J
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it, signature) }
     val summary: String? by NullableStringDelegate()
-    val optional: Boolean by BooleanDelegate()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
