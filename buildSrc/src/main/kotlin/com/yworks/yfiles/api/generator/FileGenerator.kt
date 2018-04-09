@@ -184,7 +184,8 @@ private abstract class GeneratedFile(private val declaration: Type) {
             return ""
         }
 
-        return "external object ${className}s {\n" +
+        return "@JsName(\"$className\")\n" +
+                "external object ${className}s {\n" +
                 items.joinToString("\n") +
                 "}"
     }
