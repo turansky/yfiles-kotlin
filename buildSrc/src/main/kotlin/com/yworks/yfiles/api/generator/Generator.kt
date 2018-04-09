@@ -13,7 +13,7 @@ private val PRIMITIVE_TYPES = listOf(
         "yfiles.lang.Number",
         "yfiles.lang.String",
         "yfiles.lang.Struct"
-)
+).map { fixPackage(it) }
 
 private fun loadApiJson(path: String): String {
     return URL(path)

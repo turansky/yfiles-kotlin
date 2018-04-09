@@ -135,13 +135,15 @@ internal object Hacks {
             "yfiles.geometry.Matrix",
             "yfiles.geometry.MutablePoint",
             "yfiles.geometry.MutableSize"
-    ).map { fixPackage(it) }
+    )
 
     private val CLONE_OVERRIDE = "override fun clone(): ${OBJECT_TYPE} = definedExternally"
 
     // yfiles.api.json correction required
-    fun getAdditionalContent(className: String): String {
-        return when {
+    fun getAdditionalContent(cn: String): String {
+        val className = cn.removePrefix("com.yworks.")
+
+        var result = when {
             className == "yfiles.algorithms.YList"
             -> lines("override val isReadOnly: Boolean",
                     "    get() = definedExternally",
@@ -206,6 +208,10 @@ internal object Hacks {
 
             else -> ""
         }
+
+        result = result.replace(": yfiles.", ": com.yworks.yfiles.")
+
+        return result
     }
 
     private fun lines(vararg lines: String): String {

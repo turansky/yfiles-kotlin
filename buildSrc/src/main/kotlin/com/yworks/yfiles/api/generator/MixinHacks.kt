@@ -1,9 +1,11 @@
 package com.yworks.yfiles.api.generator
 
 internal object MixinHacks {
-    fun getImplementedTypes(className: String, implementedTypes: List<String>): List<String> {
+    fun getImplementedTypes(cn: String, implementedTypes: List<String>): List<String> {
+        val className = cn.removePrefix("com.yworks.")
+
         return when (className) {
-            "yfiles.collections.Map" -> listOf("yfiles.collections.IMap<TKey, TValue>")
+            "yfiles.collections.Map" -> listOf(fixPackage("yfiles.collections.IMap<TKey, TValue>"))
             "yfiles.geometry.IRectangle" -> existedItem("yfiles.geometry.IPoint", implementedTypes)
             "yfiles.geometry.IMutableRectangle" -> existedItem("yfiles.geometry.IRectangle", implementedTypes)
             "yfiles.geometry.MutableRectangle" -> existedItem("yfiles.geometry.IMutableRectangle", implementedTypes)
@@ -14,11 +16,13 @@ internal object MixinHacks {
     }
 
     private fun existedItem(item: String, items: List<String>): List<String> {
-        if (items.contains(item)) {
-            return listOf(item)
+        val searchItem = fixPackage(item)
+
+        if (items.contains(searchItem)) {
+            return listOf(searchItem)
         }
 
-        throw IllegalArgumentException("Item '$item' not contains in item list '$items'")
+        throw IllegalArgumentException("Item '$searchItem' not contains in item list '$items'")
     }
 
     private val MUST_BE_ABSTRACT_CLASSES = listOf(
@@ -34,7 +38,7 @@ internal object MixinHacks {
 
             "yfiles.graph.IColumn",
             "yfiles.graph.IRow"
-    )
+    ).map { fixPackage(it) }
 
     fun defineLikeAbstractClass(className: String, functions: List<Method>, properties: List<Property>): Boolean {
         if (className in MUST_BE_ABSTRACT_CLASSES) {

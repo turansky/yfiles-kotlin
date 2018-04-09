@@ -128,8 +128,12 @@ private abstract class GeneratedFile(private val declaration: Type) {
             val module = findModule(fqn.packageName)
             val qualifier = getQualifier(fqn.packageName)
             return "@file:JsModule(\"$module\")\n" +
-                    if (qualifier != null) "@file:JsQualifier(\"$qualifier\")\n" else "" +
-                            "package ${fqn.packageName}\n"
+                    if (qualifier != null) {
+                        "@file:JsQualifier(\"$qualifier\")\n"
+                    } else {
+                        ""
+                    } +
+                    "package ${fqn.packageName}\n"
         }
 
     protected open fun parentTypes(): List<String> {
