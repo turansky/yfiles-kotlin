@@ -125,7 +125,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
 
     val header: String
         get() {
-            val module = findModule(fqn.packageName)
+            val module = findModule(declaration.modules)
             val qualifier = getQualifier(fqn.packageName)
             return "@file:JsModule(\"$module\")\n" +
                     if (qualifier != null) {

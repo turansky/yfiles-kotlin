@@ -80,7 +80,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal abstract class Type(source: JSONObject) : Declaration(source) {
-    val modules: List<Module> by ArrayDelegate(::Module)
+    val modules: List<IModule> by ArrayDelegate(::Module)
     val es6Module: String by StringDelegate()
     val constants: List<Constant> by ArrayDelegate { Constant(this.fqn, it) }
 
@@ -136,9 +136,9 @@ internal class Modifiers(flags: List<String>) {
 internal class Interface(source: JSONObject) : Type(source)
 internal class Enum(source: JSONObject) : Type(source)
 
-internal class Module(source: JSONObject) : JsonWrapper(source) {
-    val text: String? by NullableStringDelegate()
-    val moduleId: String? by NullableStringDelegate()
+private class Module(source: JSONObject) : JsonWrapper(source), IModule {
+    override val text: String? by NullableStringDelegate()
+    override val moduleId: String? by NullableStringDelegate()
 }
 
 internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
