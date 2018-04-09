@@ -135,7 +135,7 @@ internal object Hacks {
             "yfiles.geometry.Matrix",
             "yfiles.geometry.MutablePoint",
             "yfiles.geometry.MutableSize"
-    )
+    ).map { fixPackage(it) }
 
     private val CLONE_OVERRIDE = "override fun clone(): ${OBJECT_TYPE} = definedExternally"
 
@@ -297,6 +297,5 @@ internal object Hacks {
 private data class ParameterData(
         val className: String,
         val functionName: String,
-        val parameterName: String,
-        val staticFunction: Boolean = false
+        val parameterName: String
 )

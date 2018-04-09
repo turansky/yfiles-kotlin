@@ -56,7 +56,7 @@ internal object TypeParser {
         }
 
         if (!type.contains(GENERIC_START)) {
-            return type
+            return fixPackage(type)
         }
 
         val mainType = parseType(till(type, GENERIC_START))

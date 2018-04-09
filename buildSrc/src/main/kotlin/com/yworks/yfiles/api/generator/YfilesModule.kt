@@ -29,7 +29,8 @@ internal enum class YfilesModule(val id: String) {
     val path = "yfiles/$id"
 
     companion object {
-        val LANG_PACKAGE = "yfiles.lang"
+        val YFILES_PACKAGE = fixPackage("yfiles.")
+        val LANG_PACKAGE = fixPackage("yfiles.lang")
 
         fun findModule(pkg: String): YfilesModule {
             return if (pkg == LANG_PACKAGE) {
@@ -39,11 +40,11 @@ internal enum class YfilesModule(val id: String) {
             }
         }
 
-        fun getQualifier(pkg: String): String {
-            return if (pkg == "yfiles.lang") {
-                pkg
-            } else {
-                pkg.substring(pkg.indexOf(".") + 1)
+        fun getQualifier(pkg: String): String? {
+            return when {
+                pkg == LANG_PACKAGE -> null
+                pkg.startsWith(YFILES_PACKAGE) -> pkg.removePrefix(YFILES_PACKAGE)
+                else -> throw IllegalArgumentException("Invalid package: $pkg")
             }
         }
     }

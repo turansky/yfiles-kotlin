@@ -18,12 +18,12 @@ internal abstract class Declaration : JsonWrapper {
     val nameOfClass: String
 
     constructor(source: JSONObject) : super(source) {
-        this.fqn = id
+        this.fqn = fixPackage(id)
         this.nameOfClass = fqn.split(".").last()
     }
 
     constructor(fqn: String, source: JSONObject) : super(source) {
-        this.fqn = fqn
+        this.fqn = fixPackage(fqn)
         this.nameOfClass = fqn.split(".").last()
     }
 
@@ -57,7 +57,8 @@ internal class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-internal class FunctionSignature(val fqn: String, source: JSONObject) : JsonWrapper(source) {
+internal class FunctionSignature(fqn: String, source: JSONObject) : JsonWrapper(source) {
+    val fqn = fixPackage(fqn)
     val summary: String by StringDelegate()
     val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
@@ -249,7 +250,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
 // TODO: support artificial parameters
 internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
-    val parameters: List<Parameter> by ArrayDelegate({ Parameter(this, it) }, { !it.modifiers.artificial })
+    val parameters: List<Parameter> by ArrayDelegate({ Parameter(it) }, { !it.modifiers.artificial })
 
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
@@ -279,7 +280,7 @@ internal class ParameterModifiers(flags: List<String>) {
     val conversion = flags.contains("conversion")
 }
 
-internal class Parameter(private val method: MethodBase, source: JSONObject) : JsonWrapper(source) {
+internal class Parameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { TypeParser.parse(it, signature) }

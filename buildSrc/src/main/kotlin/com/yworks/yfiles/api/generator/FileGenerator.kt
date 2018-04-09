@@ -1,5 +1,6 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.Types.ENUM_TYPE
 import com.yworks.yfiles.api.generator.Types.UNIT
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
@@ -69,7 +70,7 @@ internal class FileGenerator(private val types: Iterable<Type>,
     }
 }
 
-private class FQN(val fqn: String) {
+private class FQN(private val fqn: String) {
     private val names = fqn.split(".")
     private val packageNames = names.subList(0, names.size - 1)
 
@@ -123,9 +124,13 @@ private abstract class GeneratedFile(private val declaration: Type) {
                 .sortedBy { it.name }
 
     val header: String
-        get() = "@file:JsModule(\"${findModule(fqn.packageName)}\")\n" +
-                "@file:JsQualifier(\"${getQualifier(fqn.packageName)}\")\n" +
-                "package ${fqn.packageName}\n"
+        get() {
+            val module = findModule(fqn.packageName)
+            val qualifier = getQualifier(fqn.packageName)
+            return "@file:JsModule(\"$module\")\n" +
+                    if (qualifier != null) "@file:JsQualifier(\"$qualifier\")\n" else "" +
+                            "package ${fqn.packageName}\n"
+        }
 
     protected open fun parentTypes(): List<String> {
         return declaration.implementedTypes()
@@ -258,7 +263,7 @@ private class EnumFile(private val declaration: Enum) : GeneratedFile(declaratio
         val values = declaration.constants
                 .map { "    val ${it.name}: ${it.nameOfClass} = definedExternally" }
                 .joinToString("\n")
-        return "external object ${fqn.name}: ${Types.ENUM_TYPE} {\n" +
+        return "external object ${fqn.name}: ${ENUM_TYPE} {\n" +
                 values + "\n\n" +
                 super.content() + "\n" +
                 "}\n"
