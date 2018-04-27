@@ -23,9 +23,8 @@ internal object Hacks {
 
     private fun JSONObject.methodParameters(methodName: String,
                                             parameterName: String,
-                                            staticMethod: Boolean,
                                             parameterFilter: (JSONObject) -> Boolean): Iterable<JSONObject> {
-        val result = getJSONArray(if (staticMethod) "staticMethods" else "methods")
+        val result = getJSONArray("methods")
                 .objects { it.getString("name") == methodName }
                 .flatMap {
                     it.getJSONArray("parameters")
@@ -294,8 +293,9 @@ internal object Hacks {
     private fun fixMethodParameterName(source: JSONObject) {
         PARAMETERS_CORRECTION.forEach { data, fixedName ->
             source.type(data.className)
-                    .methodParameters(data.functionName, data.parameterName, false, { it.getString("name") != fixedName })
-                    .forEach { it.put("name", fixedName) }
+                    .methodParameters(data.functionName, data.parameterName, { it.getString("name") != fixedName })
+                    .first()
+                    .put("name", fixedName)
         }
     }
 }
