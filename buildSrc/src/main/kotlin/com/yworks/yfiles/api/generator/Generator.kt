@@ -12,7 +12,9 @@ private val PRIMITIVE_TYPES = listOf(
         "yfiles.lang.Boolean",
         "yfiles.lang.Number",
         "yfiles.lang.String",
-        "yfiles.lang.Struct"
+        "yfiles.lang.Struct",
+        "yfiles.lang.Enum",
+        "yfiles.lang.EnumDefinition"
 ).map { fixPackage(it) }
 
 private fun loadApiJson(path: String): String {

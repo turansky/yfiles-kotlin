@@ -1,6 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.ENUM_TYPE
 import com.yworks.yfiles.api.generator.Types.UNIT
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
@@ -266,9 +265,9 @@ private class InterfaceFile(declaration: Interface) : GeneratedFile(declaration)
 private class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
     override fun content(): String {
         val values = declaration.constants
-                .map { "    val ${it.name}: ${it.nameOfClass} = definedExternally" }
-                .joinToString("\n")
-        return "external object ${fqn.name}: ${ENUM_TYPE} {\n" +
+                .map { "    ${it.name}" }
+                .joinToString(",\n")
+        return "external enum class ${fqn.name} {\n" +
                 values + "\n\n" +
                 super.content() + "\n" +
                 "}\n"
