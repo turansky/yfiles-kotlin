@@ -251,6 +251,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 // TODO: support artificial parameters
 internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
     val parameters: List<Parameter> by ArrayDelegate({ Parameter(it) }, { !it.modifiers.artificial })
+    val options: Boolean by BooleanDelegate()
 
     protected fun parametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
