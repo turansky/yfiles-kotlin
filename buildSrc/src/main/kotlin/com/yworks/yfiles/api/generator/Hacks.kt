@@ -40,8 +40,6 @@ internal object Hacks {
     }
 
     fun applyHacks(source: JSONObject) {
-        addComparisonClass(source)
-
         fixConstantGenerics(source)
         fixFunctionGenerics(source)
 
@@ -101,31 +99,13 @@ internal object Hacks {
     }
 
     // yfiles.api.json correction required
-    private fun addComparisonClass(source: JSONObject) {
-        source.getJSONObject("functionSignatures")
-                .put(
-                        "system.Comparison",
-                        jObject(
-                                "parameters" to jArray(
-                                        jObject("name" to "o1", "type" to "T"),
-                                        jObject("name" to "o2", "type" to "T")
-                                ),
-                                "typeparameters" to jArray(
-                                        jObject("name" to "T")
-                                ),
-                                "returns" to jObject("type" to "number")
-                        )
-                )
-    }
-
-    // yfiles.api.json correction required
     private fun fixPropertyType(source: JSONObject) {
         listOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
                 .map { source.type(it) }
                 .forEach {
                     it.getJSONArray("properties")
                             .first { it.getString("name") == "outEdgeComparers" }
-                            .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,system.Comparison<yfiles.graph.IEdge>>")
+                            .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
                 }
     }
 
