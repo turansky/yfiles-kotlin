@@ -66,3 +66,7 @@ publishing {
         }
     }
 }
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
