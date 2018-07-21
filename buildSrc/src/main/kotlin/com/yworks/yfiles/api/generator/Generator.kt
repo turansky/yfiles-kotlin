@@ -24,6 +24,18 @@ private fun loadApiJson(path: String): String {
 }
 
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
+    generateWrappers(apiPath, sourceDir, ::KotlinFileGenerator)
+}
+
+fun generateJavaWrappers(apiPath: String, sourceDir: File) {
+    // generateWrappers(apiPath, sourceDir, ::JavaFileGenerator)
+}
+
+private fun generateWrappers(
+        apiPath: String,
+        sourceDir: File,
+        createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
+) {
     val source = JSONObject(loadApiJson(apiPath))
 
     Hacks.applyHacks(source)
@@ -38,6 +50,6 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = createFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 }

@@ -10,8 +10,8 @@ private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.KOTLIN
 internal class KotlinFileGenerator(
         private val types: Iterable<Type>,
         private val functionSignatures: Iterable<FunctionSignature>
-) {
-    fun generate(directory: File) {
+) : FileGenerator {
+    override fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
 
