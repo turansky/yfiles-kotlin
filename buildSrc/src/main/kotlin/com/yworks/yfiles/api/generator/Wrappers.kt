@@ -6,8 +6,14 @@ import java.util.*
 import kotlin.reflect.KProperty
 
 internal abstract class JsonWrapper(val source: JSONObject) {
-    open fun toCode(): String {
-        throw IllegalStateException("toCode() method must be overridden for object " + this)
+    protected open fun toKotlinCode(): String {
+        throw IllegalStateException("toKotlinCode() method must be overridden for object " + this)
+    }
+
+    fun toCode(programmingLanguage: ProgrammingLanguage): String {
+        return when (programmingLanguage) {
+            ProgrammingLanguage.KOTLIN -> toKotlinCode()
+        }
     }
 
     final override fun toString(): String {
@@ -75,7 +81,7 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { TypeParser.parseType(it) }
     val summary: String by StringDelegate()
 
-    override fun toCode(): String {
+    override fun toKotlinCode(): String {
         return "$name: $type"
     }
 }
@@ -159,13 +165,13 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
         else -> ""
     }
 
-    override fun toCode(): String {
+    override fun toKotlinCode(): String {
         return "${modificator}constructor(${parametersString()})"
     }
 }
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
-    override fun toCode(): String {
+    override fun toKotlinCode(): String {
         return "val $name: $type = definedExternally"
     }
 }
@@ -177,7 +183,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
     val abstract = modifiers.abstract
 
-    override fun toCode(): String {
+    override fun toKotlinCode(): String {
         var str = ""
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
@@ -238,7 +244,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         }
     }
 
-    override fun toCode(): String {
+    override fun toKotlinCode(): String {
         val returnType = returns?.type
         val returnSignature = if (abstract) {
             if (returnType != null) {

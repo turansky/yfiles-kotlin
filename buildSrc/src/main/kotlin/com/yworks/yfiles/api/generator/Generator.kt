@@ -38,6 +38,6 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
 
     ClassRegistry.instance = ClassRegistryImpl(types)
 
-    val fileGenerator = FileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 }

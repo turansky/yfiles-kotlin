@@ -5,8 +5,12 @@ import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
 import java.io.File
 
-internal class FileGenerator(private val types: Iterable<Type>,
-                             private val functionSignatures: Iterable<FunctionSignature>) {
+private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.KOTLIN
+
+internal class KotlinFileGenerator(
+        private val types: Iterable<Type>,
+        private val functionSignatures: Iterable<FunctionSignature>
+) {
     fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
@@ -59,7 +63,7 @@ internal class FileGenerator(private val types: Iterable<Type>,
             ""
         }
         val parameters = functionSignature.parameters
-                .map { it.toCode() }
+                .map { it.toCode(PROGRAMMING_LANGUAGE) }
                 .joinToString(", ")
         val returns = functionSignature.returns?.type ?: UNIT
 
@@ -158,7 +162,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
 
     protected fun companionContent(): String {
         val items = staticDeclarations.map {
-            it.toCode()
+            it.toCode(PROGRAMMING_LANGUAGE)
         }
 
         if (items.isEmpty()) {
@@ -177,7 +181,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
 
     protected fun utilContent(): String {
         val items = staticDeclarations.map {
-            it.toCode()
+            it.toCode(PROGRAMMING_LANGUAGE)
         }
 
         if (items.isEmpty()) {
@@ -194,7 +198,7 @@ private abstract class GeneratedFile(private val declaration: Type) {
         return listOf<Declaration>()
                 .union(memberProperties)
                 .union(memberFunctions)
-                .map { it.toCode() }
+                .map { it.toCode(PROGRAMMING_LANGUAGE) }
                 .union(listOf(Hacks.getAdditionalContent(declaration.fqn)))
                 .joinToString("\n") + "\n"
     }
@@ -222,7 +226,7 @@ private class ClassFile(private val declaration: Class) : GeneratedFile(declarat
     private fun constructors(): String {
         val constructorSet = declaration.constructors.toSet()
         return constructorSet.map {
-            it.toCode()
+            it.toCode(PROGRAMMING_LANGUAGE)
         }.joinToString("\n") + "\n"
     }
 
