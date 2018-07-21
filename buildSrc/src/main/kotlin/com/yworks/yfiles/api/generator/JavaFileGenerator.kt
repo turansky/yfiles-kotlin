@@ -7,8 +7,8 @@ import java.io.File
 private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.JAVA
 
 internal class JavaFileGenerator(
-        private val types: Iterable<Type>,
-        private val functionSignatures: Iterable<FunctionSignature>
+    private val types: Iterable<Type>,
+    private val functionSignatures: Iterable<FunctionSignature>
 ) : FileGenerator {
     override fun generate(directory: File) {
         directory.mkdirs()
@@ -43,7 +43,7 @@ internal class JavaFileGenerator(
         val file = dir.resolve("${fqn.name}.java")
         val header = generatedFile.header
         val content = generatedFile.content()
-                .replace(redundantPackageDeclaration, "")
+            .replace(redundantPackageDeclaration, "")
         file.writeText("$header\n\n$content")
     }
 
@@ -65,15 +65,15 @@ internal class JavaFileGenerator(
             ""
         }
         val parameters = functionSignature.parameters
-                .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString(", ")
+            .map { it.toCode(PROGRAMMING_LANGUAGE) }
+            .joinToString(", ")
         val returns = functionSignature.returns?.type ?: "void"
 
         val content = ("@jsinterop.annotations.JsFunction\n" +
                 "public interface ${fqn.name} {\n" +
                 "    $generics $returns execute($parameters);\n" +
                 "}")
-                .replace(redundantPackageDeclaration, "")
+            .replace(redundantPackageDeclaration, "")
 
         file.writeText("$header\n\n$content")
     }
@@ -84,27 +84,27 @@ internal class JavaFileGenerator(
 
         val properties: List<Property>
             get() = declaration.properties
-                    .sortedBy { it.name }
+                .sortedBy { it.name }
 
         val staticConstants: List<Constant>
             get() = declaration.constants
-                    .sortedBy { it.name }
+                .sortedBy { it.name }
 
         val staticProperties: List<Property>
             get() = declaration.staticProperties
-                    .sortedBy { it.name }
+                .sortedBy { it.name }
 
         val staticFunctions: List<Method>
             get() = declaration.staticMethods
-                    .sortedBy { it.name }
+                .sortedBy { it.name }
 
         val staticDeclarations: List<Declaration>
             get() {
                 return mutableListOf<Declaration>()
-                        .union(staticConstants)
-                        .union(staticProperties)
-                        .union(staticFunctions)
-                        .toList()
+                    .union(staticConstants)
+                    .union(staticProperties)
+                    .union(staticFunctions)
+                    .toList()
             }
 
         val memberProperties: List<Property>
@@ -112,7 +112,7 @@ internal class JavaFileGenerator(
 
         val memberFunctions: List<Method>
             get() = declaration.methods
-                    .sortedBy { it.name }
+                .sortedBy { it.name }
 
         val header: String
             get() {
@@ -183,11 +183,11 @@ internal class JavaFileGenerator(
 
         open fun content(): String {
             return listOf<Declaration>()
-                    .union(memberProperties)
-                    .union(memberFunctions)
-                    .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                    .union(listOf(Hacks.getAdditionalContent(declaration.fqn)))
-                    .joinToString("\n") + "\n"
+                .union(memberProperties)
+                .union(memberFunctions)
+                .map { it.toCode(PROGRAMMING_LANGUAGE) }
+                .union(listOf(Hacks.getAdditionalContent(declaration.fqn)))
+                .joinToString("\n") + "\n"
         }
     }
 
@@ -222,8 +222,8 @@ internal class JavaFileGenerator(
                     ?: return super.parentTypes()
 
             return listOf(extendedType)
-                    .union(super.parentTypes())
-                    .toList()
+                .union(super.parentTypes())
+                .toList()
         }
 
         override fun content(): String {
@@ -241,10 +241,10 @@ internal class JavaFileGenerator(
             val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
             if (!likeAbstractClass) {
                 content = content.replace("abstract ", "")
-                        .replace("open fun", "fun")
-                        .replace("\n    get() = definedExternally", "")
-                        .replace("\n    set(value) = definedExternally", "")
-                        .replace(" = definedExternally", "")
+                    .replace("open fun", "fun")
+                    .replace("\n    get() = definedExternally", "")
+                    .replace("\n    set(value) = definedExternally", "")
+                    .replace(" = definedExternally", "")
             }
 
             val type = if (likeAbstractClass) "abstract class" else "interface"
@@ -258,8 +258,8 @@ internal class JavaFileGenerator(
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = declaration.constants
-                    .map { "    ${it.name}" }
-                    .joinToString(",\n")
+                .map { "    ${it.name}" }
+                .joinToString(",\n")
             return "external enum class ${fqn.name} {\n" +
                     values + "\n\n" +
                     super.content() + "\n" +

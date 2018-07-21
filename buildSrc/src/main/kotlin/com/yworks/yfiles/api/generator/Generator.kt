@@ -9,18 +9,18 @@ import java.net.URL
 private val YFILES_NAMESPACE = "yfiles"
 
 private val PRIMITIVE_TYPES = listOf(
-        "yfiles.lang.Boolean",
-        "yfiles.lang.Number",
-        "yfiles.lang.String",
-        "yfiles.lang.Struct",
-        "yfiles.lang.Enum",
-        "yfiles.lang.EnumDefinition"
+    "yfiles.lang.Boolean",
+    "yfiles.lang.Number",
+    "yfiles.lang.String",
+    "yfiles.lang.Struct",
+    "yfiles.lang.Enum",
+    "yfiles.lang.EnumDefinition"
 ).map { fixPackage(it) }
 
 private fun loadApiJson(path: String): String {
     return URL(path)
-            .readText(DEFAULT_CHARSET)
-            .removePrefix("var apiData=")
+        .readText(DEFAULT_CHARSET)
+        .removePrefix("var apiData=")
 }
 
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
@@ -32,9 +32,9 @@ fun generateJavaWrappers(apiPath: String, sourceDir: File) {
 }
 
 private fun generateWrappers(
-        apiPath: String,
-        sourceDir: File,
-        createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
+    apiPath: String,
+    sourceDir: File,
+    createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
 ) {
     val source = JSONObject(loadApiJson(apiPath))
 
@@ -42,9 +42,9 @@ private fun generateWrappers(
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot
-            .namespaces.first { it.id == YFILES_NAMESPACE }
-            .namespaces.flatMap { it.types }
-            .filterNot { PRIMITIVE_TYPES.contains(it.fqn) }
+        .namespaces.first { it.id == YFILES_NAMESPACE }
+        .namespaces.flatMap { it.types }
+        .filterNot { PRIMITIVE_TYPES.contains(it.fqn) }
 
     val functionSignatures = apiRoot.functionSignatures
 

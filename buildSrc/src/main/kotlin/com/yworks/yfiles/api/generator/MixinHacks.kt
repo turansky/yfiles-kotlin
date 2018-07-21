@@ -26,18 +26,18 @@ internal object MixinHacks {
     }
 
     private val MUST_BE_ABSTRACT_CLASSES = listOf(
-            "yfiles.collections.ICollection",
-            "yfiles.collections.IList",
-            "yfiles.collections.IMap",
-            "yfiles.collections.IListEnumerable",
-            "yfiles.collections.IObservableCollection",
-            "yfiles.view.ICanvasObjectGroup",
-            "yfiles.view.ISelectionModel",
-            "yfiles.view.IStripeSelection",
-            "yfiles.view.IGraphSelection",
+        "yfiles.collections.ICollection",
+        "yfiles.collections.IList",
+        "yfiles.collections.IMap",
+        "yfiles.collections.IListEnumerable",
+        "yfiles.collections.IObservableCollection",
+        "yfiles.view.ICanvasObjectGroup",
+        "yfiles.view.ISelectionModel",
+        "yfiles.view.IStripeSelection",
+        "yfiles.view.IGraphSelection",
 
-            "yfiles.graph.IColumn",
-            "yfiles.graph.IRow"
+        "yfiles.graph.IColumn",
+        "yfiles.graph.IRow"
     ).map { fixPackage(it) }
 
     fun defineLikeAbstractClass(className: String, functions: List<Method>, properties: List<Property>): Boolean {

@@ -42,23 +42,23 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
     private val instances = types.associateBy({ it.fqn }, { it })
 
     private val functionsMap = types.associateBy(
-            { it.fqn },
-            { it.methods.map { it.name } }
+        { it.fqn },
+        { it.methods.map { it.name } }
     )
 
     private val propertiesMap = types.associateBy(
-            { it.fqn },
-            { it.properties.map { it.name } }
+        { it.fqn },
+        { it.properties.map { it.name } }
     )
 
     private fun getParents(className: String): List<String> {
         val instance = instances[className] ?: throw IllegalArgumentException("Unknown instance type: $className")
 
         return mutableListOf<String>()
-                .union(listOf(instance.extendedType()).filterNotNull())
-                .union(instance.implementedTypes())
-                .map { if (it.contains("<")) till(it, "<") else it }
-                .toList()
+            .union(listOf(instance.extendedType()).filterNotNull())
+            .union(instance.implementedTypes())
+            .map { if (it.contains("<")) till(it, "<") else it }
+            .toList()
     }
 
     private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {

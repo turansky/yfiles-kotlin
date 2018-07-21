@@ -14,13 +14,13 @@ internal fun jObject(vararg items: Pair<String, Any>): JSONObject {
 
 internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
     return (0 until this.length())
-            .map(this::getJSONObject)
-            .filter(predicate)
-            .first()
+        .map(this::getJSONObject)
+        .filter(predicate)
+        .first()
 }
 
 internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSONObject> {
     return (0 until this.length())
-            .map(this::getJSONObject)
-            .filter(predicate)
+        .map(this::getJSONObject)
+        .filter(predicate)
 }

@@ -34,7 +34,7 @@ internal enum class YfilesModule(val id: String, val weight: Int) {
         private val LANG_PACKAGE = fixPackage("yfiles.lang")
 
         private val MODULE_MAP = YfilesModule.values()
-                .associateBy { it.id }
+            .associateBy { it.id }
 
         fun findModule(modules: List<IModule>): YfilesModule {
             if (modules.size == 1) {
@@ -60,10 +60,10 @@ internal enum class YfilesModule(val id: String, val weight: Int) {
             }
 
             return modules
-                    .map { it.moduleId ?: throw IllegalArgumentException("No moduleId defined for module: $it") }
-                    .map { MODULE_MAP[it] ?: throw IllegalArgumentException("No module found with id: $it") }
-                    .sortedBy { it.weight }
-                    .first()
+                .map { it.moduleId ?: throw IllegalArgumentException("No moduleId defined for module: $it") }
+                .map { MODULE_MAP[it] ?: throw IllegalArgumentException("No module found with id: $it") }
+                .sortedBy { it.weight }
+                .first()
         }
 
         fun getQualifier(pkg: String): String? {
