@@ -56,7 +56,7 @@ internal class JavaFileGenerator(
         val redundantPackageDeclaration = packageName + "."
 
         val file = dir.resolve("${fqn.name}.java")
-        val header = "package $packageName"
+        val header = "package $packageName;"
 
         val typeparameters = functionSignature.typeparameters
         val generics = if (typeparameters.isNotEmpty()) {
@@ -70,7 +70,7 @@ internal class JavaFileGenerator(
         val returns = functionSignature.returns?.type ?: "void"
 
         val content = ("public interface ${fqn.name} {\n" +
-                "    $returns $generics execute($parameters);\n" +
+                "    $generics $returns execute($parameters);\n" +
                 "}")
                 .replace(redundantPackageDeclaration, "")
 
