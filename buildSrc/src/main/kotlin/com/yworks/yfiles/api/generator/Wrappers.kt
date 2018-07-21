@@ -5,7 +5,16 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
 
-internal abstract class JsonWrapper(val source: JSONObject)
+internal abstract class JsonWrapper(val source: JSONObject) {
+    open fun toCode(): String {
+        throw IllegalStateException("toCode() method must be overridden for object " + this)
+    }
+
+    final override fun toString(): String {
+        throw IllegalStateException("Use method toCode() instead")
+    }
+}
+
 internal abstract class Declaration : JsonWrapper {
     val id: String by StringDelegate()
     val name: String by StringDelegate()
@@ -25,10 +34,6 @@ internal abstract class Declaration : JsonWrapper {
     constructor(fqn: String, source: JSONObject) : super(source) {
         this.fqn = fixPackage(fqn)
         this.nameOfClass = fqn.split(".").last()
-    }
-
-    override fun toString(): String {
-        throw IllegalStateException("toString() method must be overridden for object " + this)
     }
 }
 
@@ -70,7 +75,7 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { TypeParser.parseType(it) }
     val summary: String by StringDelegate()
 
-    override fun toString(): String {
+    override fun toCode(): String {
         return "$name: $type"
     }
 }
@@ -154,13 +159,13 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
         else -> ""
     }
 
-    override fun toString(): String {
+    override fun toCode(): String {
         return "${modificator}constructor(${parametersString()})"
     }
 }
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
-    override fun toString(): String {
+    override fun toCode(): String {
         return "val $name: $type = definedExternally"
     }
 }
@@ -172,7 +177,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
     val abstract = modifiers.abstract
 
-    override fun toString(): String {
+    override fun toCode(): String {
         var str = ""
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
@@ -233,7 +238,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         }
     }
 
-    override fun toString(): String {
+    override fun toCode(): String {
         val returnType = returns?.type
         val returnSignature = if (abstract) {
             if (returnType != null) {
