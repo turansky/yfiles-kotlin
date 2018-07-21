@@ -10,9 +10,14 @@ internal abstract class JsonWrapper(val source: JSONObject) {
         throw IllegalStateException("toKotlinCode() method must be overridden for object " + this)
     }
 
+    protected open fun toJavaCode(): String {
+        throw IllegalStateException("toJavaCode() method must be overridden for object " + this)
+    }
+
     fun toCode(programmingLanguage: ProgrammingLanguage): String {
         return when (programmingLanguage) {
             ProgrammingLanguage.KOTLIN -> toKotlinCode()
+            ProgrammingLanguage.JAVA -> toJavaCode()
         }
     }
 

@@ -28,7 +28,7 @@ fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
 }
 
 fun generateJavaWrappers(apiPath: String, sourceDir: File) {
-    // generateWrappers(apiPath, sourceDir, ::JavaFileGenerator)
+    generateWrappers(apiPath, sourceDir, ::JavaFileGenerator)
 }
 
 private fun generateWrappers(
