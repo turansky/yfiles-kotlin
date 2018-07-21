@@ -89,6 +89,10 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     override fun toKotlinCode(): String {
         return "$name: $type"
     }
+
+    override fun toJavaCode(): String {
+        return "$type $name"
+    }
 }
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {

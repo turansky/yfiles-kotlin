@@ -1,11 +1,10 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.UNIT
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
 import java.io.File
 
-private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.KOTLIN
+private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.JAVA
 
 internal class JavaFileGenerator(
         private val types: Iterable<Type>,
@@ -15,6 +14,8 @@ internal class JavaFileGenerator(
         directory.mkdirs()
         directory.deleteRecursively()
 
+        // TODO: uncomment
+        /*
         types.forEach {
             val generatedFile = when (it) {
                 is Class -> ClassFile(it)
@@ -25,6 +26,7 @@ internal class JavaFileGenerator(
 
             generate(directory, generatedFile)
         }
+        */
 
         functionSignatures.forEach {
             generate(directory, it)
@@ -38,7 +40,7 @@ internal class JavaFileGenerator(
 
         val redundantPackageDeclaration = fqn.packageName + "."
 
-        val file = dir.resolve("${fqn.name}.kt")
+        val file = dir.resolve("${fqn.name}.java")
         val header = generatedFile.header
         val content = generatedFile.content()
                 .replace(redundantPackageDeclaration, "")
@@ -53,7 +55,7 @@ internal class JavaFileGenerator(
         val packageName = fqn.packageName
         val redundantPackageDeclaration = packageName + "."
 
-        val file = dir.resolve("${fqn.name}.kt")
+        val file = dir.resolve("${fqn.name}.java")
         val header = "package $packageName"
 
         val typeparameters = functionSignature.typeparameters
@@ -65,9 +67,11 @@ internal class JavaFileGenerator(
         val parameters = functionSignature.parameters
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
                 .joinToString(", ")
-        val returns = functionSignature.returns?.type ?: UNIT
+        val returns = functionSignature.returns?.type ?: "void"
 
-        val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
+        val content = ("public interface ${fqn.name} {\n" +
+                "    $returns $generics execute($parameters);\n" +
+                "}")
                 .replace(redundantPackageDeclaration, "")
 
         file.writeText("$header\n\n$content")
