@@ -1,6 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.UNIT
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -262,7 +261,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
                 ""
             }
         } else {
-            ":" + (returnType ?: UNIT) + " = definedExternally"
+            ":" + (returnType ?: KotlinTypes.UNIT) + " = definedExternally"
         }
         return "${modificator()}fun $generics$name(${parametersString()})$returnSignature"
     }

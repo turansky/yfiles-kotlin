@@ -1,5 +1,6 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.JavaTypes.VOID
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
 import java.io.File
@@ -67,7 +68,7 @@ internal class JavaFileGenerator(
         val parameters = functionSignature.parameters
             .map { it.toCode(PROGRAMMING_LANGUAGE) }
             .joinToString(", ")
-        val returns = functionSignature.returns?.type ?: "void"
+        val returns = functionSignature.returns?.type ?: VOID
 
         val content = ("@jsinterop.annotations.JsFunction\n" +
                 "public interface ${fqn.name} {\n" +

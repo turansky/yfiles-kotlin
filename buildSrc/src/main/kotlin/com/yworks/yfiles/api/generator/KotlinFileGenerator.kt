@@ -1,6 +1,6 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.UNIT
+import com.yworks.yfiles.api.generator.KotlinTypes.UNIT
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
 import java.io.File
