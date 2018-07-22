@@ -1,7 +1,7 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.JavaTypes.VOID
-import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
+import com.yworks.yfiles.api.generator.YfilesModule.Companion.getNamespace
 import java.io.File
 
 private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.JAVA
@@ -235,8 +235,8 @@ internal class JavaFileGenerator(
                 .map { "    public static ${fqn.name} ${it.name};" }
                 .joinToString("\n")
 
-            val qualifier = getQualifier(fqn.packageName)
-            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$qualifier\")\n" +
+            val namespace = getNamespace(fqn.packageName)
+            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
                     "public class ${fqn.name} {\n" +
                     values + "\n\n" +
                     super.content() + "\n" +

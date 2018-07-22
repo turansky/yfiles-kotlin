@@ -30,7 +30,8 @@ internal enum class YfilesModule(val id: String, val weight: Int) {
     val path = "yfiles/$id"
 
     companion object {
-        private val YFILES_PACKAGE = fixPackage("yfiles.")
+        private val YFILES = "yfiles."
+        private val YFILES_PACKAGE = fixPackage(YFILES)
         private val LANG_PACKAGE = fixPackage("yfiles.lang")
 
         private val MODULE_MAP = YfilesModule.values()
@@ -70,6 +71,13 @@ internal enum class YfilesModule(val id: String, val weight: Int) {
             return when {
                 pkg == LANG_PACKAGE -> null
                 pkg.startsWith(YFILES_PACKAGE) -> pkg.removePrefix(YFILES_PACKAGE)
+                else -> throw IllegalArgumentException("Invalid package: $pkg")
+            }
+        }
+
+        fun getNamespace(pkg: String): String? {
+            return when {
+                pkg.startsWith(YFILES_PACKAGE) -> pkg.replaceFirst(YFILES_PACKAGE, YFILES)
                 else -> throw IllegalArgumentException("Invalid package: $pkg")
             }
         }
