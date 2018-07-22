@@ -95,15 +95,6 @@ internal class JavaFileGenerator(
             get() = declaration.staticMethods
                 .sortedBy { it.name }
 
-        val staticDeclarations: List<Declaration>
-            get() {
-                return mutableListOf<Declaration>()
-                    .union(staticConstants)
-                    .union(staticProperties)
-                    .union(staticFunctions)
-                    .toList()
-            }
-
         val memberProperties: List<Property>
             get() = properties.filter { !it.static }
 
@@ -136,27 +127,11 @@ internal class JavaFileGenerator(
             return false
         }
 
-        protected fun companionContent(): String {
-            val items = staticDeclarations.map {
-                it.toCode(PROGRAMMING_LANGUAGE)
-            }
-
-            if (items.isEmpty()) {
-                return ""
-            }
-
-            val result = items.joinToString("\n") + "\n"
-            if (isStatic()) {
-                return result
-            }
-
-            return "    companion object {\n" +
-                    result +
-                    "    }\n"
-        }
-
         open fun content(): String {
             return listOf<Declaration>()
+                .union(staticConstants)
+                .union(staticProperties)
+                .union(staticFunctions)
                 .union(memberProperties)
                 .union(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
@@ -181,7 +156,7 @@ internal class JavaFileGenerator(
                 declaration.modificator
             }
 
-            return modificator + " class"
+            return "public $modificator class"
         }
 
         private fun constructors(): String {
@@ -201,8 +176,9 @@ internal class JavaFileGenerator(
         }
 
         override fun content(): String {
-            return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
-                    companionContent() +
+            val namespace = getNamespace(fqn.packageName)
+            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
+                    "${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     constructors() +
                     super.content() + "\n" +
                     "}"
