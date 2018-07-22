@@ -1,7 +1,6 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.JavaTypes.VOID
-import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
 import java.io.File
 
@@ -15,8 +14,6 @@ internal class JavaFileGenerator(
         directory.mkdirs()
         directory.deleteRecursively()
 
-        // TODO: uncomment
-        /*
         types.forEach {
             val generatedFile = when (it) {
                 is Class -> ClassFile(it)
@@ -27,7 +24,6 @@ internal class JavaFileGenerator(
 
             generate(directory, generatedFile)
         }
-        */
 
         functionSignatures.forEach {
             generate(directory, it)
@@ -117,15 +113,7 @@ internal class JavaFileGenerator(
 
         val header: String
             get() {
-                val module = findModule(declaration.modules)
-                val qualifier = getQualifier(fqn.packageName)
-                return "@file:JsModule(\"$module\")\n" +
-                        if (qualifier != null) {
-                            "@file:JsQualifier(\"$qualifier\")\n"
-                        } else {
-                            ""
-                        } +
-                        "package ${fqn.packageName}\n"
+                return "package ${fqn.packageName};\n"
             }
 
         protected open fun parentTypes(): List<String> {
@@ -165,21 +153,6 @@ internal class JavaFileGenerator(
             return "    companion object {\n" +
                     result +
                     "    }\n"
-        }
-
-        protected fun utilContent(): String {
-            val items = staticDeclarations.map {
-                it.toCode(PROGRAMMING_LANGUAGE)
-            }
-
-            if (items.isEmpty()) {
-                return ""
-            }
-
-            return "@JsName(\"$className\")\n" +
-                    "external object ${className}s {\n" +
-                    items.joinToString("\n") +
-                    "}"
         }
 
         open fun content(): String {
@@ -251,17 +224,20 @@ internal class JavaFileGenerator(
             val type = if (likeAbstractClass) "abstract class" else "interface"
             return "external $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
-                    "}\n\n" +
-                    utilContent()
+                    "}"
         }
     }
 
+    // TODO: check if fields can be final
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = declaration.constants
-                .map { "    ${it.name}" }
-                .joinToString(",\n")
-            return "external enum class ${fqn.name} {\n" +
+                .map { "    public static ${fqn.name} ${it.name};" }
+                .joinToString("\n")
+
+            val qualifier = getQualifier(fqn.packageName)
+            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$qualifier\")\n" +
+                    "public class ${fqn.name} {\n" +
                     values + "\n\n" +
                     super.content() + "\n" +
                     "}\n"

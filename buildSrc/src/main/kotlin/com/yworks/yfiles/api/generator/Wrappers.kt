@@ -1,16 +1,17 @@
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.JavaTypes.VOID
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
 
 internal abstract class JsonWrapper(val source: JSONObject) {
     protected open fun toKotlinCode(): String {
-        throw IllegalStateException("toKotlinCode() method must be overridden for object " + this)
+        throw IllegalStateException("toKotlinCode() method must be overridden")
     }
 
     protected open fun toJavaCode(): String {
-        throw IllegalStateException("toJavaCode() method must be overridden for object " + this)
+        throw IllegalStateException("toJavaCode() method must be overridden")
     }
 
     fun toCode(programmingLanguage: ProgrammingLanguage): String {
@@ -168,19 +169,32 @@ internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Decl
 internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
     val protected = modifiers.protected
 
-    val modificator: String = when {
-        protected -> "protected "
-        else -> ""
+    override fun toKotlinCode(): String {
+        val modificator: String = when {
+            protected -> "protected"
+            else -> ""
+        }
+
+        return "${modificator} constructor(${parametersString()})"
     }
 
-    override fun toKotlinCode(): String {
-        return "${modificator}constructor(${parametersString()})"
+    override fun toJavaCode(): String {
+        val modificator: String = when {
+            protected -> "protected"
+            else -> "public"
+        }
+
+        return "${modificator} ${nameOfClass}(${parametersString()}) {}"
     }
 }
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
     override fun toKotlinCode(): String {
         return "val $name: $type = definedExternally"
+    }
+
+    override fun toJavaCode(): String {
+        return "public final $type $name"
     }
 }
 
@@ -197,6 +211,36 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         if (classRegistry.propertyOverriden(fqn, name)) {
             str += "override "
+        } else {
+            if (protected) {
+                str += "protected "
+            }
+
+            str += when {
+                abstract -> "abstract "
+                !static && !classRegistry.isFinalClass(fqn) -> "open "
+                else -> ""
+            }
+        }
+
+        str += if (getterSetter) "var " else "val "
+
+        str += "$name: $type"
+        if (!abstract) {
+            str += "\n    get() = definedExternally"
+            if (getterSetter) {
+                str += "\n    set(value) = definedExternally"
+            }
+        }
+        return str
+    }
+
+    override fun toJavaCode(): String {
+        var str = ""
+        val classRegistry: ClassRegistry = ClassRegistry.instance
+
+        if (classRegistry.propertyOverriden(fqn, name)) {
+            return ""
         } else {
             if (protected) {
                 str += "protected "
@@ -264,6 +308,11 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
             ":" + (returnType ?: KotlinTypes.UNIT) + " = definedExternally"
         }
         return "${modificator()}fun $generics$name(${parametersString()})$returnSignature"
+    }
+
+    override fun toJavaCode(): String {
+        val returnType = returns?.type ?: VOID
+        return "${modificator()} $generics $returnType $name(${parametersString()});"
     }
 }
 
