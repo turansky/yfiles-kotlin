@@ -153,7 +153,7 @@ internal class JavaFileGenerator(
             val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
                 "abstract"
             } else {
-                declaration.modificator
+                declaration.javaModificator
             }
 
             return "public $modificator class"

@@ -199,7 +199,7 @@ internal class KotlinFileGenerator(
             val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
                 "abstract"
             } else {
-                declaration.modificator
+                declaration.kotlinModificator
             }
 
             return modificator + " class"

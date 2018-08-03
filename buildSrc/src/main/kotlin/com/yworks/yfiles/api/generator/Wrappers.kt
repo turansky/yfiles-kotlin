@@ -136,9 +136,15 @@ internal class Class(source: JSONObject) : Type(source) {
     val open = !final
     val abstract = modifiers.abstract
 
-    val modificator = when {
+    val kotlinModificator = when {
         abstract -> "abstract" // no such cases (JS specific?)
         open -> "open"
+        else -> ""
+    }
+
+    val javaModificator = when {
+        abstract -> "abstract" // no such cases (JS specific?)
+        final -> "final"
         else -> ""
     }
 
