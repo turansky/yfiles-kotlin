@@ -1,8 +1,10 @@
 .gradle/
 build/
+out/
 web/
 
 /src/
+/jsinterop/src/
 
 # Ignore Gradle GUI config
 gradle-app.setting
