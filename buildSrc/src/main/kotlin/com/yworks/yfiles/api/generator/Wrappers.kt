@@ -200,7 +200,7 @@ internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     }
 
     override fun toJavaCode(): String {
-        return "public final $type $name"
+        return "public final $type $name;"
     }
 }
 
