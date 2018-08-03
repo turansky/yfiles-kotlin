@@ -283,7 +283,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val generics: String
         get() = TypeParser.getGenericString(typeparameters)
 
-    private fun modificator(canBeOpen: Boolean = true): String {
+    private fun kotlinModificator(): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
         // TODO: add abstract modificator if needed
@@ -293,13 +293,31 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         val result = when {
             abstract -> "abstract "
-            canBeOpen && !static && !classRegistry.isFinalClass(fqn) -> "open "
+            !static && !classRegistry.isFinalClass(fqn) -> "open "
             else -> ""
         }
         return result + when {
             protected -> "protected "
             else -> ""
         }
+    }
+
+    private fun javaModificator(): String {
+        val classRegistry: ClassRegistry = ClassRegistry.instance
+
+        val override = if (classRegistry.functionOverriden(fqn, name)) {
+            "@Override\n"
+        } else {
+            ""
+        }
+
+        val mofificators = mutableListOf<String>()
+
+        if (abstract) mofificators.add("abstract ")
+        if (protected) mofificators.add("protected")
+        mofificators.add("native")
+
+        return override + mofificators.joinToString(" ") + " "
     }
 
     override fun toKotlinCode(): String {
@@ -313,12 +331,12 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         } else {
             ":" + (returnType ?: KotlinTypes.UNIT) + " = definedExternally"
         }
-        return "${modificator()}fun $generics$name(${kotlinParametersString()})$returnSignature"
+        return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})$returnSignature"
     }
 
     override fun toJavaCode(): String {
         val returnType = returns?.type ?: VOID
-        return "${modificator()} $generics $returnType $name(${javaParametersString()});"
+        return "${javaModificator()} $generics $returnType $name(${javaParametersString()});"
     }
 }
 
