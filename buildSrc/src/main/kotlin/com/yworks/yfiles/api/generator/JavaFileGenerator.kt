@@ -107,16 +107,25 @@ internal class JavaFileGenerator(
                 return "package ${fqn.packageName};\n"
             }
 
-        protected open fun parentTypes(): List<String> {
-            return declaration.implementedTypes()
+        protected open fun extendsTypes(): List<String> {
+            return emptyList()
+        }
+
+        protected open fun implementsTypes(): List<String> {
+            return emptyList()
         }
 
         protected fun parentString(): String {
-            val parentTypes = parentTypes()
-            if (parentTypes.isEmpty()) {
+            return toString("extends", extendsTypes()) +
+                    toString("implements", implementsTypes())
+        }
+
+        private fun toString(keyword: String, types: List<String>): String {
+            if (types.isEmpty()) {
                 return ""
             }
-            return ": " + parentTypes.joinToString(", ")
+
+            return " " + keyword + " " + types.joinToString(", ")
         }
 
         fun genericParameters(): String {
@@ -166,13 +175,17 @@ internal class JavaFileGenerator(
             }.joinToString("\n") + "\n"
         }
 
-        override fun parentTypes(): List<String> {
+        override fun extendsTypes(): List<String> {
             val extendedType = declaration.extendedType()
-                    ?: return super.parentTypes()
+            return if (extendedType != null) {
+                listOf(extendedType)
+            } else {
+                emptyList()
+            }
+        }
 
-            return listOf(extendedType)
-                .union(super.parentTypes())
-                .toList()
+        override fun implementsTypes(): List<String> {
+            return declaration.implementedTypes()
         }
 
         override fun content(): String {
@@ -185,7 +198,7 @@ internal class JavaFileGenerator(
         }
     }
 
-    inner class InterfaceFile(declaration: Interface) : GeneratedFile(declaration) {
+    inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
         override fun content(): String {
             var content = super.content()
             val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
@@ -197,10 +210,16 @@ internal class JavaFileGenerator(
                     .replace(" = definedExternally", "")
             }
 
+            val namespace = getNamespace(fqn.packageName)
             val type = if (likeAbstractClass) "abstract class" else "interface"
-            return "external $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
+            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
+                    "public $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}"
+        }
+
+        override fun extendsTypes(): List<String> {
+            return declaration.implementedTypes()
         }
     }
 
