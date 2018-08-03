@@ -250,6 +250,8 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         } else {
             if (protected) {
                 str += "protected "
+            } else {
+                str += "public "
             }
 
             str += when {
@@ -314,7 +316,11 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         val mofificators = mutableListOf<String>()
 
         if (abstract) mofificators.add("abstract ")
-        if (protected) mofificators.add("protected")
+        if (protected) {
+            mofificators.add("protected")
+        } else {
+            mofificators.add("public")
+        }
         mofificators.add("native")
 
         return override + mofificators.joinToString(" ") + " "
