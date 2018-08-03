@@ -242,34 +242,35 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     }
 
     override fun toJavaCode(): String {
-        var str = ""
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
         if (classRegistry.propertyOverriden(fqn, name)) {
             return ""
+        }
+
+        val modificator = if (protected) {
+            "protected "
         } else {
-            if (protected) {
-                str += "protected "
-            } else {
-                str += "public "
-            }
-
-            str += when {
-                abstract -> "abstract "
-                !static && !classRegistry.isFinalClass(fqn) -> "open "
-                else -> ""
-            }
+            "public "
+        } + if (abstract) {
+            "abstract "
+        } else {
+            ""
+        } + if (classRegistry.isInterface(fqn)) {
+            ""
+        } else {
+            "native "
         }
 
-        str += if (getterSetter) "var " else "val "
+        val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
+        val cname = name.capitalize()
 
-        str += "$name: $type"
-        if (!abstract) {
-            str += "\n    get() = definedExternally"
-            if (getterSetter) {
-                str += "\n    set(value) = definedExternally"
-            }
+        var str = annotation + "\n" + "$modificator $type get$cname();"
+
+        if (getterSetter) {
+            str += annotation + "\n" + "$modificator void set$cname($type value);"
         }
+
         return str
     }
 }
