@@ -181,7 +181,7 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
             else -> ""
         }
 
-        return "${modificator} constructor(${parametersString()})"
+        return "${modificator} constructor(${kotlinParametersString()})"
     }
 
     override fun toJavaCode(): String {
@@ -190,7 +190,7 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
             else -> "public"
         }
 
-        return "${modificator} ${nameOfClass}(${parametersString()}) {}"
+        return "${modificator} ${nameOfClass}(${javaParametersString()}) {}"
     }
 }
 
@@ -313,12 +313,12 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         } else {
             ":" + (returnType ?: KotlinTypes.UNIT) + " = definedExternally"
         }
-        return "${modificator()}fun $generics$name(${parametersString()})$returnSignature"
+        return "${modificator()}fun $generics$name(${kotlinParametersString()})$returnSignature"
     }
 
     override fun toJavaCode(): String {
         val returnType = returns?.type ?: VOID
-        return "${modificator()} $generics $returnType $name(${parametersString()});"
+        return "${modificator()} $generics $returnType $name(${javaParametersString()});"
     }
 }
 
@@ -327,7 +327,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     val parameters: List<Parameter> by ArrayDelegate({ Parameter(it) }, { !it.modifiers.artificial })
     val options: Boolean by BooleanDelegate()
 
-    protected fun parametersString(checkOverriding: Boolean = true): String {
+    protected fun kotlinParametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters.map {
             val modifiers = if (it.modifiers.vararg) "vararg " else ""
@@ -336,15 +336,22 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
         }.joinToString(", ")
     }
 
+    protected fun javaParametersString(): String {
+        return parameters.map {
+            val modifiers = if (it.modifiers.vararg) "..." else ""
+            "${it.type} $modifiers${it.name}"
+        }.joinToString(", ")
+    }
+
     override fun hashCode(): Int {
-        return Objects.hash(fqn, name, parametersString(false))
+        return Objects.hash(fqn, name, kotlinParametersString(false))
     }
 
     override fun equals(other: Any?): Boolean {
         return other is MethodBase
                 && Objects.equals(fqn, other.fqn)
                 && Objects.equals(name, other.name)
-                && Objects.equals(parametersString(false), other.parametersString(false))
+                && Objects.equals(kotlinParametersString(false), other.kotlinParametersString(false))
     }
 }
 
