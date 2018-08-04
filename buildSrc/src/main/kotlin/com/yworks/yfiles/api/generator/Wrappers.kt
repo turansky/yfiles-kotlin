@@ -201,7 +201,7 @@ internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
     override fun toJavaCode(): String {
         val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
-        return "$annotation\npublic static native $type $name();"
+        return "$annotation\npublic static $type $name();"
     }
 }
 
@@ -266,12 +266,21 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         }
 
         val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
-        val cname = name.capitalize()
+        val getterName = if (type != "boolean") {
+            "get" + name.capitalize()
+        } else {
+            if (name.startsWith("is")) {
+                name
+            } else {
+                "is" + name.capitalize()
+            }
+        }
 
-        var str = annotation + "\n" + "$override $modificator $type get$cname();"
+        var str = annotation + "\n" + "$override $modificator $type $getterName();"
 
         if (getterSetter) {
-            str += annotation + "\n" + "$override $modificator void set$cname($type value);"
+            val setterName = "set" + name.capitalize()
+            str += annotation + "\n" + "$override $modificator void $setterName($type value);"
         }
 
         return str
