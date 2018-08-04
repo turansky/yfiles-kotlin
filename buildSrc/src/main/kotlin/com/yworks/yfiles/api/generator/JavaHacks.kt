@@ -19,8 +19,9 @@ internal object JavaHacks {
         var result = when {
             className == "yfiles.algorithms.YList"
             -> lines(
-                "@Override val isReadOnly: Boolean",
-                "    get()",
+                "@jsinterop.annotations.JsProperty(name=\"isReadOnly\")",
+                "@Override",
+                "public native boolean isReadOnly()",
                 "@Override public native void add(${OBJECT_TYPE} item)"
             )
 
@@ -64,8 +65,9 @@ internal object JavaHacks {
 
             className == "yfiles.styles.Arrow"
             -> lines(
-                "@Override val length: double",
-                "    get()",
+                "@jsinterop.annotations.JsProperty(name=\"length\")",
+                "@Override",
+                "public native double getLength()",
                 "@Override public native yfiles.view.IBoundsProvider getBoundsProvider(yfiles.graph.IEdge edge, boolean atSource, yfiles.geometry.Point anchor, yfiles.geometry.Point directionVector)",
                 "@Override public native yfiles.view.IVisualCreator getVisualCreator(yfiles.graph.IEdge edge, boolean atSource, yfiles.geometry.Point anchor, yfiles.geometry.Point direction)",
                 CLONE_OVERRIDE
