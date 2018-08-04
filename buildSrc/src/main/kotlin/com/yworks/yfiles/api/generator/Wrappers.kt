@@ -319,13 +319,17 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         val mofificators = mutableListOf<String>()
 
-        if (abstract) mofificators.add("abstract ")
+        if (abstract) {
+            mofificators.add("abstract ")
+        } else {
+            mofificators.add("native")
+        }
+
         if (protected) {
             mofificators.add("protected")
         } else {
             mofificators.add("public")
         }
-        mofificators.add("native")
 
         return override + mofificators.joinToString(" ") + " "
     }
