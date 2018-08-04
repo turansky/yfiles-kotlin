@@ -201,7 +201,8 @@ internal class JavaFileGenerator(
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
         override fun content(): String {
             var content = super.content()
-            val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
+            val likeAbstractClass = false
+            // val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
             if (!likeAbstractClass) {
                 content = content.replace("abstract ", "")
                     .replace("open fun", "fun")
