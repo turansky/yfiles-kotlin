@@ -144,7 +144,7 @@ internal class JavaFileGenerator(
                 .union(memberProperties)
                 .union(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .union(listOf(Hacks.getAdditionalContent(declaration.fqn)))
+                .union(listOf(KotlinHacks.getAdditionalContent(declaration.fqn)))
                 .joinToString("\n") + "\n"
         }
     }
