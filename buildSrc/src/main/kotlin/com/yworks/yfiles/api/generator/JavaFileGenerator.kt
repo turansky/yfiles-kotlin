@@ -67,8 +67,8 @@ internal class JavaFileGenerator(
         val returns = functionSignature.returns?.type ?: VOID
 
         val content = ("@jsinterop.annotations.JsFunction\n" +
-                "public interface ${fqn.name} {\n" +
-                "    $generics $returns execute($parameters);\n" +
+                "public interface ${fqn.name}$generics {\n" +
+                "   $returns execute($parameters);\n" +
                 "}")
             .replace(redundantPackageDeclaration, "")
 
