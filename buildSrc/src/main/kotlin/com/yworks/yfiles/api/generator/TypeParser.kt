@@ -50,10 +50,17 @@ internal object TypeParser {
             return generics
         }
 
-        return generics
+        val result = generics
             .replace("boolean", "Boolean")
             .replace("double", "Double")
-            .replace("int", "Integer")
+            .replace(", int", ", Integer")
+
+        if (result == "int") {
+            return "Integer"
+        }
+
+        return result
+            .replace("int,", "Integer,")
     }
 
     // TODO: optimize calculation
