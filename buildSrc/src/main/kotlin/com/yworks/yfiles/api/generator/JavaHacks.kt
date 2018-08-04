@@ -10,7 +10,7 @@ internal object JavaHacks {
         "yfiles.geometry.MutableSize"
     )
 
-    private val CLONE_OVERRIDE = "@Override public native void clone(): ${OBJECT_TYPE}"
+    private val CLONE_OVERRIDE = "@Override public native ${OBJECT_TYPE} void clone()"
 
     // yfiles.api.json correction required
     fun getAdditionalContent(cn: String): String {
@@ -30,70 +30,70 @@ internal object JavaHacks {
 
             className == "yfiles.graph.CompositeUndoUnit"
             -> lines(
-                "@Override public native tryMergeUnit(unit: IUndoUnit): Boolean",
-                "@Override public native tryReplaceUnit(unit: IUndoUnit): Boolean"
+                "@Override public native boolean tryMergeUnit(unit: IUndoUnit)",
+                "@Override public native boolean tryReplaceUnit(unit: IUndoUnit)"
             )
 
             className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"
             -> lines(
-                "@Override public native findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter",
-                "@Override public native getParameters(label: ILabel, model: ILabelModel): yfiles.collections.IEnumerable<ILabelModelParameter>",
-                "@Override public native getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle"
+                "@Override public native ILabelModelParameter findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle)",
+                "@Override public native yfiles.collections.IEnumerable<ILabelModelParameter> getParameters(label: ILabel, model: ILabelModel)",
+                "@Override public native yfiles.geometry.IOrientedRectangle getGeometry(label: ILabel, layoutParameter: ILabelModelParameter)"
             )
 
             className == "yfiles.graph.FreeLabelModel"
-            -> "@Override public native findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter"
+            -> "@Override public native ILabelModelParameter findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle)"
 
             className == "yfiles.graph.GenericLabelModel"
             -> lines(
-                "@Override public native canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): Boolean",
-                "@Override public native getParameters(label: ILabel, model: ILabelModel): yfiles.collections.IEnumerable<ILabelModelParameter>",
-                "@Override public native convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): yfiles.graphml.MarkupExtension",
-                "@Override public native getGeometry(label: ILabel, layoutParameter: ILabelModelParameter): yfiles.geometry.IOrientedRectangle"
+                "@Override public native boolean canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native yfiles.collections.IEnumerable<ILabelModelParameter> getParameters(label: ILabel, model: ILabelModel)",
+                "@Override public native yfiles.graphml.MarkupExtension convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native yfiles.geometry.IOrientedRectangle getGeometry(label: ILabel, layoutParameter: ILabelModelParameter)"
             )
 
             className == "yfiles.graph.GenericPortLocationModel"
             -> lines(
-                "@Override public native canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): Boolean",
-                "@Override public native convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE}): yfiles.graphml.MarkupExtension",
-                "@Override public native getEnumerator(): yfiles.collections.IEnumerator<IPortLocationModelParameter>"
+                "@Override public native boolean canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native yfiles.graphml.MarkupExtension convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native yfiles.collections.IEnumerator<IPortLocationModelParameter> getEnumerator()"
             )
 
             className == "yfiles.input.PortRelocationHandleProvider"
-            -> "@Override public native getHandle(context: IInputModeContext, edge: yfiles.graph.IEdge, sourceHandle: Boolean): IHandle"
+            -> "@Override public native IHandle getHandle(context: IInputModeContext, edge: yfiles.graph.IEdge, sourceHandle: boolean)"
 
             className == "yfiles.styles.Arrow"
             -> lines(
-                "@Override val length: Number",
+                "@Override val length: double",
                 "    get()",
-                "@Override public native getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider",
-                "@Override public native getVisualCreator(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point): yfiles.view.IVisualCreator",
+                "@Override public native yfiles.view.IBoundsProvider getBoundsProvider(edge: yfiles.graph.IEdge, atSource: boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point)",
+                "@Override public native yfiles.view.IVisualCreator getVisualCreator(edge: yfiles.graph.IEdge, atSource: boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point)",
                 CLONE_OVERRIDE
             )
 
             className == "yfiles.styles.GraphOverviewSvgVisualCreator" || className == "yfiles.view.GraphOverviewCanvasVisualCreator"
             -> lines(
-                "@Override public native createVisual(context: yfiles.view.IRenderContext): yfiles.view.Visual",
-                "@Override public native updateVisual(context: yfiles.view.IRenderContext, oldVisual: yfiles.view.Visual): yfiles.view.Visual"
+                "@Override public native yfiles.view.Visual createVisual(context: yfiles.view.IRenderContext)",
+                "@Override public native yfiles.view.Visual updateVisual(context: yfiles.view.IRenderContext, oldVisual: yfiles.view.Visual)"
             )
 
             className == "yfiles.view.DefaultPortCandidateDescriptor"
             -> lines(
-                "@Override public native createVisual(context: IRenderContext): Visual",
-                "@Override public native updateVisual(context: IRenderContext, oldVisual: Visual): Visual",
-                "@Override public native isInBox(context: yfiles.input.IInputModeContext, rectangle: yfiles.geometry.Rect): Boolean",
-                "@Override public native isVisible(context: ICanvasContext, rectangle: yfiles.geometry.Rect): Boolean",
-                "@Override public native getBounds(context: ICanvasContext): yfiles.geometry.Rect",
-                "@Override public native isHit(context: yfiles.input.IInputModeContext, location: yfiles.geometry.Point): Boolean",
-                "@Override public native isInPath(context: yfiles.input.IInputModeContext, lassoPath: yfiles.geometry.GeneralPath): Boolean"
+                "@Override public native Visual createVisual(context: IRenderContext)",
+                "@Override public native Visual updateVisual(context: IRenderContext, oldVisual: Visual)",
+                "@Override public native boolean isInBox(context: yfiles.input.IInputModeContext, rectangle: yfiles.geometry.Rect)",
+                "@Override public native boolean isVisible(context: ICanvasContext, rectangle: yfiles.geometry.Rect)",
+                "@Override public native yfiles.geometry.Rect getBounds(context: ICanvasContext)",
+                "@Override public native boolean isHit(context: yfiles.input.IInputModeContext, location: yfiles.geometry.Point)",
+                "@Override public native boolean isInPath(context: yfiles.input.IInputModeContext, lassoPath: yfiles.geometry.GeneralPath)"
             )
 
             className == "yfiles.styles.VoidPathGeometry"
             -> lines(
-                "@Override public native getPath(): yfiles.geometry.GeneralPath",
-                "@Override public native getSegmentCount(): Number",
-                "@Override public native getTangent(ratio: Number): yfiles.geometry.Tangent",
-                "@Override public native getTangent(segmentIndex: Number, ratio: Number): yfiles.geometry.Tangent"
+                "@Override public native yfiles.geometry.GeneralPath getPath()",
+                "@Override public native double getSegmentCount()",
+                "@Override public native yfiles.geometry.Tangent getTangent(ratio: double)",
+                "@Override public native yfiles.geometry.Tangent getTangent(segmentIndex: double, ratio: double)"
             )
 
             else -> ""
