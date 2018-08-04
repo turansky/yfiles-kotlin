@@ -21,7 +21,7 @@ internal object JavaHacks {
             -> lines(
                 "@Override val isReadOnly: Boolean",
                 "    get()",
-                "@Override fun add(item: ${OBJECT_TYPE})"
+                "@Override public native void add(item: ${OBJECT_TYPE})"
             )
 
 
@@ -46,16 +46,16 @@ internal object JavaHacks {
 
             className == "yfiles.graph.GenericLabelModel"
             -> lines(
-                "@Override public native boolean canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native boolean canConvert(context: yfiles.graphml.IWriteContext, ${OBJECT_TYPE} value)",
                 "@Override public native yfiles.collections.IEnumerable<ILabelModelParameter> getParameters(label: ILabel, model: ILabelModel)",
-                "@Override public native yfiles.graphml.MarkupExtension convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native yfiles.graphml.MarkupExtension convert(context: yfiles.graphml.IWriteContext, ${OBJECT_TYPE} value)",
                 "@Override public native yfiles.geometry.IOrientedRectangle getGeometry(label: ILabel, layoutParameter: ILabelModelParameter)"
             )
 
             className == "yfiles.graph.GenericPortLocationModel"
             -> lines(
-                "@Override public native boolean canConvert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
-                "@Override public native yfiles.graphml.MarkupExtension convert(context: yfiles.graphml.IWriteContext, value: ${OBJECT_TYPE})",
+                "@Override public native boolean canConvert(context: yfiles.graphml.IWriteContext, ${OBJECT_TYPE} value)",
+                "@Override public native yfiles.graphml.MarkupExtension convert(context: yfiles.graphml.IWriteContext, ${OBJECT_TYPE} value)",
                 "@Override public native yfiles.collections.IEnumerator<IPortLocationModelParameter> getEnumerator()"
             )
 
