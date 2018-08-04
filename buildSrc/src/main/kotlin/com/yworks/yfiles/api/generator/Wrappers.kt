@@ -245,8 +245,10 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     override fun toJavaCode(): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
-        if (classRegistry.propertyOverriden(fqn, name)) {
-            return ""
+        val override = if (classRegistry.propertyOverriden(fqn, name)) {
+            "@Override\n"
+        } else {
+            ""
         }
 
         val modificator = if (protected) {
@@ -266,10 +268,10 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
         val cname = name.capitalize()
 
-        var str = annotation + "\n" + "$modificator $type get$cname();"
+        var str = annotation + "\n" + "$override $modificator $type get$cname();"
 
         if (getterSetter) {
-            str += annotation + "\n" + "$modificator void set$cname($type value);"
+            str += annotation + "\n" + "$override $modificator void set$cname($type value);"
         }
 
         return str
