@@ -13,26 +13,26 @@ internal object JavaTypes {
         "void" to VOID,
         "Function" to "Runnable",
 
-        "Event" to "org.w3c.dom.events.Event",
-        "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
-        "Document" to "org.w3c.dom.Document",
-        "Node" to "org.w3c.dom.Node",
-        "Element" to "org.w3c.dom.Element",
-        "HTMLElement" to "org.w3c.dom.HTMLElement",
-        "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
-        "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
-        "SVGElement" to "org.w3c.dom.svg.SVGElement",
-        "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
-        "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
-        "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
-        "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
-        "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
-        "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
+        "Event" to "com.google.gwt.dom.client.NativeEvent",
+        "KeyboardEvent" to "com.google.gwt.dom.client.NativeEvent",
+        "Document" to "com.google.gwt.dom.client.Document",
+        "Node" to "com.google.gwt.dom.client.Node",
+        "Element" to "com.google.gwt.dom.client.Element",
+        "HTMLElement" to "com.google.gwt.dom.client.Element",
+        "HTMLInputElement" to "com.google.gwt.dom.client.InputElement",
+        "HTMLDivElement" to "com.google.gwt.dom.client.DivElement",
+        "SVGElement" to "com.google.gwt.dom.client.Element",
+        "SVGDefsElement" to "com.google.gwt.dom.client.Element",
+        "SVGGElement" to "com.google.gwt.dom.client.Element",
+        "SVGImageElement" to "com.google.gwt.dom.client.Element",
+        "SVGPathElement" to "com.google.gwt.dom.client.Element",
+        "SVGTextElement" to "com.google.gwt.dom.client.Element",
+        "CanvasRenderingContext2D" to "com.google.gwt.canvas.dom.client.Context2d",
 
-        "WebGLProgram" to "com.google.gwt.webgl.client.WebGLProgram",
-        "WebGLRenderingContext" to "com.google.gwt.webgl.client.WebGLRenderingContext",
+        "WebGLProgram" to Types.OBJECT_TYPE,
+        "WebGLRenderingContext" to Types.OBJECT_TYPE,
 
-        // TODO: check if Kotlin promises is what we need in yFiles
-        "Promise" to "kotlin.js.Promise"
+        // TODO: add promise alias
+        "Promise" to "java.util.Consumer"
     )
 }
