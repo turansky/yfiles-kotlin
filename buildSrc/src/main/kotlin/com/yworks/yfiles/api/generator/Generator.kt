@@ -25,11 +25,13 @@ private fun loadApiJson(path: String): String {
 
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     TypeParser.standardTypeMap = KotlinTypes.STANDARD_TYPE_MAP
+    TypeParser.javaArrayMode = false
     generateWrappers(apiPath, sourceDir, ::KotlinFileGenerator)
 }
 
 fun generateJavaWrappers(apiPath: String, sourceDir: File) {
     TypeParser.standardTypeMap = JavaTypes.STANDARD_TYPE_MAP
+    TypeParser.javaArrayMode = true
     generateWrappers(apiPath, sourceDir, ::JavaFileGenerator)
 }
 

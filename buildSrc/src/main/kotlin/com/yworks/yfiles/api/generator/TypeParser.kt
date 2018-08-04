@@ -5,6 +5,7 @@ internal object TypeParser {
     private val GENERIC_END = ">"
 
     var standardTypeMap = emptyMap<String, String>()
+    var javaArrayMode = false
 
     fun parse(type: String, signature: String?): String {
         return parseType(signature ?: type)
@@ -27,7 +28,13 @@ internal object TypeParser {
 
         val mainType = parseType(till(type, GENERIC_START))
         val parametrizedTypes = parseGenericParameters(between(type, GENERIC_START, GENERIC_END))
-        return "$mainType<${parametrizedTypes.joinToString(", ")}>"
+        val generics = parametrizedTypes.joinToString(", ")
+
+        if (javaArrayMode && mainType == "Array") {
+            return "$generics[]"
+        }
+
+        return "$mainType<$generics>"
     }
 
     fun getGenericString(parameters: List<TypeParameter>): String {
