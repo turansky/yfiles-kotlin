@@ -28,7 +28,7 @@ internal object TypeParser {
 
         val mainType = parseType(till(type, GENERIC_START))
         val parametrizedTypes = parseGenericParameters(between(type, GENERIC_START, GENERIC_END))
-        val generics = parametrizedTypes.joinToString(", ")
+        val generics = checkGenericString(parametrizedTypes.joinToString(", "))
 
         if (javaArrayMode && mainType == "Array") {
             return "$generics[]"
@@ -39,10 +39,21 @@ internal object TypeParser {
 
     fun getGenericString(parameters: List<TypeParameter>): String {
         return if (parameters.isNotEmpty()) {
-            "<${parameters.map { it.name }.joinToString(", ")}> "
+            checkGenericString("<${parameters.map { it.name }.joinToString(", ")}> ")
         } else {
             ""
         }
+    }
+
+    private fun checkGenericString(generics: String): String {
+        if (!javaArrayMode) {
+            return generics
+        }
+
+        return generics
+            .replace("boolean", "Boolean")
+            .replace("double", "Double")
+            .replace("int", "Integer")
     }
 
     // TODO: optimize calculation
