@@ -233,8 +233,7 @@ internal class JavaFileGenerator(
             val namespace = getNamespace(fqn.packageName)
             return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
                     "public class ${fqn.name} {\n" +
-                    values + "\n\n" +
-                    super.content() + "\n" +
+                    values + "\n" +
                     "}\n"
         }
     }
