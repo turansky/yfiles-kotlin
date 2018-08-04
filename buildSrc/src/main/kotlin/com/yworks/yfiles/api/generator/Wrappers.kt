@@ -370,8 +370,10 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 
     protected fun javaParametersString(): String {
         return parameters.map {
+            val name = if (it.name != "synchronized") it.name else "synchronized1" // TODO: find better name
+
             val modifiers = if (it.modifiers.vararg) "..." else ""
-            "${it.type} $modifiers${it.name}"
+            "${it.type} $modifiers${name}"
         }.joinToString(", ")
     }
 
