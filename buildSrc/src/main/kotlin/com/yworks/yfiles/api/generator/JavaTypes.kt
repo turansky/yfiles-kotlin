@@ -33,6 +33,6 @@ internal object JavaTypes {
         "WebGLRenderingContext" to Types.OBJECT_TYPE,
 
         // TODO: add promise alias
-        "Promise" to "java.util.Consumer"
+        "Promise" to "java.util.function.Consumer"
     )
 }
