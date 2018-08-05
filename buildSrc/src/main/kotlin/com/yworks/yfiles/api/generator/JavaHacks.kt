@@ -101,7 +101,9 @@ internal object JavaHacks {
             else -> ""
         }
 
-        result = result.replace("yfiles.", "com.yworks.yfiles.")
+        result = result
+            .replace("(yfiles.", "(com.yworks.yfiles.")
+            .replace(" yfiles.", " com.yworks.yfiles.")
 
         return result
     }
