@@ -201,7 +201,7 @@ internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
     override fun toJavaCode(): String {
         val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
-        return "$annotation\npublic static $type $name();"
+        return "$annotation\npublic static native $type $name();"
     }
 }
 
