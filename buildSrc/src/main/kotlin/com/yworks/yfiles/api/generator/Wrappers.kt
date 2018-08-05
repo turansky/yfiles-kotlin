@@ -258,7 +258,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
             "abstract "
         } else {
             ""
-        } + if (classRegistry.isInterface(fqn)) {
+        } + if (abstract || classRegistry.isInterface(fqn)) {
             ""
         } else {
             "native "
