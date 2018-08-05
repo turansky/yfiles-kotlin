@@ -131,7 +131,6 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
 }
 
 internal class Class(source: JSONObject) : Type(source) {
-    val static = modifiers.static
     val final = modifiers.final
     val open = !final
     val abstract = modifiers.abstract

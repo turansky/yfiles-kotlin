@@ -132,10 +132,6 @@ internal class JavaFileGenerator(
             return declaration.genericParameters()
         }
 
-        protected open fun isStatic(): Boolean {
-            return false
-        }
-
         open fun content(): String {
             return listOf<Declaration>()
                 .union(staticConstants)
@@ -150,15 +146,7 @@ internal class JavaFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
-        override fun isStatic(): Boolean {
-            return declaration.static
-        }
-
         private fun type(): String {
-            if (isStatic()) {
-                return "object"
-            }
-
             val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
                 "abstract"
             } else {

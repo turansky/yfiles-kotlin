@@ -138,10 +138,6 @@ internal class KotlinFileGenerator(
             return declaration.genericParameters()
         }
 
-        protected open fun isStatic(): Boolean {
-            return false
-        }
-
         protected fun companionContent(): String {
             val items = staticDeclarations.map {
                 it.toCode(PROGRAMMING_LANGUAGE)
@@ -152,10 +148,6 @@ internal class KotlinFileGenerator(
             }
 
             val result = items.joinToString("\n") + "\n"
-            if (isStatic()) {
-                return result
-            }
-
             return "    companion object {\n" +
                     result +
                     "    }\n"
@@ -187,15 +179,7 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
-        override fun isStatic(): Boolean {
-            return declaration.static
-        }
-
         private fun type(): String {
-            if (isStatic()) {
-                return "object"
-            }
-
             val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
                 "abstract"
             } else {
