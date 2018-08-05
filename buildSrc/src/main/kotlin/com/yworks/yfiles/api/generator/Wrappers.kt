@@ -280,7 +280,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         if (getterSetter) {
             val setterName = "set" + name.capitalize()
-            str += annotation + "\n" + "$override $modificator void $setterName($type value);"
+            str += annotation + "\n" + "$modificator void $setterName($type value);"
         }
 
         return str
