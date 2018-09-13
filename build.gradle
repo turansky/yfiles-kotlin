@@ -5,7 +5,7 @@ group 'com.yworks.yfiles'
 version '2.1.0.4-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.2.70'
     repositories {
         mavenCentral()
     }
