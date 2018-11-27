@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.json:json:20160810"
+    compile "org.json:json:20180813"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version"
 }
 
