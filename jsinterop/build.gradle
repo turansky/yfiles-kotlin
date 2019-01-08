@@ -2,8 +2,8 @@ group 'com.yworks.yfiles'
 version '2.1.0.6-SNAPSHOT'
 
 buildscript {
-    ext.gwt_version = '2.8.2'
     ext.jsinterop_version = '1.0.2'
+    ext.elemental2_version = '1.0.0-RC1'
     repositories {
         mavenCentral()
     }
@@ -21,8 +21,12 @@ repositories {
 }
 
 dependencies {
-    compile "com.google.gwt:gwt-user:$gwt_version"
     compile "com.google.jsinterop:jsinterop-annotations:$jsinterop_version"
+    compile "com.google.elemental2:elemental2-core:$elemental2_version"
+    compile "com.google.elemental2:elemental2-dom:$elemental2_version"
+    compile "com.google.elemental2:elemental2-promise:$elemental2_version"
+    compile "com.google.elemental2:elemental2-svg:$elemental2_version"
+    compile "com.google.elemental2:elemental2-webgl:$elemental2_version"
 }
 
 task mainJar(type: Jar) {
