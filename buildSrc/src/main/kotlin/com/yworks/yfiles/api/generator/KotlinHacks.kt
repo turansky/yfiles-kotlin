@@ -17,12 +17,6 @@ internal object KotlinHacks {
                 "override fun add(item: ${OBJECT_TYPE}) = definedExternally"
             )
 
-            className == "yfiles.graph.CompositeUndoUnit"
-            -> lines(
-                "override fun tryMergeUnit(unit: IUndoUnit): Boolean = definedExternally",
-                "override fun tryReplaceUnit(unit: IUndoUnit): Boolean = definedExternally"
-            )
-
             className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"
             -> lines(
                 "override fun findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter = definedExternally",

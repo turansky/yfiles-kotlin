@@ -3,13 +3,6 @@ package com.yworks.yfiles.api.generator
 import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
 
 internal object JavaHacks {
-    // yfiles.api.json correction required
-    private val CLONE_REQUIRED = listOf(
-        "yfiles.geometry.Matrix",
-        "yfiles.geometry.MutablePoint",
-        "yfiles.geometry.MutableSize"
-    )
-
     private val CLONE_OVERRIDE = "@Override public native ${OBJECT_TYPE} clone();"
 
     // yfiles.api.json correction required
@@ -23,16 +16,6 @@ internal object JavaHacks {
                 "@Override",
                 "public native boolean isReadOnly();",
                 "@Override public native void add(${OBJECT_TYPE} item);"
-            )
-
-
-            className in CLONE_REQUIRED
-            -> CLONE_OVERRIDE
-
-            className == "yfiles.graph.CompositeUndoUnit"
-            -> lines(
-                "@Override public native boolean tryMergeUnit(IUndoUnit unit);",
-                "@Override public native boolean tryReplaceUnit(IUndoUnit unit);"
             )
 
             className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"

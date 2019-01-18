@@ -46,7 +46,10 @@ internal object Hacks {
     ) {
         getJSONArray("methods")
             .put(
-                mutableMapOf<String, Any>("name" to methodData.methodName)
+                mutableMapOf(
+                    "name" to methodData.methodName,
+                    "modifiers" to listOf("public")
+                )
                     .also {
                         val parameters = methodData.parameters
                         if (parameters.isNotEmpty()) {
@@ -218,7 +221,26 @@ internal object Hacks {
     private val MISSED_METHODS = listOf(
         MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = OBJECT_TYPE),
         MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = OBJECT_TYPE),
-        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = OBJECT_TYPE)
+        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = OBJECT_TYPE),
+
+        // YList
+
+        MethodData(
+            className = "yfiles.graph.CompositeUndoUnit",
+            methodName = "tryMergeUnit",
+            parameters = listOf(
+                MethodParameterData("unit", "IUndoUnit")
+            ),
+            resultType = "boolean"
+        ),
+        MethodData(
+            className = "yfiles.graph.CompositeUndoUnit",
+            methodName = "tryReplaceUnit",
+            parameters = listOf(
+                MethodParameterData("unit", "IUndoUnit")
+            ),
+            resultType = "boolean"
+        )
     )
 
     private fun addMissedMethods(source: JSONObject) {
