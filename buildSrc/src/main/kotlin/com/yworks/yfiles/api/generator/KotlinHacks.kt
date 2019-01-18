@@ -71,14 +71,6 @@ internal object KotlinHacks {
                 "override fun isInPath(context: yfiles.input.IInputModeContext, lassoPath: yfiles.geometry.GeneralPath): Boolean = definedExternally"
             )
 
-            className == "yfiles.styles.VoidPathGeometry"
-            -> lines(
-                "override fun getPath(): yfiles.geometry.GeneralPath = definedExternally",
-                "override fun getSegmentCount(): Number = definedExternally",
-                "override fun getTangent(ratio: Number): yfiles.geometry.Tangent = definedExternally",
-                "override fun getTangent(segmentIndex: Number, ratio: Number): yfiles.geometry.Tangent = definedExternally"
-            )
-
             else -> ""
         }
 

@@ -73,14 +73,6 @@ internal object JavaHacks {
                 "@Override public native boolean isInPath(yfiles.input.IInputModeContext context, yfiles.geometry.GeneralPath lassoPath);"
             )
 
-            className == "yfiles.styles.VoidPathGeometry"
-            -> lines(
-                "@Override public native yfiles.geometry.GeneralPath getPath();",
-                "@Override public native double getSegmentCount();",
-                "@Override public native yfiles.geometry.Tangent getTangent(double ratio);",
-                "@Override public native yfiles.geometry.Tangent getTangent(double segmentIndex, double ratio);"
-            )
-
             else -> ""
         }
 

@@ -44,6 +44,10 @@ internal object Hacks {
     private fun JSONObject.addMethod(
         methodData: MethodData
     ) {
+        if (!has("methods")) {
+            put("methods", emptyList<Any>())
+        }
+
         getJSONArray("methods")
             .put(
                 mutableMapOf(
@@ -240,6 +244,26 @@ internal object Hacks {
                 MethodParameterData("unit", "IUndoUnit")
             ),
             resultType = "boolean"
+        ),
+
+        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
+        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = "number"),
+        MethodData(
+            className = "yfiles.styles.VoidPathGeometry",
+            methodName = "getTangent",
+            parameters = listOf(
+                MethodParameterData("ratio", "number")
+            ),
+            resultType = "yfiles.geometry.Tangent"
+        ),
+        MethodData(
+            className = "yfiles.styles.VoidPathGeometry",
+            methodName = "getTangent",
+            parameters = listOf(
+                MethodParameterData("segmentIndex", "number"),
+                MethodParameterData("ratio", "number")
+            ),
+            resultType = "yfiles.geometry.Tangent"
         )
     )
 
