@@ -41,6 +41,32 @@ internal object Hacks {
         return result
     }
 
+    private fun JSONObject.addMethod(
+        methodData: MethodData
+    ) {
+        getJSONArray("methods")
+            .put(
+                mutableMapOf<String, Any>("name" to methodData.methodName)
+                    .also {
+                        val parameters = methodData.parameters
+                        if (parameters.isNotEmpty()) {
+                            it.put(
+                                "parameters",
+                                parameters.map {
+                                    mapOf("name" to it.name, "type" to it.type)
+                                }
+                            )
+                        }
+                    }
+                    .also {
+                        val resultType = methodData.resultType
+                        if (resultType != null) {
+                            it.put("returns", mapOf("type" to resultType))
+                        }
+                    }
+            )
+    }
+
     fun applyHacks(source: JSONObject) {
         fixConstantGenerics(source)
         fixFunctionGenerics(source)
@@ -50,9 +76,9 @@ internal object Hacks {
         fixImplementedTypes(source)
         fixPropertyType(source)
         fixMethodParameterName(source)
+        addMissedMethods(source)
     }
 
-    // yfiles.api.json correction required
     private fun fixConstantGenerics(source: JSONObject) {
         source.type("yfiles.collections.IListEnumerable")
             .getJSONArray("constants")
@@ -64,7 +90,6 @@ internal object Hacks {
             }
     }
 
-    // yfiles.api.json correction required
     private fun fixFunctionGenerics(source: JSONObject) {
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")
@@ -78,7 +103,6 @@ internal object Hacks {
             }
     }
 
-    // yfiles.api.json correction required
     private fun fixReturnType(source: JSONObject) {
         listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
             .map { source.type(it) }
@@ -95,14 +119,12 @@ internal object Hacks {
             .remove("extends")
     }
 
-    // yfiles.api.json correction required
     private fun fixImplementedTypes(source: JSONObject) {
         listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
             .map { source.type(it) }
             .forEach { it.remove("implements") }
     }
 
-    // yfiles.api.json correction required
     private fun fixPropertyType(source: JSONObject) {
         listOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
             .map { source.type(it) }
@@ -113,7 +135,6 @@ internal object Hacks {
             }
     }
 
-    // yfiles.api.json correction required
     private val PARAMETERS_CORRECTION = mapOf(
         ParameterData("yfiles.lang.IComparable", "compareTo", "obj") to "o",
         ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
@@ -185,19 +206,44 @@ internal object Hacks {
         ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
-    // yfiles.api.json correction required
     private fun fixMethodParameterName(source: JSONObject) {
         PARAMETERS_CORRECTION.forEach { data, fixedName ->
             source.type(data.className)
-                .methodParameters(data.functionName, data.parameterName, { it.getString("name") != fixedName })
+                .methodParameters(data.methodName, data.parameterName, { it.getString("name") != fixedName })
                 .first()
                 .put("name", fixedName)
         }
+    }
+
+    private val MISSED_METHODS = listOf(
+        MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = OBJECT_TYPE),
+        MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = OBJECT_TYPE),
+        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = OBJECT_TYPE)
+    )
+
+    private fun addMissedMethods(source: JSONObject) {
+        MISSED_METHODS
+            .forEach { data ->
+                source.type(data.className)
+                    .addMethod(data)
+            }
     }
 }
 
 private data class ParameterData(
     val className: String,
-    val functionName: String,
+    val methodName: String,
     val parameterName: String
+)
+
+private data class MethodData(
+    val className: String,
+    val methodName: String,
+    val parameters: List<MethodParameterData> = emptyList(),
+    val resultType: String? = null
+)
+
+private data class MethodParameterData(
+    val name: String,
+    val type: String
 )

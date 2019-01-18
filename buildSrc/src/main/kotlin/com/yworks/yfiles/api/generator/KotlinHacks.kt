@@ -3,13 +3,6 @@ package com.yworks.yfiles.api.generator
 import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
 
 internal object KotlinHacks {
-    // yfiles.api.json correction required
-    private val CLONE_REQUIRED = listOf(
-        "yfiles.geometry.Matrix",
-        "yfiles.geometry.MutablePoint",
-        "yfiles.geometry.MutableSize"
-    )
-
     private val CLONE_OVERRIDE = "override fun clone(): ${OBJECT_TYPE} = definedExternally"
 
     // yfiles.api.json correction required
@@ -23,10 +16,6 @@ internal object KotlinHacks {
                 "    get() = definedExternally",
                 "override fun add(item: ${OBJECT_TYPE}) = definedExternally"
             )
-
-
-            className in CLONE_REQUIRED
-            -> CLONE_OVERRIDE
 
             className == "yfiles.graph.CompositeUndoUnit"
             -> lines(
