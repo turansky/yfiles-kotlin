@@ -10,9 +10,6 @@ internal object KotlinHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.input.PortRelocationHandleProvider"
-            -> "override fun getHandle(context: IInputModeContext, edge: yfiles.graph.IEdge, sourceHandle: Boolean): IHandle = definedExternally"
-
             className == "yfiles.styles.Arrow"
             -> lines(
                 "override val length: Number",

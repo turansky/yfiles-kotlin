@@ -402,6 +402,17 @@ internal object Hacks {
             resultType = "yfiles.collections.IEnumerator<IPortLocationModelParameter>"
         ),
 
+        MethodData(
+            className = "yfiles.input.PortRelocationHandleProvider",
+            methodName = "getHandle",
+            parameters = listOf(
+                MethodParameterData("context", "IInputModeContext"),
+                MethodParameterData("edge", "yfiles.graph.IEdge"),
+                MethodParameterData("sourceHandle", JS_BOOLEAN)
+            ),
+            resultType = "IHandle"
+        ),
+
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(
