@@ -4,8 +4,7 @@ internal object KotlinTypes {
     val UNIT = "Unit"
 
     val STANDARD_TYPE_MAP = mapOf(
-        "Object" to Types.OBJECT_TYPE,
-        "object" to Types.OBJECT_TYPE,
+        JS_OBJECT to Types.OBJECT_TYPE,
         JS_BOOLEAN to "Boolean",
         JS_STRING to "String",
         JS_NUMBER to "Number",
@@ -32,7 +31,6 @@ internal object KotlinTypes {
         "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
         "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
 
-        // TODO: check if Kotlin promises is what we need in yFiles
         "Promise" to "kotlin.js.Promise"
     )
 }
