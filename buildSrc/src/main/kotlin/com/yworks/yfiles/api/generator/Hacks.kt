@@ -475,6 +475,68 @@ internal object Hacks {
             resultType = "yfiles.view.Visual"
         ),
 
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "createVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "updateVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext"),
+                MethodParameterData("oldVisual", "yfiles.view.Visual")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "isInBox",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.input.IInputModeContext"),
+                MethodParameterData("rectangle", "yfiles.geometry.Rect")
+            ),
+            resultType = JS_BOOLEAN
+        ),
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "isVisible",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.ICanvasContext"),
+                MethodParameterData("rectangle", "yfiles.geometry.Rect")
+            ),
+            resultType = JS_BOOLEAN
+        ),
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "getBounds",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.ICanvasContext")
+            ),
+            resultType = "yfiles.geometry.Rect"
+        ),
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "isHit",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.input.IInputModeContext"),
+                MethodParameterData("location", "yfiles.geometry.Point")
+            ),
+            resultType = JS_BOOLEAN
+        ),
+        MethodData(
+            className = "yfiles.view.DefaultPortCandidateDescriptor",
+            methodName = "isInPath",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.input.IInputModeContext"),
+                MethodParameterData("lassoPath", "yfiles.geometry.GeneralPath")
+            ),
+            resultType = JS_BOOLEAN
+        ),
+
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(

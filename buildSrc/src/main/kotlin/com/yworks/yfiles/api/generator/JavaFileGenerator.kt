@@ -140,7 +140,6 @@ internal class JavaFileGenerator(
                 .union(memberProperties)
                 .union(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .union(listOf(JavaHacks.getAdditionalContent(declaration.fqn)))
                 .joinToString("\n") + "\n"
         }
     }
