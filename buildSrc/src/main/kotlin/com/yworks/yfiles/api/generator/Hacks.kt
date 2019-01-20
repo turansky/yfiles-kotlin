@@ -226,6 +226,7 @@ internal object Hacks {
         ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
         ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
         ParameterData("yfiles.styles.PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
+        ParameterData("yfiles.styles.IArrow", "getBoundsProvider", "directionVector") to "direction",
         ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
     )
 
@@ -421,7 +422,7 @@ internal object Hacks {
                 MethodParameterData("edge", "yfiles.graph.IEdge"),
                 MethodParameterData("atSource", JS_BOOLEAN),
                 MethodParameterData("anchor", "yfiles.geometry.Point"),
-                MethodParameterData("directionVector", "yfiles.geometry.Point")
+                MethodParameterData("direction", "yfiles.geometry.Point")
             ),
             resultType = "yfiles.view.IBoundsProvider"
         ),
@@ -432,7 +433,7 @@ internal object Hacks {
                 MethodParameterData("edge", "yfiles.graph.IEdge"),
                 MethodParameterData("atSource", JS_BOOLEAN),
                 MethodParameterData("anchor", "yfiles.geometry.Point"),
-                MethodParameterData("directionVector", "yfiles.geometry.Point")
+                MethodParameterData("direction", "yfiles.geometry.Point")
             ),
             resultType = "yfiles.view.IVisualCreator"
         ),
