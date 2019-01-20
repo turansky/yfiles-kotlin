@@ -110,7 +110,10 @@ internal class JavaFileGenerator(
                 .sortedBy { it.name }
 
         val memberProperties: List<Property>
-            get() = properties.filter { !it.static }
+            get() = properties
+                .filter { !it.static }
+                // WA: temp, for compilation only
+                .filterNot { it.nameOfClass == "NavigationInputMode" && it.name == "graphComponent" }
 
         val memberFunctions: List<Method>
             get() = declaration.methods
@@ -199,6 +202,7 @@ internal class JavaFileGenerator(
             val namespace = getNamespace(fqn.packageName)
             return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
                     "${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
+                    // TODO: support
                     // constructors() +
                     super.content() + "\n" +
                     "}"
