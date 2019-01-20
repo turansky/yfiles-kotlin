@@ -1,1 +1,3 @@
 rootProject.name = 'yfiles-kotlin'
+
+include 'jsinterop'

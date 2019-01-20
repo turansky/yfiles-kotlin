@@ -258,7 +258,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
             "abstract "
         } else {
             ""
-        } + if (abstract || classRegistry.isInterface(fqn)) {
+        } + if (abstract) {
             ""
         } else {
             "native "
@@ -327,7 +327,6 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         val mofificators = mutableListOf<String>()
 
-        if (!classRegistry.isInterface(fqn)) {
             if (abstract) {
                 mofificators.add("abstract ")
             } else {
@@ -339,7 +338,6 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
             } else {
                 mofificators.add("public")
             }
-        }
 
         return override + mofificators.joinToString(" ") + " "
     }

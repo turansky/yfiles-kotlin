@@ -14,15 +14,29 @@ internal class JavaFileGenerator(
         directory.mkdirs()
         directory.deleteRecursively()
 
-        types.forEach {
-            val generatedFile = when (it) {
+        val generatedFiles = types.map {
+            when (it) {
                 is Class -> ClassFile(it)
                 is Interface -> InterfaceFile(it)
                 is Enum -> EnumFile(it)
                 else -> throw IllegalStateException("Undefined type for generation: " + it)
             }
+        }
 
-            generate(directory, generatedFile)
+        val interfaceRegistry = InterfaceRegistry(
+            generatedFiles
+                .asSequence()
+                .filterIsInstance<InterfaceFile>()
+                .filter { !it.likeAbstractClass }
+                .map { it.className }
+                .toSet()
+        )
+
+        generatedFiles
+            .forEach { it.registry = interfaceRegistry }
+
+        generatedFiles.forEach {
+            generate(directory, it)
         }
 
         functionSignatures.forEach {
@@ -107,6 +121,8 @@ internal class JavaFileGenerator(
                 return "package ${fqn.packageName};\n"
             }
 
+        lateinit var registry: InterfaceRegistry
+
         protected open fun extendsTypes(): List<String> {
             return emptyList()
         }
@@ -134,9 +150,11 @@ internal class JavaFileGenerator(
 
         open fun content(): String {
             return listOf<Declaration>()
-                .union(staticConstants)
+                // TODO: support
+                // .union(staticConstants)
                 .union(staticProperties)
-                .union(staticFunctions)
+                // TODO: support
+                // .union(staticFunctions)
                 .union(memberProperties)
                 .union(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
@@ -167,35 +185,34 @@ internal class JavaFileGenerator(
             return if (extendedType != null) {
                 listOf(extendedType)
             } else {
-                emptyList()
+                declaration.implementedTypes()
+                    .filterNot(registry::contains)
             }
         }
 
         override fun implementsTypes(): List<String> {
             return declaration.implementedTypes()
+                .filter(registry::contains)
         }
 
         override fun content(): String {
             val namespace = getNamespace(fqn.packageName)
             return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
                     "${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
-                    constructors() +
+                    // constructors() +
                     super.content() + "\n" +
                     "}"
         }
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
+        val likeAbstractClass: Boolean by lazy { MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties) }
+
         override fun content(): String {
             var content = super.content()
-            val likeAbstractClass = false
-            // val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
             if (!likeAbstractClass) {
-                content = content.replace("abstract ", "")
-                    .replace("open fun", "fun")
-                    .replace("\n    get() = definedExternally", "")
-                    .replace("\n    set(value) = definedExternally", "")
-                    .replace(" = definedExternally", "")
+                content = content.replace("public abstract ", "")
+                    .replace("native ", "")
             }
 
             val namespace = getNamespace(fqn.packageName)
@@ -207,7 +224,32 @@ internal class JavaFileGenerator(
         }
 
         override fun extendsTypes(): List<String> {
+            if (likeAbstractClass) {
+                return declaration.implementedTypes()
+                    .asSequence()
+                    .filterNot(registry::contains)
+                    .toList()
+            }
+
             return declaration.implementedTypes()
+        }
+
+        override fun implementsTypes(): List<String> {
+            if (likeAbstractClass) {
+                return declaration.implementedTypes()
+                    .asSequence()
+                    .filter(registry::contains)
+                    .toList()
+            }
+
+            return super.implementsTypes()
+        }
+    }
+
+    class InterfaceRegistry(private val items: Set<String>) {
+        fun contains(type: String): Boolean {
+            val fqn = type.split("<")[0]
+            return items.contains(fqn)
         }
     }
 
