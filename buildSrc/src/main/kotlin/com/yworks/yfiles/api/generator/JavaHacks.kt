@@ -10,9 +10,6 @@ internal object JavaHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.graph.FreeLabelModel"
-            -> "@Override public native ILabelModelParameter findBestParameter(ILabel label, ILabelModel model, yfiles.geometry.IOrientedRectangle layout);"
-
             className == "yfiles.graph.GenericLabelModel"
             -> lines(
                 "@Override public native boolean canConvert(yfiles.graphml.IWriteContext context, ${OBJECT_TYPE} value);",

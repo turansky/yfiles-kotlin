@@ -330,6 +330,17 @@ internal object Hacks {
             resultType = "yfiles.geometry.IOrientedRectangle"
         ),
 
+        MethodData(
+            className = "yfiles.graph.FreeLabelModel",
+            methodName = "findBestParameter",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("model", "ILabelModel"),
+                MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
+            ),
+            resultType = "ILabelModelParameter"
+        ),
+
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(
