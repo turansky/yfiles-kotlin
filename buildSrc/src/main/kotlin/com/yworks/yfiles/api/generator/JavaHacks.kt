@@ -1,25 +1,10 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
-
 internal object JavaHacks {
-    private val CLONE_OVERRIDE = "@Override public native ${OBJECT_TYPE} clone();"
-
-    // yfiles.api.json correction required
     fun getAdditionalContent(cn: String): String {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.styles.Arrow"
-            -> lines(
-                "@jsinterop.annotations.JsProperty(name=\"length\")",
-                "@Override",
-                "public native double getLength();",
-                "@Override public native yfiles.view.IBoundsProvider getBoundsProvider(yfiles.graph.IEdge edge, boolean atSource, yfiles.geometry.Point anchor, yfiles.geometry.Point directionVector);",
-                "@Override public native yfiles.view.IVisualCreator getVisualCreator(yfiles.graph.IEdge edge, boolean atSource, yfiles.geometry.Point anchor, yfiles.geometry.Point direction);",
-                CLONE_OVERRIDE
-            )
-
             className == "yfiles.styles.GraphOverviewSvgVisualCreator" || className == "yfiles.view.GraphOverviewCanvasVisualCreator"
             -> lines(
                 "@Override public native yfiles.view.Visual createVisual(yfiles.view.IRenderContext context);",

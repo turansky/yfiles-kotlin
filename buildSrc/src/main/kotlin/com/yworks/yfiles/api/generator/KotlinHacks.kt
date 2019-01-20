@@ -1,24 +1,10 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
-
 internal object KotlinHacks {
-    private val CLONE_OVERRIDE = "override fun clone(): ${OBJECT_TYPE} = definedExternally"
-
-    // yfiles.api.json correction required
     fun getAdditionalContent(cn: String): String {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.styles.Arrow"
-            -> lines(
-                "override val length: Number",
-                "    get() = definedExternally",
-                "override fun getBoundsProvider(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, directionVector: yfiles.geometry.Point): yfiles.view.IBoundsProvider = definedExternally",
-                "override fun getVisualCreator(edge: yfiles.graph.IEdge, atSource: Boolean, anchor: yfiles.geometry.Point, direction: yfiles.geometry.Point): yfiles.view.IVisualCreator = definedExternally",
-                CLONE_OVERRIDE
-            )
-
             className == "yfiles.styles.GraphOverviewSvgVisualCreator" || className == "yfiles.view.GraphOverviewCanvasVisualCreator"
             -> lines(
                 "override fun createVisual(context: yfiles.view.IRenderContext): yfiles.view.Visual = definedExternally",

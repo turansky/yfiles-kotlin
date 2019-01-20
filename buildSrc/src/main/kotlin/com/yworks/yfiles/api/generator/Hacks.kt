@@ -239,7 +239,8 @@ internal object Hacks {
     }
 
     private val MISSED_PROPERTIES = listOf(
-        PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN)
+        PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
+        PropertyData(className = "yfiles.styles.Arrow", propertyName = "length", type = JS_NUMBER)
     )
 
     private val MISSED_METHODS = listOf(
@@ -412,6 +413,30 @@ internal object Hacks {
             ),
             resultType = "IHandle"
         ),
+
+        MethodData(
+            className = "yfiles.styles.Arrow",
+            methodName = "getBoundsProvider",
+            parameters = listOf(
+                MethodParameterData("edge", "yfiles.graph.IEdge"),
+                MethodParameterData("atSource", JS_BOOLEAN),
+                MethodParameterData("anchor", "yfiles.geometry.Point"),
+                MethodParameterData("directionVector", "yfiles.geometry.Point")
+            ),
+            resultType = "yfiles.view.IBoundsProvider"
+        ),
+        MethodData(
+            className = "yfiles.styles.Arrow",
+            methodName = "getVisualCreator",
+            parameters = listOf(
+                MethodParameterData("edge", "yfiles.graph.IEdge"),
+                MethodParameterData("atSource", JS_BOOLEAN),
+                MethodParameterData("anchor", "yfiles.geometry.Point"),
+                MethodParameterData("directionVector", "yfiles.geometry.Point")
+            ),
+            resultType = "yfiles.view.IVisualCreator"
+        ),
+        MethodData(className = "yfiles.styles.Arrow", methodName = "clone", resultType = OBJECT_TYPE),
 
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
