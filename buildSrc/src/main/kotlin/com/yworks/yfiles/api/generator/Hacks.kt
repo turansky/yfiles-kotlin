@@ -272,6 +272,64 @@ internal object Hacks {
             resultType = JS_BOOLEAN
         ),
 
+        MethodData(
+            className = "yfiles.graph.EdgePathLabelModel",
+            methodName = "findBestParameter",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("model", "ILabelModel"),
+                MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
+            ),
+            resultType = "ILabelModelParameter"
+        ),
+        MethodData(
+            className = "yfiles.graph.EdgePathLabelModel",
+            methodName = "getParameters",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("model", "ILabelModel")
+            ),
+            resultType = "yfiles.collections.IEnumerable<ILabelModelParameter>"
+        ),
+        MethodData(
+            className = "yfiles.graph.EdgePathLabelModel",
+            methodName = "getGeometry",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("layoutParameter", "ILabelModelParameter")
+            ),
+            resultType = "yfiles.geometry.IOrientedRectangle"
+        ),
+
+        MethodData(
+            className = "yfiles.graph.EdgeSegmentLabelModel",
+            methodName = "findBestParameter",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("model", "ILabelModel"),
+                MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
+            ),
+            resultType = "ILabelModelParameter"
+        ),
+        MethodData(
+            className = "yfiles.graph.EdgeSegmentLabelModel",
+            methodName = "getParameters",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("model", "ILabelModel")
+            ),
+            resultType = "yfiles.collections.IEnumerable<ILabelModelParameter>"
+        ),
+        MethodData(
+            className = "yfiles.graph.EdgeSegmentLabelModel",
+            methodName = "getGeometry",
+            parameters = listOf(
+                MethodParameterData("label", "ILabel"),
+                MethodParameterData("layoutParameter", "ILabelModelParameter")
+            ),
+            resultType = "yfiles.geometry.IOrientedRectangle"
+        ),
+
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(

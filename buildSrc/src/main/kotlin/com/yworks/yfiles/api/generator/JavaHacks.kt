@@ -10,13 +10,6 @@ internal object JavaHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"
-            -> lines(
-                "@Override public native ILabelModelParameter findBestParameter(ILabel label, ILabelModel model, yfiles.geometry.IOrientedRectangle layout);",
-                "@Override public native yfiles.collections.IEnumerable<ILabelModelParameter> getParameters(ILabel label, ILabelModel model);",
-                "@Override public native yfiles.geometry.IOrientedRectangle getGeometry(ILabel label, ILabelModelParameter layoutParameter);"
-            )
-
             className == "yfiles.graph.FreeLabelModel"
             -> "@Override public native ILabelModelParameter findBestParameter(ILabel label, ILabelModel model, yfiles.geometry.IOrientedRectangle layout);"
 
