@@ -5,12 +5,6 @@ internal object KotlinHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.styles.GraphOverviewSvgVisualCreator" || className == "yfiles.view.GraphOverviewCanvasVisualCreator"
-            -> lines(
-                "override fun createVisual(context: yfiles.view.IRenderContext): yfiles.view.Visual = definedExternally",
-                "override fun updateVisual(context: yfiles.view.IRenderContext, oldVisual: yfiles.view.Visual): yfiles.view.Visual = definedExternally"
-            )
-
             className == "yfiles.view.DefaultPortCandidateDescriptor"
             -> lines(
                 "override fun createVisual(context: IRenderContext): Visual = definedExternally",

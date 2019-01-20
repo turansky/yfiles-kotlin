@@ -5,12 +5,6 @@ internal object JavaHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.styles.GraphOverviewSvgVisualCreator" || className == "yfiles.view.GraphOverviewCanvasVisualCreator"
-            -> lines(
-                "@Override public native yfiles.view.Visual createVisual(yfiles.view.IRenderContext context);",
-                "@Override public native yfiles.view.Visual updateVisual(yfiles.view.IRenderContext context, yfiles.view.Visual oldVisual);"
-            )
-
             className == "yfiles.view.DefaultPortCandidateDescriptor"
             -> lines(
                 "@Override public native Visual createVisual(IRenderContext context);",

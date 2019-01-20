@@ -438,6 +438,42 @@ internal object Hacks {
         ),
         MethodData(className = "yfiles.styles.Arrow", methodName = "clone", resultType = OBJECT_TYPE),
 
+        MethodData(
+            className = "yfiles.styles.GraphOverviewSvgVisualCreator",
+            methodName = "createVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+        MethodData(
+            className = "yfiles.styles.GraphOverviewSvgVisualCreator",
+            methodName = "updateVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext"),
+                MethodParameterData("oldVisual", "yfiles.view.Visual")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+
+        MethodData(
+            className = "yfiles.view.GraphOverviewCanvasVisualCreator",
+            methodName = "createVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+        MethodData(
+            className = "yfiles.view.GraphOverviewCanvasVisualCreator",
+            methodName = "updateVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext"),
+                MethodParameterData("oldVisual", "yfiles.view.Visual")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(
