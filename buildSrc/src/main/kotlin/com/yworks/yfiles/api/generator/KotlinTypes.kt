@@ -6,9 +6,9 @@ internal object KotlinTypes {
     val STANDARD_TYPE_MAP = mapOf(
         "Object" to Types.OBJECT_TYPE,
         "object" to Types.OBJECT_TYPE,
-        "boolean" to "Boolean",
-        "string" to "String",
-        "number" to "Number",
+        JS_BOOLEAN to "Boolean",
+        JS_STRING to "String",
+        JS_NUMBER to "Number",
         "Date" to "kotlin.js.Date",
         "void" to UNIT,
         "Function" to "() -> ${UNIT}",

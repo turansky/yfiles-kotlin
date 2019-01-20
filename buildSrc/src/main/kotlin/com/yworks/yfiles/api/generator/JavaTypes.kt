@@ -6,9 +6,9 @@ internal object JavaTypes {
     val STANDARD_TYPE_MAP = mapOf(
         "Object" to Types.OBJECT_TYPE,
         "object" to Types.OBJECT_TYPE,
-        "boolean" to "boolean",
-        "string" to "String",
-        "number" to "double", // TODO: separate on int/double
+        JS_BOOLEAN to "boolean",
+        JS_STRING to "String",
+        JS_NUMBER to "double", // TODO: separate on int/double
         "Date" to "elemental2.core.JsDate",
         "void" to VOID,
         "Function" to "elemental2.core.Function",

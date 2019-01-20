@@ -235,7 +235,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("unit", "IUndoUnit")
             ),
-            resultType = "boolean"
+            resultType = JS_BOOLEAN
         ),
         MethodData(
             className = "yfiles.graph.CompositeUndoUnit",
@@ -243,16 +243,16 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("unit", "IUndoUnit")
             ),
-            resultType = "boolean"
+            resultType = JS_BOOLEAN
         ),
 
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
-        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = "number"),
+        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(
             className = "yfiles.styles.VoidPathGeometry",
             methodName = "getTangent",
             parameters = listOf(
-                MethodParameterData("ratio", "number")
+                MethodParameterData("ratio", JS_NUMBER)
             ),
             resultType = "yfiles.geometry.Tangent"
         ),
@@ -260,8 +260,8 @@ internal object Hacks {
             className = "yfiles.styles.VoidPathGeometry",
             methodName = "getTangent",
             parameters = listOf(
-                MethodParameterData("segmentIndex", "number"),
-                MethodParameterData("ratio", "number")
+                MethodParameterData("segmentIndex", JS_NUMBER),
+                MethodParameterData("ratio", JS_NUMBER)
             ),
             resultType = "yfiles.geometry.Tangent"
         )
