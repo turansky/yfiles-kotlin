@@ -378,6 +378,30 @@ internal object Hacks {
             resultType = "yfiles.geometry.IOrientedRectangle"
         ),
 
+        MethodData(
+            className = "yfiles.graph.GenericPortLocationModel",
+            methodName = "canConvert",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.graphml.IWriteContext"),
+                MethodParameterData("value", OBJECT_TYPE)
+            ),
+            resultType = JS_BOOLEAN
+        ),
+        MethodData(
+            className = "yfiles.graph.GenericPortLocationModel",
+            methodName = "convert",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.graphml.IWriteContext"),
+                MethodParameterData("value", OBJECT_TYPE)
+            ),
+            resultType = "yfiles.graphml.MarkupExtension"
+        ),
+        MethodData(
+            className = "yfiles.graph.GenericPortLocationModel",
+            methodName = "getEnumerator",
+            resultType = "yfiles.collections.IEnumerator<IPortLocationModelParameter>"
+        ),
+
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
         MethodData(
