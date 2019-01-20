@@ -10,13 +10,6 @@ internal object KotlinHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.algorithms.YList"
-            -> lines(
-                "override val isReadOnly: Boolean",
-                "    get() = definedExternally",
-                "override fun add(item: ${OBJECT_TYPE}) = definedExternally"
-            )
-
             className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"
             -> lines(
                 "override fun findBestParameter(label: ILabel, model: ILabelModel, layout: yfiles.geometry.IOrientedRectangle): ILabelModelParameter = definedExternally",

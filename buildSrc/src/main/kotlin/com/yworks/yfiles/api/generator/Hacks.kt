@@ -41,6 +41,20 @@ internal object Hacks {
         return result
     }
 
+    private fun JSONObject.addProperty(
+        propertyName: String,
+        type: String
+    ) {
+        getJSONArray("properties")
+            .put(
+                mapOf(
+                    "name" to propertyName,
+                    "modifiers" to listOf("public", "final", "ro"),
+                    "type" to type
+                )
+            )
+    }
+
     private fun JSONObject.addMethod(
         methodData: MethodData
     ) {
@@ -83,6 +97,8 @@ internal object Hacks {
         fixImplementedTypes(source)
         fixPropertyType(source)
         fixMethodParameterName(source)
+
+        addMissedProperties(source)
         addMissedMethods(source)
     }
 
@@ -222,12 +238,22 @@ internal object Hacks {
         }
     }
 
+    private val MISSED_PROPERTIES = listOf(
+        PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN)
+    )
+
     private val MISSED_METHODS = listOf(
         MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = OBJECT_TYPE),
         MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = OBJECT_TYPE),
         MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = OBJECT_TYPE),
 
-        // YList
+        MethodData(
+            className = "yfiles.algorithms.YList",
+            methodName = "add",
+            parameters = listOf(
+                MethodParameterData("item", OBJECT_TYPE)
+            )
+        ),
 
         MethodData(
             className = "yfiles.graph.CompositeUndoUnit",
@@ -267,6 +293,14 @@ internal object Hacks {
         )
     )
 
+    private fun addMissedProperties(source: JSONObject) {
+        MISSED_PROPERTIES
+            .forEach { data ->
+                source.type(data.className)
+                    .addProperty(data.propertyName, data.type)
+            }
+    }
+
     private fun addMissedMethods(source: JSONObject) {
         MISSED_METHODS
             .forEach { data ->
@@ -280,6 +314,12 @@ private data class ParameterData(
     val className: String,
     val methodName: String,
     val parameterName: String
+)
+
+private data class PropertyData(
+    val className: String,
+    val propertyName: String,
+    val type: String
 )
 
 private data class MethodData(

@@ -10,14 +10,6 @@ internal object JavaHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.algorithms.YList"
-            -> lines(
-                "@jsinterop.annotations.JsProperty(name=\"isReadOnly\")",
-                "@Override",
-                "public native boolean isReadOnly();",
-                "@Override public native void add(${OBJECT_TYPE} item);"
-            )
-
             className == "yfiles.graph.EdgePathLabelModel" || className == "yfiles.graph.EdgeSegmentLabelModel"
             -> lines(
                 "@Override public native ILabelModelParameter findBestParameter(ILabel label, ILabelModel model, yfiles.geometry.IOrientedRectangle layout);",
