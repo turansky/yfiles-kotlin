@@ -10,14 +10,6 @@ internal object JavaHacks {
         val className = cn.removePrefix("com.yworks.")
 
         var result = when {
-            className == "yfiles.graph.GenericLabelModel"
-            -> lines(
-                "@Override public native boolean canConvert(yfiles.graphml.IWriteContext context, ${OBJECT_TYPE} value);",
-                "@Override public native yfiles.collections.IEnumerable<ILabelModelParameter> getParameters(ILabel label, ILabelModel model);",
-                "@Override public native yfiles.graphml.MarkupExtension convert(yfiles.graphml.IWriteContext context, ${OBJECT_TYPE} value);",
-                "@Override public native yfiles.geometry.IOrientedRectangle getGeometry(ILabel label, ILabelModelParameter layoutParameter);"
-            )
-
             className == "yfiles.graph.GenericPortLocationModel"
             -> lines(
                 "@Override public native boolean canConvert(yfiles.graphml.IWriteContext context, ${OBJECT_TYPE} value);",
