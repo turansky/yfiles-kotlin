@@ -96,7 +96,7 @@ internal class KotlinFileGenerator(
         val staticDeclarations: List<Declaration>
             get() {
                 return mutableListOf<Declaration>()
-                    .union(staticConstants)
+                    // .union(staticConstants)
                     .union(staticProperties)
                     .union(staticFunctions)
                     .toList()
@@ -192,7 +192,7 @@ internal class KotlinFileGenerator(
             val constructorSet = declaration.constructors.toSet()
             return constructorSet.map {
                 it.toCode(PROGRAMMING_LANGUAGE)
-            }.joinToString("\n") + "\n"
+            }.joinToString(separator = "\n", postfix = "\n")
         }
 
         override fun parentTypes(): List<String> {

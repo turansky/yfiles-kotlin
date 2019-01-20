@@ -11,6 +11,7 @@ private val YFILES_NAMESPACE = "yfiles"
 private val PRIMITIVE_TYPES = listOf(
     "yfiles.lang.Boolean",
     "yfiles.lang.Number",
+    "yfiles.lang.Object",
     "yfiles.lang.String",
     "yfiles.lang.Struct",
     "yfiles.lang.Enum",

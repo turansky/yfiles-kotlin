@@ -4,7 +4,7 @@ internal object KotlinTypes {
     val UNIT = "Unit"
 
     val STANDARD_TYPE_MAP = mapOf(
-        JS_OBJECT to Types.OBJECT_TYPE,
+        JS_OBJECT to "Any",
         JS_BOOLEAN to "Boolean",
         JS_STRING to "String",
         JS_NUMBER to "Number",
