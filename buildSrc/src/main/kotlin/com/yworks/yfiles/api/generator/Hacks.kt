@@ -1,6 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.Types.OBJECT_TYPE
 import org.json.JSONObject
 
 internal object Hacks {
@@ -133,7 +132,7 @@ internal object Hacks {
                 it.getJSONArray("methods")
                     .first { it.get("name") == "getEnumerator" }
                     .getJSONObject("returns")
-                    .put("type", "yfiles.collections.IEnumerator<${OBJECT_TYPE}>")
+                    .put("type", "yfiles.collections.IEnumerator<${JS_OBJECT}>")
             }
     }
 
@@ -245,15 +244,15 @@ internal object Hacks {
     )
 
     private val MISSED_METHODS = listOf(
-        MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = OBJECT_TYPE),
-        MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = OBJECT_TYPE),
-        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = OBJECT_TYPE),
+        MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = JS_OBJECT),
+        MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = JS_OBJECT),
+        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = JS_OBJECT),
 
         MethodData(
             className = "yfiles.algorithms.YList",
             methodName = "add",
             parameters = listOf(
-                MethodParameterData("item", OBJECT_TYPE)
+                MethodParameterData("item", JS_OBJECT)
             )
         ),
 
@@ -348,7 +347,7 @@ internal object Hacks {
             methodName = "canConvert",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", OBJECT_TYPE)
+                MethodParameterData("value", JS_OBJECT)
             ),
             resultType = JS_BOOLEAN
         ),
@@ -366,7 +365,7 @@ internal object Hacks {
             methodName = "convert",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", OBJECT_TYPE)
+                MethodParameterData("value", JS_OBJECT)
             ),
             resultType = "yfiles.graphml.MarkupExtension"
         ),
@@ -385,7 +384,7 @@ internal object Hacks {
             methodName = "canConvert",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", OBJECT_TYPE)
+                MethodParameterData("value", JS_OBJECT)
             ),
             resultType = JS_BOOLEAN
         ),
@@ -394,7 +393,7 @@ internal object Hacks {
             methodName = "convert",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", OBJECT_TYPE)
+                MethodParameterData("value", JS_OBJECT)
             ),
             resultType = "yfiles.graphml.MarkupExtension"
         ),
@@ -437,7 +436,7 @@ internal object Hacks {
             ),
             resultType = "yfiles.view.IVisualCreator"
         ),
-        MethodData(className = "yfiles.styles.Arrow", methodName = "clone", resultType = OBJECT_TYPE),
+        MethodData(className = "yfiles.styles.Arrow", methodName = "clone", resultType = JS_OBJECT),
 
         MethodData(
             className = "yfiles.styles.GraphOverviewSvgVisualCreator",
