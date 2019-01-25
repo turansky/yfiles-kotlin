@@ -151,17 +151,24 @@ internal class JavaFileGenerator(
             return declaration.genericParameters()
         }
 
+        protected open val addStaticDeclarations: Boolean = true
+
         open fun content(): String {
-            return listOf<Declaration>()
-                // TODO: support
-                // .union(staticConstants)
-                .union(staticProperties)
-                // TODO: support
-                // .union(staticFunctions)
-                .union(memberProperties)
-                .union(memberFunctions)
+            val declarations = if (addStaticDeclarations) {
+                sequenceOf(
+                    staticConstants,
+                    staticProperties,
+                    staticFunctions
+                ).flatten()
+            } else {
+                emptySequence()
+            }
+
+            return declarations
+                .plus(memberProperties)
+                .plus(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString("\n") + "\n"
+                .joinToString(separator = "\n", postfix = "\n")
         }
     }
 
@@ -211,6 +218,8 @@ internal class JavaFileGenerator(
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
         val likeAbstractClass: Boolean by lazy { MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties) }
+
+        override val addStaticDeclarations: Boolean = false
 
         override fun content(): String {
             var content = super.content()
