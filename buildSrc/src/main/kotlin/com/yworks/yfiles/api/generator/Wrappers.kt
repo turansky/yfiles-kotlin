@@ -329,25 +329,25 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
             ""
         }
 
-        val mofificators = mutableListOf<String>()
+        val modificators = mutableListOf<String>()
 
         if (abstract) {
-            mofificators.add("abstract ")
+            modificators.add("abstract")
         } else {
-            mofificators.add("native")
+            modificators.add("native")
         }
 
         if (protected) {
-            mofificators.add("protected")
+            modificators.add("protected")
         } else {
-            mofificators.add("public")
+            modificators.add("public")
         }
 
         if (static) {
-            mofificators.add("static")
+            modificators.add("static")
         }
 
-        return override + mofificators.joinToString(" ") + " "
+        return override + modificators.joinToString(separator = " ", postfix = " ")
     }
 
     override fun toKotlinCode(): String {
