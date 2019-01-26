@@ -16,7 +16,8 @@ internal interface ClassRegistry {
     fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
-    fun propertyOverriden(className: String, functionName: String): Boolean
+    fun propertyOverriden(className: String, propertyName: String): Boolean
+    fun listenerOverriden(className: String, listenerName: String): Boolean = false
 }
 
 private class EmptyClassRegistry : ClassRegistry {
@@ -32,7 +33,7 @@ private class EmptyClassRegistry : ClassRegistry {
         return false
     }
 
-    override fun propertyOverriden(className: String, functionName: String): Boolean {
+    override fun propertyOverriden(className: String, propertyName: String): Boolean {
         return false
     }
 
@@ -98,7 +99,7 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
         return functionOverriden(className, functionName, false)
     }
 
-    override fun propertyOverriden(className: String, functionName: String): Boolean {
-        return propertyOverriden(className, functionName, false)
+    override fun propertyOverriden(className: String, propertyName: String): Boolean {
+        return propertyOverriden(className, propertyName, false)
     }
 }
