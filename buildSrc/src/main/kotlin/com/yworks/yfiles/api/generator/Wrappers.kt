@@ -467,7 +467,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         }
 
         return when {
-            modifiers.abstract -> "protected "
+            modifiers.abstract -> "abstract "
             else -> ""
         }
     }
@@ -503,7 +503,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
 
         val parametersString = parameters
             .asSequence()
-            .map { it.toCode(KOTLIN) }
+            .map { "${it.name}: ${it.type}" }
             .joinToString(separator = ", ")
 
         return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
@@ -512,7 +512,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     override fun toJavaCode(): String {
         val parametersString = parameters
             .asSequence()
-            .map { it.toCode(JAVA) }
+            .map { "${it.type} ${it.name}" }
             .joinToString(separator = ", ")
 
         return "${javaModificator()} $VOID $name($parametersString);"
