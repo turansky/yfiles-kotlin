@@ -96,7 +96,7 @@ internal class KotlinFileGenerator(
         val staticDeclarations: List<Declaration>
             get() {
                 return mutableListOf<Declaration>()
-                    // .union(staticConstants)
+                    .union(staticConstants)
                     .union(staticProperties)
                     .union(staticFunctions)
                     .toList()
