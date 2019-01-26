@@ -1,6 +1,8 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.JavaTypes.VOID
+import com.yworks.yfiles.api.generator.ProgrammingLanguage.JAVA
+import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -16,8 +18,8 @@ internal abstract class JsonWrapper(val source: JSONObject) {
 
     fun toCode(programmingLanguage: ProgrammingLanguage): String {
         return when (programmingLanguage) {
-            ProgrammingLanguage.KOTLIN -> toKotlinCode()
-            ProgrammingLanguage.JAVA -> toJavaCode()
+            KOTLIN -> toKotlinCode()
+            JAVA -> toJavaCode()
         }
     }
 
@@ -131,7 +133,7 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
 }
 
 internal abstract class ExtendedType(source: JSONObject) : Type(source) {
-    val events: List<Event> by ArrayDelegate(::Event)
+    val events: List<Event> by ArrayDelegate { Event(fqn, it) }
 }
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
@@ -429,17 +431,88 @@ internal class Returns(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { TypeParser.parse(it, signature) }
 }
 
-internal class Event(source: JSONObject) : JsonWrapper(source) {
+internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val summary: String by StringDelegate()
-    val add: EventListener by EventListenerDelegate()
-    val remove: EventListener by EventListenerDelegate()
+    private val add: EventListener by EventListenerDelegate(fqn)
+    private val remove: EventListener by EventListenerDelegate(fqn)
+
+    override fun toKotlinCode(): String {
+        return sequenceOf(add, remove)
+            .map { it.toCode(KOTLIN) }
+            .joinToString("\n")
+    }
+
+    override fun toJavaCode(): String {
+        return sequenceOf(add, remove)
+            .map { it.toCode(JAVA) }
+            .joinToString("\n")
+    }
 }
 
-internal class EventListener(source: JSONObject) : JsonWrapper(source) {
+private class EventListener(private val fqn: String, source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
+
+    private fun kotlinModificator(): String {
+        val classRegistry: ClassRegistry = ClassRegistry.instance
+
+        if (classRegistry.functionOverriden(fqn, name)) {
+            return "override "
+        }
+
+        return when {
+            modifiers.abstract -> "protected "
+            else -> ""
+        }
+    }
+
+    private fun javaModificator(): String {
+        val classRegistry: ClassRegistry = ClassRegistry.instance
+
+        val override = if (classRegistry.functionOverriden(fqn, name)) {
+            "@Override\n"
+        } else {
+            ""
+        }
+
+        val modificators = mutableListOf<String>()
+
+        if (modifiers.abstract) {
+            modificators.add("abstract")
+        } else {
+            modificators.add("native")
+        }
+
+        modificators.add("public")
+
+        return override + modificators.joinToString(separator = " ", postfix = " ")
+    }
+
+    override fun toKotlinCode(): String {
+        val returnSignature = if (modifiers.abstract) {
+            ""
+        } else {
+            ":${KotlinTypes.UNIT} = definedExternally"
+        }
+
+        val parametersString = parameters
+            .asSequence()
+            .map { it.toCode(KOTLIN) }
+            .joinToString(separator = ", ")
+
+        return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
+    }
+
+    override fun toJavaCode(): String {
+        val parametersString = parameters
+            .asSequence()
+            .map { it.toCode(JAVA) }
+            .joinToString(separator = ", ")
+
+        return "${javaModificator()} $VOID $name($parametersString);"
+    }
 }
 
 internal class EventListenerModifiers(flags: List<String>) {
@@ -616,9 +689,9 @@ private class ReturnsDelegate {
     }
 }
 
-private class EventListenerDelegate {
+private class EventListenerDelegate(private val fqn: String) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListener {
-        return EventListener(thisRef.source.getJSONObject(property.name))
+        return EventListener(fqn, thisRef.source.getJSONObject(property.name))
     }
 }
 
