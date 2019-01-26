@@ -55,9 +55,9 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
     private fun getParents(className: String): List<String> {
         val instance = instances[className] ?: throw IllegalArgumentException("Unknown instance type: $className")
 
-        return mutableListOf<String>()
-            .union(listOf(instance.extendedType()).filterNotNull())
-            .union(instance.implementedTypes())
+        return sequenceOf(instance.extendedType())
+            .filterNotNull()
+            .plus(instance.implementedTypes())
             .map { if (it.contains("<")) till(it, "<") else it }
             .toList()
     }

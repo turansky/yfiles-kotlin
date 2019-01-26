@@ -95,10 +95,10 @@ internal class KotlinFileGenerator(
 
         val staticDeclarations: List<Declaration>
             get() {
-                return mutableListOf<Declaration>()
-                    .union(staticConstants)
-                    .union(staticProperties)
-                    .union(staticFunctions)
+                return sequenceOf<Declaration>()
+                    .plus(staticConstants)
+                    .plus(staticProperties)
+                    .plus(staticFunctions)
                     .toList()
             }
 
@@ -169,9 +169,9 @@ internal class KotlinFileGenerator(
         }
 
         open fun content(): String {
-            return listOf<Declaration>()
-                .union(memberProperties)
-                .union(memberFunctions)
+            return sequenceOf<Declaration>()
+                .plus(memberProperties)
+                .plus(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
                 .joinToString("\n") + "\n"
         }
@@ -199,8 +199,8 @@ internal class KotlinFileGenerator(
             val extendedType = declaration.extendedType()
                     ?: return super.parentTypes()
 
-            return listOf(extendedType)
-                .union(super.parentTypes())
+            return sequenceOf(extendedType)
+                .plus(super.parentTypes())
                 .toList()
         }
 
