@@ -58,13 +58,12 @@ internal class KotlinFileGenerator(
 
         val typeparameters = functionSignature.typeparameters
         val generics = if (typeparameters.isNotEmpty()) {
-            "<${typeparameters.map { it.name }.joinToString(", ")}>"
+            "<${typeparameters.joinToString(separator = ", ", transform = { it.name })}>"
         } else {
             ""
         }
         val parameters = functionSignature.parameters
-            .map { it.toCode(PROGRAMMING_LANGUAGE) }
-            .joinToString(", ")
+            .joinToString(separator = ", ", transform = { it.toCode(PROGRAMMING_LANGUAGE) })
         val returns = functionSignature.returns?.type ?: UNIT
 
         val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
@@ -173,7 +172,7 @@ internal class KotlinFileGenerator(
                 .plus(memberProperties)
                 .plus(memberFunctions)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString("\n") + "\n"
+                .joinToString(separator = "\n", postfix = "\n")
         }
     }
 
@@ -189,10 +188,12 @@ internal class KotlinFileGenerator(
         }
 
         private fun constructors(): String {
-            val constructorSet = declaration.constructors.toSet()
-            return constructorSet.map {
-                it.toCode(PROGRAMMING_LANGUAGE)
-            }.joinToString(separator = "\n", postfix = "\n")
+            return declaration
+                .constructors
+                .asSequence()
+                .distinct()
+                .map { it.toCode(PROGRAMMING_LANGUAGE) }
+                .joinToString(separator = "\n", postfix = "\n")
         }
 
         override fun parentTypes(): List<String> {
@@ -236,8 +237,7 @@ internal class KotlinFileGenerator(
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = declaration.constants
-                .map { "    ${it.name}" }
-                .joinToString(",\n")
+                .joinToString(separator = ",\n", transform = { "    ${it.name}" })
             return "external enum class ${fqn.name} {\n" +
                     values + "\n\n" +
                     super.content() + "\n" +

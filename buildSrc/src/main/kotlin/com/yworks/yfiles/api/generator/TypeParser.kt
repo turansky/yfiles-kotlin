@@ -39,7 +39,7 @@ internal object TypeParser {
 
     fun getGenericString(parameters: List<TypeParameter>): String {
         return if (parameters.isNotEmpty()) {
-            checkGenericString("<${parameters.map { it.name }.joinToString(", ")}> ")
+            checkGenericString("<${parameters.joinToString(separator = ", ", transform = { it.name })}> ")
         } else {
             ""
         }
@@ -66,7 +66,8 @@ internal object TypeParser {
     // TODO: optimize calculation
     private fun parseGenericParameters(parameters: String): List<String> {
         if (!parameters.contains(GENERIC_START)) {
-            return parameters.split(",")
+            return parameters
+                .split(",")
                 .map { parseType(it) }
         }
 

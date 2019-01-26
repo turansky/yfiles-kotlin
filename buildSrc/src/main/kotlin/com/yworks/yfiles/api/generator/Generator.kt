@@ -8,7 +8,7 @@ import java.net.URL
 
 private val YFILES_NAMESPACE = "yfiles"
 
-private val PRIMITIVE_TYPES = listOf(
+private val PRIMITIVE_TYPES = sequenceOf(
     "yfiles.lang.Boolean",
     "yfiles.lang.Number",
     "yfiles.lang.Object",
@@ -16,7 +16,9 @@ private val PRIMITIVE_TYPES = listOf(
     "yfiles.lang.Struct",
     "yfiles.lang.Enum",
     "yfiles.lang.EnumDefinition"
-).map { fixPackage(it) }
+)
+    .map(::fixPackage)
+    .toSet()
 
 private fun loadApiJson(path: String): String {
     return URL(path)

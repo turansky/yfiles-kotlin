@@ -25,7 +25,7 @@ internal object MixinHacks {
         throw IllegalArgumentException("Item '$searchItem' not contains in item list '$items'")
     }
 
-    private val MUST_BE_ABSTRACT_CLASSES = listOf(
+    private val MUST_BE_ABSTRACT_CLASSES = sequenceOf(
         "yfiles.collections.ICollection",
         "yfiles.collections.IList",
         "yfiles.collections.IMap",
@@ -38,7 +38,9 @@ internal object MixinHacks {
 
         "yfiles.graph.IColumn",
         "yfiles.graph.IRow"
-    ).map { fixPackage(it) }
+    )
+        .map(::fixPackage)
+        .toSet()
 
     fun defineLikeAbstractClass(className: String, functions: List<Method>, properties: List<Property>): Boolean {
         if (className in MUST_BE_ABSTRACT_CLASSES) {

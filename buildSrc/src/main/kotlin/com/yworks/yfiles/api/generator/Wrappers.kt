@@ -379,20 +379,26 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 
     protected fun kotlinParametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
-        return parameters.map {
-            val modifiers = if (it.modifiers.vararg) "vararg " else ""
-            val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
-            "$modifiers ${it.name}: ${it.type}" + body
-        }.joinToString(", ")
+        return parameters
+            .asSequence()
+            .map {
+                val modifiers = if (it.modifiers.vararg) "vararg " else ""
+                val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
+                "$modifiers ${it.name}: ${it.type}" + body
+            }
+            .joinToString(", ")
     }
 
     protected fun javaParametersString(): String {
-        return parameters.map {
-            val name = if (it.name != "synchronized") it.name else "synchronized1" // TODO: find better name
+        return parameters
+            .asSequence()
+            .map {
+                val name = if (it.name != "synchronized") it.name else "synchronized1" // TODO: find better name
 
-            val modifiers = if (it.modifiers.vararg) "..." else ""
-            "${it.type} $modifiers${name}"
-        }.joinToString(", ")
+                val modifiers = if (it.modifiers.vararg) "..." else ""
+                "${it.type} $modifiers${name}"
+            }
+            .joinToString(", ")
     }
 
     override fun hashCode(): Int {
@@ -439,14 +445,12 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
 
     override fun toKotlinCode(): String {
         return sequenceOf(add, remove)
-            .map { it.toCode(KOTLIN) }
-            .joinToString("\n")
+            .joinToString(separator = "\n", transform = { it.toCode(KOTLIN) })
     }
 
     override fun toJavaCode(): String {
         return sequenceOf(add, remove)
-            .map { it.toCode(JAVA) }
-            .joinToString("\n")
+            .joinToString(separator = "\n", transform = { it.toCode(JAVA) })
     }
 }
 

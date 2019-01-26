@@ -71,13 +71,12 @@ internal class JavaFileGenerator(
 
         val typeparameters = functionSignature.typeparameters
         val generics = if (typeparameters.isNotEmpty()) {
-            "<${typeparameters.map { it.name }.joinToString(", ")}>"
+            "<${typeparameters.joinToString(separator = ", ", transform = { it.name })}>"
         } else {
             ""
         }
         val parameters = functionSignature.parameters
-            .map { it.toCode(PROGRAMMING_LANGUAGE) }
-            .joinToString(", ")
+            .joinToString(separator = ", ", transform = { it.toCode(PROGRAMMING_LANGUAGE) })
         val returns = functionSignature.returns?.type ?: VOID
 
         val content = ("@jsinterop.annotations.JsFunction\n" +
@@ -184,10 +183,12 @@ internal class JavaFileGenerator(
         }
 
         private fun constructors(): String {
-            val constructorSet = declaration.constructors.toSet()
-            return constructorSet.map {
-                it.toCode(PROGRAMMING_LANGUAGE)
-            }.joinToString("\n") + "\n"
+            return declaration
+                .constructors
+                .asSequence()
+                .distinct()
+                .map { it.toCode(PROGRAMMING_LANGUAGE) }
+                .joinToString(separator = "\n", postfix = "\n")
         }
 
         override fun extendsTypes(): List<String> {

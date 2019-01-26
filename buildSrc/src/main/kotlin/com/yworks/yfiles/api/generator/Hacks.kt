@@ -126,7 +126,7 @@ internal object Hacks {
     }
 
     private fun fixReturnType(source: JSONObject) {
-        listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+        sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
             .map { source.type(it) }
             .forEach {
                 it.getJSONArray("methods")
@@ -142,13 +142,13 @@ internal object Hacks {
     }
 
     private fun fixImplementedTypes(source: JSONObject) {
-        listOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+        sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
             .map { source.type(it) }
             .forEach { it.remove("implements") }
     }
 
     private fun fixPropertyType(source: JSONObject) {
-        listOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
+        sequenceOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
             .map { source.type(it) }
             .forEach {
                 it.getJSONArray("properties")
