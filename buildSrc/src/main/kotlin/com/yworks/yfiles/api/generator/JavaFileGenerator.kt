@@ -110,9 +110,11 @@ internal class JavaFileGenerator(
 
         val memberProperties: List<Property>
             get() = properties
+                .asSequence()
                 .filter { !it.static }
                 // WA: temp, for compilation only
                 .filterNot { it.nameOfClass == "NavigationInputMode" && it.name == "graphComponent" }
+                .toList()
 
         val memberFunctions: List<Method>
             get() = declaration.methods

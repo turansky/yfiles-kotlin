@@ -49,8 +49,11 @@ private fun generateWrappers(
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot
-        .namespaces.first { it.id == YFILES_NAMESPACE }
-        .namespaces.flatMap { it.types }
+        .namespaces
+        .asSequence()
+        .first { it.id == YFILES_NAMESPACE }
+        .namespaces
+        .flatMap { it.types }
         .filterNot { PRIMITIVE_TYPES.contains(it.fqn) }
 
     val functionSignatures = apiRoot.functionSignatures
