@@ -130,7 +130,11 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
     }
 }
 
-internal class Class(source: JSONObject) : Type(source) {
+internal abstract class ExtendedType(source: JSONObject) : Type(source) {
+    val events: List<Event> by ArrayDelegate(::Event)
+}
+
+internal class Class(source: JSONObject) : ExtendedType(source) {
     val final = modifiers.final
     val open = !final
     val abstract = modifiers.abstract
@@ -158,7 +162,7 @@ internal class Modifiers(flags: List<String>) {
     val protected = flags.contains("protected")
 }
 
-internal class Interface(source: JSONObject) : Type(source)
+internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
 
 private class Module(source: JSONObject) : JsonWrapper(source), IModule {
@@ -425,6 +429,24 @@ internal class Returns(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { TypeParser.parse(it, signature) }
 }
 
+internal class Event(source: JSONObject) : JsonWrapper(source) {
+    val name: String by StringDelegate()
+    val summary: String by StringDelegate()
+    val add: EventListener by EventListenerDelegate()
+    val remove: EventListener by EventListenerDelegate()
+}
+
+internal class EventListener(source: JSONObject) : JsonWrapper(source) {
+    val name: String by StringDelegate()
+    val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
+    val parameters: List<Parameter> by ArrayDelegate(::Parameter)
+}
+
+internal class EventListenerModifiers(flags: List<String>) {
+    val public = flags.contains("public")
+    val abstract = flags.contains("abstract")
+}
+
 private class ArrayDelegate<T> {
 
     private val transform: (JSONObject) -> T
@@ -593,3 +615,16 @@ private class ReturnsDelegate {
         }
     }
 }
+
+private class EventListenerDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListener {
+        return EventListener(thisRef.source.getJSONObject(property.name))
+    }
+}
+
+private class EventListenerModifiersDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListenerModifiers {
+        return EventListenerModifiers(StringArrayDelegate.value(thisRef, property))
+    }
+}
+
