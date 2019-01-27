@@ -174,12 +174,12 @@ internal class JavaFileGenerator(
 
             var overlays = """
                 $JS_OVERLAY
-                public static boolean is(Object o) {
+                $PUBLIC_STATIC boolean is(Object o) {
                     return jsClass.isInstance(o);
                 }
 
                 $JS_OVERLAY
-                public static ${fqn.name} as(Object o) {
+                $PUBLIC_STATIC ${fqn.name} as(Object o) {
                     return is(o) ? $JS.cast(o) : null;
                 }
             """
@@ -187,12 +187,12 @@ internal class JavaFileGenerator(
             overlays += if (addStaticDeclarations) {
                 """
                 @jsinterop.annotations.JsProperty(name="${'$'}class")
-                public static $YFILES_CLASS jsClass;
+                $PUBLIC_STATIC $YFILES_CLASS jsClass;
                 """
             } else {
                 """
                 $JS_OVERLAY
-                public static $YFILES_CLASS jsClass = null;
+                $PUBLIC_STATIC $YFILES_CLASS jsClass = null;
                 """
             }
 
@@ -263,7 +263,9 @@ internal class JavaFileGenerator(
         override fun content(): String {
             var content = super.content()
             if (!likeAbstractClass) {
-                content = content.replace("public abstract ", "")
+                content = content
+                    .replace("public ", "")
+                    .replace("abstract ", "")
                     .replace("native ", "")
             }
 
@@ -308,7 +310,7 @@ internal class JavaFileGenerator(
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = declaration.constants
-                .lines { "    public static ${fqn.name} ${it.name};" }
+                .lines { "    $PUBLIC_STATIC ${fqn.name} ${it.name};" }
 
             return jsType(fqn) +
                     "public final class ${fqn.name} {\n" +
@@ -323,4 +325,5 @@ internal class JavaFileGenerator(
     private val YFILES_CLASS = fixPackage("yfiles.lang.Class")
     private val JS_OVERLAY = "@jsinterop.annotations.JsOverlay"
     private val JS = "jsinterop.base.Js"
+    private val PUBLIC_STATIC = "public static"
 }
