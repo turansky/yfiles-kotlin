@@ -175,7 +175,7 @@ internal class JavaFileGenerator(
             var overlays = """
                 @jsinterop.annotations.JsOverlay
                 public static boolean is(Object o) {
-                    return false;
+                    return jsClass.isInstance(o);
                 }
 
                 @jsinterop.annotations.JsOverlay
@@ -196,13 +196,19 @@ internal class JavaFileGenerator(
                 """
             }
 
-            return declarations
+            var result = declarations
                 .plus(memberProperties)
                 .plus(memberFunctions)
                 .plus(memberEvents)
-                .lines { it.toCode(PROGRAMMING_LANGUAGE) } +
-                    "\n\n\n" +
-                    overlays
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
+
+            // WA: For Class
+            if (fqn.name != "Class") {
+                result += "\n\n\n$overlays"
+            }
+
+            return result
+
         }
     }
 
