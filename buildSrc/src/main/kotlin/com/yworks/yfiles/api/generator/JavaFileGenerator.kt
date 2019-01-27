@@ -120,6 +120,13 @@ internal class JavaFileGenerator(
             get() = declaration.methods
                 .sortedBy { it.name }
 
+        val memberEvents: List<Event>
+            get() = if (declaration is ExtendedType) {
+                declaration.events
+            } else {
+                emptyList()
+            }
+
         val header: String
             get() {
                 return "package ${fqn.packageName};\n"
@@ -168,6 +175,7 @@ internal class JavaFileGenerator(
             return declarations
                 .plus(memberProperties)
                 .plus(memberFunctions)
+                .plus(memberEvents)
                 .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
     }
