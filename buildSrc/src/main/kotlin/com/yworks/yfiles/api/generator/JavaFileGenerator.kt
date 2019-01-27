@@ -323,7 +323,7 @@ internal class JavaFileGenerator(
         }
     }
 
-    private fun jsType(fqn: FQN) = "@jsinterop.annotations.JsType(isNative=true, name=\"${fqn.name}\", namespace=\"${getNamespace(fqn.packageName)}\")\n"
+    private fun jsType(fqn: FQN) = "@jsinterop.annotations.JsType(isNative=true, namespace=\"${getNamespace(fqn.packageName)}\", name=\"${fqn.name}\")\n"
 
     private val YFILES_CLASS = fixPackage("yfiles.lang.Class")
     private val JS_OVERLAY = "@jsinterop.annotations.JsOverlay"
