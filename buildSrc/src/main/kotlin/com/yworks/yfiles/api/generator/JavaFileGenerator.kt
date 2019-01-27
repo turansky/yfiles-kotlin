@@ -71,12 +71,12 @@ internal class JavaFileGenerator(
 
         val typeparameters = functionSignature.typeparameters
         val generics = if (typeparameters.isNotEmpty()) {
-            "<${typeparameters.joinToString(separator = ", ", transform = { it.name })}>"
+            "<${typeparameters.byComma { it.name }}>"
         } else {
             ""
         }
         val parameters = functionSignature.parameters
-            .joinToString(separator = ", ", transform = { it.toCode(PROGRAMMING_LANGUAGE) })
+            .byComma { it.toCode(PROGRAMMING_LANGUAGE) }
         val returns = functionSignature.returns?.type ?: VOID
 
         val content = ("@jsinterop.annotations.JsFunction\n" +
@@ -145,7 +145,7 @@ internal class JavaFileGenerator(
                 return ""
             }
 
-            return " " + keyword + " " + types.joinToString(", ")
+            return " " + keyword + " " + types.byComma()
         }
 
         fun genericParameters(): String {

@@ -58,12 +58,12 @@ internal class KotlinFileGenerator(
 
         val typeparameters = functionSignature.typeparameters
         val generics = if (typeparameters.isNotEmpty()) {
-            "<${typeparameters.joinToString(separator = ", ", transform = { it.name })}>"
+            "<${typeparameters.byComma { it.name }}>"
         } else {
             ""
         }
         val parameters = functionSignature.parameters
-            .joinToString(separator = ", ", transform = { it.toCode(PROGRAMMING_LANGUAGE) })
+            .byComma { it.toCode(PROGRAMMING_LANGUAGE) }
         val returns = functionSignature.returns?.type ?: UNIT
 
         val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
@@ -137,7 +137,7 @@ internal class KotlinFileGenerator(
             if (parentTypes.isEmpty()) {
                 return ""
             }
-            return ": " + parentTypes.joinToString(", ")
+            return ": " + parentTypes.byComma()
         }
 
         fun genericParameters(): String {

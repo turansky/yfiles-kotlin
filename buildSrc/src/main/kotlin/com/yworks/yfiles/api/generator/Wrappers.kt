@@ -380,25 +380,21 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     protected fun kotlinParametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters
-            .asSequence()
-            .map {
+            .byComma {
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
                 val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
                 "$modifiers ${it.name}: ${it.type}" + body
             }
-            .joinToString(", ")
     }
 
     protected fun javaParametersString(): String {
         return parameters
-            .asSequence()
-            .map {
+            .byComma {
                 val name = if (it.name != "synchronized") it.name else "synchronized1" // TODO: find better name
 
                 val modifiers = if (it.modifiers.vararg) "..." else ""
                 "${it.type} $modifiers${name}"
             }
-            .joinToString(", ")
     }
 
     override fun hashCode(): Int {
@@ -506,18 +502,14 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         }
 
         val parametersString = parameters
-            .asSequence()
-            .map { "${it.name}: ${it.type}" }
-            .joinToString(separator = ", ")
+            .byComma { "${it.name}: ${it.type}" }
 
         return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
     }
 
     override fun toJavaCode(): String {
         val parametersString = parameters
-            .asSequence()
-            .map { "${it.type} ${it.name}" }
-            .joinToString(separator = ", ")
+            .byComma { "${it.type} ${it.name}" }
 
         return "${javaModificator()} $VOID $name($parametersString);"
     }
