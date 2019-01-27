@@ -172,6 +172,17 @@ internal class JavaFileGenerator(
                 emptySequence()
             }
 
+            val result = declarations
+                .plus(memberProperties)
+                .plus(memberFunctions)
+                .plus(memberEvents)
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
+
+            // WA: For Class
+            if (className == YFILES_CLASS) {
+                return result
+            }
+
             var overlays = """
                 $JS_OVERLAY
                 $PUBLIC_STATIC boolean is(Object o) {
@@ -196,18 +207,7 @@ internal class JavaFileGenerator(
                 """
             }
 
-            var result = declarations
-                .plus(memberProperties)
-                .plus(memberFunctions)
-                .plus(memberEvents)
-                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
-
-            // WA: For Class
-            if (className != YFILES_CLASS) {
-                result += "\n\n\n$overlays"
-            }
-
-            return result
+            return "$result\n\n\n$overlays"
         }
     }
 
