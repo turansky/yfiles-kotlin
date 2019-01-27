@@ -17,7 +17,7 @@ internal interface ClassRegistry {
     fun isFinalClass(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
     fun propertyOverriden(className: String, propertyName: String): Boolean
-    fun listenerOverriden(className: String, listenerName: String): Boolean = false
+    fun listenerOverriden(className: String, listenerName: String): Boolean
 }
 
 private class EmptyClassRegistry : ClassRegistry {
@@ -37,6 +37,9 @@ private class EmptyClassRegistry : ClassRegistry {
         return false
     }
 
+    override fun listenerOverriden(className: String, listenerName: String): Boolean {
+        return false
+    }
 }
 
 internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
@@ -51,6 +54,14 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
         { it.fqn },
         { it.properties.map { it.name } }
     )
+
+    private val listenerMap = types
+        .asSequence()
+        .filterIsInstance<ExtendedType>()
+        .associateBy(
+            { it.fqn },
+            { it.events.flatMap { it.listenerNames } }
+        )
 
     private fun getParents(className: String): List<String> {
         val instance = instances[className] ?: throw IllegalArgumentException("Unknown instance type: $className")
@@ -86,6 +97,18 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
         }
     }
 
+    private fun listenerOverriden(className: String, listenerName: String, checkCurrentClass: Boolean): Boolean {
+        if (checkCurrentClass) {
+            val listeners = listenerMap[className] ?: throw IllegalArgumentException("No listener found for type: $className")
+            if (listeners.contains(listenerName)) {
+                return true
+            }
+        }
+        return getParents(className).any {
+            listenerOverriden(it, listenerName, true)
+        }
+    }
+
     override fun isInterface(className: String): Boolean {
         return instances[className] is Interface
     }
@@ -101,5 +124,9 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
 
     override fun propertyOverriden(className: String, propertyName: String): Boolean {
         return propertyOverriden(className, propertyName, false)
+    }
+
+    override fun listenerOverriden(className: String, listenerName: String): Boolean {
+        return listenerOverriden(className, listenerName, false)
     }
 }

@@ -442,14 +442,18 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
     val summary: String by StringDelegate()
     private val add: EventListener by EventListenerDelegate(fqn)
     private val remove: EventListener by EventListenerDelegate(fqn)
+    private val listeners = listOf(add, remove)
+
+    val listenerNames: List<String>
+        get() = listeners.map { it.name }
 
     override fun toKotlinCode(): String {
-        return sequenceOf(add, remove)
+        return listeners
             .joinToString(separator = "\n", transform = { it.toCode(KOTLIN) })
     }
 
     override fun toJavaCode(): String {
-        return sequenceOf(add, remove)
+        return listeners
             .joinToString(separator = "\n", transform = { it.toCode(JAVA) })
     }
 }
@@ -462,7 +466,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     private fun kotlinModificator(): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
-        if (classRegistry.functionOverriden(fqn, name)) {
+        if (classRegistry.listenerOverriden(fqn, name)) {
             return "override "
         }
 
@@ -475,7 +479,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     private fun javaModificator(): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
-        val override = if (classRegistry.functionOverriden(fqn, name)) {
+        val override = if (classRegistry.listenerOverriden(fqn, name)) {
             "@Override\n"
         } else {
             ""

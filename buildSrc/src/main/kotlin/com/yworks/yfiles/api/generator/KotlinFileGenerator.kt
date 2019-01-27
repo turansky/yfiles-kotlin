@@ -108,6 +108,13 @@ internal class KotlinFileGenerator(
             get() = declaration.methods
                 .sortedBy { it.name }
 
+        val memberEvents: List<Event>
+            get() = if (declaration is ExtendedType) {
+                declaration.events
+            } else {
+                emptyList()
+            }
+
         val header: String
             get() {
                 val module = findModule(declaration.modules)
@@ -171,6 +178,7 @@ internal class KotlinFileGenerator(
             return sequenceOf<Declaration>()
                 .plus(memberProperties)
                 .plus(memberFunctions)
+                .plus(memberEvents)
                 .map { it.toCode(PROGRAMMING_LANGUAGE) }
                 .joinToString(separator = "\n", postfix = "\n")
         }
