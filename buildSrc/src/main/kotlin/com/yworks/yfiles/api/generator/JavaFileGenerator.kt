@@ -172,11 +172,25 @@ internal class JavaFileGenerator(
                 emptySequence()
             }
 
+            val overlays = """
+                @jsinterop.annotations.JsOverlay
+                public static boolean is(Object o) {
+                    return false;
+                }
+
+                @jsinterop.annotations.JsOverlay
+                public static ${fqn.name} as(Object o) {
+                    return is(o) ? jsinterop.base.Js.cast(o) : null;
+                }
+            """.trimIndent()
+
             return declarations
                 .plus(memberProperties)
                 .plus(memberFunctions)
                 .plus(memberEvents)
-                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) } +
+                    "\n\n\n" +
+                    overlays
         }
     }
 
