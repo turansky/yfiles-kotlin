@@ -75,7 +75,7 @@ internal enum class YfilesModule(val id: String, val weight: Int) {
             }
         }
 
-        fun getNamespace(pkg: String): String? {
+        fun getNamespace(pkg: String): String {
             return when {
                 pkg.startsWith(YFILES_PACKAGE) -> pkg.replaceFirst(YFILES_PACKAGE, YFILES)
                 else -> throw IllegalArgumentException("Invalid package: $pkg")

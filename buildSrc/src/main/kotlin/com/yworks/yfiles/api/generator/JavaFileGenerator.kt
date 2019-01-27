@@ -246,8 +246,7 @@ internal class JavaFileGenerator(
         }
 
         override fun content(): String {
-            val namespace = getNamespace(fqn.packageName)
-            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
+            return jsType(fqn) +
                     "${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     // TODO: support
                     // constructors() +
@@ -268,9 +267,8 @@ internal class JavaFileGenerator(
                     .replace("native ", "")
             }
 
-            val namespace = getNamespace(fqn.packageName)
             val type = if (likeAbstractClass) "abstract class" else "interface"
-            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
+            return jsType(fqn) +
                     "public $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}"
@@ -312,12 +310,13 @@ internal class JavaFileGenerator(
             val values = declaration.constants
                 .lines { "    public static ${fqn.name} ${it.name};" }
 
-            val namespace = getNamespace(fqn.packageName)
-            return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +
+            return jsType(fqn) +
                     "public final class ${fqn.name} {\n" +
                     values + "\n\n" +
                     "private ${fqn.name}() {}\n" +
                     "}\n"
         }
     }
+
+    private fun jsType(fqn: FQN) = "@jsinterop.annotations.JsType(isNative=true, namespace=\"${getNamespace(fqn.packageName)}\")\n"
 }
