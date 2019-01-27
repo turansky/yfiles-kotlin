@@ -242,7 +242,7 @@ internal class JavaFileGenerator(
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
         val likeAbstractClass: Boolean by lazy { MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties) }
 
-        override val addStaticDeclarations: Boolean = false
+        override val addStaticDeclarations: Boolean = likeAbstractClass
 
         override fun content(): String {
             var content = super.content()
