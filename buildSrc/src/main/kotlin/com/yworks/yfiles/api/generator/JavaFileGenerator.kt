@@ -168,8 +168,7 @@ internal class JavaFileGenerator(
             return declarations
                 .plus(memberProperties)
                 .plus(memberFunctions)
-                .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString(separator = "\n", postfix = "\n")
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
     }
 
@@ -189,8 +188,7 @@ internal class JavaFileGenerator(
                 .constructors
                 .asSequence()
                 .distinct()
-                .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString(separator = "\n", postfix = "\n")
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
 
         override fun extendsTypes(): List<String> {
@@ -273,8 +271,7 @@ internal class JavaFileGenerator(
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = declaration.constants
-                .map { "    public static ${fqn.name} ${it.name};" }
-                .joinToString("\n")
+                .lines { "    public static ${fqn.name} ${it.name};" }
 
             val namespace = getNamespace(fqn.packageName)
             return "@jsinterop.annotations.JsType(isNative=true, namespace=\"$namespace\")\n" +

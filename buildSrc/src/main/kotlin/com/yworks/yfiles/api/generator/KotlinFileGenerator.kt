@@ -153,7 +153,7 @@ internal class KotlinFileGenerator(
                 return ""
             }
 
-            val result = items.joinToString("\n") + "\n"
+            val result = items.lines()
             return "    companion object {\n" +
                     result +
                     "    }\n"
@@ -170,7 +170,7 @@ internal class KotlinFileGenerator(
 
             return "@JsName(\"$className\")\n" +
                     "external object ${className}s {\n" +
-                    items.joinToString("\n") +
+                    items.lines() +
                     "}"
         }
 
@@ -179,8 +179,7 @@ internal class KotlinFileGenerator(
                 .plus(memberProperties)
                 .plus(memberFunctions)
                 .plus(memberEvents)
-                .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString(separator = "\n", postfix = "\n")
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
     }
 
@@ -200,8 +199,7 @@ internal class KotlinFileGenerator(
                 .constructors
                 .asSequence()
                 .distinct()
-                .map { it.toCode(PROGRAMMING_LANGUAGE) }
-                .joinToString(separator = "\n", postfix = "\n")
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
 
         override fun parentTypes(): List<String> {
@@ -245,9 +243,12 @@ internal class KotlinFileGenerator(
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
             val values = declaration.constants
-                .joinToString(separator = ",\n", transform = { "    ${it.name}" })
+                .asSequence()
+                .map { "    ${it.name}" }
+                .joinToString(separator = ",\n", postfix = ";\n")
+
             return "external enum class ${fqn.name} {\n" +
-                    values + "\n\n" +
+                    values + "\n" +
                     super.content() + "\n" +
                     "}\n"
         }

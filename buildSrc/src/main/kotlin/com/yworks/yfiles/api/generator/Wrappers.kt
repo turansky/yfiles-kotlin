@@ -445,12 +445,12 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
 
     override fun toKotlinCode(): String {
         return listeners
-            .joinToString(separator = "\n", transform = { it.toCode(KOTLIN) })
+            .lines { it.toCode(KOTLIN) }
     }
 
     override fun toJavaCode(): String {
         return listeners
-            .joinToString(separator = "\n", transform = { it.toCode(JAVA) })
+            .lines { it.toCode(JAVA) }
     }
 }
 
