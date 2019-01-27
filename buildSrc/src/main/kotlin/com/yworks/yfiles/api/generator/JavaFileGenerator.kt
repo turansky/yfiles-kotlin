@@ -183,7 +183,13 @@ internal class JavaFileGenerator(
                 return result
             }
 
-            var overlays = """
+            val companionModificators = if (addStaticDeclarations) {
+                "private static "
+            } else {
+                ""
+            }
+
+            val overlays = """
                 $JS_OVERLAY
                 $PUBLIC_STATIC boolean is(Object o) {
                     return jsClass.isInstance(o);
@@ -193,19 +199,16 @@ internal class JavaFileGenerator(
                 $PUBLIC_STATIC ${fqn.name} as(Object o) {
                     return is(o) ? $JS.cast(o) : null;
                 }
-            """
 
-            overlays += if (addStaticDeclarations) {
-                """
-                @jsinterop.annotations.JsProperty(name="${'$'}class")
-                $PUBLIC_STATIC $YFILES_CLASS jsClass;
-                """
-            } else {
-                """
                 $JS_OVERLAY
-                $PUBLIC_STATIC $YFILES_CLASS jsClass = null;
-                """
-            }
+                $PUBLIC_STATIC final $YFILES_CLASS jsClass = Companion.jsClass;
+
+                ${jsType(fqn)}
+                $companionModificators class Companion {
+                    @jsinterop.annotations.JsProperty(name="${'$'}class")
+                    private static $YFILES_CLASS jsClass;
+                }
+            """.trimIndent()
 
             return "$result\n\n\n$overlays"
         }
@@ -320,7 +323,7 @@ internal class JavaFileGenerator(
         }
     }
 
-    private fun jsType(fqn: FQN) = "@jsinterop.annotations.JsType(isNative=true, namespace=\"${getNamespace(fqn.packageName)}\")\n"
+    private fun jsType(fqn: FQN) = "@jsinterop.annotations.JsType(isNative=true, name=\"${fqn.name}\", namespace=\"${getNamespace(fqn.packageName)}\")\n"
 
     private val YFILES_CLASS = fixPackage("yfiles.lang.Class")
     private val JS_OVERLAY = "@jsinterop.annotations.JsOverlay"
