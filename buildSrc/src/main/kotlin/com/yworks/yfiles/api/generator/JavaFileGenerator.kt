@@ -208,7 +208,6 @@ internal class JavaFileGenerator(
             }
 
             return result
-
         }
     }
 
