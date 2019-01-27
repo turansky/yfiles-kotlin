@@ -172,7 +172,7 @@ internal class JavaFileGenerator(
                 emptySequence()
             }
 
-            val overlays = """
+            var overlays = """
                 @jsinterop.annotations.JsOverlay
                 public static boolean is(Object o) {
                     return false;
@@ -182,7 +182,19 @@ internal class JavaFileGenerator(
                 public static ${fqn.name} as(Object o) {
                     return is(o) ? jsinterop.base.Js.cast(o) : null;
                 }
-            """.trimIndent()
+            """
+
+            overlays += if (addStaticDeclarations) {
+                """
+                @jsinterop.annotations.JsProperty(name="${'$'}class")
+                public static ${fixPackage("yfiles.lang.Class")} jsClass;
+                """
+            } else {
+                """
+                @jsinterop.annotations.JsOverlay
+                public static ${fixPackage("yfiles.lang.Class")} jsClass = null;
+                """
+            }
 
             return declarations
                 .plus(memberProperties)
