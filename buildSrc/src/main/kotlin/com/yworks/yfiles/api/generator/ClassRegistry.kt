@@ -64,7 +64,7 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
         )
 
     private fun getParents(className: String): List<String> {
-        val instance = instances[className] ?: throw IllegalArgumentException("Unknown instance type: $className")
+        val instance = instances.getValue(className)
 
         return sequenceOf(instance.extendedType())
             .filterNotNull()
@@ -75,7 +75,7 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
 
     private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {
         if (checkCurrentClass) {
-            val funs = functionsMap[className] ?: throw IllegalArgumentException("No functions found for type: $className")
+            val funs = functionsMap.getValue(className)
             if (funs.contains(functionName)) {
                 return true
             }
@@ -87,7 +87,7 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
 
     private fun propertyOverriden(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
         if (checkCurrentClass) {
-            val props = propertiesMap[className] ?: throw IllegalArgumentException("No properties found for type: $className")
+            val props = propertiesMap.getValue(className)
             if (props.contains(propertyName)) {
                 return true
             }
@@ -99,7 +99,7 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
 
     private fun listenerOverriden(className: String, listenerName: String, checkCurrentClass: Boolean): Boolean {
         if (checkCurrentClass) {
-            val listeners = listenerMap[className] ?: throw IllegalArgumentException("No listener found for type: $className")
+            val listeners = listenerMap.getValue(className)
             if (listeners.contains(listenerName)) {
                 return true
             }
