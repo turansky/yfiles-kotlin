@@ -173,26 +173,26 @@ internal class JavaFileGenerator(
             }
 
             var overlays = """
-                @jsinterop.annotations.JsOverlay
+                $JS_OVERLAY
                 public static boolean is(Object o) {
                     return jsClass.isInstance(o);
                 }
 
-                @jsinterop.annotations.JsOverlay
+                $JS_OVERLAY
                 public static ${fqn.name} as(Object o) {
-                    return is(o) ? jsinterop.base.Js.cast(o) : null;
+                    return is(o) ? $JS.cast(o) : null;
                 }
             """
 
             overlays += if (addStaticDeclarations) {
                 """
                 @jsinterop.annotations.JsProperty(name="${'$'}class")
-                public static ${fixPackage("yfiles.lang.Class")} jsClass;
+                public static $YFILES_CLASS jsClass;
                 """
             } else {
                 """
-                @jsinterop.annotations.JsOverlay
-                public static ${fixPackage("yfiles.lang.Class")} jsClass = null;
+                $JS_OVERLAY
+                public static $YFILES_CLASS jsClass = null;
                 """
             }
 
@@ -203,7 +203,7 @@ internal class JavaFileGenerator(
                 .lines { it.toCode(PROGRAMMING_LANGUAGE) }
 
             // WA: For Class
-            if (fqn.name != "Class") {
+            if (className != YFILES_CLASS) {
                 result += "\n\n\n$overlays"
             }
 
@@ -319,4 +319,8 @@ internal class JavaFileGenerator(
     }
 
     private fun jsType(fqn: FQN) = "@jsinterop.annotations.JsType(isNative=true, namespace=\"${getNamespace(fqn.packageName)}\")\n"
+
+    private val YFILES_CLASS = fixPackage("yfiles.lang.Class")
+    private val JS_OVERLAY = "@jsinterop.annotations.JsOverlay"
+    private val JS = "jsinterop.base.Js"
 }
