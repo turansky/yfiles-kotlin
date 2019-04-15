@@ -98,7 +98,7 @@ internal object Hacks {
         fixMethodParameterName(source)
 
         addMissedProperties(source)
-        addMissedMethods(source)
+        addMissedMethods(source, version)
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
@@ -565,6 +565,26 @@ internal object Hacks {
         )
     )
 
+    private val MISSED_METHODS_2_2 = listOf(
+        MethodData(
+            className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
+            methodName = "createVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext")
+            ),
+            resultType = "yfiles.view.Visual"
+        ),
+        MethodData(
+            className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
+            methodName = "updateVisual",
+            parameters = listOf(
+                MethodParameterData("context", "yfiles.view.IRenderContext"),
+                MethodParameterData("oldVisual", "yfiles.view.Visual")
+            ),
+            resultType = "yfiles.view.Visual"
+        )
+    )
+
     private fun addMissedProperties(source: JSONObject) {
         MISSED_PROPERTIES
             .forEach { data ->
@@ -573,8 +593,14 @@ internal object Hacks {
             }
     }
 
-    private fun addMissedMethods(source: JSONObject) {
-        MISSED_METHODS
+    private fun addMissedMethods(source: JSONObject, version: ApiVersion) {
+        val missedMethods = if (version == ApiVersion.V_2_2) {
+            MISSED_METHODS + MISSED_METHODS_2_2
+        } else {
+            MISSED_METHODS
+        }
+
+        missedMethods
             .forEach { data ->
                 source.type(data.className)
                     .addMethod(data)
