@@ -1,8 +1,8 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.KotlinTypes.UNIT
-import com.yworks.yfiles.api.generator.YfilesModule.Companion.findModule
-import com.yworks.yfiles.api.generator.YfilesModule.Companion.getQualifier
+import com.yworks.yfiles.api.generator.YModule.Companion.findModule
+import com.yworks.yfiles.api.generator.YModule.Companion.getQualifier
 import java.io.File
 
 private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.KOTLIN

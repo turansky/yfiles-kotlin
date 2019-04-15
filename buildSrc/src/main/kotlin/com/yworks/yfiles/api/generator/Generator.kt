@@ -26,26 +26,27 @@ private fun loadApiJson(path: String): String {
         .removePrefix("var apiData=")
 }
 
-fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
+fun generateKotlinWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
     TypeParser.standardTypeMap = KotlinTypes.STANDARD_TYPE_MAP
     TypeParser.javaArrayMode = false
-    generateWrappers(apiPath, sourceDir, ::KotlinFileGenerator)
+    generateWrappers(apiPath, apiVersion, sourceDir, ::KotlinFileGenerator)
 }
 
-fun generateJavaWrappers(apiPath: String, sourceDir: File) {
+fun generateJavaWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
     TypeParser.standardTypeMap = JavaTypes.STANDARD_TYPE_MAP
     TypeParser.javaArrayMode = true
-    generateWrappers(apiPath, sourceDir, ::JavaFileGenerator)
+    generateWrappers(apiPath, apiVersion, sourceDir, ::JavaFileGenerator)
 }
 
 private fun generateWrappers(
     apiPath: String,
+    apiVersion: ApiVersion,
     sourceDir: File,
     createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
 ) {
     val source = JSONObject(loadApiJson(apiPath))
 
-    Hacks.applyHacks(source)
+    Hacks.applyHacks(source, apiVersion)
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot

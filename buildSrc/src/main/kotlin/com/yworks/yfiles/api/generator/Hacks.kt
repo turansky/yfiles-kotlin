@@ -87,9 +87,9 @@ internal object Hacks {
             )
     }
 
-    fun applyHacks(source: JSONObject) {
+    fun applyHacks(source: JSONObject, version: ApiVersion) {
         fixConstantGenerics(source)
-        fixFunctionGenerics(source)
+        fixFunctionGenerics(source, version)
 
         fixReturnType(source)
         fixExtendedType(source)
@@ -112,7 +112,7 @@ internal object Hacks {
             }
     }
 
-    private fun fixFunctionGenerics(source: JSONObject) {
+    private fun fixFunctionGenerics(source: JSONObject, version: ApiVersion) {
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")
             .first { it.getString("name") == "fromArray" }
@@ -123,6 +123,14 @@ internal object Hacks {
                     )
                 )
             }
+
+        if (version == ApiVersion.V_2_2) {
+            source.type("yfiles.collections.List")
+                .getJSONArray("staticMethods")
+                .first { it.getString("name") == "from" }
+                .getJSONArray("typeparameters")
+                .put(jObject("name" to "T"))
+        }
     }
 
     private fun fixReturnType(source: JSONObject) {

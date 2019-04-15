@@ -1,7 +1,7 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.JavaTypes.VOID
-import com.yworks.yfiles.api.generator.YfilesModule.Companion.getNamespace
+import com.yworks.yfiles.api.generator.YModule.Companion.getNamespace
 import java.io.File
 
 private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.JAVA

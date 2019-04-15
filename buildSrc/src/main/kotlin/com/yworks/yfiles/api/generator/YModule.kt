@@ -1,6 +1,6 @@
 package com.yworks.yfiles.api.generator
 
-internal enum class YfilesModule(val id: String, val weight: Int) {
+internal enum class YModule(val id: String, val weight: Int) {
     COMPLETE("complete", 1000),
     VIEW("view", 100),
     LAYOUT("layout", 100),
@@ -34,10 +34,10 @@ internal enum class YfilesModule(val id: String, val weight: Int) {
         private val YFILES_PACKAGE = fixPackage(YFILES)
         private val LANG_PACKAGE = fixPackage("yfiles.lang")
 
-        private val MODULE_MAP = YfilesModule.values()
+        private val MODULE_MAP = values()
             .associateBy { it.id }
 
-        fun findModule(modules: List<IModule>): YfilesModule {
+        fun findModule(modules: List<IModule>): YModule {
             if (modules.size == 1) {
                 val module = modules.first()
                 val moduleId = module.moduleId
