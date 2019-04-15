@@ -4,6 +4,7 @@ internal object JavaTypes {
     val VOID = "void"
 
     val STANDARD_TYPE_MAP = mapOf(
+        JS_ANY to "Object",
         JS_OBJECT to "Object",
         JS_BOOLEAN to "boolean",
         JS_STRING to "String",
