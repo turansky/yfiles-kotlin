@@ -40,9 +40,16 @@ internal class KotlinFileGenerator(
 
         val file = dir.resolve("${fqn.name}.kt")
         val header = generatedFile.header
+
         val content = generatedFile.content()
             .replace(redundantPackageDeclaration, "")
         file.writeText("$header\n\n$content")
+
+        val companionContent = generatedFile.companionContent()
+            ?: return
+
+        dir.resolve("${fqn.name}Companion.kt")
+            .writeText(companionContent)
     }
 
     private fun generate(directory: File, functionSignature: FunctionSignature) {
@@ -167,6 +174,10 @@ internal class KotlinFileGenerator(
                 .plus(memberEvents)
                 .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
+
+        open fun companionContent(): String? {
+            return "package ${fqn.packageName}"
+        }
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
@@ -238,5 +249,7 @@ internal class KotlinFileGenerator(
                     super.content() + "\n" +
                     "}\n"
         }
+
+        override fun companionContent() = null
     }
 }
