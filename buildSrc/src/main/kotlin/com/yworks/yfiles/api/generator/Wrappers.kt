@@ -161,7 +161,8 @@ internal class Modifiers(flags: List<String>) {
     val final = flags.contains("final")
     val readOnly = flags.contains("ro")
     val abstract = flags.contains("abstract")
-    val protected = flags.contains("protected")
+    // WA: required while no @JsStatic
+    val protected = flags.contains("protected") && !static
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
