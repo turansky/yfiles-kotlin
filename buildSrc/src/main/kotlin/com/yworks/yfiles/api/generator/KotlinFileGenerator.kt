@@ -153,6 +153,9 @@ internal class KotlinFileGenerator(
                 |@JsName("$className")
                 |external object ${className}Static {
                 |    ${items.lines()}
+                |
+                |    @JsName("\${"$"}class")
+                |    internal val yclass: ${fixPackage("yfiles.lang.Class")}
                 |}
             """.trimMargin()
         }
