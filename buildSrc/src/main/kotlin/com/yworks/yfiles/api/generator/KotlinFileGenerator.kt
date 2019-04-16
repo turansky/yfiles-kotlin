@@ -149,10 +149,12 @@ internal class KotlinFileGenerator(
                 it.toCode(PROGRAMMING_LANGUAGE)
             }
 
-            return "@JsName(\"$className\")\n" +
-                    "external object ${className}Static {\n" +
-                    items.lines() +
-                    "}"
+            return """
+                @JsName("$className")
+                external object ${className}Static {
+                    ${items.lines()}
+                }
+            """.trimIndent()
         }
 
         open fun content(): String {
