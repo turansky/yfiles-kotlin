@@ -144,32 +144,13 @@ internal class KotlinFileGenerator(
             return declaration.genericParameters()
         }
 
-        protected fun companionContent(): String {
+        protected fun staticContent(): String {
             val items = staticDeclarations.map {
                 it.toCode(PROGRAMMING_LANGUAGE)
-            }
-
-            if (items.isEmpty()) {
-                return ""
-            }
-
-            val result = items.lines()
-            return "    companion object {\n" +
-                    result +
-                    "    }\n"
-        }
-
-        protected fun utilContent(): String {
-            val items = staticDeclarations.map {
-                it.toCode(PROGRAMMING_LANGUAGE)
-            }
-
-            if (items.isEmpty()) {
-                return ""
             }
 
             return "@JsName(\"$className\")\n" +
-                    "external object ${className}s {\n" +
+                    "external object ${className}Static {\n" +
                     items.lines() +
                     "}"
         }
@@ -213,10 +194,10 @@ internal class KotlinFileGenerator(
 
         override fun content(): String {
             return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
-                    companionContent() +
                     constructors() +
                     super.content() + "\n" +
-                    "}"
+                    "}\n\n\n" +
+                    staticContent()
         }
     }
 
@@ -236,7 +217,7 @@ internal class KotlinFileGenerator(
             return "external $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
-                    utilContent()
+                    staticContent()
         }
     }
 
