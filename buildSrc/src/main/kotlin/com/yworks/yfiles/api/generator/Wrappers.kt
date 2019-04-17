@@ -163,6 +163,8 @@ internal class Modifiers(flags: List<String>) {
     val abstract = flags.contains("abstract")
     // WA: required while no @JsStatic
     val protected = flags.contains("protected") && !static
+
+    val canbenull = flags.contains("canbenull")
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
@@ -353,27 +355,34 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         return override + modificators.joinToString(separator = " ", postfix = " ")
     }
 
-    override fun toKotlinCode(): String {
-        val overriden = ClassRegistry.instance
-            .functionOverriden(fqn, name)
-
-        val returnType = returns?.type
-        val returnSignature = if (abstract) {
-            if (returnType != null) {
+    private fun getReturnSignature(): String {
+        var returnType = returns?.type
+        if (abstract) {
+            return if (returnType != null) {
                 ":" + returnType
             } else {
                 ""
             }
-        } else {
-            val type = if (overriden) {
-                ""
-            } else {
-                ":" + (returnType ?: KotlinTypes.UNIT)
-            }
-
-            type + " = definedExternally"
         }
-        return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})$returnSignature"
+
+        val overriden = ClassRegistry.instance
+            .functionOverriden(fqn, name)
+
+        if (overriden) {
+            return " = definedExternally"
+        }
+
+        if (returnType == null) {
+            returnType = KotlinTypes.UNIT
+        } else if (modifiers.canbenull) {
+            returnType = returnType + "?"
+        }
+
+        return ": $returnType = definedExternally"
+    }
+
+    override fun toKotlinCode(): String {
+        return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
     override fun toJavaCode(): String {
