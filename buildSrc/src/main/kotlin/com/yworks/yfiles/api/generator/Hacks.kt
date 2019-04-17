@@ -77,7 +77,11 @@ private fun JSONObject.addMethod(
                         it.put(
                             "parameters",
                             parameters.map {
-                                mapOf("name" to it.name, "type" to it.type)
+                                mapOf(
+                                    "name" to it.name,
+                                    "type" to it.type,
+                                    "modifiers" to it.modifiers
+                                )
                             }
                         )
                     }
@@ -484,7 +488,7 @@ internal object Hacks {
             methodName = "updateVisual",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual")
+                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
             resultType = "yfiles.view.Visual"
         ),
@@ -502,7 +506,7 @@ internal object Hacks {
             methodName = "updateVisual",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual")
+                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
             resultType = "yfiles.view.Visual"
         ),
@@ -520,7 +524,7 @@ internal object Hacks {
             methodName = "updateVisual",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual")
+                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
             resultType = "yfiles.view.Visual"
         ),
@@ -604,7 +608,7 @@ internal object Hacks {
             methodName = "updateVisual",
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual")
+                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
             resultType = "yfiles.view.Visual"
         )
@@ -654,5 +658,8 @@ private data class MethodData(
 
 private data class MethodParameterData(
     val name: String,
-    val type: String
-)
+    val type: String,
+    private val nullable: Boolean = false
+) {
+    val modifiers = if (nullable) setOf("canbenull") else emptySet()
+}
