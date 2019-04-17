@@ -122,7 +122,7 @@ internal class KotlinFileGenerator(
                 emptyList()
             }
 
-        private val memberDeclarations = sequenceOf<Declaration>()
+        protected val memberDeclarations = sequenceOf<Declaration>()
             .plus(memberProperties)
             .plus(memberFunctions)
             .plus(memberEvents)
@@ -221,7 +221,11 @@ internal class KotlinFileGenerator(
                 .toList()
         }
 
-        override fun isObject() = false
+        override fun isObject(): Boolean {
+            return declaration.constructors.isEmpty() &&
+                    memberDeclarations.isEmpty() &&
+                    !isMarkerClass(className)
+        }
 
         override fun content(): String {
             if (isObject()) {
