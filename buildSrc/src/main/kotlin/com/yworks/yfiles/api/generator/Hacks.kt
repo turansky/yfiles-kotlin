@@ -6,6 +6,10 @@ import org.json.JSONObject
 private val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
 
 internal fun redundantMethod(method: Method): Boolean {
+    if (method.name == "equals") {
+        return true
+    }
+
     return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
 }
 

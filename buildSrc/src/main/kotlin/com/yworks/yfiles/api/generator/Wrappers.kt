@@ -403,7 +403,8 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
             .byComma {
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
                 val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
-                "$modifiers ${it.name}: ${it.type}" + body
+                val nullability = if (it.modifiers.canbenull) "?" else ""
+                "$modifiers ${it.name}: ${it.type}$nullability" + body
             }
     }
 
@@ -434,6 +435,8 @@ internal class ParameterModifiers(flags: List<String>) {
     val vararg = flags.contains("vararg")
     val optional = flags.contains("optional")
     val conversion = flags.contains("conversion")
+
+    val canbenull = flags.contains("canbenull")
 }
 
 internal class Parameter(source: JSONObject) : JsonWrapper(source) {
