@@ -280,6 +280,9 @@ internal object Hacks {
         ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false,
         ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to false,
 
+        ParameterData("yfiles.graphml.CreationProperties", "get", "key") to true,
+        ParameterData("yfiles.graphml.CreationProperties", "set", "key") to true,
+
         ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "context") to false,
         ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
 
