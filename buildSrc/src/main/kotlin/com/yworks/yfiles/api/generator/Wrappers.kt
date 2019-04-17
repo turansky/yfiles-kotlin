@@ -424,9 +424,9 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 
     override fun equals(other: Any?): Boolean {
         return other is MethodBase
-                && Objects.equals(fqn, other.fqn)
-                && Objects.equals(name, other.name)
-                && Objects.equals(kotlinParametersString(false), other.kotlinParametersString(false))
+                && fqn == other.fqn
+                && name == other.name
+                && kotlinParametersString(false) == other.kotlinParametersString(false)
     }
 }
 
