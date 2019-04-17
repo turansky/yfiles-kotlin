@@ -5,7 +5,6 @@ internal interface ClassRegistry {
         var instance: ClassRegistry = EmptyClassRegistry()
     }
 
-    fun isInterface(className: String): Boolean
     fun isFinalClass(className: String): Boolean
     fun functionOverriden(className: String, functionName: String): Boolean
     fun propertyOverriden(className: String, propertyName: String): Boolean
@@ -13,10 +12,6 @@ internal interface ClassRegistry {
 }
 
 private class EmptyClassRegistry : ClassRegistry {
-    override fun isInterface(className: String): Boolean {
-        return false
-    }
-
     override fun isFinalClass(className: String): Boolean {
         return false
     }
@@ -99,10 +94,6 @@ internal class ClassRegistryImpl(types: List<Type>) : ClassRegistry {
         return getParents(className).any {
             listenerOverriden(it, listenerName, true)
         }
-    }
-
-    override fun isInterface(className: String): Boolean {
-        return instances[className] is Interface
     }
 
     override fun isFinalClass(className: String): Boolean {
