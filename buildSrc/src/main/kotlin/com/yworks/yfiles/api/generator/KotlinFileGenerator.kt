@@ -189,7 +189,20 @@ internal class KotlinFileGenerator(
                 return null
             }
 
-            return "package ${fqn.packageName}"
+            val className = fqn.name
+            val yclass = "${className}Static.yclass"
+
+            return """
+                |package ${fqn.packageName}
+                |
+                |fun Any.is$className() = ${yclass}.isInstance(this)
+                |
+                |/*
+                |fun Any.as$className(): $className? = if (this.is$className()) this as $className else null
+                |
+                |fun Any.to$className(): $className = requireNotNull(this.as$className())
+                |*/
+            """.trimMargin()
         }
     }
 
