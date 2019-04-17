@@ -2,91 +2,92 @@ package com.yworks.yfiles.api.generator
 
 import org.json.JSONObject
 
+
+private val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
+
+internal fun redundantMethod(method: Method): Boolean {
+    return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
+}
+
+private fun JSONObject.type(id: String): JSONObject {
+    val rootPackage = id.substring(0, id.indexOf("."))
+    val typePackage = id.substring(0, id.lastIndexOf("."))
+    return this.getJSONArray("namespaces")
+        .first { it.getString("id") == rootPackage }
+        .getJSONArray("namespaces")
+        .first { it.getString("id") == typePackage }
+        .getJSONArray("types")
+        .first { it.getString("id") == id }
+}
+
+private fun JSONObject.methodParameters(
+    methodName: String,
+    parameterName: String,
+    parameterFilter: (JSONObject) -> Boolean
+): Iterable<JSONObject> {
+    val result = getJSONArray("methods")
+        .objects { it.getString("name") == methodName }
+        .flatMap {
+            it.getJSONArray("parameters")
+                .objects { it.getString("name") == parameterName }
+                .filter(parameterFilter)
+        }
+
+    if (result.isEmpty()) {
+        throw IllegalArgumentException("No method parameters found for object: $this, method: $methodName, parameter: $parameterName")
+    }
+
+    return result
+}
+
+private fun JSONObject.addProperty(
+    propertyName: String,
+    type: String
+) {
+    getJSONArray("properties")
+        .put(
+            mapOf(
+                "name" to propertyName,
+                "modifiers" to listOf("public", "final", "ro"),
+                "type" to type
+            )
+        )
+}
+
+private fun JSONObject.addMethod(
+    methodData: MethodData
+) {
+    if (!has("methods")) {
+        put("methods", emptyList<Any>())
+    }
+
+    getJSONArray("methods")
+        .put(
+            mutableMapOf(
+                "name" to methodData.methodName,
+                "modifiers" to listOf("public")
+            )
+                .also {
+                    val parameters = methodData.parameters
+                    if (parameters.isNotEmpty()) {
+                        it.put(
+                            "parameters",
+                            parameters.map {
+                                mapOf("name" to it.name, "type" to it.type)
+                            }
+                        )
+                    }
+                }
+                .also {
+                    val resultType = methodData.resultType
+                    if (resultType != null) {
+                        it.put("returns", mapOf("type" to resultType))
+                    }
+                }
+        )
+}
+
 internal object Hacks {
-    private val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
-
-    fun redundantMethod(method: Method): Boolean {
-        return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
-    }
-
-    private fun JSONObject.type(id: String): JSONObject {
-        val rootPackage = id.substring(0, id.indexOf("."))
-        val typePackage = id.substring(0, id.lastIndexOf("."))
-        return this.getJSONArray("namespaces")
-            .first { it.getString("id") == rootPackage }
-            .getJSONArray("namespaces")
-            .first { it.getString("id") == typePackage }
-            .getJSONArray("types")
-            .first { it.getString("id") == id }
-    }
-
-    private fun JSONObject.methodParameters(
-        methodName: String,
-        parameterName: String,
-        parameterFilter: (JSONObject) -> Boolean
-    ): Iterable<JSONObject> {
-        val result = getJSONArray("methods")
-            .objects { it.getString("name") == methodName }
-            .flatMap {
-                it.getJSONArray("parameters")
-                    .objects { it.getString("name") == parameterName }
-                    .filter(parameterFilter)
-            }
-
-        if (result.isEmpty()) {
-            throw IllegalArgumentException("No method parameters found for object: $this, method: $methodName, parameter: $parameterName")
-        }
-
-        return result
-    }
-
-    private fun JSONObject.addProperty(
-        propertyName: String,
-        type: String
-    ) {
-        getJSONArray("properties")
-            .put(
-                mapOf(
-                    "name" to propertyName,
-                    "modifiers" to listOf("public", "final", "ro"),
-                    "type" to type
-                )
-            )
-    }
-
-    private fun JSONObject.addMethod(
-        methodData: MethodData
-    ) {
-        if (!has("methods")) {
-            put("methods", emptyList<Any>())
-        }
-
-        getJSONArray("methods")
-            .put(
-                mutableMapOf(
-                    "name" to methodData.methodName,
-                    "modifiers" to listOf("public")
-                )
-                    .also {
-                        val parameters = methodData.parameters
-                        if (parameters.isNotEmpty()) {
-                            it.put(
-                                "parameters",
-                                parameters.map {
-                                    mapOf("name" to it.name, "type" to it.type)
-                                }
-                            )
-                        }
-                    }
-                    .also {
-                        val resultType = methodData.resultType
-                        if (resultType != null) {
-                            it.put("returns", mapOf("type" to resultType))
-                        }
-                    }
-            )
-    }
-
     fun applyHacks(source: JSONObject, version: ApiVersion) {
         fixConstantGenerics(source)
         fixFunctionGenerics(source, version)
