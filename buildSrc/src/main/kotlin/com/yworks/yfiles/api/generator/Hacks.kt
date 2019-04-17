@@ -277,7 +277,13 @@ internal object Hacks {
     }
 
     private val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
-        ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false
+        ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false,
+        ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to false,
+
+        ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "context") to false,
+        ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
+
+        ParameterData("yfiles.view.FocusIndicatorManager", "getInstaller", "item") to true
     )
 
     private fun fixMethodParameterNullability(source: JSONObject) {
