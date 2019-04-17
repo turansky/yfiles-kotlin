@@ -122,11 +122,11 @@ internal class KotlinFileGenerator(
                 emptyList()
             }
 
-        protected val memberDeclarations = sequenceOf<Declaration>()
-            .plus(memberProperties)
-            .plus(memberFunctions)
-            .plus(memberEvents)
-            .toList()
+        protected val memberDeclarations by lazy { calculateMemberDeclarations() }
+
+        protected open fun calculateMemberDeclarations(): List<JsonWrapper> {
+            return memberProperties + memberFunctions + memberEvents
+        }
 
         val header: String
             get() {
@@ -267,19 +267,21 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(declaration: Interface) : GeneratedFile(declaration) {
+        override fun calculateMemberDeclarations(): List<JsonWrapper> {
+            return memberProperties.filter { it.abstract } +
+                    memberFunctions.filter { it.abstract } +
+                    memberEvents
+        }
+
         override fun content(): String {
-            var content = super.content()
-            val likeAbstractClass = MixinHacks.defineLikeAbstractClass(className, memberFunctions, memberProperties)
-            if (!likeAbstractClass) {
-                content = content.replace("abstract ", "")
+            val content = super.content()
+                .replace("abstract ", "")
                     .replace("open fun", "fun")
                     .replace("\n    get() = definedExternally", "")
                     .replace("\n    set(value) = definedExternally", "")
                     .replace(" = definedExternally", "")
-            }
 
-            val type = if (likeAbstractClass) "abstract class" else "interface"
-            return "external $type ${fqn.name}${genericParameters()}${parentString()} {\n" +
+            return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
                     staticContent()
