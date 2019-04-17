@@ -96,6 +96,7 @@ internal object Hacks {
         fixExtendedType(source)
         fixImplementedTypes(source)
         fixPropertyType(source)
+        fixPropertyNullability(source)
         fixMethodParameterName(source)
 
         addMissedProperties(source)
@@ -164,6 +165,25 @@ internal object Hacks {
                     .first { it.getString("name") == "outEdgeComparers" }
                     .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
             }
+    }
+
+    private fun fixPropertyNullability(source: JSONObject) {
+        sequenceOf(
+            "yfiles.graph.DefaultGraph",
+            "yfiles.graph.GraphWrapperBase",
+            "yfiles.graph.SimpleBend",
+            "yfiles.graph.SimpleEdge",
+            "yfiles.graph.SimpleLabel",
+            "yfiles.graph.SimpleNode",
+            "yfiles.graph.SimplePort"
+        ).forEach { className ->
+            source
+                .type(className)
+                .getJSONArray("properties")
+                .first { it.get("name") == "tag" }
+                .getJSONArray("modifiers")
+                .put("canbenull")
+        }
     }
 
     private val PARAMETERS_CORRECTION = mapOf(
