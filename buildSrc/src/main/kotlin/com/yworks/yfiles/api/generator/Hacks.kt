@@ -106,6 +106,7 @@ internal object Hacks {
         fixPropertyType(source)
         fixPropertyNullability(source)
         fixMethodParameterName(source)
+        fixMethodParameterNullability(source)
 
         addMissedProperties(source)
         addMissedMethods(source, version)
@@ -275,6 +276,26 @@ internal object Hacks {
         }
     }
 
+    private val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
+        ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false
+    )
+
+    private fun fixMethodParameterNullability(source: JSONObject) {
+        PARAMETERS_NULLABILITY_CORRECTION
+            .forEach { data, nullable ->
+                val modifiers = source.type(data.className)
+                    .methodParameters(data.methodName, data.parameterName, { true })
+                    .first()
+                    .getJSONArray("modifiers")
+
+                if (nullable) {
+                    modifiers.put("canbenull")
+                } else {
+                    modifiers.remove(modifiers.indexOf("canbenull"))
+                }
+            }
+    }
+
     private val MISSED_PROPERTIES = listOf(
         PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
         PropertyData(className = "yfiles.styles.Arrow", propertyName = "length", type = JS_NUMBER)
@@ -289,7 +310,7 @@ internal object Hacks {
             className = "yfiles.algorithms.YList",
             methodName = "add",
             parameters = listOf(
-                MethodParameterData("item", JS_OBJECT)
+                MethodParameterData("item", JS_OBJECT, true)
             )
         ),
 
