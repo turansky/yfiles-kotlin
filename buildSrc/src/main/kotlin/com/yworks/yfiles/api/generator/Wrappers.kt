@@ -241,6 +241,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         str += if (getterSetter) "var " else "val "
 
         str += "$name: $type"
+        str += if (modifiers.canbenull) "?" else ""
         if (!abstract) {
             str += "\n    get() = definedExternally"
             if (getterSetter) {
