@@ -157,12 +157,18 @@ internal class KotlinFileGenerator(
             return declaration.genericParameters()
         }
 
+        open fun isObject() = false
+
         open fun content(): String {
             return memberDeclarations
                 .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
 
         protected fun staticContent(): String {
+            if (isObject()) {
+                return ""
+            }
+
             val items = staticDeclarations.map {
                 it.toCode(PROGRAMMING_LANGUAGE)
             }
@@ -178,7 +184,11 @@ internal class KotlinFileGenerator(
             """.trimMargin()
         }
 
-        open fun companionContent(): String? {
+        fun companionContent(): String? {
+            if (isObject()) {
+                return null
+            }
+
             return "package ${fqn.packageName}"
         }
     }
@@ -204,20 +214,39 @@ internal class KotlinFileGenerator(
 
         override fun parentTypes(): List<String> {
             val extendedType = declaration.extendedType()
-                    ?: return super.parentTypes()
+                ?: return super.parentTypes()
 
             return sequenceOf(extendedType)
                 .plus(super.parentTypes())
                 .toList()
         }
 
+        override fun isObject() = false
+
         override fun content(): String {
+            if (isObject()) {
+                return objectContent()
+            }
+
             return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     constructors() +
                     super.content() + "\n" +
                     "}\n\n\n" +
                     staticContent()
         }
+
+        private fun objectContent(): String {
+            val items = staticDeclarations.map {
+                it.toCode(PROGRAMMING_LANGUAGE)
+            }
+
+            return """
+                |external object ${className} {
+                |    ${items.lines()}
+                |}
+            """.trimMargin()
+        }
+
     }
 
     inner class InterfaceFile(declaration: Interface) : GeneratedFile(declaration) {
@@ -253,6 +282,6 @@ internal class KotlinFileGenerator(
                     "}\n"
         }
 
-        override fun companionContent() = null
+        override fun isObject() = true
     }
 }
