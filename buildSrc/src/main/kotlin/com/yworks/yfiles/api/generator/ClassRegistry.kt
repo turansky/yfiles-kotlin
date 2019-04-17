@@ -2,15 +2,7 @@ package com.yworks.yfiles.api.generator
 
 internal interface ClassRegistry {
     companion object {
-        private var _instance: ClassRegistry = EmptyClassRegistry()
-
-        var instance: ClassRegistry
-            get() {
-                return _instance
-            }
-            set(value) {
-                _instance = value
-            }
+        var instance: ClassRegistry = EmptyClassRegistry()
     }
 
     fun isInterface(className: String): Boolean

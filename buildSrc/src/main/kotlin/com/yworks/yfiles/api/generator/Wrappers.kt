@@ -354,6 +354,9 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     }
 
     override fun toKotlinCode(): String {
+        val overriden = ClassRegistry.instance
+            .functionOverriden(fqn, name)
+
         val returnType = returns?.type
         val returnSignature = if (abstract) {
             if (returnType != null) {
@@ -362,7 +365,13 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
                 ""
             }
         } else {
-            ":" + (returnType ?: KotlinTypes.UNIT) + " = definedExternally"
+            val type = if (overriden) {
+                ""
+            } else {
+                ":" + (returnType ?: KotlinTypes.UNIT)
+            }
+
+            type + " = definedExternally"
         }
         return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})$returnSignature"
     }
