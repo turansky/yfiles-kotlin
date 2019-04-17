@@ -80,26 +80,26 @@ internal class KotlinFileGenerator(
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
-        val className = declaration.fqn
+        protected val className = declaration.fqn
         val fqn: FQN = FQN(className)
 
-        val properties: List<Property>
+        protected val properties: List<Property>
             get() = declaration.properties
                 .sortedBy { it.name }
 
-        val staticConstants: List<Constant>
+        protected val staticConstants: List<Constant>
             get() = declaration.constants
                 .sortedBy { it.name }
 
-        val staticProperties: List<Property>
+        protected val staticProperties: List<Property>
             get() = declaration.staticProperties
                 .sortedBy { it.name }
 
-        val staticFunctions: List<Method>
+        protected val staticFunctions: List<Method>
             get() = declaration.staticMethods
                 .sortedBy { it.name }
 
-        val staticDeclarations: List<Declaration>
+        protected val staticDeclarations: List<Declaration>
             get() {
                 return sequenceOf<Declaration>()
                     .plus(staticConstants)
@@ -108,19 +108,25 @@ internal class KotlinFileGenerator(
                     .toList()
             }
 
-        val memberProperties: List<Property>
+        protected val memberProperties: List<Property>
             get() = properties.filter { !it.static }
 
-        val memberFunctions: List<Method>
+        protected val memberFunctions: List<Method>
             get() = declaration.methods
                 .sortedBy { it.name }
 
-        val memberEvents: List<Event>
+        protected val memberEvents: List<Event>
             get() = if (declaration is ExtendedType) {
                 declaration.events
             } else {
                 emptyList()
             }
+
+        private val memberDeclarations = sequenceOf<Declaration>()
+            .plus(memberProperties)
+            .plus(memberFunctions)
+            .plus(memberEvents)
+            .toList()
 
         val header: String
             get() {
@@ -151,6 +157,11 @@ internal class KotlinFileGenerator(
             return declaration.genericParameters()
         }
 
+        open fun content(): String {
+            return memberDeclarations
+                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
+        }
+
         protected fun staticContent(): String {
             val items = staticDeclarations.map {
                 it.toCode(PROGRAMMING_LANGUAGE)
@@ -165,14 +176,6 @@ internal class KotlinFileGenerator(
                 |    internal val yclass: ${fixPackage("yfiles.lang.Class")}
                 |}
             """.trimMargin()
-        }
-
-        open fun content(): String {
-            return sequenceOf<Declaration>()
-                .plus(memberProperties)
-                .plus(memberFunctions)
-                .plus(memberEvents)
-                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
 
         open fun companionContent(): String? {
