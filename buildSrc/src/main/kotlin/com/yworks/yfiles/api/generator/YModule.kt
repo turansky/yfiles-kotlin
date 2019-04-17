@@ -44,7 +44,7 @@ internal enum class YModule(val id: String, val weight: Int) {
 
                 if (moduleId != null) {
                     return MODULE_MAP[moduleId]
-                            ?: throw IllegalArgumentException("Unable to calculate module by id: $moduleId")
+                        ?: throw IllegalArgumentException("Unable to calculate module by id: $moduleId")
                 }
 
                 return when (module.text) {
