@@ -142,7 +142,7 @@ internal class KotlinFileGenerator(
             }
 
         protected open fun parentTypes(): List<String> {
-            return declaration.implementedTypes()
+            return declaration.implementedTypes(PROGRAMMING_LANGUAGE)
         }
 
         protected fun parentString(): String {

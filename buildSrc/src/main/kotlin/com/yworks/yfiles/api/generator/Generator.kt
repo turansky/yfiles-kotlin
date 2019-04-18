@@ -29,18 +29,19 @@ private fun loadApiJson(path: String): String {
 fun generateKotlinWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
     TypeParser.standardTypeMap = KotlinTypes.STANDARD_TYPE_MAP
     TypeParser.javaArrayMode = false
-    generateWrappers(apiPath, apiVersion, sourceDir, ::KotlinFileGenerator)
+    generateWrappers(apiPath, apiVersion, ProgrammingLanguage.KOTLIN, sourceDir, ::KotlinFileGenerator)
 }
 
 fun generateJavaWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
     TypeParser.standardTypeMap = JavaTypes.STANDARD_TYPE_MAP
     TypeParser.javaArrayMode = true
-    generateWrappers(apiPath, apiVersion, sourceDir, ::JavaFileGenerator)
+    generateWrappers(apiPath, apiVersion, ProgrammingLanguage.JAVA, sourceDir, ::JavaFileGenerator)
 }
 
 private fun generateWrappers(
     apiPath: String,
     apiVersion: ApiVersion,
+    language: ProgrammingLanguage,
     sourceDir: File,
     createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
 ) {
@@ -59,7 +60,7 @@ private fun generateWrappers(
 
     val functionSignatures = apiRoot.functionSignatures
 
-    ClassRegistry.instance = ClassRegistryImpl(types)
+    ClassRegistry.instance = ClassRegistryImpl(types, language)
 
     val fileGenerator = createFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)

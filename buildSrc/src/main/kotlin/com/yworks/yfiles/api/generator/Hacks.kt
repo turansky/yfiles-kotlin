@@ -315,6 +315,8 @@ internal object Hacks {
         MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = JS_OBJECT),
         MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = JS_OBJECT),
         MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = JS_OBJECT),
+        MethodData(className = "yfiles.geometry.MutableRectangle", methodName = "clone", resultType = JS_OBJECT),
+        MethodData(className = "yfiles.geometry.OrientedRectangle", methodName = "clone", resultType = JS_OBJECT),
 
         MethodData(
             className = "yfiles.algorithms.YList",

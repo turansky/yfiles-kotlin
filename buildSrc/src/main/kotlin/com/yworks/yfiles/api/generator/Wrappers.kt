@@ -130,6 +130,14 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
         val types = implements.map { TypeParser.parseType(it) }
         return MixinHacks.getImplementedTypes(fqn, types)
     }
+
+    fun implementedTypes(language: ProgrammingLanguage): List<String> {
+        if (language == KOTLIN) {
+            return implements.map { TypeParser.parseType(it) }
+        }
+
+        return implementedTypes()
+    }
 }
 
 internal abstract class ExtendedType(source: JSONObject) : Type(source) {
