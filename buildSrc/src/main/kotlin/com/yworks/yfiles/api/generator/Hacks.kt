@@ -680,7 +680,12 @@ internal object Hacks {
         PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size"),
 
-        PropertyDeclaration(className = "yfiles.view.ISelectionModel", propertyName = "size")
+        PropertyDeclaration(className = "yfiles.graph.DefaultGraph", propertyName = "undoEngineEnabled"),
+
+        PropertyDeclaration(className = "yfiles.view.DefaultSelectionModel", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.view.GraphSelection", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.view.ISelectionModel", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.view.StripeSelection", propertyName = "size")
     )
 
     private fun removeDuplicatedProperties(source: JSONObject) {
