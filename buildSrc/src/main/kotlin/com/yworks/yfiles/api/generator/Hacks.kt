@@ -680,6 +680,7 @@ internal object Hacks {
         PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size"),
 
+        PropertyDeclaration(className = "yfiles.geometry.MutableRectangle", propertyName = "isEmpty"),
         PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomLeft"),
         PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomRight"),
         PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "center"),
