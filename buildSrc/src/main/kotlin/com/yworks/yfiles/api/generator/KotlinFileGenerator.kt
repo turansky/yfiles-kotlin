@@ -300,10 +300,15 @@ internal class KotlinFileGenerator(
                 return ""
             }
 
+            val content = items.lines()
+                .replace("open val", "val")
+                .replace("open fun", "fun")
+
+
             return """
                 |@JsName("${fqn.name}")
                 |internal external class ${fqn.name}Ext${genericParameters()} {
-                |    ${items.lines()}
+                |    $content
                 |}
             """.trimMargin()
         }
