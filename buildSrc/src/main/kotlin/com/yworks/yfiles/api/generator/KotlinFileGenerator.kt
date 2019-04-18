@@ -174,8 +174,8 @@ internal class KotlinFileGenerator(
             }
 
             return """
-                |@JsName("$className")
-                |external object ${className}Static {
+                |@JsName("${fqn.name}")
+                |external object ${fqn.name}Static {
                 |    ${items.lines()}
                 |
                 |    @JsName("\${"$"}class")
@@ -258,7 +258,7 @@ internal class KotlinFileGenerator(
             }
 
             return """
-                |external object ${className} {
+                |external object ${fqn.name} {
                 |    ${items.lines()}
                 |}
             """.trimMargin()
@@ -284,7 +284,27 @@ internal class KotlinFileGenerator(
             return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
+                    calculateDefaultsContent() +
+                    "\n\n" +
                     staticContent()
+        }
+
+        private fun calculateDefaultsContent(): String {
+            val items = (
+                    memberProperties.filter { !it.abstract } +
+                            memberFunctions.filter { !it.abstract }
+                    ).map { it.toCode(PROGRAMMING_LANGUAGE) }
+
+            if (items.isEmpty()) {
+                return ""
+            }
+
+            return """
+                |@JsName("${fqn.name}")
+                |internal external object ${fqn.name}Ext${genericParameters()} {
+                |    ${items.lines()}
+                |}
+            """.trimMargin()
         }
     }
 
