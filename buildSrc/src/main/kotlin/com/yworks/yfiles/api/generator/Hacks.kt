@@ -98,6 +98,7 @@ private fun JSONObject.addMethod(
 internal object Hacks {
     fun applyHacks(source: JSONObject, version: ApiVersion) {
         removeDuplicatedProperties(source)
+        removeDuplicatedMethods(source)
 
         fixConstantGenerics(source)
         fixFunctionGenerics(source, version)
@@ -202,7 +203,6 @@ internal object Hacks {
         ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
         ParameterData("yfiles.collections.IEnumerable", "includes", "value") to "item",
 
-        ParameterData("yfiles.algorithms.YList", "elementAt", "i") to "index",
         ParameterData("yfiles.algorithms.YList", "includes", "o") to "item",
         ParameterData("yfiles.algorithms.YList", "indexOf", "obj") to "item",
         ParameterData("yfiles.algorithms.YList", "insert", "element") to "item",
@@ -692,6 +692,25 @@ internal object Hacks {
                     .first { it.getString("name") == declaration.propertyName }
 
                 properties.remove(properties.indexOf(property))
+            }
+    }
+
+    private val DUPLICATED_METHODS = listOf(
+        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "elementAt"),
+        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "toArray")
+    )
+
+    private fun removeDuplicatedMethods(source: JSONObject) {
+        DUPLICATED_METHODS
+            .forEach { declaration ->
+                val methods = source
+                    .type(declaration.className)
+                    .getJSONArray("methods")
+
+                val method = methods
+                    .first { it.getString("name") == declaration.methodName }
+
+                methods.remove(methods.indexOf(method))
             }
     }
 }
