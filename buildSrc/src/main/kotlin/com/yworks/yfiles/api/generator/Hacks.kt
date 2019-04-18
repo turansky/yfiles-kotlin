@@ -680,6 +680,15 @@ internal object Hacks {
         PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size"),
 
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomLeft"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomRight"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "center"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "isEmpty"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxX"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxY"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topLeft"),
+        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topRight"),
+
         PropertyDeclaration(className = "yfiles.graph.DefaultGraph", propertyName = "undoEngineEnabled"),
 
         PropertyDeclaration(className = "yfiles.view.DefaultSelectionModel", propertyName = "size"),
