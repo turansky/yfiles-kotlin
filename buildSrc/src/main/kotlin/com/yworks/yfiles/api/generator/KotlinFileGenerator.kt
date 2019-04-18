@@ -302,6 +302,7 @@ internal class KotlinFileGenerator(
 
             val content = items.lines()
                 .replace("open val", "val")
+                .replace("open var", "var")
                 .replace("open fun", "fun")
 
 
