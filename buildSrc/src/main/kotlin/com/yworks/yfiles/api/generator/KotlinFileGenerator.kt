@@ -289,11 +289,12 @@ internal class KotlinFileGenerator(
                     staticContent()
         }
 
+        private val defaultDeclarations = memberProperties.filter { !it.abstract } +
+                memberFunctions.filter { !it.abstract }
+
         private fun calculateDefaultsContent(): String {
-            val items = (
-                    memberProperties.filter { !it.abstract } +
-                            memberFunctions.filter { !it.abstract }
-                    ).map { it.toCode(PROGRAMMING_LANGUAGE) }
+            val items = defaultDeclarations
+                .map { it.toCode(PROGRAMMING_LANGUAGE) }
 
             if (items.isEmpty()) {
                 return ""
