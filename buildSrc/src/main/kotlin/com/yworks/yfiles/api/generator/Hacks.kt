@@ -97,6 +97,8 @@ private fun JSONObject.addMethod(
 
 internal object Hacks {
     fun applyHacks(source: JSONObject, version: ApiVersion) {
+        removeDuplicatedProperties(source)
+
         fixConstantGenerics(source)
         fixFunctionGenerics(source, version)
 
@@ -665,6 +667,33 @@ internal object Hacks {
                     .addMethod(data)
             }
     }
+
+    private val DUPLICATED_PROPERTIES = listOf(
+        PropertyDeclaration(className = "yfiles.algorithms.YList", propertyName = "size"),
+
+        PropertyDeclaration(className = "yfiles.analysis.ResultItemCollection", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.analysis.ResultItemMapping", propertyName = "size"),
+
+        PropertyDeclaration(className = "yfiles.collections.ICollection", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.collections.IListEnumerable", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.collections.List", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size")
+    )
+
+    private fun removeDuplicatedProperties(source: JSONObject) {
+        DUPLICATED_PROPERTIES
+            .forEach { declaration ->
+                val properties = source
+                    .type(declaration.className)
+                    .getJSONArray("properties")
+
+                val property = properties
+                    .first { it.getString("name") == declaration.propertyName }
+
+                properties.remove(properties.indexOf(property))
+            }
+    }
 }
 
 private data class ParameterData(
@@ -673,10 +702,20 @@ private data class ParameterData(
     val parameterName: String
 )
 
+private data class PropertyDeclaration(
+    val className: String,
+    val propertyName: String
+)
+
 private data class PropertyData(
     val className: String,
     val propertyName: String,
     val type: String
+)
+
+private data class MethodDeclaration(
+    val className: String,
+    val methodName: String
 )
 
 private data class MethodData(
