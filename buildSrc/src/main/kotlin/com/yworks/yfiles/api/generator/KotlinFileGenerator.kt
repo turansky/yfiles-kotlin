@@ -301,7 +301,7 @@ internal class KotlinFileGenerator(
 
             return """
                 |@JsName("${fqn.name}")
-                |internal external object ${fqn.name}Ext${genericParameters()} {
+                |internal external class ${fqn.name}Ext${genericParameters()} {
                 |    ${items.lines()}
                 |}
             """.trimMargin()
