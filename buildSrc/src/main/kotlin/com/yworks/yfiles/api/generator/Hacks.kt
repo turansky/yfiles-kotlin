@@ -677,6 +677,7 @@ internal object Hacks {
         PropertyDeclaration(className = "yfiles.collections.ICollection", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.IListEnumerable", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.List", propertyName = "size"),
+        PropertyDeclaration(className = "yfiles.collections.ListEnumerable", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
         PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size")
     )
@@ -697,7 +698,10 @@ internal object Hacks {
 
     private val DUPLICATED_METHODS = listOf(
         MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "elementAt"),
-        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "toArray")
+        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "toArray"),
+
+        MethodDeclaration(className = "yfiles.collections.ICollection", methodName = "includes"),
+        MethodDeclaration(className = "yfiles.collections.List", methodName = "toArray")
     )
 
     private fun removeDuplicatedMethods(source: JSONObject) {
