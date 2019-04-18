@@ -2,6 +2,8 @@
 
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.ProgrammingLanguage.JAVA
+import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -29,13 +31,25 @@ private fun loadApiJson(path: String): String {
 fun generateKotlinWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
     TypeParser.standardTypeMap = KotlinTypes.STANDARD_TYPE_MAP
     TypeParser.javaArrayMode = false
-    generateWrappers(apiPath, apiVersion, ProgrammingLanguage.KOTLIN, sourceDir, ::KotlinFileGenerator)
+    generateWrappers(
+        apiPath = apiPath,
+        apiVersion = apiVersion,
+        language = KOTLIN,
+        sourceDir = sourceDir,
+        createFileGenerator = ::KotlinFileGenerator
+    )
 }
 
 fun generateJavaWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
     TypeParser.standardTypeMap = JavaTypes.STANDARD_TYPE_MAP
     TypeParser.javaArrayMode = true
-    generateWrappers(apiPath, apiVersion, ProgrammingLanguage.JAVA, sourceDir, ::JavaFileGenerator)
+    generateWrappers(
+        apiPath = apiPath,
+        apiVersion = apiVersion,
+        language = JAVA,
+        sourceDir = sourceDir,
+        createFileGenerator = ::JavaFileGenerator
+    )
 }
 
 private fun generateWrappers(
