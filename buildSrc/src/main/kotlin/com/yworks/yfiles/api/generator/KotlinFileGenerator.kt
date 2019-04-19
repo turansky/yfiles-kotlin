@@ -279,7 +279,6 @@ internal class KotlinFileGenerator(
                     .replace("open fun", "fun")
                     .replace("\n    get() = definedExternally", "")
                     .replace("\n    set(value) = definedExternally", "")
-                    .replace(" = definedExternally", "")
 
             return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
