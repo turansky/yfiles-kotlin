@@ -276,9 +276,6 @@ internal class KotlinFileGenerator(
         override fun content(): String {
             val content = super.content()
                 .replace("abstract ", "")
-                    .replace("open fun", "fun")
-                    .replace("\n    get() = definedExternally", "")
-                    .replace("\n    set(value) = definedExternally", "")
 
             return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
