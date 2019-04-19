@@ -217,9 +217,17 @@ internal class KotlinFileGenerator(
             return modificator + " class"
         }
 
+        // TODO: check after fix
+        //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
-            return declaration
-                .constructors
+            val constructors = declaration.constructors
+
+            if (constructors.size <= 1) {
+                return ""
+            }
+
+            return constructors
+                .dropLast(1)
                 .asSequence()
                 .distinct()
                 .lines { it.toCode(PROGRAMMING_LANGUAGE) }
@@ -245,7 +253,17 @@ internal class KotlinFileGenerator(
                 return objectContent()
             }
 
-            return "external ${type()} ${fqn.name}${genericParameters()}${parentString()} {\n" +
+            val lastConstructor = declaration.constructors
+                .lastOrNull()
+
+            val constructor = if (lastConstructor != null) {
+                lastConstructor.toCode(PROGRAMMING_LANGUAGE)
+                    .removePrefix(" constructor")
+            } else {
+                ""
+            }
+
+            return "external ${type()} ${fqn.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() +
                     super.content() + "\n" +
                     "}\n\n\n" +
