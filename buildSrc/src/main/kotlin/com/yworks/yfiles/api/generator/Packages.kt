@@ -1,6 +1,6 @@
 package com.yworks.yfiles.api.generator
 
-internal val ROOT_PACKAGE = "com.yworks."
+internal val ROOT_PACKAGE = ""
 
 internal fun fixPackage(pkg: String): String {
     return when {
