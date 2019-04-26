@@ -153,6 +153,10 @@ internal class KotlinFileGenerator(
             return ": " + parentTypes.byComma()
         }
 
+        fun hasGenerics(): Boolean {
+            return declaration.typeparameters.isNotEmpty()
+        }
+
         fun genericParameters(): String {
             return declaration.genericParameters()
         }
@@ -343,8 +347,18 @@ internal class KotlinFileGenerator(
                     }
                 }
 
+            val baseContent = if (hasGenerics()) {
+                ""
+            } else {
+                val name = fqn.name
+                """
+                |abstract class ${name}Base: $name
+                """.trimMargin()
+            }
             return """
                 |$content
+                |
+                |$baseContent
                 |
                 |$extensions
             """.trimMargin()
