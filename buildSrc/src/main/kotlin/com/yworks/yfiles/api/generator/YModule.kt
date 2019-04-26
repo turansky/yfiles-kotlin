@@ -37,7 +37,11 @@ internal enum class YModule(val id: String, val weight: Int) {
         private val MODULE_MAP = values()
             .associateBy { it.id }
 
-        fun findModule(modules: List<IModule>): YModule {
+        fun findModule(className: String, modules: List<IModule>): YModule {
+            if (className.startsWith(LANG_PACKAGE)) {
+                return LANG
+            }
+
             if (modules.size == 1) {
                 val module = modules.first()
                 val moduleId = module.moduleId
