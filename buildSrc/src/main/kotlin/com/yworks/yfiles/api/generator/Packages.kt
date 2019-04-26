@@ -1,12 +1,14 @@
 package com.yworks.yfiles.api.generator
 
+internal val ROOT_PACKAGE = "com.yworks."
+
 internal fun fixPackage(pkg: String): String {
     return when {
         pkg.startsWith("system.") ->
-            "com.yworks.yfiles.lang." + pkg.removePrefix("system.")
+            "${ROOT_PACKAGE}yfiles.lang." + pkg.removePrefix("system.")
 
         pkg.startsWith("yfiles.") ->
-            "com.yworks." + pkg
+            ROOT_PACKAGE + pkg
 
         else -> pkg
     }

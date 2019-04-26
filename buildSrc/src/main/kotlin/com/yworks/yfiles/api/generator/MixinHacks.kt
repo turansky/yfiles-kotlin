@@ -2,7 +2,7 @@ package com.yworks.yfiles.api.generator
 
 internal object MixinHacks {
     fun getImplementedTypes(cn: String, implementedTypes: List<String>): List<String> {
-        val className = cn.removePrefix("com.yworks.")
+        val className = cn.removePrefix(ROOT_PACKAGE)
 
         return when (className) {
             "yfiles.collections.Map" -> listOf(fixPackage("yfiles.collections.IMap<TKey, TValue>"))
