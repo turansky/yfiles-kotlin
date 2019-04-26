@@ -352,7 +352,9 @@ internal class KotlinFileGenerator(
             } else {
                 val name = fqn.name
                 """
-                |abstract class ${name}Base: $name
+                |private val prototype: $name = ${name}Ext::class.js.asDynamic().prototype
+                |
+                |abstract class ${name}Base: $name by prototype
                 """.trimMargin()
             }
             return """
