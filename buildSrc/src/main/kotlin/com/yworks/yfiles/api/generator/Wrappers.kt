@@ -259,6 +259,11 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         return str
     }
 
+    fun toExtensionCode(): String {
+        require(!protected)
+        return "// property $name"
+    }
+
     override fun toJavaCode(): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
@@ -392,6 +397,11 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
     override fun toKotlinCode(): String {
         return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
+    }
+
+    fun toExtensionCode(): String {
+        require(!protected)
+        return "// fun $name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
     override fun toJavaCode(): String {

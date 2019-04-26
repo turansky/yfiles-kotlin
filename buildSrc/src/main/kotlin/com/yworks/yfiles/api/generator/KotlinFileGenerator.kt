@@ -184,7 +184,7 @@ internal class KotlinFileGenerator(
             """.trimMargin()
         }
 
-        fun companionContent(): String? {
+        open fun companionContent(): String? {
             if (isObject()) {
                 return null
             }
@@ -325,6 +325,28 @@ internal class KotlinFileGenerator(
                 |internal external class ${fqn.name}Ext${genericParameters()} {
                 |    $content
                 |}
+            """.trimMargin()
+        }
+
+        override fun companionContent(): String? {
+            val content = requireNotNull(super.companionContent())
+            if (defaultDeclarations.isEmpty()) {
+                return content
+            }
+
+            val extensions = defaultDeclarations
+                .lines {
+                    when (it) {
+                        is Property -> it.toExtensionCode()
+                        is Method -> it.toExtensionCode()
+                        else -> throw IllegalStateException("Invalid default declaration")
+                    }
+                }
+
+            return """
+                |$content
+                |
+                |$extensions
             """.trimMargin()
         }
     }
