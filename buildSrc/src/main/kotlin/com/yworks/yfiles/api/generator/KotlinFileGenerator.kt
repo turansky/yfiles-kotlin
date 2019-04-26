@@ -334,9 +334,6 @@ internal class KotlinFileGenerator(
 
         override fun companionContent(): String? {
             val content = requireNotNull(super.companionContent())
-            if (defaultDeclarations.isEmpty()) {
-                return content
-            }
 
             val extensions = defaultDeclarations
                 .lines {
@@ -352,7 +349,8 @@ internal class KotlinFileGenerator(
             } else {
                 val name = fqn.name
                 """
-                |private val prototype: $name = ${name}Ext::class.js.asDynamic().prototype
+                |@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE", "CAST_NEVER_SUCCEEDS")
+                |private val prototype: $name = ${name}Static as $name
                 |
                 |abstract class ${name}Base: $name by prototype
                 """.trimMargin()
