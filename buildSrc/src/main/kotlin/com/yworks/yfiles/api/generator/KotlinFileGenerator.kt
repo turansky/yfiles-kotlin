@@ -344,21 +344,8 @@ internal class KotlinFileGenerator(
                     }
                 }
 
-            val baseContent = if (hasGenerics()) {
-                ""
-            } else {
-                val name = fqn.name
-                """
-                |@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE", "CAST_NEVER_SUCCEEDS")
-                |private val prototype: $name = ${name}Static as $name
-                |
-                |abstract class ${name}Base: $name by prototype
-                """.trimMargin()
-            }
             return """
                 |$content
-                |
-                |$baseContent
                 |
                 |$extensions
             """.trimMargin()
