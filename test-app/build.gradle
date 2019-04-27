@@ -1,0 +1,38 @@
+buildscript {
+  ext.kotlin_version = '1.3.31'
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
+}
+
+apply plugin: 'kotlin2js'
+
+clean.doLast {
+  delete 'web'
+}
+
+compileKotlin2Js {
+  kotlinOptions {
+    outputFile = "${projectDir}/out/web/app.js"
+    moduleKind = 'amd'
+    metaInfo = false
+    sourceMap = false
+  }
+}
+
+sourceSets {
+  main.kotlin.srcDirs += 'src/main/kotlin'
+  main.kotlin.srcDirs += '../src/main/kotlin'
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+dependencies {
+  compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
+}
