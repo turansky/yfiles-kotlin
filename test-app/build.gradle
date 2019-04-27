@@ -25,7 +25,6 @@ compileKotlin2Js {
 
 sourceSets {
   main.kotlin.srcDirs += 'src/main/kotlin'
-  main.kotlin.srcDirs += '../src/main/kotlin'
 }
 
 repositories {
@@ -35,4 +34,5 @@ repositories {
 
 dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
+  compile project(":api")
 }

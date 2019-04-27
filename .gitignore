@@ -3,7 +3,7 @@ build/
 out/
 web/
 
-/src/
+/api/src/
 /jsinterop/src/
 
 # Ignore Gradle GUI config

@@ -1,3 +1,1 @@
-rootProject.name = 'yfiles-kotlin'
-
-include 'test-app'
+include 'api', 'test-app'
