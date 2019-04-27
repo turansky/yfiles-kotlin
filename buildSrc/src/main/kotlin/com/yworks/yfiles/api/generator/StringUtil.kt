@@ -26,12 +26,3 @@ fun till(str: String, end: String): String {
 
     return str.substring(0, endIndex)
 }
-
-fun from(str: String, start: String): String {
-    val startIndex = str.lastIndexOf(start)
-    if (startIndex == -1) {
-        throw IllegalArgumentException("String '$str' doesn't contains '$start'")
-    }
-
-    return str.substring(startIndex + start.length)
-}
