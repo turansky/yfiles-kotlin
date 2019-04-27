@@ -153,10 +153,6 @@ internal class KotlinFileGenerator(
             return ": " + parentTypes.byComma()
         }
 
-        fun hasGenerics(): Boolean {
-            return declaration.typeparameters.isNotEmpty()
-        }
-
         fun genericParameters(): String {
             return declaration.genericParameters()
         }
@@ -194,6 +190,9 @@ internal class KotlinFileGenerator(
             }
 
             val className = fqn.name
+            val generics = genericParameters()
+            val classDeclaration = className + generics
+
             val yclass = "${className}Static.yclass"
 
             return """
@@ -201,11 +200,16 @@ internal class KotlinFileGenerator(
                 |
                 |fun Any.is$className() = ${yclass}.isInstance(this)
                 |
-                |/*
-                |fun Any.as$className(): $className? = if (this.is$className()) this as $className else null
+                |fun $generics Any.as$className(): $classDeclaration? =
+                |   if (this.is$className()) {
+                |       @Suppress("UNCHECKED_CAST", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+                |       this as $classDeclaration
+                |   } else {
+                |       null
+                |   }
                 |
-                |fun Any.to$className(): $className = requireNotNull(this.as$className())
-                |*/
+                |fun $generics Any.to$className(): $classDeclaration =
+                |   requireNotNull(this.as$className())
             """.trimMargin()
         }
     }
