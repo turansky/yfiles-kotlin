@@ -174,17 +174,29 @@ internal class KotlinFileGenerator(
                 return ""
             }
 
-            val items = staticContentItems().map {
-                it.toCode(PROGRAMMING_LANGUAGE)
+            val items = staticContentItems()
+            val companion = if (items.isNotEmpty()) {
+                val code = items.lines {
+                    it.toCode(PROGRAMMING_LANGUAGE)
+                }
+
+                """
+                |@JsName("${fqn.name}")
+                |external object ${fqn.name}s {
+                |$code
+                |}
+            """.trimMargin()
+            } else {
+                ""
             }
 
             return """
-                |@JsName("${fqn.name}")
-                |external object ${fqn.name}Static {
-                |    ${items.lines()}
+                |$companion
                 |
+                |@JsName("${fqn.name}")
+                |internal external object ${fqn.name}Static {
                 |    @JsName("\${"$"}class")
-                |    internal val yclass: ${fixPackage("yfiles.lang.Class")}
+                |    val yclass: ${fixPackage("yfiles.lang.Class")}
                 |}
             """.trimMargin()
         }
