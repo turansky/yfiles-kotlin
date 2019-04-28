@@ -338,6 +338,9 @@ internal class KotlinFileGenerator(
 
         override fun companionContent(): String? {
             val content = requireNotNull(super.companionContent())
+            if (defaultDeclarations.isEmpty()) {
+                return content
+            }
 
             val extensions = defaultDeclarations
                 .lines {
@@ -348,8 +351,15 @@ internal class KotlinFileGenerator(
                     }
                 }
 
+            val generics = genericParameters()
+            val classDeclaration = fqn.name + generics
+            val extClassDeclaration = fqn.name + "Ext" + generics
             return """
                 |$content
+                |
+                |@Suppress("CAST_NEVER_SUCCEEDS")
+                |private val $generics ${classDeclaration}.ext:$extClassDeclaration
+                |    get () = this as $extClassDeclaration
                 |
                 |$extensions
             """.trimMargin()
