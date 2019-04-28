@@ -167,12 +167,14 @@ internal class KotlinFileGenerator(
                 .lines { it.toCode(PROGRAMMING_LANGUAGE) }
         }
 
+        protected open fun staticContentItems(): List<Declaration> = emptyList()
+
         protected fun staticContent(): String {
             if (isObject()) {
                 return ""
             }
 
-            val items = staticDeclarations.map {
+            val items = staticContentItems().map {
                 it.toCode(PROGRAMMING_LANGUAGE)
             }
 
@@ -313,6 +315,8 @@ internal class KotlinFileGenerator(
                     "\n\n" +
                     staticContent()
         }
+
+        override fun staticContentItems(): List<Declaration> = staticDeclarations
 
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract }

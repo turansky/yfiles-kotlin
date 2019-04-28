@@ -170,8 +170,7 @@ internal class Modifiers(flags: List<String>) {
     val final = flags.contains("final")
     val readOnly = flags.contains("ro")
     val abstract = flags.contains("abstract")
-    // WA: required while no @JsStatic
-    val protected = flags.contains("protected") && !static
+    val protected = flags.contains("protected")
 
     private val canbenull = flags.contains("canbenull")
     val nullability = if (canbenull) "?" else ""
