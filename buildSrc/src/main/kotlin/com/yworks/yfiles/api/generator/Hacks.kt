@@ -290,7 +290,7 @@ internal object Hacks {
 
         ParameterData("yfiles.graph.IGraph", "addPortAt", "style") to true,
         ParameterData("yfiles.graph.ILookupDecorator", "add", "nullIsFallback") to true,
-        // ParameterData("yfiles.graph.ILookupDecorator", "add", "decorateNull") to true,
+        ParameterData("yfiles.graph.ILookupDecorator", "add", "decorateNull", true) to true,
 
         ParameterData("yfiles.graphml.CreationProperties", "get", "key") to true,
         ParameterData("yfiles.graphml.CreationProperties", "set", "key") to true,
@@ -306,10 +306,14 @@ internal object Hacks {
     private fun fixMethodParameterNullability(source: JSONObject) {
         PARAMETERS_NULLABILITY_CORRECTION
             .forEach { data, nullable ->
-                val modifiers = source.type(data.className)
+                val parameters = source.type(data.className)
                     .methodParameters(data.methodName, data.parameterName, { true })
-                    .first()
-                    .getJSONArray("modifiers")
+
+                val modifiers = if (data.last) {
+                    parameters.last()
+                } else {
+                    parameters.first()
+                }.getJSONArray("modifiers")
 
                 if (nullable) {
                     modifiers.put("canbenull")
@@ -757,7 +761,8 @@ internal object Hacks {
 private data class ParameterData(
     val className: String,
     val methodName: String,
-    val parameterName: String
+    val parameterName: String,
+    val last: Boolean = false
 )
 
 private data class PropertyDeclaration(
