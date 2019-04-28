@@ -371,13 +371,26 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
-            val content = requireNotNull(super.companionContent())
+            var content = requireNotNull(super.companionContent())
+
+            val generics = genericParameters()
+            val classDeclaration = fqn.name + generics
+            val baseClassDeclaration = fqn.name + "Base" + generics
+
+            content += """
+                |
+                |
+                |abstract class $baseClassDeclaration : $classDeclaration {
+                |   init {
+                |       yfiles.lang.Class.injectInterfaces(this, ${fqn.name}Static.yclass)
+                |   }
+                |}
+            """.trimMargin()
+
             if (defaultDeclarations.isEmpty()) {
                 return content
             }
 
-            val generics = genericParameters()
-            val classDeclaration = fqn.name + generics
             val extClassDeclaration = fqn.name + "Ext" + generics
 
             val extensions = defaultDeclarations
