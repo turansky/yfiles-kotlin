@@ -276,9 +276,24 @@ internal class KotlinFileGenerator(
                 ""
             }
 
+            val companionObjectContent = if (staticDeclarations.isNotEmpty()) {
+                val content = staticDeclarations.lines {
+                    it.toCode(PROGRAMMING_LANGUAGE)
+                }
+
+                """
+                |companion object {
+                |$content
+                |}
+            """.trimMargin()
+            } else {
+                ""
+            }
+
             return "external ${type()} ${fqn.name}${genericParameters()} $constructor ${parentString()} {\n" +
-                    constructors() +
-                    super.content() + "\n" +
+                    constructors() + "\n\n" +
+                    super.content() + "\n\n" +
+                    companionObjectContent + "\n" +
                     "}\n\n\n" +
                     staticContent()
         }
