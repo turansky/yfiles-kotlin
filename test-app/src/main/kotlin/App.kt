@@ -1,8 +1,7 @@
+import org.w3c.dom.HTMLDivElement
 import yfiles.graph.DefaultGraph
-import yfiles.hierarchic.HierarchicLayout
 import yfiles.input.GraphViewerInputMode
 import yfiles.view.GraphComponent
-import org.w3c.dom.HTMLDivElement
 
 fun create(): HTMLDivElement {
     val component = GraphComponent()
@@ -18,7 +17,8 @@ fun create(): HTMLDivElement {
     val node2 = graph.createNode()
     graph.createEdge(node1, node2)
 
-    graph.applyLayout(HierarchicLayout())
+    // TODO: support extensions
+    // graph.applyLayout(HierarchicLayout())
 
     component.graph = graph
     component.fitGraphBounds()
