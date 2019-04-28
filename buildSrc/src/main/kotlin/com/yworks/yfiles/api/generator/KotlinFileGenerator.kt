@@ -361,7 +361,7 @@ internal class KotlinFileGenerator(
             return """
                 |$content
                 |
-                |@Suppress("CAST_NEVER_SUCCEEDS")
+                |@Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")
                 |private val $generics ${classDeclaration}.ext:$extClassDeclaration
                 |    get () = this as $extClassDeclaration
                 |
