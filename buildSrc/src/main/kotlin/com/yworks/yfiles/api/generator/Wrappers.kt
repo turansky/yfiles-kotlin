@@ -260,9 +260,22 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         return str
     }
 
-    fun toExtensionCode(): String {
+    fun toExtensionCode(
+        classDeclaration: String,
+        typeparameters: List<TypeParameter>
+    ): String {
         require(!protected)
-        return "// property $name"
+
+        val generics = getGenericString(typeparameters)
+
+        var str = if (getterSetter) "var " else "val "
+        str += "$generics ${classDeclaration}.$name: $type${modifiers.nullability}\n" +
+                "    get() = ext.$name"
+        if (getterSetter) {
+            str += "\n    set(value) { ext.$name = value }"
+        }
+
+        return str
     }
 
     override fun toJavaCode(): String {

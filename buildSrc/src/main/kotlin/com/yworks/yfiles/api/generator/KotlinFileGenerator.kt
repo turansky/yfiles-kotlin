@@ -352,7 +352,7 @@ internal class KotlinFileGenerator(
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
-                        is Property -> it.toExtensionCode()
+                        is Property -> it.toExtensionCode(classDeclaration, typeparameters)
                         is Method -> it.toExtensionCode(classDeclaration, typeparameters)
                         else -> throw IllegalStateException("Invalid default declaration")
                     }
