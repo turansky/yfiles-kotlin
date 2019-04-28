@@ -3,6 +3,7 @@ package com.yworks.yfiles.api.generator
 import com.yworks.yfiles.api.generator.JavaTypes.VOID
 import com.yworks.yfiles.api.generator.ProgrammingLanguage.JAVA
 import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
+import com.yworks.yfiles.api.generator.TypeParser.getGenericString
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -118,7 +119,7 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
     private val implements: List<String> by StringArrayDelegate()
 
     fun genericParameters(): String {
-        return TypeParser.getGenericString(typeparameters)
+        return getGenericString(typeparameters)
     }
 
     fun extendedType(): String? {
@@ -318,7 +319,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val returns: Returns? by ReturnsDelegate()
 
     val generics: String
-        get() = TypeParser.getGenericString(typeparameters)
+        get() = getGenericString(typeparameters)
 
     private fun kotlinModificator(): String {
         val classRegistry: ClassRegistry = ClassRegistry.instance
@@ -387,7 +388,10 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
-    fun toExtensionCode(classDeclaration: String): String {
+    fun toExtensionCode(
+        classDeclaration: String,
+        typeparameters: List<TypeParameter>
+    ): String {
         require(!protected)
 
         val extParameters = kotlinParametersString()
@@ -398,7 +402,9 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         val returnSignature = getReturnSignature()
             .removeSuffix(" = definedExternally")
 
-        return "fun ${classDeclaration}.$name($extParameters)$returnSignature\n" +
+        val generics = getGenericString(typeparameters + this.typeparameters)
+
+        return "fun $generics ${classDeclaration}.$name($extParameters)$returnSignature\n" +
                 " = ext.$name($callParameters)"
     }
 

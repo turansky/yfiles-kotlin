@@ -83,6 +83,9 @@ internal class KotlinFileGenerator(
         protected val className = declaration.fqn
         val fqn: FQN = FQN(className)
 
+        protected val typeparameters: List<TypeParameter>
+            get() = declaration.typeparameters
+
         protected val properties: List<Property>
             get() = declaration.properties
                 .sortedBy { it.name }
@@ -350,7 +353,7 @@ internal class KotlinFileGenerator(
                 .lines {
                     when (it) {
                         is Property -> it.toExtensionCode()
-                        is Method -> it.toExtensionCode("$generics $classDeclaration")
+                        is Method -> it.toExtensionCode(classDeclaration, typeparameters)
                         else -> throw IllegalStateException("Invalid default declaration")
                     }
                 }
