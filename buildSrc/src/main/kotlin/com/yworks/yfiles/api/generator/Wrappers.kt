@@ -369,30 +369,20 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         return override + modificators.joinToString(separator = " ", postfix = " ")
     }
 
+    // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(): String {
         var returnType = returns?.type
-        if (abstract) {
-            return if (returnType != null) {
-                ":" + returnType
-            } else {
-                ""
-            }
+            ?: KotlinTypes.UNIT
+
+        if (modifiers.canbenull) {
+            returnType += "?"
         }
 
-        val overriden = ClassRegistry.instance
-            .functionOverriden(fqn, name)
-
-        if (overriden) {
-            return " = definedExternally"
+        if (!abstract) {
+            returnType += " = definedExternally"
         }
 
-        if (returnType == null) {
-            returnType = KotlinTypes.UNIT
-        } else if (modifiers.canbenull) {
-            returnType = returnType + "?"
-        }
-
-        return ": $returnType = definedExternally"
+        return ": $returnType"
     }
 
     override fun toKotlinCode(): String {
