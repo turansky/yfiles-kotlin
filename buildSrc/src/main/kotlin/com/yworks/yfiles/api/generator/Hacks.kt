@@ -138,6 +138,13 @@ internal object Hacks {
                 )
             }
 
+        // WA: generic 'TContext' is temporally unused (while Class has no generics)
+        source.type("yfiles.graph.ILookupDecorator")
+            .getJSONArray("methods")
+            .first { it.getString("name") == "addConstant" }
+            .getJSONArray("typeparameters")
+            .remove(0)
+
         if (version == ApiVersion.V_2_2) {
             source.type("yfiles.collections.List")
                 .getJSONArray("staticMethods")
