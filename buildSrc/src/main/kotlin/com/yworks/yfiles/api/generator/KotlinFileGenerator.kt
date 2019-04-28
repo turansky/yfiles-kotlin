@@ -342,18 +342,19 @@ internal class KotlinFileGenerator(
                 return content
             }
 
+            val generics = genericParameters()
+            val classDeclaration = fqn.name + generics
+            val extClassDeclaration = fqn.name + "Ext" + generics
+
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
                         is Property -> it.toExtensionCode()
-                        is Method -> it.toExtensionCode()
+                        is Method -> it.toExtensionCode("$generics $classDeclaration")
                         else -> throw IllegalStateException("Invalid default declaration")
                     }
                 }
 
-            val generics = genericParameters()
-            val classDeclaration = fqn.name + generics
-            val extClassDeclaration = fqn.name + "Ext" + generics
             return """
                 |$content
                 |

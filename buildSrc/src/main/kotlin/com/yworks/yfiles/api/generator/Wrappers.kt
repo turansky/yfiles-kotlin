@@ -172,7 +172,8 @@ internal class Modifiers(flags: List<String>) {
     // WA: required while no @JsStatic
     val protected = flags.contains("protected") && !static
 
-    val canbenull = flags.contains("canbenull")
+    private val canbenull = flags.contains("canbenull")
+    val nullability = if (canbenull) "?" else ""
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
@@ -248,8 +249,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         str += if (getterSetter) "var " else "val "
 
-        str += "$name: $type"
-        str += if (modifiers.canbenull) "?" else ""
+        str += "$name: $type${modifiers.nullability}"
         if (!abstract) {
             str += "\n    get() = definedExternally"
             if (getterSetter) {
@@ -374,9 +374,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         var returnType = returns?.type
             ?: KotlinTypes.UNIT
 
-        if (modifiers.canbenull) {
-            returnType += "?"
-        }
+        returnType += modifiers.nullability
 
         if (!abstract) {
             returnType += " = definedExternally"
@@ -389,9 +387,19 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
-    fun toExtensionCode(): String {
+    fun toExtensionCode(classDeclaration: String): String {
         require(!protected)
-        return "// fun $name(${kotlinParametersString()})${getReturnSignature()}"
+
+        val extParameters = kotlinParametersString()
+            .replace(" = definedExternally", " = null")
+        val callParameters = parameters
+            .byComma { it.name }
+
+        val returnSignature = getReturnSignature()
+            .removeSuffix(" = definedExternally")
+
+        return "fun ${classDeclaration}.$name($extParameters)$returnSignature\n" +
+                " = ext.$name($callParameters)"
     }
 
     override fun toJavaCode(): String {
@@ -411,8 +419,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
             .byComma {
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
                 val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
-                val nullability = if (it.modifiers.canbenull) "?" else ""
-                "$modifiers ${it.name}: ${it.type}$nullability" + body
+                "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
             }
     }
 
@@ -444,7 +451,8 @@ internal class ParameterModifiers(flags: List<String>) {
     val optional = flags.contains("optional")
     val conversion = flags.contains("conversion")
 
-    val canbenull = flags.contains("canbenull")
+    private val canbenull = flags.contains("canbenull")
+    val nullability = if (canbenull) "?" else ""
 }
 
 internal class Parameter(source: JSONObject) : JsonWrapper(source) {
