@@ -281,12 +281,18 @@ internal object Hacks {
         ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false,
         ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to false,
 
+        ParameterData("yfiles.graph.IGraph", "addPortAt", "style") to true,
+        ParameterData("yfiles.graph.ILookupDecorator", "add", "nullIsFallback") to true,
+        // ParameterData("yfiles.graph.ILookupDecorator", "add", "decorateNull") to true,
+
         ParameterData("yfiles.graphml.CreationProperties", "get", "key") to true,
         ParameterData("yfiles.graphml.CreationProperties", "set", "key") to true,
 
         ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "context") to false,
         ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
 
+        ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeIn") to true,
+        ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeOut") to true,
         ParameterData("yfiles.view.FocusIndicatorManager", "getInstaller", "item") to true
     )
 
