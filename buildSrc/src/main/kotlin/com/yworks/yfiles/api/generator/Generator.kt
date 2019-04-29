@@ -10,14 +10,25 @@ import java.net.URL
 
 private val YFILES_NAMESPACE = "yfiles"
 
-private val PRIMITIVE_TYPES = sequenceOf(
+private val EXCLUDED_TYPES = sequenceOf(
     "yfiles.lang.Boolean",
     "yfiles.lang.Number",
     "yfiles.lang.Object",
     "yfiles.lang.String",
+
     "yfiles.lang.Struct",
+
     "yfiles.lang.Enum",
-    "yfiles.lang.EnumDefinition"
+    "yfiles.lang.EnumDefinition",
+
+    "yfiles.lang.Interface",
+    "yfiles.lang.InterfaceDefinition",
+
+    "yfiles.lang.ClassDefinition",
+
+    "yfiles.lang.delegate",
+    "yfiles.lang.Exception",
+    "yfiles.lang.Trait"
 )
     .map(::fixPackage)
     .toSet()
@@ -70,7 +81,7 @@ private fun generateWrappers(
         .first { it.id == YFILES_NAMESPACE }
         .namespaces
         .flatMap { it.types }
-        .filterNot { PRIMITIVE_TYPES.contains(it.fqn) }
+        .filterNot { EXCLUDED_TYPES.contains(it.fqn) }
 
     val functionSignatures = apiRoot.functionSignatures
 
