@@ -12,11 +12,6 @@ internal object TypeParser {
     }
 
     fun parseType(type: String): String {
-        // TODO: Fix for SvgDefsManager and SvgVisual required (2 constructors from 1)
-        if (type.contains("|")) {
-            return parseType(type.split("|")[0])
-        }
-
         val standardType = standardTypeMap[type]
         if (standardType != null) {
             return standardType
