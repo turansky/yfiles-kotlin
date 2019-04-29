@@ -215,6 +215,8 @@ internal class KotlinFileGenerator(
             return """
                 |package ${fqn.packageName}
                 |
+                |val ${constName(className)}_CLASS = $yclass
+                |
                 |fun Any.is$className() = ${yclass}.isInstance(this)
                 |
                 |fun $generics Any.as$className(): $classDeclaration? =

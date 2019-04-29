@@ -26,3 +26,9 @@ fun till(str: String, end: String): String {
 
     return str.substring(0, endIndex)
 }
+
+fun constName(str: String): String {
+    return str
+        .replace(Regex("([a-z])([A-Z])"), "\$1_\$2")
+        .toUpperCase()
+}
