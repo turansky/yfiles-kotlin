@@ -79,6 +79,13 @@ internal class KotlinFileGenerator(
         file.writeText("$header\n\n$content")
     }
 
+    private val PRIMITIVE_CLASSES = setOf(
+        "Boolean",
+        "Number",
+        "Object",
+        "String"
+    )
+
     abstract inner class GeneratedFile(private val declaration: Type) {
         protected val className = declaration.fqn
         val fqn: FQN = FQN(className)
@@ -207,15 +214,23 @@ internal class KotlinFileGenerator(
             }
 
             val className = fqn.name
-            val generics = genericParameters()
-            val classDeclaration = className + generics
-
             val yclass = "${className}Static.yclass"
 
-            return """
+            val result = """
                 |package ${fqn.packageName}
                 |
                 |val ${constName(className)}_CLASS = $yclass
+            """.trimMargin()
+
+            if (PRIMITIVE_CLASSES.contains(fqn.name)) {
+                return result
+            }
+
+            val generics = genericParameters()
+            val classDeclaration = className + generics
+
+            return """
+                |$result
                 |
                 |fun Any.is$className() = ${yclass}.isInstance(this)
                 |
@@ -278,6 +293,10 @@ internal class KotlinFileGenerator(
         override fun content(): String {
             if (isObject()) {
                 return objectContent()
+            }
+
+            if (PRIMITIVE_CLASSES.contains(fqn.name)) {
+                return staticContent()
             }
 
             val lastConstructor = declaration.constructors
