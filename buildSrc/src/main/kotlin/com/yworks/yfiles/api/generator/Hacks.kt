@@ -87,9 +87,14 @@ private fun JSONObject.addMethod(
                     }
                 }
                 .also {
-                    val resultType = methodData.resultType
-                    if (resultType != null) {
-                        it.put("returns", mapOf("type" to resultType))
+                    val result = methodData.result
+                    if (result != null) {
+                        it.put(
+                            "returns", mapOf(
+                                "type" to result.type,
+                                "modifiers" to result.modifiers
+                            )
+                        )
                     }
                 }
         )
@@ -329,11 +334,11 @@ internal object Hacks {
     )
 
     private val MISSED_METHODS = listOf(
-        MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", resultType = JS_OBJECT),
-        MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", resultType = JS_OBJECT),
-        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", resultType = JS_OBJECT),
-        MethodData(className = "yfiles.geometry.MutableRectangle", methodName = "clone", resultType = JS_OBJECT),
-        MethodData(className = "yfiles.geometry.OrientedRectangle", methodName = "clone", resultType = JS_OBJECT),
+        MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
+        MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
+        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
+        MethodData(className = "yfiles.geometry.MutableRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
+        MethodData(className = "yfiles.geometry.OrientedRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
 
         MethodData(
             className = "yfiles.algorithms.YList",
@@ -349,7 +354,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("unit", "IUndoUnit")
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
         MethodData(
             className = "yfiles.graph.CompositeUndoUnit",
@@ -357,7 +362,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("unit", "IUndoUnit")
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
 
         MethodData(
@@ -368,7 +373,7 @@ internal object Hacks {
                 MethodParameterData("model", "ILabelModel"),
                 MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
             ),
-            resultType = "ILabelModelParameter"
+            result = ResultData("ILabelModelParameter")
         ),
         MethodData(
             className = "yfiles.graph.EdgePathLabelModel",
@@ -377,7 +382,7 @@ internal object Hacks {
                 MethodParameterData("label", "ILabel"),
                 MethodParameterData("model", "ILabelModel")
             ),
-            resultType = "yfiles.collections.IEnumerable<ILabelModelParameter>"
+            result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
         ),
         MethodData(
             className = "yfiles.graph.EdgePathLabelModel",
@@ -386,7 +391,7 @@ internal object Hacks {
                 MethodParameterData("label", "ILabel"),
                 MethodParameterData("layoutParameter", "ILabelModelParameter")
             ),
-            resultType = "yfiles.geometry.IOrientedRectangle"
+            result = ResultData("yfiles.geometry.IOrientedRectangle")
         ),
 
         MethodData(
@@ -397,7 +402,7 @@ internal object Hacks {
                 MethodParameterData("model", "ILabelModel"),
                 MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
             ),
-            resultType = "ILabelModelParameter"
+            result = ResultData("ILabelModelParameter")
         ),
         MethodData(
             className = "yfiles.graph.EdgeSegmentLabelModel",
@@ -406,7 +411,7 @@ internal object Hacks {
                 MethodParameterData("label", "ILabel"),
                 MethodParameterData("model", "ILabelModel")
             ),
-            resultType = "yfiles.collections.IEnumerable<ILabelModelParameter>"
+            result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
         ),
         MethodData(
             className = "yfiles.graph.EdgeSegmentLabelModel",
@@ -415,7 +420,7 @@ internal object Hacks {
                 MethodParameterData("label", "ILabel"),
                 MethodParameterData("layoutParameter", "ILabelModelParameter")
             ),
-            resultType = "yfiles.geometry.IOrientedRectangle"
+            result = ResultData("yfiles.geometry.IOrientedRectangle")
         ),
 
         MethodData(
@@ -426,7 +431,7 @@ internal object Hacks {
                 MethodParameterData("model", "ILabelModel"),
                 MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
             ),
-            resultType = "ILabelModelParameter"
+            result = ResultData("ILabelModelParameter")
         ),
 
         MethodData(
@@ -436,7 +441,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
                 MethodParameterData("value", JS_OBJECT)
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
         MethodData(
             className = "yfiles.graph.GenericLabelModel",
@@ -445,7 +450,7 @@ internal object Hacks {
                 MethodParameterData("label", "ILabel"),
                 MethodParameterData("model", "ILabelModel")
             ),
-            resultType = "yfiles.collections.IEnumerable<ILabelModelParameter>"
+            result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
         ),
         MethodData(
             className = "yfiles.graph.GenericLabelModel",
@@ -454,7 +459,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
                 MethodParameterData("value", JS_OBJECT)
             ),
-            resultType = "yfiles.graphml.MarkupExtension"
+            result = ResultData("yfiles.graphml.MarkupExtension")
         ),
         MethodData(
             className = "yfiles.graph.GenericLabelModel",
@@ -463,7 +468,7 @@ internal object Hacks {
                 MethodParameterData("label", "ILabel"),
                 MethodParameterData("layoutParameter", "ILabelModelParameter")
             ),
-            resultType = "yfiles.geometry.IOrientedRectangle"
+            result = ResultData("yfiles.geometry.IOrientedRectangle")
         ),
 
         MethodData(
@@ -473,7 +478,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
                 MethodParameterData("value", JS_OBJECT)
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
         MethodData(
             className = "yfiles.graph.GenericPortLocationModel",
@@ -482,12 +487,12 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.graphml.IWriteContext"),
                 MethodParameterData("value", JS_OBJECT)
             ),
-            resultType = "yfiles.graphml.MarkupExtension"
+            result = ResultData("yfiles.graphml.MarkupExtension")
         ),
         MethodData(
             className = "yfiles.graph.GenericPortLocationModel",
             methodName = "getEnumerator",
-            resultType = "yfiles.collections.IEnumerator<IPortLocationModelParameter>"
+            result = ResultData("yfiles.collections.IEnumerator<IPortLocationModelParameter>")
         ),
 
         MethodData(
@@ -498,7 +503,7 @@ internal object Hacks {
                 MethodParameterData("edge", "yfiles.graph.IEdge"),
                 MethodParameterData("sourceHandle", JS_BOOLEAN)
             ),
-            resultType = "IHandle"
+            result = ResultData("IHandle")
         ),
 
         MethodData(
@@ -510,7 +515,7 @@ internal object Hacks {
                 MethodParameterData("anchor", "yfiles.geometry.Point"),
                 MethodParameterData("direction", "yfiles.geometry.Point")
             ),
-            resultType = "yfiles.view.IBoundsProvider"
+            result = ResultData("yfiles.view.IBoundsProvider")
         ),
         MethodData(
             className = "yfiles.styles.Arrow",
@@ -521,9 +526,9 @@ internal object Hacks {
                 MethodParameterData("anchor", "yfiles.geometry.Point"),
                 MethodParameterData("direction", "yfiles.geometry.Point")
             ),
-            resultType = "yfiles.view.IVisualCreator"
+            result = ResultData("yfiles.view.IVisualCreator")
         ),
-        MethodData(className = "yfiles.styles.Arrow", methodName = "clone", resultType = JS_OBJECT),
+        MethodData(className = "yfiles.styles.Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
 
         MethodData(
             className = "yfiles.styles.GraphOverviewSvgVisualCreator",
@@ -531,7 +536,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
         MethodData(
             className = "yfiles.styles.GraphOverviewSvgVisualCreator",
@@ -540,7 +545,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
 
         MethodData(
@@ -549,7 +554,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
         MethodData(
             className = "yfiles.view.GraphOverviewCanvasVisualCreator",
@@ -558,7 +563,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
 
         MethodData(
@@ -567,7 +572,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -576,7 +581,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -585,7 +590,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.input.IInputModeContext"),
                 MethodParameterData("rectangle", "yfiles.geometry.Rect")
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -594,7 +599,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.ICanvasContext"),
                 MethodParameterData("rectangle", "yfiles.geometry.Rect")
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -602,7 +607,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.ICanvasContext")
             ),
-            resultType = "yfiles.geometry.Rect"
+            result = ResultData("yfiles.geometry.Rect")
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -611,7 +616,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.input.IInputModeContext"),
                 MethodParameterData("location", "yfiles.geometry.Point")
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -620,18 +625,18 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.input.IInputModeContext"),
                 MethodParameterData("lassoPath", "yfiles.geometry.GeneralPath")
             ),
-            resultType = JS_BOOLEAN
+            result = ResultData(JS_BOOLEAN)
         ),
 
-        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", resultType = "yfiles.geometry.GeneralPath"),
-        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", resultType = JS_NUMBER),
+        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath")),
+        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
         MethodData(
             className = "yfiles.styles.VoidPathGeometry",
             methodName = "getTangent",
             parameters = listOf(
                 MethodParameterData("ratio", JS_NUMBER)
             ),
-            resultType = "yfiles.geometry.Tangent"
+            result = ResultData("yfiles.geometry.Tangent")
         ),
         MethodData(
             className = "yfiles.styles.VoidPathGeometry",
@@ -640,7 +645,7 @@ internal object Hacks {
                 MethodParameterData("segmentIndex", JS_NUMBER),
                 MethodParameterData("ratio", JS_NUMBER)
             ),
-            resultType = "yfiles.geometry.Tangent"
+            result = ResultData("yfiles.geometry.Tangent")
         )
     )
 
@@ -651,7 +656,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         ),
         MethodData(
             className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
@@ -660,7 +665,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            resultType = "yfiles.view.Visual"
+            result = ResultData("yfiles.view.Visual")
         )
     )
 
@@ -785,11 +790,18 @@ private data class MethodData(
     val className: String,
     val methodName: String,
     val parameters: List<MethodParameterData> = emptyList(),
-    val resultType: String? = null
+    val result: ResultData? = null
 )
 
 private data class MethodParameterData(
     val name: String,
+    val type: String,
+    private val nullable: Boolean = false
+) {
+    val modifiers = if (nullable) setOf("canbenull") else emptySet()
+}
+
+private data class ResultData(
     val type: String,
     private val nullable: Boolean = false
 ) {
