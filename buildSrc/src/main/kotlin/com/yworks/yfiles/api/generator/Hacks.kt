@@ -65,11 +65,17 @@ private fun JSONObject.addMethod(
         put("methods", emptyList<Any>())
     }
 
+    val result = methodData.result
+    var modifiers = listOf("public")
+    if (result != null) {
+        modifiers += result.modifiers
+    }
+
     getJSONArray("methods")
         .put(
             mutableMapOf(
                 "name" to methodData.methodName,
-                "modifiers" to listOf("public")
+                "modifiers" to modifiers
             )
                 .also {
                     val parameters = methodData.parameters
@@ -87,12 +93,10 @@ private fun JSONObject.addMethod(
                     }
                 }
                 .also {
-                    val result = methodData.result
                     if (result != null) {
                         it.put(
                             "returns", mapOf(
-                                "type" to result.type,
-                                "modifiers" to result.modifiers
+                                "type" to result.type
                             )
                         )
                     }
@@ -503,7 +507,7 @@ internal object Hacks {
                 MethodParameterData("edge", "yfiles.graph.IEdge"),
                 MethodParameterData("sourceHandle", JS_BOOLEAN)
             ),
-            result = ResultData("IHandle")
+            result = ResultData("IHandle", true)
         ),
 
         MethodData(
@@ -536,7 +540,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
         MethodData(
             className = "yfiles.styles.GraphOverviewSvgVisualCreator",
@@ -545,7 +549,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
 
         MethodData(
@@ -554,7 +558,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
         MethodData(
             className = "yfiles.view.GraphOverviewCanvasVisualCreator",
@@ -563,7 +567,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
 
         MethodData(
@@ -572,7 +576,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -581,7 +585,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
         MethodData(
             className = "yfiles.view.DefaultPortCandidateDescriptor",
@@ -628,7 +632,7 @@ internal object Hacks {
             result = ResultData(JS_BOOLEAN)
         ),
 
-        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath")),
+        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath", true)),
         MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
         MethodData(
             className = "yfiles.styles.VoidPathGeometry",
@@ -636,7 +640,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("ratio", JS_NUMBER)
             ),
-            result = ResultData("yfiles.geometry.Tangent")
+            result = ResultData("yfiles.geometry.Tangent", true)
         ),
         MethodData(
             className = "yfiles.styles.VoidPathGeometry",
@@ -645,7 +649,7 @@ internal object Hacks {
                 MethodParameterData("segmentIndex", JS_NUMBER),
                 MethodParameterData("ratio", JS_NUMBER)
             ),
-            result = ResultData("yfiles.geometry.Tangent")
+            result = ResultData("yfiles.geometry.Tangent", true)
         )
     )
 
@@ -656,7 +660,7 @@ internal object Hacks {
             parameters = listOf(
                 MethodParameterData("context", "yfiles.view.IRenderContext")
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         ),
         MethodData(
             className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
@@ -665,7 +669,7 @@ internal object Hacks {
                 MethodParameterData("context", "yfiles.view.IRenderContext"),
                 MethodParameterData("oldVisual", "yfiles.view.Visual", true)
             ),
-            result = ResultData("yfiles.view.Visual")
+            result = ResultData("yfiles.view.Visual", true)
         )
     )
 
