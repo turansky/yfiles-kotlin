@@ -290,5 +290,9 @@ internal val DOUBLE_PROPERTIES = setOf(
     "epsilon",
     "criticalEdgePriority",
     "portBorderGapRatios",
-    "cutoff"
+    "cutoff",
+
+    // static
+    "enlargementAbsolute",
+    "enlargementRelative"
 )

@@ -19,12 +19,17 @@ internal fun correctNumbers(source: JSONObject) {
 }
 
 private fun JSONObject.correctProperties() {
-    if (!has("properties")) {
+    correctProperties("staticProperties")
+    correctProperties("properties")
+}
+
+private fun JSONObject.correctProperties(key: String) {
+    if (!has(key)) {
         return
     }
 
     val className = getString("name")
-        getJSONArray("properties")
+    getJSONArray(key)
             .asSequence()
             .map { it as JSONObject }
             .filter { it.getString("type") == JS_NUMBER }

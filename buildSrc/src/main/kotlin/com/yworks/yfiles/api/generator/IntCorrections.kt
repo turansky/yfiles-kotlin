@@ -112,5 +112,8 @@ internal val INT_PROPERTIES = setOf(
 
     // ???
     "maximumIterations",
-    "maximumFlow"
+    "maximumFlow",
+
+    // static
+    "cr570845"
 )
