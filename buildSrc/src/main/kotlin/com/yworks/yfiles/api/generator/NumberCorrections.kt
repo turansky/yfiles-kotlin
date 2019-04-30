@@ -14,7 +14,8 @@ internal fun correctNumbers(source: JSONObject) {
         .map { it as JSONObject }
         .flatMap { it.getJSONArray("types").asSequence() }
         .map { it as JSONObject }
-        .forEach { it.correctProperties() }
+        .onEach { it.correctProperties() }
+        .forEach { it.correctMethods() }
 }
 
 private fun JSONObject.correctProperties() {
@@ -31,6 +32,10 @@ private fun JSONObject.correctProperties() {
 }
 
 private fun getPropertyType(className: String, propertyName: String): String {
+    if (propertyName.endsWith("Count")) {
+        return INT
+    }
+
     if (className == "AffineLine" && (propertyName == "a" || propertyName == "b")) {
         return DOUBLE
     }
@@ -39,6 +44,43 @@ private fun getPropertyType(className: String, propertyName: String): String {
         in INT_PROPERTIES -> INT
         in DOUBLE_PROPERTIES -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$propertyName")
+    }
+}
+
+private fun JSONObject.correctMethods() {
+    if (!has("methods")) {
+        return
+    }
+
+    val className = getString("name")
+    getJSONArray("methods")
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.has("returns") }
+        .forEach {
+            val returns = it.getJSONObject("returns")
+            if (returns.getString("type") == JS_NUMBER) {
+                returns.put("type", getReturnType(className, it.getString("name")))
+            }
+        }
+}
+
+private fun getReturnType(className: String, methodName: String): String {
+    if (methodName.endsWith("Count")) {
+        return INT
+    }
+
+    if (className == "YVector" || className == "LineSegment" && methodName == "length") {
+        return DOUBLE
+    }
+
+    return when (methodName) {
+        in INT_METHODS -> INT
+        in DOUBLE_METHODS -> DOUBLE
+        else -> {
+            println("Unexpected $className.$methodName")
+            DOUBLE
+        }
     }
 }
 

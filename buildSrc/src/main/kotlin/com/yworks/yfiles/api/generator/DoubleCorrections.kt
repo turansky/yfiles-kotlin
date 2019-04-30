@@ -1,5 +1,22 @@
 package com.yworks.yfiles.api.generator
 
+internal val DOUBLE_METHODS = setOf(
+    "length",
+    "distanceSq",
+    "distance",
+    "distanceTo",
+    "calculateLength",
+    "sum",
+    "findRayIntersection",
+    "findLineIntersection",
+    "scalarProduct",
+    "distanceToSegment",
+    "commitPositionsSmoothly",
+    "manhattanDistanceTo",
+    "calculateScaleForWidth",
+    "calculateScaleForHeight"
+)
+
 internal val DOUBLE_PROPERTIES = setOf(
     "c",
     "min",
