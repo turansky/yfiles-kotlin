@@ -40,7 +40,9 @@ internal val DOUBLE_METHODS = setOf(
     "getMaxValue",
     "getMinValue",
     "getDistanceTo",
-    "getLength"
+    "getLength",
+    "getPortBorderGap",
+    "getPortDistanceDelta"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(

@@ -28,6 +28,7 @@ internal val INT_METHODS = setOf(
     "getPriority",
     "push",
     "unshift",
+    "getDirection",
 
     // ???
     "translateDirectionToReal",
