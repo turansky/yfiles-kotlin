@@ -14,7 +14,16 @@ internal val DOUBLE_METHODS = setOf(
     "commitPositionsSmoothly",
     "manhattanDistanceTo",
     "calculateScaleForWidth",
-    "calculateScaleForHeight"
+    "calculateScaleForHeight",
+    "getCenterX",
+    "getCenterY",
+    "getX",
+    "getY",
+    "getWidth",
+    "getHeight",
+    "getXOffsetForLayoutOrientation",
+    "getYOffsetForLayoutOrientation",
+    "getSmoothingLength"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(

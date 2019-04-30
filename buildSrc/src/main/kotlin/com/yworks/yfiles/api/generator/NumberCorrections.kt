@@ -74,7 +74,7 @@ private fun getReturnType(className: String, methodName: String): String {
         return INT
     }
 
-    if (methodName.endsWith("Cost")) {
+    if (methodName.endsWith("Cost") || methodName.endsWith("Costs")) {
         return DOUBLE
     }
 
