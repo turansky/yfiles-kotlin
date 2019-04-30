@@ -3,6 +3,7 @@ package com.yworks.yfiles.api.generator
 internal val DOUBLE_METHODS = setOf(
     "getNumber",
     "distanceSq",
+    "distance",
     "getDistance",
     "distanceTo",
     "calculateLength",
@@ -34,7 +35,16 @@ internal val DOUBLE_METHODS = setOf(
     "getMinimumLayerHeight",
     "getLayerAlignment",
     "getMinDistance",
-    "getProfit"
+    "getProfit",
+    "getValueAt",
+    "getValue",
+    "getMin",
+    "getSlope",
+    "getMax",
+    "getMaxValue",
+    "getMinValue",
+    "getDistanceTo",
+    "getLength"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(

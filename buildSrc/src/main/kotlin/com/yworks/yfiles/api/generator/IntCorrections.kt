@@ -26,6 +26,8 @@ internal val INT_METHODS = setOf(
     "compareRenderOrder",
     "getObstacleHash",
     "getPriority",
+    "push",
+    "unshift",
 
     // ???
     "translateDirectionToReal",
