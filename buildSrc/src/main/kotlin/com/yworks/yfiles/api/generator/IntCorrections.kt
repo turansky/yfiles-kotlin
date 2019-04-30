@@ -117,3 +117,8 @@ internal val INT_PROPERTIES = setOf(
     // static
     "cr570845"
 )
+
+internal val INT_METHOD_PARAMETERS = setOf(
+    "index",
+    "i"
+)

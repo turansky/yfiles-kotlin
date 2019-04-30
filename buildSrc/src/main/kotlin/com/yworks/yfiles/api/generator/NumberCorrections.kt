@@ -15,7 +15,8 @@ internal fun correctNumbers(source: JSONObject) {
         .flatMap { it.getJSONArray("types").asSequence() }
         .map { it as JSONObject }
         .onEach { it.correctProperties() }
-        .forEach { it.correctMethods() }
+        .onEach { it.correctMethods() }
+        .forEach { it.correctMethodParameters() }
 }
 
 private fun JSONObject.correctProperties() {
@@ -120,6 +121,55 @@ private fun getReturnType(className: String, methodName: String): String {
         in INT_METHODS -> INT
         in DOUBLE_METHODS -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$methodName")
+    }
+}
+
+private fun JSONObject.correctMethodParameters() {
+    correctMethodParameters("staticMethods")
+    correctMethodParameters("methods")
+}
+
+private fun JSONObject.correctMethodParameters(key: String) {
+    if (!has(key)) {
+        return
+    }
+
+    getJSONArray(key)
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.has("parameters") }
+        .flatMap { it.getJSONArray("parameters").asSequence() }
+        .map { it as JSONObject }
+        .filter { it.getString("type") == JS_NUMBER }
+        .forEach { it.put("type", getParameterType(it.getString("name"))) }
+}
+
+private fun getParameterType(parameterName: String): String {
+    if (parameterName.endsWith("Ratio")) {
+        return DOUBLE
+    }
+
+    if (parameterName.endsWith("Duration")) {
+        return DOUBLE
+    }
+
+    if (parameterName.endsWith("Index")) {
+        return INT
+    }
+
+    if (parameterName.endsWith("Count")) {
+        return INT
+    }
+
+    return when (parameterName) {
+        in INT_METHOD_PARAMETERS -> INT
+        in INT_PROPERTIES -> INT
+        in DOUBLE_METHOD_PARAMETERS -> DOUBLE
+        in DOUBLE_PROPERTIES -> DOUBLE
+        else -> {
+            println("Unexpected $parameterName")
+            DOUBLE
+        }
     }
 }
 

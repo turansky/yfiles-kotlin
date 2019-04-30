@@ -296,3 +296,24 @@ internal val DOUBLE_PROPERTIES = setOf(
     "enlargementAbsolute",
     "enlargementRelative"
 )
+
+internal val DOUBLE_METHOD_PARAMETERS = setOf(
+    "eps",
+    "x", "y",
+    "x1", "y1",
+    "x2", "y2",
+    "x3", "y3",
+    "x4", "y4",
+    "cx", "cy",
+    "dx", "dy",
+    "px", "py",
+    "qx", "qy",
+    "rx", "ry",
+    "sx", "sy",
+    "tx", "ty",
+    "c1x", "c1y",
+    "c2x", "c2y",
+    "upx", "upy",
+    "w", "h",
+    "minWidth", "minHeight"
+)
