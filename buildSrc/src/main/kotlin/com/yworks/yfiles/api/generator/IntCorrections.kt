@@ -120,5 +120,7 @@ internal val INT_PROPERTIES = setOf(
 
 internal val INT_METHOD_PARAMETERS = setOf(
     "index",
-    "i"
+    "i",
+    "columns",
+    "rows"
 )

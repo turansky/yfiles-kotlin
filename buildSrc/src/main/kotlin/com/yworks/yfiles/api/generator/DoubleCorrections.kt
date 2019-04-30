@@ -314,6 +314,12 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "c1x", "c1y",
     "c2x", "c2y",
     "upx", "upy",
+    "cornerX", "cornerY",
+    "offsetX", "offsetY",
+    "oppositeX", "oppositeY",
+    "scaleX", "scaleY",
+    "pointX", "pointY",
     "w", "h",
-    "minWidth", "minHeight"
+    "minWidth", "minHeight",
+    "newWidth", "newHeight"
 )
