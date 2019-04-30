@@ -67,5 +67,13 @@ internal val INT_PROPERTIES = setOf(
     "maximumClusterCount",
     "clusterCount",
     "subchannelCount",
-    "branchCount"
+    "branchCount",
+    "maximumNodesBeforeBus",
+    "maximumNodesAfterBus",
+    "randomizationRounds",
+
+    // ???
+    "maximumIterations",
+    "cutoff",
+    "maximumFlow"
 )

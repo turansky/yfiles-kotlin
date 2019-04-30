@@ -74,6 +74,7 @@ internal val DOUBLE_PROPERTIES = setOf(
     "minimumLastSegmentLength",
     "minimumLength",
     "minimumDistance",
+    "maximumDistance",
     "minimumSlope",
     "minimumOctilinearSegmentLength",
     "minimumLayerDistance",
@@ -269,6 +270,12 @@ internal val DOUBLE_PROPERTIES = setOf(
     "minimumNodeCentrality",
     "maximumNodeCentrality",
     "minimumEdgeCentrality",
-    "maximumEdgeCentrality"
+    "maximumEdgeCentrality",
+    "scaleFactor",
+    "epsilon",
+    "criticalEdgePriority",
+    "portBorderGapRatios",
 
+    // ???
+    "totalCost"
 )
