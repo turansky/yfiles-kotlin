@@ -61,5 +61,11 @@ internal val INT_PROPERTIES = setOf(
     "scrollAmount",
     "viewWidth",
     "viewHeight",
-    "deviceIndex"
+    "deviceIndex",
+    "layerCount",
+    "minimumClusterCount",
+    "maximumClusterCount",
+    "clusterCount",
+    "subchannelCount",
+    "branchCount"
 )

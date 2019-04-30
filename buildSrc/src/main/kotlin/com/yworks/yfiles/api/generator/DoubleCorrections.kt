@@ -265,5 +265,10 @@ internal val DOUBLE_PROPERTIES = setOf(
     "miterLimit",
     "verticalOffset",
     "horizontalOffset",
-    "maximumTargetZoom"
+    "maximumTargetZoom",
+    "minimumNodeCentrality",
+    "maximumNodeCentrality",
+    "minimumEdgeCentrality",
+    "maximumEdgeCentrality"
+
 )
