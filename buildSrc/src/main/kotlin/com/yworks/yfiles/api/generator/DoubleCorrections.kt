@@ -42,7 +42,12 @@ internal val DOUBLE_METHODS = setOf(
     "getDistanceTo",
     "getLength",
     "getPortBorderGap",
-    "getPortDistanceDelta"
+    "getPortDistanceDelta",
+    "calculateEdgeLength",
+    "calculateTotalCropLength",
+    "getDistanceBetween",
+    "getClosest",
+    "calculateAngles"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(
