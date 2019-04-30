@@ -36,6 +36,10 @@ private fun getPropertyType(className: String, propertyName: String): String {
         return INT
     }
 
+    if (propertyName.endsWith("Cost")) {
+        return DOUBLE
+    }
+
     if (className == "AffineLine" && (propertyName == "a" || propertyName == "b")) {
         return DOUBLE
     }
@@ -68,6 +72,10 @@ private fun JSONObject.correctMethods() {
 private fun getReturnType(className: String, methodName: String): String {
     if (methodName.endsWith("Count")) {
         return INT
+    }
+
+    if (methodName.endsWith("Cost")) {
+        return DOUBLE
     }
 
     if (className == "YVector" || className == "LineSegment" && methodName == "length") {

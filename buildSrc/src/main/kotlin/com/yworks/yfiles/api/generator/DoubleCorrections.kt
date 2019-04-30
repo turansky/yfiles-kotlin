@@ -187,13 +187,9 @@ internal val DOUBLE_PROPERTIES = setOf(
     "sectorStart",
     "sectorSize",
     "location",
-    "crossingCost",
     "minimumBackboneSegmentLength",
     "costs",
     "heuristicCosts",
-    "cutObstacleCost",
-    "unbalancedObstaclesCost",
-    "unbalancedRatioCost",
     "minimumEdgeToEdgeDistance",
     "minimumNodeCornerDistance",
     "preferredPolylineSegmentLength",
@@ -202,10 +198,6 @@ internal val DOUBLE_PROPERTIES = setOf(
     "originX",
     "originY",
     "center",
-    "edgeCrossingCost",
-    "nodeCrossingCost",
-    "bendCost",
-    "edgeOverlapCost",
     "gridOriginX",
     "gridOriginY",
     "preferredDistance",
@@ -292,8 +284,5 @@ internal val DOUBLE_PROPERTIES = setOf(
     "epsilon",
     "criticalEdgePriority",
     "portBorderGapRatios",
-    "cutoff",
-
-    // ???
-    "totalCost"
+    "cutoff"
 )
