@@ -64,12 +64,17 @@ private fun getPropertyType(className: String, propertyName: String): String {
 }
 
 private fun JSONObject.correctMethods() {
-    if (!has("methods")) {
+    correctMethods("staticMethods")
+    correctMethods("methods")
+}
+
+private fun JSONObject.correctMethods(key: String) {
+    if (!has(key)) {
         return
     }
 
     val className = getString("name")
-    getJSONArray("methods")
+    getJSONArray(key)
         .asSequence()
         .map { it as JSONObject }
         .filter { it.has("returns") }
@@ -83,6 +88,10 @@ private fun JSONObject.correctMethods() {
 
 private fun getReturnType(className: String, methodName: String): String {
     if (methodName.endsWith("Count")) {
+        return INT
+    }
+
+    if (methodName.endsWith("Components")) {
         return INT
     }
 

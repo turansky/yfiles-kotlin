@@ -31,13 +31,19 @@ internal val INT_METHODS = setOf(
     "getDirection",
     "getLevel",
     "getDepth",
-    "findGraphComponents",
-    "findIsolatedGraphComponents",
     "getPreferredChildWedge",
 
     // ???
     "translateDirectionToReal",
-    "translateDirectionToModel"
+    "translateDirectionToModel",
+
+    // static
+    "orientation",
+    "sideOfCircle",
+    "edgeBetweennessClustering",
+    "biconnectedComponentGrouping",
+    "hierarchicalClustering",
+    "kMeansClustering"
 )
 
 internal val INT_PROPERTIES = setOf(

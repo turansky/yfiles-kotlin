@@ -57,7 +57,12 @@ internal val DOUBLE_METHODS = setOf(
     // ???
     "getChannelCoordinate",
     "getSubchannelRank",
-    "getGroupSubchannelRank"
+    "getGroupSubchannelRank",
+
+    // static
+    "toRadians",
+    "toDegrees",
+    "distanceToLineSegment"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(
