@@ -31,6 +31,8 @@ internal val INT_METHODS = setOf(
     "getDirection",
     "getLevel",
     "getDepth",
+    "findGraphComponents",
+    "findIsolatedGraphComponents",
 
     // ???
     "translateDirectionToReal",

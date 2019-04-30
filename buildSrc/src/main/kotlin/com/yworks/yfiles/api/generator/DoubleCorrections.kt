@@ -48,7 +48,11 @@ internal val DOUBLE_METHODS = setOf(
     "getDistanceBetween",
     "getClosest",
     "calculateAngles",
-    "getDissimilarityValue"
+    "getDissimilarityValue",
+    "calculateMetric",
+    "getWeight",
+    "getStress",
+    "getCurrentLocation"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(
