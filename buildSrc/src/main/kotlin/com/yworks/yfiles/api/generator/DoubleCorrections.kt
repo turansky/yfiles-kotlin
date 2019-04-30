@@ -1,7 +1,7 @@
 package com.yworks.yfiles.api.generator
 
 internal val DOUBLE_METHODS = setOf(
-    "length",
+    "getNumber",
     "distanceSq",
     "distance",
     "distanceTo",
@@ -292,6 +292,7 @@ internal val DOUBLE_PROPERTIES = setOf(
     "epsilon",
     "criticalEdgePriority",
     "portBorderGapRatios",
+    "cutoff",
 
     // ???
     "totalCost"

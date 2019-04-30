@@ -1,6 +1,7 @@
 package com.yworks.yfiles.api.generator
 
 internal val INT_METHODS = setOf(
+    "getInt",
     "hashCode",
     "compareTo",
     "lastIndexOf",
@@ -22,7 +23,10 @@ internal val INT_METHODS = setOf(
     "createBend",
     "positionOf",
     "tar",
-    "compareRenderOrder"
+    "compareRenderOrder",
+    "getObstacleHash",
+    "getBridgeWidth",
+    "getBridgeHeight"
 )
 
 internal val INT_PROPERTIES = setOf(
@@ -84,6 +88,5 @@ internal val INT_PROPERTIES = setOf(
 
     // ???
     "maximumIterations",
-    "cutoff",
     "maximumFlow"
 )
