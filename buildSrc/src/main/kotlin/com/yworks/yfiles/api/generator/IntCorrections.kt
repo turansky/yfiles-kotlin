@@ -45,7 +45,6 @@ internal val INT_PROPERTIES = setOf(
     "inDegree",
     "outDegree",
     "maximumDeviationAngle",
-    "minimumNodeDistance",
     "count",
     "maximumDuration",
     "randomizationRound",

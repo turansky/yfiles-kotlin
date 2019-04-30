@@ -44,6 +44,14 @@ private fun getPropertyType(className: String, propertyName: String): String {
         return DOUBLE
     }
 
+    if (className == "BalloonLayout" && propertyName == "minimumNodeDistance") {
+        return INT
+    }
+
+    if (propertyName.endsWith("Distance")) {
+        return DOUBLE
+    }
+
     if (className == "AffineLine" && (propertyName == "a" || propertyName == "b")) {
         return DOUBLE
     }
@@ -83,6 +91,10 @@ private fun getReturnType(className: String, methodName: String): String {
     }
 
     if (methodName.endsWith("Ratio")) {
+        return DOUBLE
+    }
+
+    if (methodName.endsWith("Distance")) {
         return DOUBLE
     }
 
