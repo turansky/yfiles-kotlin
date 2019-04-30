@@ -52,7 +52,12 @@ internal val DOUBLE_METHODS = setOf(
     "calculateMetric",
     "getWeight",
     "getStress",
-    "getCurrentLocation"
+    "getCurrentLocation",
+
+    // ???
+    "getChannelCoordinate",
+    "getSubchannelRank",
+    "getGroupSubchannelRank"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(

@@ -105,10 +105,7 @@ private fun getReturnType(className: String, methodName: String): String {
     return when (methodName) {
         in INT_METHODS -> INT
         in DOUBLE_METHODS -> DOUBLE
-        else -> {
-            println("Unexpected $className.$methodName")
-            DOUBLE
-        }
+        else -> throw IllegalStateException("Unexpected $className.$methodName")
     }
 }
 

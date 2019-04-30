@@ -33,6 +33,7 @@ internal val INT_METHODS = setOf(
     "getDepth",
     "findGraphComponents",
     "findIsolatedGraphComponents",
+    "getPreferredChildWedge",
 
     // ???
     "translateDirectionToReal",
