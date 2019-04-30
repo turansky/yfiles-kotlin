@@ -48,7 +48,10 @@ internal val INT_METHODS = setOf(
     "calcMaxFlow",
     "calcMaxFlowMinCut",
     "simple",
-    "simplex"
+    "simplex",
+    "getPosition",
+    "arrangeRectangleMultiRows",
+    "arrangeRectangleRows"
 )
 
 internal val INT_PROPERTIES = setOf(

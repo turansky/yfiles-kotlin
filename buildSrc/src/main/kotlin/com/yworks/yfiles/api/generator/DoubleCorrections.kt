@@ -65,7 +65,10 @@ internal val DOUBLE_METHODS = setOf(
     "distanceToLineSegment",
     "aStar",
     "singleSourceSingleSink",
-    "cost"
+    "cost",
+    "applyBestFitRotationAngle",
+    "findBestFitRotationAngle",
+    "getPathLength"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(
