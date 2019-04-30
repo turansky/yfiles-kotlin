@@ -25,8 +25,11 @@ internal val INT_METHODS = setOf(
     "tar",
     "compareRenderOrder",
     "getObstacleHash",
-    "getBridgeWidth",
-    "getBridgeHeight"
+    "getPriority",
+
+    // ???
+    "translateDirectionToReal",
+    "translateDirectionToModel"
 )
 
 internal val INT_PROPERTIES = setOf(
