@@ -47,7 +47,8 @@ internal val DOUBLE_METHODS = setOf(
     "calculateTotalCropLength",
     "getDistanceBetween",
     "getClosest",
-    "calculateAngles"
+    "calculateAngles",
+    "getDissimilarityValue"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(

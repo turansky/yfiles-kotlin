@@ -29,6 +29,8 @@ internal val INT_METHODS = setOf(
     "push",
     "unshift",
     "getDirection",
+    "getLevel",
+    "getDepth",
 
     // ???
     "translateDirectionToReal",
