@@ -62,7 +62,10 @@ internal val DOUBLE_METHODS = setOf(
     // static
     "toRadians",
     "toDegrees",
-    "distanceToLineSegment"
+    "distanceToLineSegment",
+    "aStar",
+    "singleSourceSingleSink",
+    "cost"
 )
 
 internal val DOUBLE_PROPERTIES = setOf(

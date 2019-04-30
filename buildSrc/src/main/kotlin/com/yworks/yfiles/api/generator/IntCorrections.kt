@@ -43,7 +43,12 @@ internal val INT_METHODS = setOf(
     "edgeBetweennessClustering",
     "biconnectedComponentGrouping",
     "hierarchicalClustering",
-    "kMeansClustering"
+    "kMeansClustering",
+    "minCostFlow",
+    "calcMaxFlow",
+    "calcMaxFlowMinCut",
+    "simple",
+    "simplex"
 )
 
 internal val INT_PROPERTIES = setOf(
