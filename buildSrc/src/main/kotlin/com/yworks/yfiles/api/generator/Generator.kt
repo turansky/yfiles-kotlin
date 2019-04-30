@@ -2,6 +2,7 @@
 
 package com.yworks.yfiles.api.generator
 
+import com.yworks.yfiles.api.generator.Hacks.applyHacks
 import com.yworks.yfiles.api.generator.ProgrammingLanguage.JAVA
 import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import org.json.JSONObject
@@ -67,7 +68,8 @@ private fun generateWrappers(
 ) {
     val source = JSONObject(loadApiJson(apiPath))
 
-    Hacks.applyHacks(source, apiVersion)
+    applyHacks(source, apiVersion)
+    correctNumbers(source)
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot
