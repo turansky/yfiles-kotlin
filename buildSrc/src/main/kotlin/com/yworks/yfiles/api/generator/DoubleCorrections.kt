@@ -372,5 +372,8 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "duration",
     "minIntersection",
     "decreaseFactor",
-    "maxAllowedCosts"
+    "maxAllowedCosts",
+    "maxLength",
+    "childForkCoordinate",
+    "rootForkCoordinate"
 )

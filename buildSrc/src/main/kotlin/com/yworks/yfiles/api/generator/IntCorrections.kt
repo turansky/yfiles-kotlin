@@ -135,5 +135,8 @@ internal val INT_METHOD_PARAMETERS = setOf(
     "maxCompNum",
     "maxCluster",
     "iterations",
-    "type"
+    "type",
+
+    // ???
+    "direction"
 )
