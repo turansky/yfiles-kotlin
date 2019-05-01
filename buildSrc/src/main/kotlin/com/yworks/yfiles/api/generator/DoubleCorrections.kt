@@ -355,5 +355,9 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "orthogonalMin",
     "orthogonalMax",
     "sideLength",
-    "portBorderGap"
+    "portBorderGap",
+
+    "angdeg",
+    "angrad",
+    "cutOff"
 )

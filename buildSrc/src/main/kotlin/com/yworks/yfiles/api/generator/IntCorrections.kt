@@ -127,5 +127,12 @@ internal val INT_METHOD_PARAMETERS = setOf(
 
     "numObstaclesInFirstHalf",
     "numObstaclesInSecondHalf",
-    "numObstaclesOnCut"
+    "numObstaclesOnCut",
+
+    "maxLayers",
+    "dfsNumber",
+    "compNumber",
+    "maxCompNum",
+    "maxCluster",
+    "iterations"
 )
