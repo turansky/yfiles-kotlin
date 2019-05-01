@@ -363,5 +363,14 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "bendReductionThreshold",
     "crossingCost",
     "minLayerHeight",
-    "ratios"
+    "ratios",
+    "originalStripeSize",
+    "originalParentSize",
+    "delta",
+    "rightVectorAngle",
+    "halo",
+    "duration",
+    "minIntersection",
+    "decreaseFactor",
+    "maxAllowedCosts"
 )
