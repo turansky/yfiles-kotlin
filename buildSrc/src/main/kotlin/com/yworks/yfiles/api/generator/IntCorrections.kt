@@ -122,5 +122,13 @@ internal val INT_METHOD_PARAMETERS = setOf(
     "index",
     "i",
     "columns",
-    "rows"
+    "rows",
+    "side",
+    "m0",
+    "m1",
+    "m2",
+    "m3",
+    "theta",
+    "theta",
+    "factor"
 )

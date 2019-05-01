@@ -31,10 +31,10 @@ private fun JSONObject.correctProperties(key: String) {
 
     val className = getString("name")
     getJSONArray(key)
-            .asSequence()
-            .map { it as JSONObject }
-            .filter { it.getString("type") == JS_NUMBER }
-            .forEach { it.put("type", getPropertyType(className, it.getString("name"))) }
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.getString("type") == JS_NUMBER }
+        .forEach { it.put("type", getPropertyType(className, it.getString("name"))) }
 }
 
 private fun getPropertyType(className: String, propertyName: String): String {
@@ -134,22 +134,37 @@ private fun JSONObject.correctMethodParameters(key: String) {
         return
     }
 
+    val className = getString("name")
     getJSONArray(key)
         .asSequence()
         .map { it as JSONObject }
         .filter { it.has("parameters") }
-        .flatMap { it.getJSONArray("parameters").asSequence() }
-        .map { it as JSONObject }
-        .filter { it.getString("type") == JS_NUMBER }
-        .forEach { it.put("type", getParameterType(it.getString("name"))) }
+        .forEach { method ->
+            val methodName = method.getString("name")
+            method.getJSONArray("parameters")
+                .asSequence()
+                .map { it as JSONObject }
+                .filter { it.getString("type") == JS_NUMBER }
+                .forEach { it.put("type", getParameterType(className, methodName, it.getString("name"))) }
+        }
 }
 
-private fun getParameterType(parameterName: String): String {
+private val A_MAP = mapOf(
+    "fromArgb" to INT,
+    "fromHSLA" to DOUBLE,
+    "fromRGBA" to DOUBLE
+)
+
+private fun getParameterType(className: String, methodName: String, parameterName: String): String {
     if (parameterName.endsWith("Ratio")) {
         return DOUBLE
     }
 
     if (parameterName.endsWith("Duration")) {
+        return DOUBLE
+    }
+
+    if (parameterName.endsWith("Distance")) {
         return DOUBLE
     }
 
@@ -161,13 +176,17 @@ private fun getParameterType(parameterName: String): String {
         return INT
     }
 
+    if (parameterName == "a") {
+        return A_MAP.getValue(methodName)
+    }
+
     return when (parameterName) {
         in INT_METHOD_PARAMETERS -> INT
         in INT_PROPERTIES -> INT
         in DOUBLE_METHOD_PARAMETERS -> DOUBLE
         in DOUBLE_PROPERTIES -> DOUBLE
         else -> {
-            println("Unexpected $parameterName")
+            println("Unexpected $className.$parameterName")
             DOUBLE
         }
     }
