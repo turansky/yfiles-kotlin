@@ -359,5 +359,9 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
 
     "angdeg",
     "angrad",
-    "cutOff"
+    "cutOff",
+    "bendReductionThreshold",
+    "crossingCost",
+    "minLayerHeight",
+    "ratios"
 )

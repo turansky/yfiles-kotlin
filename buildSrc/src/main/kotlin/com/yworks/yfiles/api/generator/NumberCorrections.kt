@@ -165,11 +165,11 @@ private val DOUBLE_CLASSES = setOf(
 )
 
 private fun getParameterType(className: String, methodName: String, parameterName: String): String {
-    if (methodName == "setInt") {
+    if (methodName == "setInt" || methodName == "createHighPerformanceIntMap") {
         return INT
     }
 
-    if (methodName == "setNumber") {
+    if (methodName == "setNumber" || methodName == "createHighPerformanceDoubleMap") {
         return DOUBLE
     }
 
@@ -177,7 +177,7 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         return DOUBLE
     }
 
-    if (className == "List") {
+    if (className == "List" || className == "IEnumerable") {
         return INT
     }
 
