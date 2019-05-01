@@ -156,6 +156,14 @@ private val A_MAP = mapOf(
 )
 
 private fun getParameterType(className: String, methodName: String, parameterName: String): String {
+    if (className == "BorderLine" || className == "Interval" || className == "TimeSpan") {
+        return DOUBLE
+    }
+
+    if (className == "List") {
+        return INT
+    }
+
     if (parameterName.endsWith("Ratio")) {
         return DOUBLE
     }
@@ -186,7 +194,7 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         in DOUBLE_METHOD_PARAMETERS -> DOUBLE
         in DOUBLE_PROPERTIES -> DOUBLE
         else -> {
-            println("Unexpected $className.$parameterName")
+            println("Unexpected $className..$methodName.$parameterName")
             DOUBLE
         }
     }

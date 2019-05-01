@@ -320,11 +320,21 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "scaleX", "scaleY",
     "pointX", "pointY",
 
+    "lineX1", "lineY1",
+    "lineX2", "lineY2",
+    "boxX1", "boxY1",
+    "boxX2", "boxY2",
+    "sX1", "sY1",
+    "sX2", "sY2",
+
     "w", "h",
     "rw", "rh",
     "minWidth", "minHeight",
     "newWidth", "newHeight",
 
     "s",
-    "l"
+    "l",
+    "time",
+    "easeIn",
+    "easeOut"
 )
