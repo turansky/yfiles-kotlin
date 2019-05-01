@@ -124,11 +124,8 @@ internal val INT_METHOD_PARAMETERS = setOf(
     "columns",
     "rows",
     "side",
-    "m0",
-    "m1",
-    "m2",
-    "m3",
-    "theta",
-    "theta",
-    "factor"
+
+    "numObstaclesInFirstHalf",
+    "numObstaclesInSecondHalf",
+    "numObstaclesOnCut"
 )

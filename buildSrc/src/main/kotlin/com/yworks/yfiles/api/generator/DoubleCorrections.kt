@@ -319,6 +319,7 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "oppositeX", "oppositeY",
     "scaleX", "scaleY",
     "pointX", "pointY",
+    "newX", "newY",
 
     "lineX1", "lineY1",
     "lineX2", "lineY2",
@@ -332,9 +333,24 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "minWidth", "minHeight",
     "newWidth", "newHeight",
 
+    "d1", "d2",
+    "a1", "a2",
+
     "s",
     "l",
     "time",
     "easeIn",
-    "easeOut"
+    "easeOut",
+
+    "m0",
+    "m1",
+    "m2",
+    "m3",
+    "theta",
+    "theta",
+    "factor",
+
+    "cut",
+    "orthogonalMin",
+    "orthogonalMax"
 )
