@@ -161,7 +161,15 @@ private val DOUBLE_CLASSES = setOf(
     "TimeSpan",
     "NodeReshapeSnapResultProvider",
     "InteractiveOrganicLayout",
-    "GraphSnapContext"
+    "GraphSnapContext",
+    "NodeHalo"
+)
+
+private val DOUBLE_METHOD_NAMES = setOf(
+    "setNumber",
+    "createHighPerformanceDoubleMap",
+    "applyZoom",
+    "createStripeAnimation"
 )
 
 private fun getParameterType(className: String, methodName: String, parameterName: String): String {
@@ -169,7 +177,7 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         return INT
     }
 
-    if (methodName == "setNumber" || methodName == "createHighPerformanceDoubleMap") {
+    if (methodName in DOUBLE_METHOD_NAMES) {
         return DOUBLE
     }
 
