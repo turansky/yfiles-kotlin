@@ -1,6 +1,6 @@
 package com.yworks.yfiles.api.generator
 
-internal val INT_CONSTRUCTOR_PARAMETRS = setOf(
+internal val INT_CONSTRUCTOR_PARAMETERS = setOf(
     "capacity",
     "enterSegmentNo"
 )

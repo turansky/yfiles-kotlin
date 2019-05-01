@@ -55,8 +55,8 @@ private fun getConstructorParameterType(className: String, parameterName: String
     }
 
     return when (parameterName) {
-        in INT_CONSTRUCTOR_PARAMETRS -> INT
-        in DOUBLE_CONSTRUCTOR_PARAMETRS -> DOUBLE
+        in INT_CONSTRUCTOR_PARAMETERS -> INT
+        in DOUBLE_CONSTRUCTOR_PARAMETERS -> DOUBLE
         else -> getPropertyType(className, parameterName)
     }
 }

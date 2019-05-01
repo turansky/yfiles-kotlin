@@ -1,6 +1,6 @@
 package com.yworks.yfiles.api.generator
 
-internal val DOUBLE_CONSTRUCTOR_PARAMETRS = setOf(
+internal val DOUBLE_CONSTRUCTOR_PARAMETERS = setOf(
     "from", "to",
 
     "minFirstSegmentLength",
