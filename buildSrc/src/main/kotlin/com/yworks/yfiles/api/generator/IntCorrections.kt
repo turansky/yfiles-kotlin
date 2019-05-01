@@ -1,5 +1,9 @@
 package com.yworks.yfiles.api.generator
 
+internal val INT_CONSTRUCTOR_PARAMETRS = setOf(
+    "capacity"
+)
+
 internal val INT_METHODS = setOf(
     "getInt",
     "hashCode",

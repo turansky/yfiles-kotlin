@@ -1,5 +1,16 @@
 package com.yworks.yfiles.api.generator
 
+internal val DOUBLE_CONSTRUCTOR_PARAMETRS = setOf(
+    "from", "to",
+
+    "minFirstSegmentLength",
+    "rowInsets",
+    "columnInsets",
+    "minRowSize",
+    "minColumnSize",
+    "mouseWheelDelta"
+)
+
 internal val DOUBLE_METHODS = setOf(
     "getNumber",
     "distanceSq",

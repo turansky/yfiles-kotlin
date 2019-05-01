@@ -44,7 +44,9 @@ private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
     "TimeSpan",
     "DefaultNodePlacer",
     "Interval",
-    "MinimumNodeSizeStage"
+    "MinimumNodeSizeStage",
+    "FreeEdgeLabelLayoutModelParameter",
+    "FreeNodeLabelLayoutModelParameter"
 )
 
 private fun getConstructorParameterType(className: String, parameterName: String): String {
@@ -52,7 +54,11 @@ private fun getConstructorParameterType(className: String, parameterName: String
         return DOUBLE
     }
 
-    return getPropertyType(className, parameterName)
+    return when (parameterName) {
+        in INT_CONSTRUCTOR_PARAMETRS -> INT
+        in DOUBLE_CONSTRUCTOR_PARAMETRS -> DOUBLE
+        else -> getPropertyType(className, parameterName)
+    }
 }
 
 private fun JSONObject.correctProperties() {
