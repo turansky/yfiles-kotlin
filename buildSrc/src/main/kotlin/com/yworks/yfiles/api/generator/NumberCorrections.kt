@@ -14,9 +14,45 @@ internal fun correctNumbers(source: JSONObject) {
         .map { it as JSONObject }
         .flatMap { it.getJSONArray("types").asSequence() }
         .map { it as JSONObject }
+        .onEach { it.correctConstructors() }
         .onEach { it.correctProperties() }
         .onEach { it.correctMethods() }
         .forEach { it.correctMethodParameters() }
+}
+
+private fun JSONObject.correctConstructors() {
+    if (!has("constructors")) {
+        return
+    }
+
+    val className = getString("name")
+    getJSONArray("constructors")
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.has("parameters") }
+        .flatMap { it.getJSONArray("parameters").asSequence() }
+        .map { it as JSONObject }
+        .filter { it.getString("type") == JS_NUMBER }
+        .forEach { it.put("type", getConstructorParameterType(className, it.getString("name"))) }
+}
+
+private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
+    "BorderLine",
+    "GridConstraintProvider",
+    "YVector",
+    "Matrix",
+    "TimeSpan",
+    "DefaultNodePlacer",
+    "Interval",
+    "MinimumNodeSizeStage"
+)
+
+private fun getConstructorParameterType(className: String, parameterName: String): String {
+    if (className in DOUBLE_CONSTRUCTOR_CLASSES) {
+        return DOUBLE
+    }
+
+    return getPropertyType(className, parameterName)
 }
 
 private fun JSONObject.correctProperties() {
