@@ -320,6 +320,7 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "scaleX", "scaleY",
     "pointX", "pointY",
     "newX", "newY",
+    "xFactor", "yFactor",
 
     "lineX1", "lineY1",
     "lineX2", "lineY2",
@@ -352,5 +353,7 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
 
     "cut",
     "orthogonalMin",
-    "orthogonalMax"
+    "orthogonalMax",
+    "sideLength",
+    "portBorderGap"
 )

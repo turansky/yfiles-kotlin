@@ -155,8 +155,25 @@ private val A_MAP = mapOf(
     "fromRGBA" to DOUBLE
 )
 
+private val DOUBLE_CLASSES = setOf(
+    "BorderLine",
+    "Interval",
+    "TimeSpan",
+    "NodeReshapeSnapResultProvider",
+    "InteractiveOrganicLayout",
+    "GraphSnapContext"
+)
+
 private fun getParameterType(className: String, methodName: String, parameterName: String): String {
-    if (className == "BorderLine" || className == "Interval" || className == "TimeSpan") {
+    if (methodName == "setInt") {
+        return INT
+    }
+
+    if (methodName == "setNumber") {
+        return DOUBLE
+    }
+
+    if (className in DOUBLE_CLASSES) {
         return DOUBLE
     }
 
@@ -194,7 +211,7 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         in DOUBLE_METHOD_PARAMETERS -> DOUBLE
         in DOUBLE_PROPERTIES -> DOUBLE
         else -> {
-            println("Unexpected $className..$methodName.$parameterName")
+            println("Unexpected $className.$methodName.$parameterName")
             DOUBLE
         }
     }
