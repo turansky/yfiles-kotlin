@@ -218,10 +218,7 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         in INT_PROPERTIES -> INT
         in DOUBLE_METHOD_PARAMETERS -> DOUBLE
         in DOUBLE_PROPERTIES -> DOUBLE
-        else -> {
-            println("Unexpected $className.$methodName.$parameterName")
-            DOUBLE
-        }
+        else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
     }
 }
 
