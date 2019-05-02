@@ -7,6 +7,10 @@ internal fun fixPackage(pkg: String): String {
         pkg.startsWith("system.") ->
             "${ROOT_PACKAGE}yfiles.lang." + pkg.removePrefix("system.")
 
+        // WA for PropertyChangedEventHandler
+        pkg.startsWith("yfiles.system.") ->
+            "${ROOT_PACKAGE}yfiles.lang." + pkg.removePrefix("yfiles.system.")
+
         pkg.startsWith("yfiles.") ->
             ROOT_PACKAGE + pkg
 
