@@ -331,11 +331,15 @@ private fun getParameterType(className: String, methodName: String, parameterNam
     }
 }
 
+private val INT_SIGNATURE_CLASSES = setOf(
+    "IEnumerable",
+    "List"
+)
+
 private fun correctEnumerable(types: List<JSONObject>) {
-    types
-        .first { it.getString("name") == "IEnumerable" }
-        .getJSONArray("methods")
-        .asSequence()
+    types.asSequence()
+        .filter { it.getString("name") in INT_SIGNATURE_CLASSES }
+        .flatMap { it.getJSONArray("methods").asSequence() }
         .map { it as JSONObject }
         .filter { it.has("parameters") }
         .flatMap { it.getJSONArray("parameters").asSequence() }
