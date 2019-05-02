@@ -6,7 +6,8 @@ private val INT = "Int"
 private val DOUBLE = "Double"
 
 internal fun correctNumbers(source: JSONObject) {
-    source.getJSONArray("namespaces")
+    val types = source
+        .getJSONArray("namespaces")
         .asSequence()
         .map { it as JSONObject }
         .filter { it.has("namespaces") }
@@ -14,6 +15,11 @@ internal fun correctNumbers(source: JSONObject) {
         .map { it as JSONObject }
         .flatMap { it.getJSONArray("types").asSequence() }
         .map { it as JSONObject }
+        .toList()
+
+    correctEnumerable(types)
+
+    types.asSequence()
         .onEach { it.correctConstructors() }
         .onEach { it.correctProperties() }
         .onEach { it.correctMethods() }
@@ -262,5 +268,23 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         in DOUBLE_PROPERTIES -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
     }
+}
+
+private fun correctEnumerable(types: List<JSONObject>) {
+    types
+        .first { it.getString("name") == "IEnumerable" }
+        .getJSONArray("methods")
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.has("parameters") }
+        .flatMap { it.getJSONArray("parameters").asSequence() }
+        .map { it as JSONObject }
+        .filter { it.has("signature") }
+        .forEach {
+            val signature = it.getString("signature")
+            if (signature.contains(",$JS_NUMBER")) {
+                it.put("signature", signature.replace(",$JS_NUMBER", ",$INT"))
+            }
+        }
 }
 
