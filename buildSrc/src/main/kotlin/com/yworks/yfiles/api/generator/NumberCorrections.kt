@@ -23,6 +23,7 @@ internal fun correctNumbers(source: JSONObject) {
         .onEach { it.correctConstants() }
         .onEach { it.correctConstructors() }
         .onEach { it.correctProperties() }
+        .onEach { it.correctPropertiesGeneric() }
         .onEach { it.correctMethods() }
         .forEach { it.correctMethodParameters() }
 }
@@ -148,6 +149,34 @@ private fun getPropertyType(className: String, propertyName: String): String {
         else -> throw IllegalStateException("Unexpected $className.$propertyName")
     }
 }
+
+private fun JSONObject.correctPropertiesGeneric() {
+    if (!has("properties")) {
+        return
+    }
+
+    getJSONArray("properties")
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.getString("type").contains(",$JS_NUMBER>") }
+        .forEach { it.put("type", getPropertyGenericType(it.getString("name"), it.getString("type"))) }
+}
+
+private fun getPropertyGenericType(propertyName: String, type: String): String {
+    val generic = if (
+        propertyName.endsWith("Ids")
+        || propertyName.endsWith("Indices")
+        || propertyName.endsWith("Capacities", true)
+        || propertyName == "busRootOffsets"
+    ) {
+        INT
+    } else {
+        DOUBLE
+    }
+
+    return type.replace(JS_NUMBER, generic)
+}
+
 
 private fun JSONObject.correctMethods() {
     correctMethods("staticMethods")
