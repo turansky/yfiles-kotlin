@@ -176,7 +176,7 @@ internal class KotlinFileGenerator(
 
         protected open fun staticContentItems(): List<Declaration> = emptyList()
 
-        protected fun staticContent(): String {
+        protected open fun staticContent(): String {
             if (isObject()) {
                 return ""
             }
@@ -366,6 +366,19 @@ internal class KotlinFileGenerator(
 
         override fun staticContentItems(): List<Declaration> = staticDeclarations
 
+        override fun staticContent(): String {
+            val staticContent = super.staticContent()
+
+            val generics = genericParameters()
+            return """
+                |$staticContent
+                |
+                |@JsName("${fqn.name}")
+                |internal external class ${fqn.name}Delegate$generics(source: ${fqn.name}$generics)
+                |
+            """.trimMargin()
+        }
+
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract }
 
@@ -396,15 +409,13 @@ internal class KotlinFileGenerator(
 
             val generics = genericParameters()
             val classDeclaration = fqn.name + generics
-            val baseClassDeclaration = fqn.name + "Base" + generics
+            val delegateClassDeclaration = fqn.name + "Delegate" + generics
 
             content += """
                 |
-                |
-                |abstract class $baseClassDeclaration : $classDeclaration {
-                |   init {
-                |       yfiles.lang.Class.injectInterfaces(this, ${fqn.name}Static.yclass)
-                |   }
+                |fun $generics yy(source:$classDeclaration) : $classDeclaration {
+                |   @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+                |   return $delegateClassDeclaration(source) as $classDeclaration
                 |}
             """.trimMargin()
 
