@@ -20,10 +20,42 @@ internal fun correctNumbers(source: JSONObject) {
     correctEnumerable(types)
 
     types.asSequence()
+        .onEach { it.correctConstants() }
         .onEach { it.correctConstructors() }
         .onEach { it.correctProperties() }
         .onEach { it.correctMethods() }
         .forEach { it.correctMethodParameters() }
+}
+
+private fun JSONObject.correctConstants() {
+    if (!has("constants")) {
+        return
+    }
+
+    val className = getString("name")
+    getJSONArray("constants")
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.getString("type") != JS_NUMBER }
+        .filter { it.getString("type").contains(JS_NUMBER) }
+        .forEach {
+            if (it.has("signature")) {
+                check(className == "HierarchicalClustering")
+                it.put("signature", it.getString("signature").replace(",$JS_NUMBER>", ",$DOUBLE>"))
+                return@forEach
+            }
+
+            val type = it.getString("type")
+            check(type.endsWith("DpKey<$JS_NUMBER>"))
+
+            val name = it.getString("name")
+            val generic = if (name.contains("_ID_") || name.contains("_INDEX_")) {
+                INT
+            } else {
+                DOUBLE
+            }
+            it.put("type", type.replace("<$JS_NUMBER>", "<$generic>"))
+        }
 }
 
 private fun JSONObject.correctConstructors() {
