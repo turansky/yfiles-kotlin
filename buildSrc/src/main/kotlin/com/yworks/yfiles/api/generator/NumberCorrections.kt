@@ -354,7 +354,11 @@ private val INT_SIGNATURE_CLASSES = setOf(
 private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
         .filter { it.getString("name") in INT_SIGNATURE_CLASSES }
-        .flatMap { it.getJSONArray("methods").asSequence() }
+        .flatMap { type ->
+            sequenceOf("constructors", "methods", "staticMethods")
+                .filter { type.has(it) }
+                .flatMap { type.getJSONArray(it).asSequence() }
+        }
         .map { it as JSONObject }
         .filter { it.has("parameters") }
         .flatMap { it.getJSONArray("parameters").asSequence() }
