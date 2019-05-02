@@ -158,7 +158,7 @@ private fun JSONObject.correctPropertiesGeneric() {
     getJSONArray("properties")
         .asSequence()
         .map { it as JSONObject }
-        .filter { it.getString("type").contains(",$JS_NUMBER>") }
+        .filter { it.getString("type").contains("$JS_NUMBER>") }
         .forEach { it.put("type", getPropertyGenericType(it.getString("name"), it.getString("type"))) }
 
     getJSONArray("properties")
@@ -173,7 +173,7 @@ private fun JSONObject.correctPropertiesGeneric() {
 
             val name = it.getString("name")
             check(name == "metric" || name == "heuristic")
-            it.put("signature", signature.replace(",$JS_NUMBER>", ",$DOUBLE>"))
+            it.put("signature", signature.replace("$JS_NUMBER>", "$DOUBLE>"))
         }
 }
 
