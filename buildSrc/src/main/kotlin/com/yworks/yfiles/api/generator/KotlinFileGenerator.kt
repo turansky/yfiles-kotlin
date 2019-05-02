@@ -414,7 +414,7 @@ internal class KotlinFileGenerator(
             content += """
                 |
                 |fun $generics yy(source:$classDeclaration) : $classDeclaration {
-                |   @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+                |   @Suppress("UNCHECKED_CAST", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE", "CAST_NEVER_SUCCEEDS")
                 |   return $delegateClassDeclaration(source) as $classDeclaration
                 |}
             """.trimMargin()
