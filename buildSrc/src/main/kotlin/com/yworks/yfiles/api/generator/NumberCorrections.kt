@@ -160,6 +160,21 @@ private fun JSONObject.correctPropertiesGeneric() {
         .map { it as JSONObject }
         .filter { it.getString("type").contains(",$JS_NUMBER>") }
         .forEach { it.put("type", getPropertyGenericType(it.getString("name"), it.getString("type"))) }
+
+    getJSONArray("properties")
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.has("signature") }
+        .forEach {
+            val signature = it.getString("signature")
+            if (!signature.endsWith(",$JS_NUMBER>")) {
+                return@forEach
+            }
+
+            val name = it.getString("name")
+            check(name == "metric" || name == "heuristic")
+            it.put("signature", signature.replace(",$JS_NUMBER>", ",$DOUBLE>"))
+        }
 }
 
 private fun getPropertyGenericType(propertyName: String, type: String): String {
