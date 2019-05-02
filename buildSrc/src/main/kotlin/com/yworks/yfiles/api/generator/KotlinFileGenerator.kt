@@ -417,6 +417,8 @@ internal class KotlinFileGenerator(
                 |   @Suppress("UNCHECKED_CAST", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE", "CAST_NEVER_SUCCEEDS")
                 |   return $delegateClassDeclaration(source) as $classDeclaration
                 |}
+                |
+                |fun $generics $classDeclaration.yCast() = yy(this)
             """.trimMargin()
 
             if (defaultDeclarations.isEmpty()) {
