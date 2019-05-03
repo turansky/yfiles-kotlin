@@ -26,6 +26,14 @@ internal fun correctNumbers(source: JSONObject) {
         .onEach { it.correctPropertiesGeneric() }
         .onEach { it.correctMethods() }
         .forEach { it.correctMethodParameters() }
+
+    (source
+        .getJSONObject("functionSignatures")
+        .getJSONObject("yfiles.view.AnimationCallback")
+        .getJSONArray("parameters")
+        .single() as JSONObject)
+        .put("type", DOUBLE)
+
 }
 
 private fun JSONObject.correctConstants() {
