@@ -275,6 +275,10 @@ private fun JSONObject.correctMethodParameters(key: String) {
                     val parameterName = it.getString("name")
                     when (it.getString("type")) {
                         JS_NUMBER -> it.put("type", getParameterType(className, methodName, parameterName))
+                        "Array<$JS_NUMBER>" -> {
+                            val generic = getGenericParameterType(className, methodName, parameterName)
+                            it.put("type", "Array<$generic>")
+                        }
                     }
                 }
         }
@@ -350,6 +354,14 @@ private fun getParameterType(className: String, methodName: String, parameterNam
         in DOUBLE_METHOD_PARAMETERS -> DOUBLE
         in DOUBLE_PROPERTIES -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
+    }
+}
+
+private fun getGenericParameterType(className: String, methodName: String, parameterName: String): String {
+    return if (className == "NodeOrders" || methodName.endsWith("ForInt") || parameterName == "intData") {
+        INT
+    } else {
+        DOUBLE
     }
 }
 
