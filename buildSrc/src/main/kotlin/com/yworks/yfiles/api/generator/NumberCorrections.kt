@@ -209,9 +209,12 @@ private fun JSONObject.correctMethods(key: String) {
         .map { it as JSONObject }
         .filter { it.has("returns") }
         .forEach {
+            val methodName = it.getString("name")
             val returns = it.getJSONObject("returns")
-            if (returns.getString("type") == JS_NUMBER) {
-                returns.put("type", getReturnType(className, it.getString("name")))
+
+            when (returns.getString("type")) {
+                JS_NUMBER -> returns.put("type", getReturnType(className, methodName))
+                "Array<$JS_NUMBER>" -> returns.put("type", "Array<$DOUBLE>")
             }
         }
 }
