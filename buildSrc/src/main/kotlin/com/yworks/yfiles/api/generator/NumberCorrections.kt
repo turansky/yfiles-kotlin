@@ -271,8 +271,12 @@ private fun JSONObject.correctMethodParameters(key: String) {
             method.getJSONArray("parameters")
                 .asSequence()
                 .map { it as JSONObject }
-                .filter { it.getString("type") == JS_NUMBER }
-                .forEach { it.put("type", getParameterType(className, methodName, it.getString("name"))) }
+                .forEach {
+                    val parameterName = it.getString("name")
+                    when (it.getString("type")) {
+                        JS_NUMBER -> it.put("type", getParameterType(className, methodName, parameterName))
+                    }
+                }
         }
 }
 
