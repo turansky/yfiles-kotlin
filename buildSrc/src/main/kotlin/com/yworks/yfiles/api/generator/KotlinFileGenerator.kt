@@ -49,7 +49,7 @@ internal class KotlinFileGenerator(
             ?: return
 
         dir.resolve("${fqn.name}Companion.kt")
-            .writeText(companionContent)
+            .writeText(companionContent.replace(redundantPackageDeclaration, ""))
     }
 
     private fun generate(directory: File, functionSignature: FunctionSignature) {
