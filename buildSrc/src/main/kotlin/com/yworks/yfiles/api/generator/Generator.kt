@@ -3,7 +3,6 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.Hacks.applyHacks
-import com.yworks.yfiles.api.generator.ProgrammingLanguage.JAVA
 import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import org.json.JSONObject
 import java.io.File
@@ -44,18 +43,6 @@ fun generateKotlinWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: F
         language = KOTLIN,
         sourceDir = sourceDir,
         createFileGenerator = ::KotlinFileGenerator
-    )
-}
-
-fun generateJavaWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: File) {
-    TypeParser.standardTypeMap = JavaTypes.STANDARD_TYPE_MAP
-    TypeParser.javaArrayMode = true
-    generateWrappers(
-        apiPath = apiPath,
-        apiVersion = apiVersion,
-        language = JAVA,
-        sourceDir = sourceDir,
-        createFileGenerator = ::JavaFileGenerator
     )
 }
 

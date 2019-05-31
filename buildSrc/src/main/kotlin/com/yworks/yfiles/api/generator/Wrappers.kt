@@ -1,7 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.JavaTypes.VOID
-import com.yworks.yfiles.api.generator.ProgrammingLanguage.JAVA
 import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import com.yworks.yfiles.api.generator.TypeParser.getGenericString
 import org.json.JSONObject
@@ -13,14 +11,9 @@ internal abstract class JsonWrapper(val source: JSONObject) {
         throw IllegalStateException("toKotlinCode() method must be overridden")
     }
 
-    protected open fun toJavaCode(): String {
-        throw IllegalStateException("toJavaCode() method must be overridden")
-    }
-
     fun toCode(programmingLanguage: ProgrammingLanguage): String {
         return when (programmingLanguage) {
             KOTLIN -> toKotlinCode()
-            JAVA -> toJavaCode()
         }
     }
 
@@ -91,10 +84,6 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
 
     override fun toKotlinCode(): String {
         return "$name: $type"
-    }
-
-    override fun toJavaCode(): String {
-        return "$type $name"
     }
 }
 
@@ -200,25 +189,11 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
 
         return "${modificator} constructor(${kotlinParametersString()})"
     }
-
-    override fun toJavaCode(): String {
-        val modificator: String = when {
-            protected -> "protected"
-            else -> "public"
-        }
-
-        return "${modificator} ${nameOfClass}(${javaParametersString()}) {}"
-    }
 }
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
     override fun toKotlinCode(): String {
         return "val $name: $type = definedExternally"
-    }
-
-    override fun toJavaCode(): String {
-        val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
-        return "$annotation\npublic static native $type $name();"
     }
 }
 
@@ -272,50 +247,6 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
                 "    get() = ext.$name"
         if (getterSetter) {
             str += "\n    set(value) { ext.$name = value }"
-        }
-
-        return str
-    }
-
-    override fun toJavaCode(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
-
-        val override = if (classRegistry.propertyOverriden(fqn, name)) {
-            "@Override\n"
-        } else {
-            ""
-        }
-
-        val modificator = if (protected) {
-            "protected "
-        } else {
-            "public "
-        } + if (abstract) {
-            "abstract "
-        } else {
-            ""
-        } + if (abstract) {
-            ""
-        } else {
-            "native "
-        }
-
-        val annotation = "@jsinterop.annotations.JsProperty(name=\"$name\")"
-        val getterName = if (type != "boolean") {
-            "get" + name.capitalize()
-        } else {
-            if (name.startsWith("is")) {
-                name
-            } else {
-                "is" + name.capitalize()
-            }
-        }
-
-        var str = annotation + "\n" + "$override $modificator $type $getterName();"
-
-        if (getterSetter) {
-            val setterName = "set" + name.capitalize()
-            str += "\n" + annotation + "\n" + "$modificator void $setterName($type value);"
         }
 
         return str
@@ -419,11 +350,6 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         return "fun $generics ${classDeclaration}.$name($extParameters)$returnSignature\n" +
                 " = ext.$name($callParameters)"
     }
-
-    override fun toJavaCode(): String {
-        val returnType = returns?.type ?: VOID
-        return "${javaModificator()} $generics $returnType $name(${javaParametersString()});"
-    }
 }
 
 // TODO: support artificial parameters
@@ -504,11 +430,6 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
         return listeners
             .lines { it.toCode(KOTLIN) }
     }
-
-    override fun toJavaCode(): String {
-        return listeners
-            .lines { it.toCode(JAVA) }
-    }
 }
 
 private class EventListener(private val fqn: String, source: JSONObject) : JsonWrapper(source) {
@@ -562,13 +483,6 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
             .byComma { "${it.name}: ${it.type}" }
 
         return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
-    }
-
-    override fun toJavaCode(): String {
-        val parametersString = parameters
-            .byComma { "${it.type} ${it.name}" }
-
-        return "${javaModificator()} $VOID $name($parametersString);"
     }
 }
 
