@@ -1,6 +1,5 @@
 package com.yworks.yfiles.api.generator
 
-import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import com.yworks.yfiles.api.generator.TypeParser.getGenericString
 import org.json.JSONObject
 import java.util.*
@@ -11,11 +10,7 @@ internal abstract class JsonWrapper(val source: JSONObject) {
         throw IllegalStateException("toKotlinCode() method must be overridden")
     }
 
-    fun toCode(programmingLanguage: ProgrammingLanguage): String {
-        return when (programmingLanguage) {
-            KOTLIN -> toKotlinCode()
-        }
-    }
+    fun toCode(): String = toKotlinCode()
 
     final override fun toString(): String {
         throw IllegalStateException("Use method toCode() instead")
@@ -117,16 +112,7 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
     }
 
     fun implementedTypes(): List<String> {
-        val types = implements.map { TypeParser.parseType(it) }
-        return MixinHacks.getImplementedTypes(fqn, types)
-    }
-
-    fun implementedTypes(language: ProgrammingLanguage): List<String> {
-        if (language == KOTLIN) {
-            return implements.map { TypeParser.parseType(it) }
-        }
-
-        return implementedTypes()
+        return implements.map { TypeParser.parseType(it) }
     }
 }
 
@@ -428,7 +414,7 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
 
     override fun toKotlinCode(): String {
         return listeners
-            .lines { it.toCode(KOTLIN) }
+            .lines { it.toCode() }
     }
 }
 

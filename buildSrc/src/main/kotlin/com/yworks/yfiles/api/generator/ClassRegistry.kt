@@ -30,8 +30,7 @@ private class EmptyClassRegistry : ClassRegistry {
 }
 
 internal class ClassRegistryImpl(
-    types: List<Type>,
-    private val language: ProgrammingLanguage
+    types: List<Type>
 ) : ClassRegistry {
     private val instances = types.associateBy({ it.fqn }, { it })
 
@@ -58,7 +57,7 @@ internal class ClassRegistryImpl(
 
         return sequenceOf(instance.extendedType())
             .filterNotNull()
-            .plus(instance.implementedTypes(language))
+            .plus(instance.implementedTypes())
             .map { if (it.contains("<")) till(it, "<") else it }
             .toList()
     }

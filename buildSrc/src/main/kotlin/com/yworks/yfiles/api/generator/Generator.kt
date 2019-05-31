@@ -3,7 +3,6 @@
 package com.yworks.yfiles.api.generator
 
 import com.yworks.yfiles.api.generator.Hacks.applyHacks
-import com.yworks.yfiles.api.generator.ProgrammingLanguage.KOTLIN
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -40,7 +39,6 @@ fun generateKotlinWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: F
     generateWrappers(
         apiPath = apiPath,
         apiVersion = apiVersion,
-        language = KOTLIN,
         sourceDir = sourceDir,
         createFileGenerator = ::KotlinFileGenerator
     )
@@ -49,7 +47,6 @@ fun generateKotlinWrappers(apiPath: String, apiVersion: ApiVersion, sourceDir: F
 private fun generateWrappers(
     apiPath: String,
     apiVersion: ApiVersion,
-    language: ProgrammingLanguage,
     sourceDir: File,
     createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
 ) {
@@ -69,7 +66,7 @@ private fun generateWrappers(
 
     val functionSignatures = apiRoot.functionSignatures
 
-    ClassRegistry.instance = ClassRegistryImpl(types, language)
+    ClassRegistry.instance = ClassRegistryImpl(types)
 
     val fileGenerator = createFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)

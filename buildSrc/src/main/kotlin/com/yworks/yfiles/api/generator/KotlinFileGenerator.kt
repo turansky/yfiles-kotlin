@@ -5,8 +5,6 @@ import com.yworks.yfiles.api.generator.YModule.Companion.findModule
 import com.yworks.yfiles.api.generator.YModule.Companion.getQualifier
 import java.io.File
 
-private val PROGRAMMING_LANGUAGE = ProgrammingLanguage.KOTLIN
-
 internal class KotlinFileGenerator(
     private val types: Iterable<Type>,
     private val functionSignatures: Iterable<FunctionSignature>
@@ -70,7 +68,7 @@ internal class KotlinFileGenerator(
             ""
         }
         val parameters = functionSignature.parameters
-            .byComma { it.toCode(PROGRAMMING_LANGUAGE) }
+            .byComma { it.toCode() }
         val returns = functionSignature.returns?.type ?: UNIT
 
         val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
@@ -152,7 +150,7 @@ internal class KotlinFileGenerator(
             }
 
         protected open fun parentTypes(): List<String> {
-            return declaration.implementedTypes(PROGRAMMING_LANGUAGE)
+            return declaration.implementedTypes()
         }
 
         protected fun parentString(): String {
@@ -171,7 +169,7 @@ internal class KotlinFileGenerator(
 
         open fun content(): String {
             return memberDeclarations
-                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
+                .lines { it.toCode() }
         }
 
         protected open fun staticContentItems(): List<Declaration> = emptyList()
@@ -184,7 +182,7 @@ internal class KotlinFileGenerator(
             val items = staticContentItems()
             val companion = if (items.isNotEmpty()) {
                 val code = items.lines {
-                    it.toCode(PROGRAMMING_LANGUAGE)
+                    it.toCode()
                 }
 
                 """
@@ -272,7 +270,7 @@ internal class KotlinFileGenerator(
                 .dropLast(1)
                 .asSequence()
                 .distinct()
-                .lines { it.toCode(PROGRAMMING_LANGUAGE) }
+                .lines { it.toCode() }
         }
 
         override fun parentTypes(): List<String> {
@@ -303,7 +301,7 @@ internal class KotlinFileGenerator(
                 .lastOrNull()
 
             val constructor = if (lastConstructor != null) {
-                lastConstructor.toCode(PROGRAMMING_LANGUAGE)
+                lastConstructor.toCode()
                     .removePrefix(" constructor")
             } else {
                 ""
@@ -311,7 +309,7 @@ internal class KotlinFileGenerator(
 
             val companionObjectContent = if (staticDeclarations.isNotEmpty()) {
                 val content = staticDeclarations.lines {
-                    it.toCode(PROGRAMMING_LANGUAGE)
+                    it.toCode()
                 }
 
                 """
@@ -333,7 +331,7 @@ internal class KotlinFileGenerator(
 
         private fun objectContent(): String {
             val items = staticDeclarations.map {
-                it.toCode(PROGRAMMING_LANGUAGE)
+                it.toCode()
             }
 
             return """
@@ -384,7 +382,7 @@ internal class KotlinFileGenerator(
 
         private fun calculateDefaultsContent(): String {
             val items = defaultDeclarations
-                .map { it.toCode(PROGRAMMING_LANGUAGE) }
+                .map { it.toCode() }
 
             if (items.isEmpty()) {
                 return ""
