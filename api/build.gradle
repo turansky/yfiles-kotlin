@@ -1,6 +1,6 @@
-import com.yworks.yfiles.api.generator.ApiVersion
+import io.github.turansky.yfiles.ApiVersion
 
-import static com.yworks.yfiles.api.generator.Generator.generateKotlinWrappers
+import static io.github.turansky.yfiles.Generator.generateKotlinWrappers
 
 group 'com.yworks.yfiles'
 version '2.2.0-SNAPSHOT'

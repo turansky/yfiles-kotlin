@@ -1,6 +1,6 @@
-package com.yworks.yfiles.api.generator
+package io.github.turansky.yfiles
 
-import com.yworks.yfiles.api.generator.TypeParser.getGenericString
+import io.github.turansky.yfiles.TypeParser.getGenericString
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty

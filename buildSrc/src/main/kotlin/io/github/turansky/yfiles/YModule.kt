@@ -1,4 +1,4 @@
-package com.yworks.yfiles.api.generator
+package io.github.turansky.yfiles
 
 internal enum class YModule(val id: String, val weight: Int) {
     COMPLETE("complete", 1000),

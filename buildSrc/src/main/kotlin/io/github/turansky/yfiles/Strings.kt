@@ -1,4 +1,4 @@
-package com.yworks.yfiles.api.generator
+package io.github.turansky.yfiles
 
 fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
     val startIndex = str.indexOf(start)

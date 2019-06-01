@@ -1,4 +1,4 @@
-package com.yworks.yfiles.api.generator
+package io.github.turansky.yfiles
 
 internal val DOUBLE_CONSTRUCTOR_PARAMETERS = setOf(
     "from", "to",

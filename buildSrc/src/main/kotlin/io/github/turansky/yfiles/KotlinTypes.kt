@@ -1,4 +1,4 @@
-package com.yworks.yfiles.api.generator
+package io.github.turansky.yfiles
 
 internal object KotlinTypes {
     val UNIT = "Unit"

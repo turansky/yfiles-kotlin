@@ -1,8 +1,8 @@
-package com.yworks.yfiles.api.generator
+package io.github.turansky.yfiles
 
-import com.yworks.yfiles.api.generator.KotlinTypes.UNIT
-import com.yworks.yfiles.api.generator.YModule.Companion.findModule
-import com.yworks.yfiles.api.generator.YModule.Companion.getQualifier
+import io.github.turansky.yfiles.KotlinTypes.UNIT
+import io.github.turansky.yfiles.YModule.Companion.findModule
+import io.github.turansky.yfiles.YModule.Companion.getQualifier
 import java.io.File
 
 internal class KotlinFileGenerator(
