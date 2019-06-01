@@ -6,11 +6,9 @@ import java.util.*
 import kotlin.reflect.KProperty
 
 internal abstract class JsonWrapper(val source: JSONObject) {
-    protected open fun toKotlinCode(): String {
-        throw IllegalStateException("toKotlinCode() method must be overridden")
+    open fun toCode(): String {
+        throw IllegalStateException("toCode() method must be overridden")
     }
-
-    fun toCode(): String = toKotlinCode()
 
     final override fun toString(): String {
         throw IllegalStateException("Use method toCode() instead")
@@ -77,7 +75,7 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { TypeParser.parseType(it) }
     val summary: String by StringDelegate()
 
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         return "$name: $type"
     }
 }
@@ -167,7 +165,7 @@ internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Decl
 internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
     val protected = modifiers.protected
 
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         val modificator: String = when {
             protected -> "protected"
             else -> ""
@@ -178,7 +176,7 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
 }
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         return "val $name: $type = definedExternally"
     }
 }
@@ -190,7 +188,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
     val abstract = modifiers.abstract
 
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         var str = ""
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
@@ -313,7 +311,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         return ": $returnType"
     }
 
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
@@ -412,7 +410,7 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
     val listenerNames: List<String>
         get() = listeners.map { it.name }
 
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         return listeners
             .lines { it.toCode() }
     }
@@ -458,7 +456,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         return override + modificators.joinToString(separator = " ", postfix = " ")
     }
 
-    override fun toKotlinCode(): String {
+    override fun toCode(): String {
         val returnSignature = if (modifiers.abstract) {
             ""
         } else {
