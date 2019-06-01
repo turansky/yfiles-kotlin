@@ -31,6 +31,7 @@ tasks.compileKotlin2Js {
     }
 
     dependsOn(generateDeclarations)
+    finalizedBy("publishToMavenLocal")
 }
 
 val mainJar by tasks.registering(Jar::class) {

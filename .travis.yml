@@ -1,6 +1,6 @@
 before_install:
   - chmod +x gradlew
 script:
-  - ./gradlew clean build publishToMavenLocal
+  - ./gradlew clean build
 notifications:
   email: false
