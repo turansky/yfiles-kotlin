@@ -24,6 +24,6 @@ compileKotlin2Js {
 }
 
 dependencies {
-  compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
-  compile project(":api")
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
+  implementation project(":api")
 }
