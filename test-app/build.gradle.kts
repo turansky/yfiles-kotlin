@@ -12,5 +12,5 @@ tasks {
 
 dependencies {
     implementation(kotlin("stdlib-js"))
-    implementation(project(":api"))
+    implementation(project(":yfiles-kotlin"))
 }

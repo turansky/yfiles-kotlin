@@ -10,3 +10,5 @@ pluginManagement {
 
 include("api")
 include("test-app")
+
+project(":api").name = "yfiles-kotlin"
