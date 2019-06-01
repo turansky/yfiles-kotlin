@@ -1,5 +1,3 @@
-@file:JvmName("Generator")
-
 package io.github.turansky.yfiles
 
 import io.github.turansky.yfiles.Hacks.applyHacks
