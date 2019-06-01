@@ -23,11 +23,6 @@ compileKotlin2Js {
   }
 }
 
-repositories {
-  mavenCentral()
-  mavenLocal()
-}
-
 dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
   compile project(":api")

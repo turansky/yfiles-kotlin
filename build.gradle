@@ -1,3 +1,9 @@
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }

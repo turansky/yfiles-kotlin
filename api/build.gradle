@@ -35,10 +35,6 @@ task generateSources() {
 
 compileKotlin2Js.dependsOn generateSources
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
 }
