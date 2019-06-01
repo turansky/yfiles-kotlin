@@ -1,3 +1,7 @@
+plugins {
+    id("kotlin2js") version "1.3.31" apply false
+}
+
 allprojects {
     repositories {
         mavenCentral()
