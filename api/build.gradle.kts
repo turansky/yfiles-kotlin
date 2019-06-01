@@ -31,6 +31,7 @@ tasks.compileKotlin2Js {
     }
 }
 
+/*
 val mainJar by tasks.registering(Jar::class) {
     from("$projectDir/out")
 }
@@ -51,3 +52,4 @@ publishing {
         }
     }
 }
+ */
