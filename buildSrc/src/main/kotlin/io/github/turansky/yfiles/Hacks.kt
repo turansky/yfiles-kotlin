@@ -105,12 +105,12 @@ private fun JSONObject.addMethod(
 }
 
 internal object Hacks {
-    fun applyHacks(source: JSONObject, version: ApiVersion) {
+    fun applyHacks(source: JSONObject) {
         removeDuplicatedProperties(source)
         removeDuplicatedMethods(source)
 
         fixConstantGenerics(source)
-        fixFunctionGenerics(source, version)
+        fixFunctionGenerics(source)
 
         fixReturnType(source)
         fixExtendedType(source)
@@ -121,7 +121,7 @@ internal object Hacks {
         fixMethodParameterNullability(source)
 
         addMissedProperties(source)
-        addMissedMethods(source, version)
+        addMissedMethods(source)
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
@@ -135,7 +135,7 @@ internal object Hacks {
             }
     }
 
-    private fun fixFunctionGenerics(source: JSONObject, version: ApiVersion) {
+    private fun fixFunctionGenerics(source: JSONObject) {
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")
             .first { it.getString("name") == "fromArray" }
@@ -154,13 +154,11 @@ internal object Hacks {
             .getJSONArray("typeparameters")
             .remove(0)
 
-        if (version == ApiVersion.V_2_2) {
             source.type("yfiles.collections.List")
                 .getJSONArray("staticMethods")
                 .first { it.getString("name") == "from" }
                 .getJSONArray("typeparameters")
                 .put(jObject("name" to "T"))
-        }
     }
 
     private fun fixReturnType(source: JSONObject) {
@@ -650,10 +648,7 @@ internal object Hacks {
                 MethodParameterData("ratio", JS_NUMBER)
             ),
             result = ResultData("yfiles.geometry.Tangent", true)
-        )
-    )
-
-    private val MISSED_METHODS_2_2 = listOf(
+        ),
         MethodData(
             className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
             methodName = "createVisual",
@@ -681,15 +676,8 @@ internal object Hacks {
             }
     }
 
-    private fun addMissedMethods(source: JSONObject, version: ApiVersion) {
-        val missedMethods = if (version == ApiVersion.V_2_2) {
-            MISSED_METHODS + MISSED_METHODS_2_2
-        } else {
-            MISSED_METHODS
-        }
-
-        missedMethods
-            .forEach { data ->
+    private fun addMissedMethods(source: JSONObject) {
+        MISSED_METHODS.forEach { data ->
                 source.type(data.className)
                     .addMethod(data)
             }
