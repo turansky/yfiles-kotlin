@@ -5,7 +5,6 @@ internal object TypeParser {
     private val GENERIC_END = ">"
 
     var standardTypeMap = emptyMap<String, String>()
-    var javaArrayMode = false
 
     fun parse(type: String, signature: String?): String {
         return parseType(signature ?: type)
@@ -23,39 +22,17 @@ internal object TypeParser {
 
         val mainType = parseType(till(type, GENERIC_START))
         val parametrizedTypes = parseGenericParameters(between(type, GENERIC_START, GENERIC_END))
-        val generics = checkGenericString(parametrizedTypes.byComma())
-
-        if (javaArrayMode && mainType == "Array") {
-            return "$generics[]"
-        }
+        val generics = parametrizedTypes.byComma()
 
         return "$mainType<$generics>"
     }
 
     fun getGenericString(parameters: List<TypeParameter>): String {
         return if (parameters.isNotEmpty()) {
-            checkGenericString("<${parameters.byComma { it.name }}> ")
+            "<${parameters.byComma { it.name }}> "
         } else {
             ""
         }
-    }
-
-    private fun checkGenericString(generics: String): String {
-        if (!javaArrayMode) {
-            return generics
-        }
-
-        val result = generics
-            .replace("boolean", "Boolean")
-            .replace("double", "Double")
-            .replace(", int", ", Integer")
-
-        if (result == "int") {
-            return "Integer"
-        }
-
-        return result
-            .replace("int,", "Integer,")
     }
 
     // TODO: optimize calculation
