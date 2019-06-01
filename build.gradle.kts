@@ -4,6 +4,7 @@ allprojects {
     }
 }
 
-wrapper {
+tasks.wrapper {
+    gradleVersion = "5.4.1"
     distributionType = Wrapper.DistributionType.ALL
 }
