@@ -12,45 +12,42 @@ dependencies {
     implementation(kotlin("stdlib-js"))
 }
 
-tasks {
-    clean {
-        doLast {
-            delete("out")
-        }
-    }
-
-    compileKotlin2Js {
-        kotlinOptions {
-            outputFile = "$projectDir/out/yfiles-kotlin.js"
-            moduleKind = "amd"
-            metaInfo = true
-        }
-
-        doFirst {
-            val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
-            generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
-        }
+tasks.clean {
+    doLast {
+        delete("out")
     }
 }
 
-/*
-task mainJar(type: Jar) {
-    from "$projectDir/out"
+tasks.compileKotlin2Js {
+    kotlinOptions {
+        outputFile = "$projectDir/out/yfiles-kotlin.js"
+        moduleKind = "amd"
+        metaInfo = true
+    }
+
+    doFirst {
+        val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
+        generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
+    }
 }
 
-task sourceJar(type: Jar) {
-    from "$projectDir/src/main/kotlin"
+val mainJar by tasks.registering(Jar::class) {
+    from("$projectDir/out")
+}
+
+val sourceJar by tasks.registering(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    classifier = "sources"
 }
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            artifact mainJar
+        register("mavenKotlin", MavenPublication::class) {
+            artifact(mainJar.get())
+        }
 
-            artifact sourceJar {
-                classifier "sources"
-            }
+        register("mavenKotlinSources", MavenPublication::class) {
+            artifact(sourceJar.get())
         }
     }
 }
-*/
