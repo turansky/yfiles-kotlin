@@ -23,10 +23,6 @@ compileKotlin2Js {
   }
 }
 
-sourceSets {
-  main.kotlin.srcDirs += 'src/main/kotlin'
-}
-
 repositories {
   mavenCentral()
   mavenLocal()
