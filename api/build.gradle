@@ -35,10 +35,6 @@ task generateSources() {
 
 compileKotlin2Js.dependsOn generateSources
 
-sourceSets {
-    main.kotlin.srcDirs += 'src/main/kotlin'
-}
-
 repositories {
     mavenCentral()
 }
