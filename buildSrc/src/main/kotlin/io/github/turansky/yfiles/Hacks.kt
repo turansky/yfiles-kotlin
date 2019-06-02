@@ -201,7 +201,10 @@ internal object Hacks {
         PropertyDeclaration("yfiles.graph.SimpleEdge", "tag") to true,
         PropertyDeclaration("yfiles.graph.SimpleLabel", "tag") to true,
         PropertyDeclaration("yfiles.graph.SimpleNode", "tag") to true,
-        PropertyDeclaration("yfiles.graph.SimplePort", "tag") to true
+        PropertyDeclaration("yfiles.graph.SimplePort", "tag") to true,
+
+        PropertyDeclaration("yfiles.graph.IEdge", "sourcePort") to false,
+        PropertyDeclaration("yfiles.graph.IEdge", "targetPort") to false
     )
 
     private fun fixPropertyNullability(source: JSONObject) {
