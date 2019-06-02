@@ -766,7 +766,6 @@ internal object Hacks {
             .map { it as JSONObject }
             .filter { it.has("fields") }
             .forEach { type ->
-                println(type.getString("name"))
                 val fields = type.getJSONArray("fields")
                 if (type.has("properties")) {
                     val properties = type.getJSONArray("properties")
