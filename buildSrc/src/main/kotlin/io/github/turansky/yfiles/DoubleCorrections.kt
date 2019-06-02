@@ -115,6 +115,10 @@ internal val DOUBLE_PROPERTIES = setOf(
     "upY",
     "angle",
     "initialAngle",
+    "upperAngle",
+    "lowerAngle",
+    "gapAngle",
+    "dist",
     "fixedRadius",
     "minimumRadius",
     "lastAppliedRadius",
@@ -302,6 +306,8 @@ internal val DOUBLE_PROPERTIES = setOf(
     "criticalEdgePriority",
     "portBorderGapRatios",
     "cutoff",
+
+    "Eps",
 
     // static
     "enlargementAbsolute",

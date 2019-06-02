@@ -122,6 +122,7 @@ internal object Hacks {
 
         addMissedProperties(source)
         addMissedMethods(source)
+        fieldToProperties(source)
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
@@ -751,6 +752,29 @@ internal object Hacks {
                     .first { it.getString("name") == declaration.methodName }
 
                 methods.remove(methods.indexOf(method))
+            }
+    }
+
+    private fun fieldToProperties(source: JSONObject) {
+        source.getJSONArray("namespaces")
+            .asSequence()
+            .map { it as JSONObject }
+            .filter { it.has("namespaces") }
+            .flatMap { it.getJSONArray("namespaces").asSequence() }
+            .map { it as JSONObject }
+            .flatMap { it.getJSONArray("types").asSequence() }
+            .map { it as JSONObject }
+            .filter { it.has("fields") }
+            .forEach { type ->
+                println(type.getString("name"))
+                val fields = type.getJSONArray("fields")
+                if (type.has("properties")) {
+                    val properties = type.getJSONArray("properties")
+                    fields.forEach { properties.put(it) }
+                } else {
+                    type.put("properties", fields)
+                }
+                type.remove("fields")
             }
     }
 }
