@@ -69,7 +69,7 @@ internal class KotlinFileGenerator(
         }
         val parameters = functionSignature.parameters
             .byComma { it.toCode() }
-        val returns = functionSignature.returns?.type ?: UNIT
+        val returns = functionSignature.returns?.toCode() ?: UNIT
 
         val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
             .replace(redundantPackageDeclaration, "")
