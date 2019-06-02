@@ -1,9 +1,4 @@
 pluginManagement {
-    repositories {
-        mavenCentral()
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-    }
-
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "kotlin2js") {
