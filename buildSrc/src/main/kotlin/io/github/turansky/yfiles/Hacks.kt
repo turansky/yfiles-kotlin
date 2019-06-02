@@ -194,22 +194,30 @@ internal object Hacks {
             }
     }
 
+    private val PROPERTY_NULLABILITY_CORRECTION = mapOf(
+        PropertyDeclaration("yfiles.graph.DefaultGraph", "tag") to true,
+        PropertyDeclaration("yfiles.graph.GraphWrapperBase", "tag") to true,
+        PropertyDeclaration("yfiles.graph.SimpleBend", "tag") to true,
+        PropertyDeclaration("yfiles.graph.SimpleEdge", "tag") to true,
+        PropertyDeclaration("yfiles.graph.SimpleLabel", "tag") to true,
+        PropertyDeclaration("yfiles.graph.SimpleNode", "tag") to true,
+        PropertyDeclaration("yfiles.graph.SimplePort", "tag") to true
+    )
+
     private fun fixPropertyNullability(source: JSONObject) {
-        sequenceOf(
-            "yfiles.graph.DefaultGraph",
-            "yfiles.graph.GraphWrapperBase",
-            "yfiles.graph.SimpleBend",
-            "yfiles.graph.SimpleEdge",
-            "yfiles.graph.SimpleLabel",
-            "yfiles.graph.SimpleNode",
-            "yfiles.graph.SimplePort"
-        ).forEach { className ->
+        PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
             source
                 .type(className)
                 .getJSONArray("properties")
-                .first { it.get("name") == "tag" }
+                .first { it.get("name") == propertyName }
                 .getJSONArray("modifiers")
-                .put("canbenull")
+                .also { modifiers ->
+                    if (nullable) {
+                        modifiers.put("canbenull")
+                    } else {
+                        modifiers.remove(modifiers.indexOf("canbenull"))
+                    }
+                }
         }
     }
 
