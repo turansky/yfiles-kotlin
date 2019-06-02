@@ -119,6 +119,7 @@ internal object Hacks {
         fixPropertyNullability(source)
         fixMethodParameterName(source)
         fixMethodParameterNullability(source)
+        fixMethodNullability(source)
 
         addMissedProperties(source)
         addMissedMethods(source)
@@ -339,6 +340,30 @@ internal object Hacks {
                 } else {
                     modifiers.remove(modifiers.indexOf("canbenull"))
                 }
+            }
+    }
+
+    private val METHOD_NULLABILITY_MAP = mapOf(
+        MethodDeclaration(className = "yfiles.algorithms.Graph", methodName = "getDataProvider") to true,
+        MethodDeclaration(className = "yfiles.input.GraphInputMode", methodName = "childInputModeContextLookup") to true,
+        MethodDeclaration(className = "yfiles.view.ViewportLimiter", methodName = "getCurrentBounds") to true,
+        MethodDeclaration(className = "yfiles.collections.IEnumerable", methodName = "first") to false
+    )
+
+    private fun fixMethodNullability(source: JSONObject) {
+        METHOD_NULLABILITY_MAP
+            .forEach { (className, methodName), nullable ->
+                source.type(className)
+                    .getJSONArray("methods")
+                    .first { it.getString("name") == methodName }
+                    .getJSONArray("modifiers")
+                    .also { modifiers ->
+                        if (nullable) {
+                            modifiers.put("canbenull")
+                        } else {
+                            modifiers.remove(modifiers.indexOf("canbenull"))
+                        }
+                    }
             }
     }
 
