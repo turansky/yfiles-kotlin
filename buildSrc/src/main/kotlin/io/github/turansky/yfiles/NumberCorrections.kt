@@ -6,16 +6,7 @@ private val INT = "Int"
 private val DOUBLE = "Double"
 
 internal fun correctNumbers(source: JSONObject) {
-    val types = source
-        .getJSONArray("namespaces")
-        .asSequence()
-        .map { it as JSONObject }
-        .filter { it.has("namespaces") }
-        .flatMap { it.getJSONArray("namespaces").asSequence() }
-        .map { it as JSONObject }
-        .flatMap { it.getJSONArray("types").asSequence() }
-        .map { it as JSONObject }
-        .toList()
+    val types = source.types().toList()
 
     correctEnumerable(types)
 

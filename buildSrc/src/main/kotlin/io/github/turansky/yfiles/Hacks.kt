@@ -792,14 +792,7 @@ internal object Hacks {
     }
 
     private fun fieldToProperties(source: JSONObject) {
-        source.getJSONArray("namespaces")
-            .asSequence()
-            .map { it as JSONObject }
-            .filter { it.has("namespaces") }
-            .flatMap { it.getJSONArray("namespaces").asSequence() }
-            .map { it as JSONObject }
-            .flatMap { it.getJSONArray("types").asSequence() }
-            .map { it as JSONObject }
+        source.types()
             .filter { it.has("fields") }
             .forEach { type ->
                 val fields = type.getJSONArray("fields")
