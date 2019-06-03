@@ -321,7 +321,9 @@ internal class KotlinFileGenerator(
                 ""
             }
 
-            return "external ${type()} ${fqn.name}${genericParameters()} $constructor ${parentString()} {\n" +
+            // TODO: add ticket on "UNREACHABLE"
+            return "@Suppress(\"UNREACHABLE_CODE\")\n" +
+                    "external ${type()} ${fqn.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +

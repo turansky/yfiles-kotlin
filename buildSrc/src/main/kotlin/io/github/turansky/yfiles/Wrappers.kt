@@ -219,10 +219,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         str += "$name: $type${modifiers.nullability}"
         if (!abstract) {
-            str += "\n    get() = definedExternally"
-            if (getterSetter) {
-                str += "\n    set(value) = definedExternally"
-            }
+            str += " = definedExternally"
         }
         return str
     }
