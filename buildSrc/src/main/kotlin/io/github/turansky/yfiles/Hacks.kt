@@ -104,6 +104,15 @@ private fun JSONObject.addMethod(
         )
 }
 
+private fun JSONObject.changeNullability(nullable: Boolean) {
+    val modifiers = getJSONArray("modifiers")
+    if (nullable) {
+        modifiers.put("canbenull")
+    } else {
+        modifiers.remove(modifiers.indexOf("canbenull"))
+    }
+}
+
 internal object Hacks {
     fun applyHacks(source: JSONObject) {
         removeDuplicatedProperties(source)
@@ -156,11 +165,11 @@ internal object Hacks {
             .getJSONArray("typeparameters")
             .remove(0)
 
-            source.type("yfiles.collections.List")
-                .getJSONArray("staticMethods")
-                .first { it.getString("name") == "from" }
-                .getJSONArray("typeparameters")
-                .put(jObject("name" to "T"))
+        source.type("yfiles.collections.List")
+            .getJSONArray("staticMethods")
+            .first { it.getString("name") == "from" }
+            .getJSONArray("typeparameters")
+            .put(jObject("name" to "T"))
     }
 
     private fun fixReturnType(source: JSONObject) {
@@ -214,14 +223,7 @@ internal object Hacks {
                 .type(className)
                 .getJSONArray("properties")
                 .first { it.get("name") == propertyName }
-                .getJSONArray("modifiers")
-                .also { modifiers ->
-                    if (nullable) {
-                        modifiers.put("canbenull")
-                    } else {
-                        modifiers.remove(modifiers.indexOf("canbenull"))
-                    }
-                }
+                .changeNullability(nullable)
         }
     }
 
@@ -329,17 +331,13 @@ internal object Hacks {
                 val parameters = source.type(data.className)
                     .methodParameters(data.methodName, data.parameterName, { true })
 
-                val modifiers = if (data.last) {
+                val parameter = if (data.last) {
                     parameters.last()
                 } else {
                     parameters.first()
-                }.getJSONArray("modifiers")
-
-                if (nullable) {
-                    modifiers.put("canbenull")
-                } else {
-                    modifiers.remove(modifiers.indexOf("canbenull"))
                 }
+
+                parameter.changeNullability(nullable)
             }
     }
 
@@ -356,14 +354,7 @@ internal object Hacks {
                 source.type(className)
                     .getJSONArray("methods")
                     .first { it.getString("name") == methodName }
-                    .getJSONArray("modifiers")
-                    .also { modifiers ->
-                        if (nullable) {
-                            modifiers.put("canbenull")
-                        } else {
-                            modifiers.remove(modifiers.indexOf("canbenull"))
-                        }
-                    }
+                    .changeNullability(nullable)
             }
     }
 
@@ -715,9 +706,9 @@ internal object Hacks {
 
     private fun addMissedMethods(source: JSONObject) {
         MISSED_METHODS.forEach { data ->
-                source.type(data.className)
-                    .addMethod(data)
-            }
+            source.type(data.className)
+                .addMethod(data)
+        }
     }
 
     private val DUPLICATED_PROPERTIES = listOf(
