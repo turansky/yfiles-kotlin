@@ -325,6 +325,8 @@ internal object Hacks {
         ParameterData("yfiles.view.FocusIndicatorManager", "getInstaller", "item") to true
     )
 
+    private val BROKEN_NULLABILITY_METHODS = setOf("applyLayout", "applyLayoutCore")
+
     private fun fixMethodParameterNullability(source: JSONObject) {
         PARAMETERS_NULLABILITY_CORRECTION
             .forEach { data, nullable ->
@@ -339,6 +341,17 @@ internal object Hacks {
 
                 parameter.changeNullability(nullable)
             }
+
+        source.types()
+            .filter { it.has("methods") }
+            .flatMap { it.getJSONArray("methods").asSequence() }
+            .map { it as JSONObject }
+            .filter { it.get("name") in BROKEN_NULLABILITY_METHODS }
+            .filter { it.getJSONArray("parameters").length() == 1 }
+            .map { it.getJSONArray("parameters").single() }
+            .map { it as JSONObject }
+            .onEach { require(it.getString("type") == "yfiles.layout.LayoutGraph") }
+            .forEach { it.changeNullability(false) }
     }
 
     private val METHOD_NULLABILITY_MAP = mapOf(
