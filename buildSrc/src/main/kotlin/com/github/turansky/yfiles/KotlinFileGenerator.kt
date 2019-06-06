@@ -234,8 +234,7 @@ internal class KotlinFileGenerator(
                 |
                 |fun $generics Any.as$className(): $classDeclaration? =
                 |   if (this.is$className()) {
-                |       @Suppress("UNCHECKED_CAST", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-                |       this as $classDeclaration
+                |       this.unsafeCast<$classDeclaration>()
                 |   } else {
                 |       null
                 |   }
@@ -414,8 +413,7 @@ internal class KotlinFileGenerator(
             content += """
                 |
                 |fun $generics yy(source:$classDeclaration) : $classDeclaration {
-                |   @Suppress("UNCHECKED_CAST", "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE", "CAST_NEVER_SUCCEEDS")
-                |   return $delegateClassDeclaration(source) as $classDeclaration
+                |   return $delegateClassDeclaration(source).unsafeCast<$classDeclaration>()
                 |}
                 |
                 |fun $generics $classDeclaration.yCast() = yy(this)
@@ -439,9 +437,8 @@ internal class KotlinFileGenerator(
             return """
                 |$content
                 |
-                |@Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")
                 |private val $generics ${classDeclaration}.ext:$extClassDeclaration
-                |    get () = this as $extClassDeclaration
+                |    get () = this.unsafeCast<$extClassDeclaration>()
                 |
                 |$extensions
             """.trimMargin()
