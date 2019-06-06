@@ -1,6 +1,6 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
-import io.github.turansky.yfiles.TypeParser.getGenericString
+import com.github.turansky.yfiles.TypeParser.getGenericString
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -199,7 +199,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
     override fun toCode(): String {
         var str = ""
-        val classRegistry: ClassRegistry = ClassRegistry.instance
+        val classRegistry: com.github.turansky.yfiles.ClassRegistry = com.github.turansky.yfiles.ClassRegistry.instance
 
         if (classRegistry.propertyOverriden(fqn, name)) {
             str += "override "
@@ -255,7 +255,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         get() = getGenericString(typeparameters)
 
     private fun kotlinModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
+        val classRegistry: com.github.turansky.yfiles.ClassRegistry = com.github.turansky.yfiles.ClassRegistry.instance
 
         // TODO: add abstract modificator if needed
         if (classRegistry.functionOverriden(fqn, name)) {
@@ -274,7 +274,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     }
 
     private fun javaModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
+        val classRegistry: com.github.turansky.yfiles.ClassRegistry = com.github.turansky.yfiles.ClassRegistry.instance
 
         val override = if (classRegistry.functionOverriden(fqn, name)) {
             "@Override\n"
@@ -348,7 +348,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     val options: Boolean by BooleanDelegate()
 
     protected fun kotlinParametersString(checkOverriding: Boolean = true): String {
-        val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
+        val overridden = checkOverriding && com.github.turansky.yfiles.ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters
             .byComma {
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
@@ -428,7 +428,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
 
     private fun kotlinModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
+        val classRegistry: com.github.turansky.yfiles.ClassRegistry = com.github.turansky.yfiles.ClassRegistry.instance
 
         if (classRegistry.listenerOverriden(fqn, name)) {
             return "override "
@@ -441,7 +441,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     }
 
     private fun javaModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
+        val classRegistry: com.github.turansky.yfiles.ClassRegistry = com.github.turansky.yfiles.ClassRegistry.instance
 
         val override = if (classRegistry.listenerOverriden(fqn, name)) {
             "@Override\n"

@@ -1,4 +1,4 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
 import java.io.File
 

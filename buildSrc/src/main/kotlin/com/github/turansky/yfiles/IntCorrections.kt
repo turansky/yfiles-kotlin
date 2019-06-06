@@ -1,4 +1,4 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
 internal val INT_CONSTRUCTOR_PARAMETERS = setOf(
     "capacity",

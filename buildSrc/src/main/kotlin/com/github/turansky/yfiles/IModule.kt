@@ -1,4 +1,4 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
 internal interface IModule {
     val text: String?

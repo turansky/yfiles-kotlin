@@ -1,6 +1,6 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
-import io.github.turansky.yfiles.Hacks.applyHacks
+import com.github.turansky.yfiles.Hacks.applyHacks
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -61,7 +61,7 @@ private fun generateWrappers(
 
     val functionSignatures = apiRoot.functionSignatures
 
-    ClassRegistry.instance = ClassRegistryImpl(types)
+    com.github.turansky.yfiles.ClassRegistry.instance = com.github.turansky.yfiles.ClassRegistryImpl(types)
 
     val fileGenerator = createFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)

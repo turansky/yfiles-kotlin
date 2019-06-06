@@ -1,8 +1,8 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
-import io.github.turansky.yfiles.KotlinTypes.UNIT
-import io.github.turansky.yfiles.YModule.Companion.findModule
-import io.github.turansky.yfiles.YModule.Companion.getQualifier
+import com.github.turansky.yfiles.KotlinTypes.UNIT
+import com.github.turansky.yfiles.YModule.Companion.findModule
+import com.github.turansky.yfiles.YModule.Companion.getQualifier
 import java.io.File
 
 internal class KotlinFileGenerator(

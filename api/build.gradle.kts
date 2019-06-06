@@ -1,4 +1,4 @@
-import io.github.turansky.yfiles.generateKotlinWrappers
+import com.github.turansky.yfiles.generateKotlinWrappers
 
 group = "com.yworks.yfiles"
 version = "2.2.0-SNAPSHOT"

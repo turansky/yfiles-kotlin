@@ -1,4 +1,4 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
 internal enum class YModule(val id: String, val weight: Int) {
     COMPLETE("complete", 1000),

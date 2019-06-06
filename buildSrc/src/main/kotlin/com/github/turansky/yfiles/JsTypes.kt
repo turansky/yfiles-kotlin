@@ -1,4 +1,4 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
 val JS_ANY = "any"
 val JS_OBJECT = "Object"

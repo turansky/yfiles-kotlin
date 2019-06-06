@@ -1,4 +1,4 @@
-package io.github.turansky.yfiles
+package com.github.turansky.yfiles
 
 private val MARKER_CLASS = sequenceOf(
     "yfiles.lang.EventArgs",
