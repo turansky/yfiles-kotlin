@@ -37,9 +37,8 @@ private fun JSONObject.methodParameters(
                 .filter(parameterFilter)
         }
 
-    if (result.isEmpty()) {
-        throw IllegalArgumentException("No method parameters found for object: $this, method: $methodName, parameter: $parameterName")
-    }
+    require(result.isNotEmpty())
+    { "No method parameters found for object: $this, method: $methodName, parameter: $parameterName" }
 
     return result
 }
