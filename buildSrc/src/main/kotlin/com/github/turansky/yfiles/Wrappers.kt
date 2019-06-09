@@ -138,12 +138,6 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         else -> ""
     }
 
-    val javaModificator = when {
-        abstract -> "abstract" // no such cases (JS specific?)
-        final -> "final"
-        else -> ""
-    }
-
     val constructors: List<Constructor> by ArrayDelegate { Constructor(this.fqn, it) }
 }
 
@@ -273,36 +267,6 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         }
     }
 
-    private fun javaModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
-
-        val override = if (classRegistry.functionOverriden(fqn, name)) {
-            "@Override\n"
-        } else {
-            ""
-        }
-
-        val modificators = mutableListOf<String>()
-
-        if (abstract) {
-            modificators.add("abstract")
-        } else {
-            modificators.add("native")
-        }
-
-        if (protected) {
-            modificators.add("protected")
-        } else {
-            modificators.add("public")
-        }
-
-        if (static) {
-            modificators.add("static")
-        }
-
-        return override + modificators.joinToString(separator = " ", postfix = " ")
-    }
-
     // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(): String {
         var returnType = returns?.type
@@ -354,16 +318,6 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
                 val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
                 "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
-            }
-    }
-
-    protected fun javaParametersString(): String {
-        return parameters
-            .byComma {
-                val name = if (it.name != "synchronized") it.name else "synchronized1" // TODO: find better name
-
-                val modifiers = if (it.modifiers.vararg) "..." else ""
-                "${it.type} $modifiers${name}"
             }
     }
 
@@ -438,28 +392,6 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
             modifiers.abstract -> "abstract "
             else -> ""
         }
-    }
-
-    private fun javaModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
-
-        val override = if (classRegistry.listenerOverriden(fqn, name)) {
-            "@Override\n"
-        } else {
-            ""
-        }
-
-        val modificators = mutableListOf<String>()
-
-        if (modifiers.abstract) {
-            modificators.add("abstract")
-        } else {
-            modificators.add("native")
-        }
-
-        modificators.add("public")
-
-        return override + modificators.joinToString(separator = " ", postfix = " ")
     }
 
     override fun toCode(): String {
