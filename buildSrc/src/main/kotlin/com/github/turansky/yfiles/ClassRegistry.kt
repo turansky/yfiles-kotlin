@@ -1,37 +1,12 @@
 package com.github.turansky.yfiles
 
-internal interface ClassRegistry {
-    companion object {
-        var instance: ClassRegistry = EmptyClassRegistry()
-    }
-
-    fun isFinalClass(className: String): Boolean
-    fun functionOverriden(className: String, functionName: String): Boolean
-    fun propertyOverriden(className: String, propertyName: String): Boolean
-    fun listenerOverriden(className: String, listenerName: String): Boolean
-}
-
-private class EmptyClassRegistry : ClassRegistry {
-    override fun isFinalClass(className: String): Boolean {
-        return false
-    }
-
-    override fun functionOverriden(className: String, functionName: String): Boolean {
-        return false
-    }
-
-    override fun propertyOverriden(className: String, propertyName: String): Boolean {
-        return false
-    }
-
-    override fun listenerOverriden(className: String, listenerName: String): Boolean {
-        return false
-    }
-}
-
-internal class ClassRegistryImpl(
+internal class ClassRegistry(
     types: List<Type>
-) : ClassRegistry {
+) {
+    companion object {
+        lateinit var instance: ClassRegistry
+    }
+
     private val instances = types.associateBy({ it.fqn }, { it })
 
     private val functionsMap = types.associateBy(
@@ -98,20 +73,20 @@ internal class ClassRegistryImpl(
         }
     }
 
-    override fun isFinalClass(className: String): Boolean {
+    fun isFinalClass(className: String): Boolean {
         val instance = instances[className]
         return instance is Class && instance.final
     }
 
-    override fun functionOverriden(className: String, functionName: String): Boolean {
+    fun functionOverriden(className: String, functionName: String): Boolean {
         return functionOverriden(className, functionName, false)
     }
 
-    override fun propertyOverriden(className: String, propertyName: String): Boolean {
+    fun propertyOverriden(className: String, propertyName: String): Boolean {
         return propertyOverriden(className, propertyName, false)
     }
 
-    override fun listenerOverriden(className: String, listenerName: String): Boolean {
+    fun listenerOverriden(className: String, listenerName: String): Boolean {
         return listenerOverriden(className, listenerName, false)
     }
 }

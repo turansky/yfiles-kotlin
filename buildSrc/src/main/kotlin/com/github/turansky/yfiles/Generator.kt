@@ -61,7 +61,7 @@ private fun generateWrappers(
 
     val functionSignatures = apiRoot.functionSignatures
 
-    ClassRegistry.instance = ClassRegistryImpl(types)
+    ClassRegistry.instance = ClassRegistry(types)
 
     val fileGenerator = createFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
