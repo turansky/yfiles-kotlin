@@ -4,7 +4,6 @@ out/
 web/
 
 /api/src/
-/jsinterop/src/
 
 # Ignore Gradle GUI config
 gradle-app.setting
