@@ -385,7 +385,7 @@ internal class ParameterModifiers(flags: List<String>) {
     val optional = flags.contains("optional")
     val conversion = flags.contains("conversion")
 
-    private val canbenull = flags.contains("canbenull")
+    private val canbenull = flags.contains("canbenull") || optional
     val nullability = if (canbenull) "?" else ""
 }
 
