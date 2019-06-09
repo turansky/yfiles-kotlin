@@ -2,7 +2,7 @@ package com.github.turansky.yfiles
 
 internal interface ClassRegistry {
     companion object {
-        var instance: com.github.turansky.yfiles.ClassRegistry = com.github.turansky.yfiles.EmptyClassRegistry()
+        var instance: ClassRegistry = EmptyClassRegistry()
     }
 
     fun isFinalClass(className: String): Boolean
@@ -11,7 +11,7 @@ internal interface ClassRegistry {
     fun listenerOverriden(className: String, listenerName: String): Boolean
 }
 
-private class EmptyClassRegistry : com.github.turansky.yfiles.ClassRegistry {
+private class EmptyClassRegistry : ClassRegistry {
     override fun isFinalClass(className: String): Boolean {
         return false
     }
@@ -30,8 +30,8 @@ private class EmptyClassRegistry : com.github.turansky.yfiles.ClassRegistry {
 }
 
 internal class ClassRegistryImpl(
-    types: List<com.github.turansky.yfiles.Type>
-) : com.github.turansky.yfiles.ClassRegistry {
+    types: List<Type>
+) : ClassRegistry {
     private val instances = types.associateBy({ it.fqn }, { it })
 
     private val functionsMap = types.associateBy(
@@ -46,7 +46,7 @@ internal class ClassRegistryImpl(
 
     private val listenerMap = types
         .asSequence()
-        .filterIsInstance<com.github.turansky.yfiles.ExtendedType>()
+        .filterIsInstance<ExtendedType>()
         .associateBy(
             { it.fqn },
             { it.events.flatMap { it.listenerNames } }
@@ -58,7 +58,7 @@ internal class ClassRegistryImpl(
         return sequenceOf(instance.extendedType())
             .filterNotNull()
             .plus(instance.implementedTypes())
-            .map { if (it.contains("<")) com.github.turansky.yfiles.till(it, "<") else it }
+            .map { if (it.contains("<")) till(it, "<") else it }
             .toList()
     }
 
@@ -100,7 +100,7 @@ internal class ClassRegistryImpl(
 
     override fun isFinalClass(className: String): Boolean {
         val instance = instances[className]
-        return instance is com.github.turansky.yfiles.Class && instance.final
+        return instance is Class && instance.final
     }
 
     override fun functionOverriden(className: String, functionName: String): Boolean {

@@ -61,7 +61,7 @@ private fun generateWrappers(
 
     val functionSignatures = apiRoot.functionSignatures
 
-    com.github.turansky.yfiles.ClassRegistry.instance = com.github.turansky.yfiles.ClassRegistryImpl(types)
+    ClassRegistry.instance = ClassRegistryImpl(types)
 
     val fileGenerator = createFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
