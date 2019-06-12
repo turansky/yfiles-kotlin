@@ -19,8 +19,10 @@ tasks.clean {
 }
 
 val generateDeclarations by tasks.register("generateDeclarations") {
-    val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
-    generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
+    doLast {
+        val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
+        generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
+    }
 }
 
 tasks.compileKotlin2Js {
