@@ -230,16 +230,16 @@ internal class KotlinFileGenerator(
             return """
                 |$result
                 |
-                |fun Any.is$className() = ${yclass}.isInstance(this)
+                |fun Any?.is$className() = ${yclass}.isInstance(this)
                 |
-                |fun $generics Any.as$className(): $classDeclaration? =
+                |fun $generics Any?.as$className(): $classDeclaration? =
                 |   if (this.is$className()) {
                 |       this.unsafeCast<$classDeclaration>()
                 |   } else {
                 |       null
                 |   }
                 |
-                |fun $generics Any.to$className(): $classDeclaration =
+                |fun $generics Any?.to$className(): $classDeclaration =
                 |   requireNotNull(this.as$className())
             """.trimMargin()
         }
