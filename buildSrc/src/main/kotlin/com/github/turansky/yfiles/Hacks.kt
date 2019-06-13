@@ -51,7 +51,7 @@ private fun JSONObject.addProperty(
         .put(
             mapOf(
                 "name" to propertyName,
-                "modifiers" to listOf("public", "final", "ro"),
+                "modifiers" to listOf(PUBLIC, FINAL, RO),
                 "type" to type
             )
         )
@@ -65,7 +65,7 @@ private fun JSONObject.addMethod(
     }
 
     val result = methodData.result
-    var modifiers = listOf("public")
+    var modifiers = listOf(PUBLIC)
     if (result != null) {
         modifiers += result.modifiers
     }
@@ -106,9 +106,9 @@ private fun JSONObject.addMethod(
 private fun JSONObject.changeNullability(nullable: Boolean) {
     val modifiers = getJSONArray("modifiers")
     if (nullable) {
-        modifiers.put("canbenull")
+        modifiers.put(CANBENULL)
     } else {
-        modifiers.remove(modifiers.indexOf("canbenull"))
+        modifiers.remove(modifiers.indexOf(CANBENULL))
     }
 }
 
@@ -845,12 +845,12 @@ private data class MethodParameterData(
     val type: String,
     private val nullable: Boolean = false
 ) {
-    val modifiers = if (nullable) setOf("canbenull") else emptySet()
+    val modifiers = if (nullable) setOf(CANBENULL) else emptySet()
 }
 
 private data class ResultData(
     val type: String,
     private val nullable: Boolean = false
 ) {
-    val modifiers = if (nullable) setOf("canbenull") else emptySet()
+    val modifiers = if (nullable) setOf(CANBENULL) else emptySet()
 }

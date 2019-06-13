@@ -142,13 +142,13 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 }
 
 internal class Modifiers(flags: List<String>) {
-    val static = flags.contains("static")
-    val final = flags.contains("final")
-    val readOnly = flags.contains("ro")
-    val abstract = flags.contains("abstract")
-    val protected = flags.contains("protected")
+    val static = flags.contains(STATIC)
+    val final = flags.contains(FINAL)
+    val readOnly = flags.contains(RO)
+    val abstract = flags.contains(ABSTRACT)
+    val protected = flags.contains(PROTECTED)
 
-    private val canbenull = flags.contains("canbenull")
+    private val canbenull = flags.contains(CANBENULL)
     val nullability = if (canbenull) "?" else ""
 }
 
@@ -334,12 +334,12 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 }
 
 internal class ParameterModifiers(flags: List<String>) {
-    val artificial = flags.contains("artificial")
-    val vararg = flags.contains("vararg")
-    val optional = flags.contains("optional")
-    val conversion = flags.contains("conversion")
+    val artificial = flags.contains(ARTIFICIAL)
+    val vararg = flags.contains(VARARG)
+    val optional = flags.contains(OPTIONAL)
+    val conversion = flags.contains(CONVERSION)
 
-    private val canbenull = flags.contains("canbenull")
+    private val canbenull = flags.contains(CANBENULL)
     val nullability = if (canbenull) "?" else ""
 }
 
@@ -409,8 +409,8 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
 }
 
 internal class EventListenerModifiers(flags: List<String>) {
-    val public = flags.contains("public")
-    val abstract = flags.contains("abstract")
+    val public = flags.contains(PUBLIC)
+    val abstract = flags.contains(ABSTRACT)
 }
 
 private class ArrayDelegate<T> {
