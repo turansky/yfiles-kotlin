@@ -95,7 +95,10 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
 
 internal abstract class Type(source: JSONObject) : Declaration(source) {
     val modules: List<IModule> by ArrayDelegate(::Module)
+
+    val es6name: String? by NullableStringDelegate()
     val es6Module: String by StringDelegate()
+
     val constants: List<Constant> by ArrayDelegate { Constant(this.fqn, it) }
 
     val properties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
