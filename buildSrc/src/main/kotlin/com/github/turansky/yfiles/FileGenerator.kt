@@ -24,13 +24,16 @@ internal data class GeneratorData(
 
 internal data class TypeGeneratorData(
     private val fqn: String,
-    val modulePath: String
+    val modulePath: String,
+    val alias: String? = null
 ) : AbstractGeneratorData(fqn)
 
 internal fun umdGeneratorData(
-    fqn: String,
-    modules: List<IModule>
+    declaration: Type
 ) = TypeGeneratorData(
-    fqn = fqn,
-    modulePath = findModule(fqn, modules).path
+    fqn = declaration.fqn,
+    modulePath = findModule(
+        declaration.fqn,
+        declaration.modules
+    ).path
 )
