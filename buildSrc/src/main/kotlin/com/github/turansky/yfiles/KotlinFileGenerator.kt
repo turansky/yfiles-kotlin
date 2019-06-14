@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.KotlinTypes.UNIT
-import com.github.turansky.yfiles.YModule.Companion.findModule
 import com.github.turansky.yfiles.YModule.Companion.getQualifier
 import java.io.File
 
@@ -86,7 +85,7 @@ internal class KotlinFileGenerator(
 
     abstract inner class GeneratedFile(private val declaration: Type) {
         protected val className = declaration.fqn
-        val data = GeneratorData(className)
+        val data = umdGeneratorData(className, declaration.modules)
 
         protected val typeparameters: List<TypeParameter>
             get() = declaration.typeparameters
@@ -138,9 +137,8 @@ internal class KotlinFileGenerator(
 
         val header: String
             get() {
-                val module = findModule(className, declaration.modules)
                 val qualifier = getQualifier(data.packageName)
-                return "@file:JsModule(\"$module\")\n" +
+                return "@file:JsModule(\"${data.modulePath}\")\n" +
                         if (qualifier != null) {
                             "@file:JsQualifier(\"$qualifier\")\n"
                         } else {

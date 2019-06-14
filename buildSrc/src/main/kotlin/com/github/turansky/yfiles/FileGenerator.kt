@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.YModule.Companion.findModule
 import java.io.File
 
 internal interface FileGenerator {
@@ -20,3 +21,16 @@ internal abstract class AbstractGeneratorData(
 internal data class GeneratorData(
     private val fqn: String
 ) : AbstractGeneratorData(fqn)
+
+internal data class TypeGeneratorData(
+    private val fqn: String,
+    val modulePath: String
+) : AbstractGeneratorData(fqn)
+
+internal fun umdGeneratorData(
+    fqn: String,
+    modules: List<IModule>
+) = TypeGeneratorData(
+    fqn = fqn,
+    modulePath = findModule(fqn, modules).path
+)
