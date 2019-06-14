@@ -34,7 +34,7 @@ internal class KotlinFileGenerator(
 
         val redundantPackageDeclaration = data.packageName + "."
 
-        val file = dir.resolve("${data.name}.kt")
+        val file = dir.resolve("${data.jsName}.kt")
         val header = generatedFile.header
 
         val content = generatedFile.content()
@@ -44,7 +44,7 @@ internal class KotlinFileGenerator(
         val companionContent = generatedFile.companionContent()
             ?: return
 
-        dir.resolve("${data.name}Companion.kt")
+        dir.resolve("${data.jsName}Companion.kt")
             .writeText(companionContent.replace(redundantPackageDeclaration, ""))
     }
 
