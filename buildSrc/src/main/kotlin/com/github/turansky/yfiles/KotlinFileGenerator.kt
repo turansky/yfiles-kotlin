@@ -319,6 +319,7 @@ internal class KotlinFileGenerator(
 
             // TODO: add ticket on "UNREACHABLE"
             return "@Suppress(\"UNREACHABLE_CODE\")\n" +
+                    data.mainAnnotation +
                     "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
@@ -352,7 +353,8 @@ internal class KotlinFileGenerator(
             val content = super.content()
                 .replace("abstract ", "")
 
-            return "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
+            return data.mainAnnotation +
+                    "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
                     calculateDefaultsContent() +
@@ -449,7 +451,8 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return "external enum class ${data.name} {\n" +
+            return data.mainAnnotation +
+                    "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
                     "}\n"
@@ -457,4 +460,11 @@ internal class KotlinFileGenerator(
 
         override fun isObject() = true
     }
+
+    val TypeGeneratorData.mainAnnotation: String
+        get() = if (name != jsName) {
+            "@JsName(\"$jsName\")\n"
+        } else {
+            ""
+        }
 }
