@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.KotlinTypes.UNIT
-import com.github.turansky.yfiles.YModule.Companion.getQualifier
 import java.io.File
 
 internal class KotlinFileGenerator(
@@ -136,7 +135,7 @@ internal class KotlinFileGenerator(
 
         val header: String
             get() {
-                val qualifier = getQualifier(data.packageName)
+                val qualifier = data.qualifier
                 return "@file:JsModule(\"${data.modulePath}\")\n" +
                         if (qualifier != null) {
                             "@file:JsQualifier(\"$qualifier\")\n"

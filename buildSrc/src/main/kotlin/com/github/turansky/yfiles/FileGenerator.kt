@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.YModule.Companion.findModule
+import com.github.turansky.yfiles.YModule.Companion.getQualifier
 import java.io.File
 
 internal interface FileGenerator {
@@ -25,9 +26,11 @@ internal data class GeneratorData(
 internal data class TypeGeneratorData(
     private val fqn: String,
     val modulePath: String,
-    private val alias: String? = null
+    private val alias: String? = null,
+    private val getQualifier: ((packageName: String) -> String?)? = null
 ) : AbstractGeneratorData(fqn) {
     val jsName = alias ?: name
+    val qualifier = getQualifier?.invoke(packageName)
 
     val marker: Boolean
         get() = isMarkerClass(fqn)
@@ -40,7 +43,8 @@ internal fun umdGeneratorData(
     modulePath = findModule(
         declaration.fqn,
         declaration.modules
-    ).path
+    ).path,
+    getQualifier = ::getQualifier
 )
 
 internal fun es6GeneratorData(
