@@ -1,7 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.YModule.Companion.findModule
-import com.github.turansky.yfiles.YModule.Companion.getQualifier
 import java.io.File
 
 internal interface FileGenerator {
@@ -35,17 +33,6 @@ internal data class TypeGeneratorData(
     val marker: Boolean
         get() = isMarkerClass(fqn)
 }
-
-internal fun umdGeneratorData(
-    declaration: Type
-) = TypeGeneratorData(
-    fqn = declaration.fqn,
-    modulePath = findModule(
-        declaration.fqn,
-        declaration.modules
-    ).path,
-    getQualifier = ::getQualifier
-)
 
 internal fun es6GeneratorData(
     declaration: Type
