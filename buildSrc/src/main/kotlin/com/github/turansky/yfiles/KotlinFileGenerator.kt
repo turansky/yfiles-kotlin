@@ -135,13 +135,7 @@ internal class KotlinFileGenerator(
 
         val header: String
             get() {
-                val qualifier = data.qualifier
-                return "@file:JsModule(\"${data.modulePath}\")\n" +
-                        if (qualifier != null) {
-                            "@file:JsQualifier(\"$qualifier\")\n"
-                        } else {
-                            ""
-                        } +
+                return "@file:JsModule(\"${data.modulePath}\")\n\n" +
                         "package ${data.packageName}\n"
             }
 

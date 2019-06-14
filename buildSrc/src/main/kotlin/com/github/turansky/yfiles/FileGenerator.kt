@@ -24,11 +24,9 @@ internal data class GeneratorData(
 internal data class TypeGeneratorData(
     private val fqn: String,
     val modulePath: String,
-    private val alias: String? = null,
-    private val getQualifier: ((packageName: String) -> String?)? = null
+    private val alias: String?
 ) : AbstractGeneratorData(fqn) {
     val jsName = alias ?: name
-    val qualifier = getQualifier?.invoke(packageName)
 
     val marker: Boolean
         get() = isMarkerClass(fqn)
