@@ -6,7 +6,7 @@ internal interface FileGenerator {
     fun generate(directory: File)
 }
 
-internal data class FQN(private val fqn: String) {
+internal data class GeneratorData(private val fqn: String) {
     private val names = fqn.split(".")
     private val packageNames = names.subList(0, names.size - 1)
 

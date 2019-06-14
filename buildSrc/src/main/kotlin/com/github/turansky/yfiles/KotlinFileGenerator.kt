@@ -30,13 +30,13 @@ internal class KotlinFileGenerator(
     }
 
     private fun generate(directory: File, generatedFile: GeneratedFile) {
-        val fqn = generatedFile.fqn
-        val dir = directory.resolve(fqn.path)
+        val data = generatedFile.data
+        val dir = directory.resolve(data.path)
         dir.mkdirs()
 
-        val redundantPackageDeclaration = fqn.packageName + "."
+        val redundantPackageDeclaration = data.packageName + "."
 
-        val file = dir.resolve("${fqn.name}.kt")
+        val file = dir.resolve("${data.name}.kt")
         val header = generatedFile.header
 
         val content = generatedFile.content()
@@ -46,19 +46,19 @@ internal class KotlinFileGenerator(
         val companionContent = generatedFile.companionContent()
             ?: return
 
-        dir.resolve("${fqn.name}Companion.kt")
+        dir.resolve("${data.name}Companion.kt")
             .writeText(companionContent.replace(redundantPackageDeclaration, ""))
     }
 
     private fun generate(directory: File, functionSignature: FunctionSignature) {
-        val fqn = FQN(functionSignature.fqn)
-        val dir = directory.resolve(fqn.path)
+        val data = GeneratorData(functionSignature.fqn)
+        val dir = directory.resolve(data.path)
         dir.mkdirs()
 
-        val packageName = fqn.packageName
+        val packageName = data.packageName
         val redundantPackageDeclaration = packageName + "."
 
-        val file = dir.resolve("${fqn.name}.kt")
+        val file = dir.resolve("${data.name}.kt")
         val header = "package $packageName"
 
         val typeparameters = functionSignature.typeparameters
@@ -71,7 +71,7 @@ internal class KotlinFileGenerator(
             .byComma { it.toCode() }
         val returns = functionSignature.returns?.toCode() ?: UNIT
 
-        val content = "typealias ${fqn.name}$generics = ($parameters) -> $returns"
+        val content = "typealias ${data.name}$generics = ($parameters) -> $returns"
             .replace(redundantPackageDeclaration, "")
 
         file.writeText("$header\n\n$content")
@@ -86,7 +86,7 @@ internal class KotlinFileGenerator(
 
     abstract inner class GeneratedFile(private val declaration: Type) {
         protected val className = declaration.fqn
-        val fqn: FQN = FQN(className)
+        val data = GeneratorData(className)
 
         protected val typeparameters: List<TypeParameter>
             get() = declaration.typeparameters
@@ -139,14 +139,14 @@ internal class KotlinFileGenerator(
         val header: String
             get() {
                 val module = findModule(className, declaration.modules)
-                val qualifier = getQualifier(fqn.packageName)
+                val qualifier = getQualifier(data.packageName)
                 return "@file:JsModule(\"$module\")\n" +
                         if (qualifier != null) {
                             "@file:JsQualifier(\"$qualifier\")\n"
                         } else {
                             ""
                         } +
-                        "package ${fqn.packageName}\n"
+                        "package ${data.packageName}\n"
             }
 
         protected open fun parentTypes(): List<String> {
@@ -186,8 +186,8 @@ internal class KotlinFileGenerator(
                 }
 
                 """
-                |@JsName("${fqn.name}")
-                |external object ${fqn.name}s {
+                |@JsName("${data.name}")
+                |external object ${data.name}s {
                 |$code
                 |}
             """.trimMargin()
@@ -198,8 +198,8 @@ internal class KotlinFileGenerator(
             return """
                 |$companion
                 |
-                |@JsName("${fqn.name}")
-                |internal external object ${fqn.name}Static {
+                |@JsName("${data.name}")
+                |internal external object ${data.name}Static {
                 |    @JsName("\${"$"}class")
                 |    val yclass: ${fixPackage("yfiles.lang.Class")}
                 |}
@@ -211,16 +211,16 @@ internal class KotlinFileGenerator(
                 return null
             }
 
-            val className = fqn.name
+            val className = data.name
             val yclass = "${className}Static.yclass"
 
             val result = """
-                |package ${fqn.packageName}
+                |package ${data.packageName}
                 |
                 |val ${constName(className)}_CLASS = $yclass
             """.trimMargin()
 
-            if (PRIMITIVE_CLASSES.contains(fqn.name)) {
+            if (PRIMITIVE_CLASSES.contains(data.name)) {
                 return result
             }
 
@@ -292,7 +292,7 @@ internal class KotlinFileGenerator(
                 return objectContent()
             }
 
-            if (PRIMITIVE_CLASSES.contains(fqn.name)) {
+            if (PRIMITIVE_CLASSES.contains(data.name)) {
                 return staticContent()
             }
 
@@ -322,7 +322,7 @@ internal class KotlinFileGenerator(
 
             // TODO: add ticket on "UNREACHABLE"
             return "@Suppress(\"UNREACHABLE_CODE\")\n" +
-                    "external ${type()} ${fqn.name}${genericParameters()} $constructor ${parentString()} {\n" +
+                    "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
@@ -336,7 +336,7 @@ internal class KotlinFileGenerator(
             }
 
             return """
-                |external object ${fqn.name} {
+                |external object ${data.name} {
                 |    ${items.lines()}
                 |}
             """.trimMargin()
@@ -355,7 +355,7 @@ internal class KotlinFileGenerator(
             val content = super.content()
                 .replace("abstract ", "")
 
-            return "external interface ${fqn.name}${genericParameters()}${parentString()} {\n" +
+            return "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
                     calculateDefaultsContent() +
@@ -372,8 +372,8 @@ internal class KotlinFileGenerator(
             return """
                 |$staticContent
                 |
-                |@JsName("${fqn.name}")
-                |internal external class ${fqn.name}Delegate$generics(source: ${fqn.name}$generics)
+                |@JsName("${data.name}")
+                |internal external class ${data.name}Delegate$generics(source: ${data.name}$generics)
                 |
             """.trimMargin()
         }
@@ -396,8 +396,8 @@ internal class KotlinFileGenerator(
 
 
             return """
-                |@JsName("${fqn.name}")
-                |internal external class ${fqn.name}Ext${genericParameters()} {
+                |@JsName("${data.name}")
+                |internal external class ${data.name}Ext${genericParameters()} {
                 |    $content
                 |}
             """.trimMargin()
@@ -407,8 +407,8 @@ internal class KotlinFileGenerator(
             var content = requireNotNull(super.companionContent())
 
             val generics = genericParameters()
-            val classDeclaration = fqn.name + generics
-            val delegateClassDeclaration = fqn.name + "Delegate" + generics
+            val classDeclaration = data.name + generics
+            val delegateClassDeclaration = data.name + "Delegate" + generics
 
             content += """
                 |
@@ -423,7 +423,7 @@ internal class KotlinFileGenerator(
                 return content
             }
 
-            val extClassDeclaration = fqn.name + "Ext" + generics
+            val extClassDeclaration = data.name + "Ext" + generics
 
             val extensions = defaultDeclarations
                 .lines {
@@ -452,7 +452,7 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return "external enum class ${fqn.name} {\n" +
+            return "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
                     "}\n"
