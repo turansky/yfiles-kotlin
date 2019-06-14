@@ -449,7 +449,7 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return "external enum class ${data.jsName} {\n" +
+            return "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
                     "}\n"
