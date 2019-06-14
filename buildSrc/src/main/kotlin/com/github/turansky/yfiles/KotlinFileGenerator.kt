@@ -84,7 +84,7 @@ internal class KotlinFileGenerator(
     )
 
     abstract inner class GeneratedFile(private val declaration: Type) {
-        val data = umdGeneratorData(declaration)
+        val data = es6GeneratorData(declaration)
 
         protected val typeparameters: List<TypeParameter>
             get() = declaration.typeparameters
