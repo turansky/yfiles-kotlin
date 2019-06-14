@@ -26,7 +26,10 @@ internal data class TypeGeneratorData(
     private val fqn: String,
     val modulePath: String,
     val alias: String? = null
-) : AbstractGeneratorData(fqn)
+) : AbstractGeneratorData(fqn) {
+    val marker: Boolean
+        get() = isMarkerClass(fqn)
+}
 
 internal fun umdGeneratorData(
     declaration: Type

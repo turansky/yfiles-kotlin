@@ -84,7 +84,6 @@ internal class KotlinFileGenerator(
     )
 
     abstract inner class GeneratedFile(private val declaration: Type) {
-        protected val className = declaration.fqn
         val data = umdGeneratorData(declaration)
 
         protected val typeparameters: List<TypeParameter>
@@ -282,7 +281,7 @@ internal class KotlinFileGenerator(
         override fun isObject(): Boolean {
             return declaration.constructors.isEmpty() &&
                     memberDeclarations.isEmpty() &&
-                    !isMarkerClass(className)
+                    !data.marker
         }
 
         override fun content(): String {
