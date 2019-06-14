@@ -183,7 +183,7 @@ internal class KotlinFileGenerator(
                 }
 
                 """
-                |@JsName("${data.name}")
+                |@JsName("${data.jsName}")
                 |external object ${data.name}s {
                 |$code
                 |}
@@ -195,7 +195,7 @@ internal class KotlinFileGenerator(
             return """
                 |$companion
                 |
-                |@JsName("${data.name}")
+                |@JsName("${data.jsName}")
                 |internal external object ${data.name}Static {
                 |    @JsName("\${"$"}class")
                 |    val yclass: ${fixPackage("yfiles.lang.Class")}
@@ -333,7 +333,7 @@ internal class KotlinFileGenerator(
             }
 
             return """
-                |external object ${data.name} {
+                |external object ${data.jsName} {
                 |    ${items.lines()}
                 |}
             """.trimMargin()
@@ -369,7 +369,7 @@ internal class KotlinFileGenerator(
             return """
                 |$staticContent
                 |
-                |@JsName("${data.name}")
+                |@JsName("${data.jsName}")
                 |internal external class ${data.name}Delegate$generics(source: ${data.name}$generics)
                 |
             """.trimMargin()
@@ -393,7 +393,7 @@ internal class KotlinFileGenerator(
 
 
             return """
-                |@JsName("${data.name}")
+                |@JsName("${data.jsName}")
                 |internal external class ${data.name}Ext${genericParameters()} {
                 |    $content
                 |}
@@ -449,7 +449,7 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return "external enum class ${data.name} {\n" +
+            return "external enum class ${data.jsName} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
                     "}\n"
