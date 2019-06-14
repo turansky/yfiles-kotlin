@@ -266,7 +266,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(): String {
         var returnType = returns?.type
-            ?: KotlinTypes.UNIT
+            ?: UNIT
 
         returnType += modifiers.nullability
 
@@ -394,7 +394,7 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         val returnSignature = if (modifiers.abstract) {
             ""
         } else {
-            ":${KotlinTypes.UNIT} = definedExternally"
+            ":${UNIT} = definedExternally"
         }
 
         val parametersString = parameters

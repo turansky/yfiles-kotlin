@@ -4,14 +4,12 @@ internal object TypeParser {
     private val GENERIC_START = "<"
     private val GENERIC_END = ">"
 
-    var standardTypeMap = emptyMap<String, String>()
-
     fun parse(type: String, signature: String?): String {
         return parseType(signature ?: type)
     }
 
     fun parseType(type: String): String {
-        val standardType = standardTypeMap[type]
+        val standardType = STANDARD_TYPE_MAP[type]
         if (standardType != null) {
             return standardType
         }

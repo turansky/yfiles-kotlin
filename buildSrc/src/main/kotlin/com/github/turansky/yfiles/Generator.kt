@@ -32,7 +32,6 @@ private fun loadApiJson(path: String): String {
 }
 
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
-    TypeParser.standardTypeMap = KotlinTypes.STANDARD_TYPE_MAP
     generateWrappers(
         apiPath = apiPath,
         sourceDir = sourceDir,

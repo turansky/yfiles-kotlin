@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.KotlinTypes.UNIT
 import java.io.File
 
 internal class KotlinFileGenerator(
