@@ -125,10 +125,16 @@ internal class KotlinFileGenerator(
             return memberProperties + memberFunctions + memberEvents
         }
 
+        protected val externalAnnotation: String
+            get() {
+                return "@JsName(\"${data.jsName}\")\n" +
+                        "@JsModule(\"${data.modulePath}\")"
+
+            }
+
         val header: String
             get() {
-                return "@file:JsModule(\"${data.modulePath}\")\n\n" +
-                        "package ${data.packageName}\n"
+                return "package ${data.packageName}\n"
             }
 
         protected open fun parentTypes(): List<String> {
@@ -168,7 +174,7 @@ internal class KotlinFileGenerator(
                 }
 
                 """
-                |@JsName("${data.jsName}")
+                |$externalAnnotation
                 |external object ${data.name}s {
                 |$code
                 |}
@@ -180,7 +186,7 @@ internal class KotlinFileGenerator(
             return """
                 |$companion
                 |
-                |@JsName("${data.jsName}")
+                |$externalAnnotation
                 |internal external object ${data.name}Static {
                 |    @JsName("\${"$"}class")
                 |    val yclass: ${fixPackage("yfiles.lang.Class")}
@@ -304,7 +310,7 @@ internal class KotlinFileGenerator(
 
             // TODO: add ticket on "UNREACHABLE"
             return "@Suppress(\"UNREACHABLE_CODE\")\n" +
-                    data.mainAnnotation +
+                    "$externalAnnotation\n" +
                     "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
@@ -350,7 +356,7 @@ internal class KotlinFileGenerator(
             val content = super.content()
                 .replace("abstract ", "")
 
-            return data.mainAnnotation +
+            return "$externalAnnotation\n" +
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
@@ -368,7 +374,7 @@ internal class KotlinFileGenerator(
             return """
                 |$staticContent
                 |
-                |@JsName("${data.jsName}")
+                |$externalAnnotation
                 |internal external class ${data.name}Delegate$generics(source: ${data.name}$generics)
                 |
             """.trimMargin()
@@ -392,7 +398,7 @@ internal class KotlinFileGenerator(
 
 
             return """
-                |@JsName("${data.jsName}")
+                |$externalAnnotation
                 |internal external class ${data.name}Ext${genericParameters()} {
                 |    $content
                 |}
@@ -448,7 +454,7 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return data.mainAnnotation +
+            return "$externalAnnotation\n" +
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
@@ -457,11 +463,4 @@ internal class KotlinFileGenerator(
 
         override fun isObject() = true
     }
-
-    val TypeGeneratorData.mainAnnotation: String
-        get() = if (name != jsName) {
-            "@JsName(\"$jsName\")\n"
-        } else {
-            ""
-        }
 }
