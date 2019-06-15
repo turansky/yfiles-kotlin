@@ -1,9 +1,9 @@
 plugins {
-    id("kotlin2js")
+    kotlin("js")
 }
 
 tasks {
-    compileKotlin2Js {
+    compileKotlinJs {
         kotlinOptions {
             moduleKind = "amd"
         }

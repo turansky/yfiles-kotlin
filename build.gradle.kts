@@ -1,10 +1,11 @@
 plugins {
-    id("kotlin2js") version "1.3.31" apply false
+    kotlin("js") version "1.3.40-eap-105" apply false
 }
 
 allprojects {
     repositories {
         mavenCentral()
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
 

@@ -4,7 +4,7 @@ group = "com.yworks.yfiles"
 version = "2.2.0-SNAPSHOT"
 
 plugins {
-    id("kotlin2js")
+    kotlin("js")
     id("maven-publish")
 }
 
@@ -25,7 +25,7 @@ val generateDeclarations by tasks.register("generateDeclarations") {
     }
 }
 
-tasks.compileKotlin2Js {
+tasks.compileKotlinJs {
     kotlinOptions {
         outputFile = "$projectDir/out/yfiles-kotlin.js"
         moduleKind = "amd"
@@ -41,7 +41,7 @@ val mainJar by tasks.registering(Jar::class) {
 }
 
 val sourceJar by tasks.registering(Jar::class) {
-    from(sourceSets.main.get().allSource)
+    from("$projectDir/src/main/kotlin")
     classifier = "sources"
 }
 
