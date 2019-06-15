@@ -454,11 +454,18 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
+            val alias = if (data.name != data.jsName) {
+                "typealias ${data.jsName} = ${data.name}"
+            } else {
+                ""
+            }
+
             return "$externalAnnotation\n" +
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
-                    "}\n"
+                    "}\n" +
+                    alias
         }
 
         override fun isObject() = true
