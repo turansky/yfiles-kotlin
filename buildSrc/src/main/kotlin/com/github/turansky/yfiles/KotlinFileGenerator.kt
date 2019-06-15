@@ -325,6 +325,18 @@ internal class KotlinFileGenerator(
             """.trimMargin()
         }
 
+        override fun companionContent(): String? {
+            val companionContent = super.companionContent()
+                ?: return null
+
+            if (data.primitive || data.name == data.jsName) {
+                return companionContent
+            }
+
+            val generics = genericParameters()
+            return companionContent + "\n\n" +
+                    "typealias ${data.jsName}$generics = ${data.name}$generics"
+        }
     }
 
     inner class InterfaceFile(declaration: Interface) : GeneratedFile(declaration) {
