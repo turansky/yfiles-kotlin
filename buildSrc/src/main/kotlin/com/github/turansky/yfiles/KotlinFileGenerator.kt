@@ -455,7 +455,7 @@ internal class KotlinFileGenerator(
                 .joinToString(separator = ",\n", postfix = ";\n")
 
             val alias = if (data.name != data.jsName) {
-                "typealias ${data.jsName} = ${data.name}"
+                "\n\ntypealias ${data.jsName} = ${data.name}"
             } else {
                 ""
             }
@@ -464,7 +464,7 @@ internal class KotlinFileGenerator(
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
-                    "}\n\n" +
+                    "}" +
                     alias
         }
 
