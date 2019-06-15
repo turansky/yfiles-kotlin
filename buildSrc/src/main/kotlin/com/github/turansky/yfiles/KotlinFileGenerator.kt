@@ -464,7 +464,7 @@ internal class KotlinFileGenerator(
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
-                    "}\n" +
+                    "}\n\n" +
                     alias
         }
 
