@@ -28,6 +28,9 @@ internal data class TypeGeneratorData(
 ) : AbstractGeneratorData(fqn) {
     val jsName = alias ?: name
 
+    val primitive: Boolean
+        get() = isPrimitiveClass(fqn)
+
     val marker: Boolean
         get() = isMarkerClass(fqn)
 }

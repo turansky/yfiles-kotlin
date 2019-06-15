@@ -74,13 +74,6 @@ internal class KotlinFileGenerator(
         file.writeText("$header\n\n$content")
     }
 
-    private val PRIMITIVE_CLASSES = setOf(
-        "Boolean",
-        "Number",
-        "Object",
-        "String"
-    )
-
     abstract inner class GeneratedFile(private val declaration: Type) {
         val data = es6GeneratorData(declaration)
 
@@ -209,7 +202,7 @@ internal class KotlinFileGenerator(
                 |val ${constName(className)}_CLASS = $yclass
             """.trimMargin()
 
-            if (PRIMITIVE_CLASSES.contains(data.name)) {
+            if (data.primitive) {
                 return result
             }
 
@@ -281,7 +274,7 @@ internal class KotlinFileGenerator(
                 return objectContent()
             }
 
-            if (PRIMITIVE_CLASSES.contains(data.name)) {
+            if (data.primitive) {
                 return staticContent()
             }
 
