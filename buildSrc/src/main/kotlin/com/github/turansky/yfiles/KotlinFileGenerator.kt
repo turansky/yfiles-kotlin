@@ -126,15 +126,12 @@ internal class KotlinFileGenerator(
         }
 
         protected val externalAnnotation: String
-            get() {
-                return "@JsName(\"${data.jsName}\")\n" +
-                        "@JsModule(\"${data.modulePath}\")"
-
-            }
+            get() = "@JsName(\"${data.jsName}\")"
 
         val header: String
             get() {
-                return "package ${data.packageName}\n"
+                return "@file:JsModule(\"${data.modulePath}\")\n\n" +
+                        "package ${data.packageName}\n"
             }
 
         protected open fun parentTypes(): List<String> {
@@ -458,7 +455,7 @@ internal class KotlinFileGenerator(
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
-                    "}\n"
+                    "}"
         }
 
         override fun isObject() = true
