@@ -21,9 +21,9 @@ internal class KotlinFileGenerator(
             generate(directory, generatedFile)
         }
 
-        functionSignatures.forEach {
-            generate(directory, it)
-        }
+        functionSignatures
+            .groupBy { it.fqn.substringBeforeLast(".") }
+            .forEach { _, items -> generate(directory, items) }
     }
 
     private fun generate(directory: File, generatedFile: GeneratedFile) {
@@ -47,29 +47,39 @@ internal class KotlinFileGenerator(
             .writeText(companionContent.replace(redundantPackageDeclaration, ""))
     }
 
-    private fun generate(directory: File, functionSignature: FunctionSignature) {
-        val data = GeneratorData(functionSignature.fqn)
-        val dir = directory.resolve(data.path)
+    private fun generate(
+        directory: File,
+        signatures: List<FunctionSignature>
+    ) {
+        val firstData = GeneratorData(signatures.first().fqn)
+        val dir = directory.resolve(firstData.path)
         dir.mkdirs()
 
-        val packageName = data.packageName
+        val packageName = firstData.packageName
         val redundantPackageDeclaration = packageName + "."
 
-        val file = dir.resolve("${data.name}.kt")
+        val file = dir.resolve("Aliases.kt")
         val header = "package $packageName"
 
-        val typeparameters = functionSignature.typeparameters
-        val generics = if (typeparameters.isNotEmpty()) {
-            "<${typeparameters.byComma { it.name }}>"
-        } else {
-            ""
-        }
-        val parameters = functionSignature.parameters
-            .byComma { it.toCode() }
-        val returns = functionSignature.returns?.toCode() ?: UNIT
+        val content = signatures
+            .asSequence()
+            .sortedBy { it.fqn }
+            .map { signature ->
+                val typeparameters = signature.typeparameters
+                val generics = if (typeparameters.isNotEmpty()) {
+                    "<${typeparameters.byComma { it.name }}>"
+                } else {
+                    ""
+                }
+                val parameters = signature.parameters
+                    .byComma { it.toCode() }
+                val returns = signature.returns?.toCode() ?: UNIT
 
-        val content = "typealias ${data.name}$generics = ($parameters) -> $returns"
-            .replace(redundantPackageDeclaration, "")
+                val data = GeneratorData(signature.fqn)
+                "typealias ${data.name}$generics = ($parameters) -> $returns"
+                    .replace(redundantPackageDeclaration, "")
+            }
+            .joinToString("\n\n")
 
         file.writeText("$header\n\n$content")
     }
