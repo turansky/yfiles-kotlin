@@ -1,11 +1,10 @@
 plugins {
-    kotlin("js") version "1.3.40-release-122" apply false
+    kotlin("js") version "1.3.40" apply false
 }
 
 allprojects {
     repositories {
-        mavenCentral()
-        maven(url = "https://kotlin.bintray.com/kotlin-dev")
+        jcenter()
     }
 }
 

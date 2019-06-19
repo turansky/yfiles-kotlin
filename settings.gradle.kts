@@ -1,12 +1,11 @@
 pluginManagement {
     repositories {
-        mavenCentral()
-        maven(url = "https://kotlin.bintray.com/kotlin-dev")
+        jcenter()
     }
 
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id == "kotlin2js") {
+            if (requested.id.id == "org.jetbrains.kotlin.js") {
                 useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
             }
         }
