@@ -264,16 +264,16 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
     // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(): String {
-        var returnType = returns?.type
-            ?: UNIT
-
-        returnType += modifiers.nullability
+        var returnType = returns?.let {
+            ":" + it.type + modifiers.nullability
+        }
 
         if (!abstract) {
+            returnType = returnType ?: ": ${UNIT}"
             returnType += " = definedExternally"
         }
 
-        return ": $returnType"
+        return returnType ?: ""
     }
 
     override fun toCode(): String {
