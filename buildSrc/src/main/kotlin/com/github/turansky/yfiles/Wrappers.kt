@@ -296,8 +296,8 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         val generics = getGenericString(typeparameters + this.typeparameters)
 
-        return "fun $generics ${classDeclaration}.$name($extParameters)$returnSignature\n" +
-                " = ext.$name($callParameters)"
+        return "fun $generics ${classDeclaration}.$name($extParameters)$returnSignature =\n" +
+                "ext.$name($callParameters)"
     }
 }
 
