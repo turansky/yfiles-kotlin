@@ -223,9 +223,9 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         var str = if (getterSetter) "var " else "val "
         str += "$generics ${classDeclaration}.$name: $type${modifiers.nullability}\n" +
-                "    get() = ext.$name"
+                "    get() = $AS_DYNAMIC.$name"
         if (getterSetter) {
-            str += "\n    set(value) { ext.$name = value }"
+            str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
         return str
@@ -297,7 +297,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         val generics = getGenericString(typeparameters + this.typeparameters)
 
         return "fun $generics ${classDeclaration}.$name($extParameters)$returnSignature =\n" +
-                "ext.$name($callParameters)"
+                "$AS_DYNAMIC.$name($callParameters)"
     }
 }
 

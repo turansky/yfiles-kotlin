@@ -1,6 +1,8 @@
 package com.github.turansky.yfiles
 
 internal val UNIT = "Unit"
+// TODO: move to separate file
+internal val AS_DYNAMIC = "asDynamic()"
 
 internal val STANDARD_TYPE_MAP = mapOf(
     JS_ANY to "Any",

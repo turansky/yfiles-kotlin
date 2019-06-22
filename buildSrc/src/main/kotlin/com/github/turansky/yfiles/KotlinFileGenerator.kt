@@ -367,8 +367,6 @@ internal class KotlinFileGenerator(
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
                     "}\n\n" +
-                    calculateDefaultsContent() +
-                    "\n\n" +
                     staticContent()
         }
 
@@ -390,28 +388,6 @@ internal class KotlinFileGenerator(
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract }
 
-        private fun calculateDefaultsContent(): String {
-            val items = defaultDeclarations
-                .map { it.toCode() }
-
-            if (items.isEmpty()) {
-                return ""
-            }
-
-            val content = items.lines()
-                .replace("open val", "val")
-                .replace("open var", "var")
-                .replace("open fun", "fun")
-
-
-            return """
-                |$externalAnnotation
-                |internal external class ${data.name}Ext${genericParameters()} {
-                |    $content
-                |}
-            """.trimMargin()
-        }
-
         override fun companionContent(): String? {
             var content = requireNotNull(super.companionContent())
 
@@ -432,8 +408,6 @@ internal class KotlinFileGenerator(
                 return content
             }
 
-            val extClassDeclaration = data.name + "Ext" + generics
-
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
@@ -443,14 +417,7 @@ internal class KotlinFileGenerator(
                     }
                 }
 
-            return """
-                |$content
-                |
-                |private val $generics ${classDeclaration}.ext:$extClassDeclaration
-                |    get () = this.unsafeCast<$extClassDeclaration>()
-                |
-                |$extensions
-            """.trimMargin()
+            return "$content\n\n$extensions"
         }
     }
 
