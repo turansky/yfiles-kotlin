@@ -9,7 +9,6 @@ internal val STANDARD_TYPE_MAP = mapOf(
     JS_STRING to "String",
     JS_NUMBER to "Number",
     "Date" to "kotlin.js.Date",
-    "void" to UNIT,
     "Function" to "() -> ${UNIT}",
 
     "Event" to "org.w3c.dom.events.Event",
