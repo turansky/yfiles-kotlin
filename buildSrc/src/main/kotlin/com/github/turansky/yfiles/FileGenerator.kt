@@ -39,6 +39,6 @@ internal fun es6GeneratorData(
     declaration: Type
 ) = TypeGeneratorData(
     fqn = declaration.fqn,
-    modulePath = "yfiles/${declaration.es6Module}",
+    modulePath = "yfiles",
     alias = declaration.es6name
 )
