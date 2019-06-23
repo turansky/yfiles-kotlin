@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.TypeParser.getGenericString
 import org.json.JSONObject
 import java.util.*
 import kotlin.reflect.KProperty
@@ -72,7 +71,7 @@ internal class FunctionSignature(fqn: String, source: JSONObject) : JsonWrapper(
 
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val type: String by TypeDelegate { TypeParser.parseType(it) }
+    val type: String by TypeDelegate { parseType(it) }
     val summary: String by StringDelegate()
 
     override fun toCode(): String {
@@ -81,7 +80,7 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
-    private val type: String by TypeDelegate { TypeParser.parseType(it) }
+    private val type: String by TypeDelegate { parseType(it) }
     private val doc: String? by NullableStringDelegate()
 
     override fun toCode(): String {
@@ -115,11 +114,11 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
 
     fun extendedType(): String? {
         val type = extends ?: return null
-        return TypeParser.parseType(type)
+        return parseType(type)
     }
 
     fun implementedTypes(): List<String> {
-        return implements.map { TypeParser.parseType(it) }
+        return implements.map { parseType(it) }
     }
 }
 
@@ -157,7 +156,7 @@ internal class Enum(source: JSONObject) : Type(source)
 
 internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
     private val signature: String? by NullableStringDelegate()
-    protected val type: String by TypeDelegate { TypeParser.parse(it, signature) }
+    protected val type: String by TypeDelegate { parse(it, signature) }
 }
 
 internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
@@ -341,7 +340,7 @@ internal class ParameterModifiers(flags: List<String>) {
 internal class Parameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     private val signature: String? by NullableStringDelegate()
-    val type: String by TypeDelegate { TypeParser.parse(it, signature) }
+    val type: String by TypeDelegate { parse(it, signature) }
     val summary: String? by NullableStringDelegate()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
@@ -352,7 +351,7 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
 
 internal class Returns(source: JSONObject) : JsonWrapper(source) {
     private val signature: String? by NullableStringDelegate()
-    val type: String by TypeDelegate { TypeParser.parse(it, signature) }
+    val type: String by TypeDelegate { parse(it, signature) }
 }
 
 internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
