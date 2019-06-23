@@ -308,7 +308,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     protected fun kotlinParametersString(checkOverriding: Boolean = true): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters
-            .byComma {
+            .byCommaLine {
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
                 val body = if (it.modifiers.optional && !overridden) EQ_DE else ""
                 "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
