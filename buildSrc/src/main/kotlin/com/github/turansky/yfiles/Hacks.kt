@@ -167,7 +167,10 @@ internal object Hacks {
                 it.firstParameter.addGeneric("TInterface")
             }
 
-        source.allMethods("typedHitElementsAt")
+        source.allMethods(
+            "typedHitElementsAt",
+            "createHitTester"
+        )
             .forEach {
                 it.firstParameter.addGeneric("T")
             }
@@ -183,13 +186,27 @@ internal object Hacks {
             "addMapper",
             "addConstantMapper",
             "addDelegateMapper",
+
+            // "createMapper",
             "createConstantMapper",
-            "createDelegateMapper"
+            "createDelegateMapper",
+
+            "addDataProvider",
+            "createDataMap",
+            "createDataProvider"
         )
             .filter { it.firstParameter.getString("name") == "keyType" }
             .forEach {
                 it.parameter("keyType").addGeneric("K")
                 it.parameter("valueType").addGeneric("V")
+            }
+
+        source.allMethods(
+            "addGraphInputData",
+            "addGraphOutputData"
+        )
+            .forEach {
+                it.firstParameter.addGeneric("TValue")
             }
     }
 
