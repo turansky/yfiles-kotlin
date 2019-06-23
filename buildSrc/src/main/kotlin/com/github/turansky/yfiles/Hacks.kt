@@ -157,6 +157,11 @@ internal object Hacks {
             .forEach {
                 it.firstParameter.put("type", "yfiles.lang.Class<TInterface>")
             }
+
+        source.allMethods("typedHitElementsAt")
+            .forEach {
+                it.firstParameter.put("type", "yfiles.lang.Class<T>")
+            }
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
