@@ -176,7 +176,7 @@ internal object Hacks {
             .map { source.type(it) }
             .forEach {
                 it.getJSONArray("methods")
-                    .first { it.get("name") == "getEnumerator" }
+                    .firstWithName("getEnumerator")
                     .getJSONObject("returns")
                     .put("type", "yfiles.collections.IEnumerator<${JS_OBJECT}>")
             }
