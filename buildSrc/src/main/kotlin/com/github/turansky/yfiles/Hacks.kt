@@ -140,7 +140,16 @@ internal object Hacks {
         source.type("yfiles.lang.Class")
             .addStandardGeneric()
 
-        source.allMethods("lookup", "innerLookup", "childInputModeContextLookup")
+        source.allMethods(
+            "lookup",
+            "innerLookup",
+            "contextLookup",
+            "lookupContext",
+            "inputModeContextLookup",
+            "childInputModeContextLookup",
+            "getCopy",
+            "getOrCreateCopy"
+        )
             .forEach {
                 it.addStandardGeneric()
 
