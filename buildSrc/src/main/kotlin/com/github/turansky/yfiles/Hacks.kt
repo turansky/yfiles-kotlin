@@ -171,6 +171,13 @@ internal object Hacks {
             .forEach {
                 it.firstParameter.addGeneric("T")
             }
+
+        source.allMethods("factoryLookupChainLink", "add", "addConstant")
+            .filter { it.firstParameter.getString("name") == "contextType" }
+            .forEach {
+                it.parameter("contextType").addGeneric("TContext")
+                it.parameter("resultType").addGeneric("TResult")
+            }
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
@@ -189,13 +196,6 @@ internal object Hacks {
             .getJSONArray("staticMethods")
             .firstWithName("fromArray")
             .addStandardGeneric()
-
-        // WA: generic 'TContext' is temporally unused (while Class has no generics)
-        source.type("yfiles.graph.ILookupDecorator")
-            .getJSONArray("methods")
-            .firstWithName("addConstant")
-            .getJSONArray("typeparameters")
-            .remove(0)
 
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")

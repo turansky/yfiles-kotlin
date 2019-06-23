@@ -36,6 +36,14 @@ internal val JSONObject.typeParameter: JSONObject
             .first { it.getString("name") in typeNames }
     }
 
+internal fun JSONObject.parameter(name: String): JSONObject {
+    return getJSONArray("parameters")
+        .asSequence()
+        .map { it as JSONObject }
+        .first { it.getString("name") == name }
+}
+
+
 internal val JSONObject.firstParameter: JSONObject
     get() = getJSONArray("parameters")
         .get(0) as JSONObject
