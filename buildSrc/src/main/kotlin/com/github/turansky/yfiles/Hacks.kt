@@ -140,11 +140,11 @@ internal object Hacks {
         source.type("yfiles.lang.Class")
             .addStandardGeneric()
 
-        source.allMethods("lookup", "childInputModeContextLookup")
+        source.allMethods("lookup", "innerLookup", "childInputModeContextLookup")
             .forEach {
                 it.addStandardGeneric()
 
-                it.firstParameter.put("type", "yfiles.lang.Class<T>")
+                it.typeParameter.addGeneric("T")
 
                 it.getJSONObject("returns")
                     .put("type", "T")
@@ -155,12 +155,12 @@ internal object Hacks {
 
         source.allMethods("getDecoratorFor")
             .forEach {
-                it.firstParameter.put("type", "yfiles.lang.Class<TInterface>")
+                it.firstParameter.addGeneric("TInterface")
             }
 
         source.allMethods("typedHitElementsAt")
             .forEach {
-                it.firstParameter.put("type", "yfiles.lang.Class<T>")
+                it.firstParameter.addGeneric("T")
             }
     }
 

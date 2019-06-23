@@ -27,6 +27,17 @@ internal fun JSONObject.allMethods(vararg methodNames: String): Sequence<JSONObj
         .map { it as JSONObject }
         .filter { it.getString("name") in methodNames }
 
+internal val JSONObject.typeParameter: JSONObject
+    get() = getJSONArray("parameters")
+        .asSequence()
+        .map { it as JSONObject }
+        .first { it.getString("name") == "type" }
+
 internal val JSONObject.firstParameter: JSONObject
     get() = getJSONArray("parameters")
         .get(0) as JSONObject
+
+internal fun JSONObject.addGeneric(generic: String) {
+    val type = getString("type")
+    put("type", "$type<$generic>")
+}
