@@ -220,7 +220,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         val generics = getGenericString(typeparameters)
 
-        var str = if (getterSetter) "var " else "val "
+        var str = "inline " + if (getterSetter) "var " else "val "
         str += "$generics ${classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $AS_DYNAMIC.$name"
         if (getterSetter) {
