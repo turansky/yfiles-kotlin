@@ -183,6 +183,46 @@ internal object Hacks {
             }
 
         source.allMethods(
+            "addGraphInputData",
+            "addGraphOutputData"
+        )
+            .forEach {
+                it.firstParameter.addGeneric("TValue")
+            }
+
+        source.allMethods("addOutputMapper")
+            .forEach {
+                it.parameter("modelItemType").addGeneric("TModelItem")
+                it.parameter("dataType").addGeneric("TValue")
+            }
+
+        source.allMethods("addRegistryOutputMapper")
+            .filter { it.firstParameter.getString("name") == "modelItemType" }
+            .forEach {
+                it.parameter("modelItemType").addGeneric("TModelItem")
+                it.parameter("valueType").addGeneric("TValue")
+            }
+
+        source.type("yfiles.graphml.GraphMLIOHandler")
+            .apply {
+                (getJSONArray("methods") + getJSONArray("staticMethods"))
+                    .asSequence()
+                    .map { it as JSONObject }
+                    .filter { it.has("parameters") }
+                    .flatMap { it.getJSONArray("parameters").asSequence() }
+                    .map { it as JSONObject }
+                    .filter { it.getString("type") == "yfiles.lang.Class" }
+                    .forEach {
+                        when (it.getString("name")) {
+                            "keyType" -> it.addGeneric("TKey")
+                            "modelItemType" -> it.addGeneric("TKey")
+                            "dataType" -> it.addGeneric("TData")
+                        }
+                    }
+            }
+
+
+        source.allMethods(
             "addMapper",
             "addConstantMapper",
             "addDelegateMapper",
@@ -199,14 +239,6 @@ internal object Hacks {
             .forEach {
                 it.parameter("keyType").addGeneric("K")
                 it.parameter("valueType").addGeneric("V")
-            }
-
-        source.allMethods(
-            "addGraphInputData",
-            "addGraphOutputData"
-        )
-            .forEach {
-                it.firstParameter.addGeneric("TValue")
             }
     }
 
