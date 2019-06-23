@@ -9,7 +9,7 @@ internal fun parse(type: String, signature: String?): String {
 
 internal fun parseType(type: String): String {
     // TODO: remove class hack
-    if (type.startsWith("yfiles.lang.Class<T")) {
+    if (type.startsWith("yfiles.lang.Class<")) {
         return type
     }
 

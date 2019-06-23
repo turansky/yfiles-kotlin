@@ -178,6 +178,17 @@ internal object Hacks {
                 it.parameter("contextType").addGeneric("TContext")
                 it.parameter("resultType").addGeneric("TResult")
             }
+
+        source.allMethods(
+            "addMapper",
+            "addConstantMapper",
+            "addDelegateMapper"
+        )
+            .filter { it.firstParameter.getString("name") == "keyType" }
+            .forEach {
+                it.parameter("keyType").addGeneric("K")
+                it.parameter("valueType").addGeneric("V")
+            }
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
