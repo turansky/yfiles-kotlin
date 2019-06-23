@@ -9,9 +9,8 @@ internal object TypeParser {
     }
 
     fun parseType(type: String): String {
-        val standardType = STANDARD_TYPE_MAP[type]
-        if (standardType != null) {
-            return standardType
+        getKotlinType(type)?.let {
+            return it
         }
 
         if (!type.contains(GENERIC_START)) {

@@ -2,7 +2,10 @@ package com.github.turansky.yfiles
 
 internal val UNIT = "Unit"
 
-internal val STANDARD_TYPE_MAP = mapOf(
+internal fun getKotlinType(type: String): String? =
+    STANDARD_TYPE_MAP[type]
+
+private val STANDARD_TYPE_MAP = mapOf(
     JS_ANY to "Any",
     JS_OBJECT to "Any",
     JS_BOOLEAN to "Boolean",
