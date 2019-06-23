@@ -17,11 +17,11 @@ private fun JSONObject.type(id: String): JSONObject {
     val rootPackage = id.substring(0, id.indexOf("."))
     val typePackage = id.substring(0, id.lastIndexOf("."))
     return this.getJSONArray("namespaces")
-        .first { it.getString("id") == rootPackage }
+        .firstWithId(rootPackage)
         .getJSONArray("namespaces")
-        .first { it.getString("id") == typePackage }
+        .firstWithId(typePackage)
         .getJSONArray("types")
-        .first { it.getString("id") == id }
+        .firstWithId(id)
 }
 
 private fun JSONObject.methodParameters(

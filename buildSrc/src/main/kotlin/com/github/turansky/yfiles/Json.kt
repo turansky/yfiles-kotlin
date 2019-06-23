@@ -19,6 +19,9 @@ internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
         .first()
 }
 
+internal fun JSONArray.firstWithId(id: String): JSONObject =
+    first { it.getString("id") == id }
+
 internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSONObject> {
     return (0 until this.length())
         .map(this::getJSONObject)
