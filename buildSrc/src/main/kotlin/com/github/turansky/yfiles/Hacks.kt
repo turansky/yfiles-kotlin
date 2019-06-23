@@ -140,7 +140,7 @@ internal object Hacks {
         source.type("yfiles.lang.Class")
             .addStandardGeneric()
 
-        source.allMethods("lookup")
+        source.allMethods("lookup", "childInputModeContextLookup")
             .forEach {
                 it.addStandardGeneric()
 
@@ -374,7 +374,6 @@ internal object Hacks {
 
     private val METHOD_NULLABILITY_MAP = mapOf(
         MethodDeclaration(className = "yfiles.algorithms.Graph", methodName = "getDataProvider") to true,
-        MethodDeclaration(className = "yfiles.input.GraphInputMode", methodName = "childInputModeContextLookup") to true,
         MethodDeclaration(className = "yfiles.view.ViewportLimiter", methodName = "getCurrentBounds") to true,
         MethodDeclaration(className = "yfiles.collections.IEnumerable", methodName = "first") to false
     )
