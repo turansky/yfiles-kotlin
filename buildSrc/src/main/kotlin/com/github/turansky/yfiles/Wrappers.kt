@@ -262,17 +262,16 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     }
 
     // https://youtrack.jetbrains.com/issue/KT-31249
-    private fun getReturnSignature(): String {
-        var returnType = returns?.let {
+    private fun getReturnSignature(extensionMode: Boolean = false): String {
+        val returnType = returns?.let {
             ":" + it.type + modifiers.nullability
         }
 
-        if (!abstract) {
-            returnType = returnType ?: ": ${UNIT}"
-            returnType += EQ_DE
+        if (abstract || extensionMode) {
+            return returnType ?: ""
         }
 
-        return returnType ?: ""
+        return (returnType ?: ": ${UNIT}") + EQ_DE
     }
 
     override fun toCode(): String {
@@ -290,8 +289,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         val callParameters = parameters
             .byComma { it.name }
 
-        val returnSignature = getReturnSignature()
-            .removeSuffix(EQ_DE)
+        val returnSignature = getReturnSignature(extensionMode = true)
 
         val generics = getGenericString(typeparameters + this.typeparameters)
 
