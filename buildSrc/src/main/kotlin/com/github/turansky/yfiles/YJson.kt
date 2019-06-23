@@ -12,3 +12,11 @@ internal fun JSONObject.types(): Sequence<JSONObject> {
         .flatMap { it.getJSONArray("types").asSequence() }
         .map { it as JSONObject }
 }
+
+internal fun JSONObject.addStandardGeneric() {
+    put(
+        "typeparameters", jArray(
+            jObject("name" to "T")
+        )
+    )
+}

@@ -138,11 +138,7 @@ internal object Hacks {
 
     private fun addClassGeneric(source: JSONObject) {
         source.type("yfiles.lang.Class")
-            .put(
-                "typeparameters", jArray(
-                    jObject("name" to "T")
-                )
-            )
+            .addStandardGeneric()
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
@@ -160,11 +156,7 @@ internal object Hacks {
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")
             .firstWithName("fromArray")
-            .put(
-                "typeparameters", jArray(
-                    jObject("name" to "T")
-                )
-            )
+            .addStandardGeneric()
 
         // WA: generic 'TContext' is temporally unused (while Class has no generics)
         source.type("yfiles.graph.ILookupDecorator")
