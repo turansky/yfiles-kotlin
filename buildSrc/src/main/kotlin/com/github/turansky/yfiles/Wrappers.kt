@@ -284,8 +284,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     ): String {
         require(!protected)
 
-        val extParameters = kotlinParametersString()
-            .replace(EQ_DE, EQ_NULL)
+        val extParameters = kotlinParametersString(extensionMode = true)
         val callParameters = parameters
             .byComma { it.name }
 
@@ -293,7 +292,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         val generics = getGenericString(typeparameters + this.typeparameters)
 
-        return "fun $generics ${classDeclaration}.$name($extParameters)$returnSignature =\n" +
+        return "inline fun $generics ${classDeclaration}.$name($extParameters)$returnSignature =\n" +
                 "$AS_DYNAMIC.$name($callParameters)"
     }
 }
@@ -303,12 +302,22 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     val parameters: List<Parameter> by ArrayDelegate({ Parameter(it) }, { !it.modifiers.artificial })
     val options: Boolean by BooleanDelegate()
 
-    protected fun kotlinParametersString(checkOverriding: Boolean = true): String {
+    protected fun kotlinParametersString(
+        checkOverriding: Boolean = true,
+        extensionMode: Boolean = false
+    ): String {
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters
             .byCommaLine {
-                val modifiers = if (it.modifiers.vararg) "vararg " else ""
-                val body = if (it.modifiers.optional && !overridden) EQ_DE else ""
+                val modifiers = exp(extensionMode && it.lambda, "noinline ")
+                exp(it.modifiers.vararg, "vararg ")
+
+                val body = if (it.modifiers.optional && !overridden) {
+                    if (extensionMode) EQ_NULL else EQ_DE
+                } else {
+                    ""
+                }
+
                 "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
             }
     }
@@ -338,6 +347,7 @@ internal class ParameterModifiers(flags: List<String>) {
 internal class Parameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     private val signature: String? by NullableStringDelegate()
+    val lambda: Boolean = signature != null
     val type: String by TypeDelegate { parse(it, signature) }
     val summary: String? by NullableStringDelegate()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()

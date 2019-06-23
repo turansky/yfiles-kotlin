@@ -29,3 +29,8 @@ fun constName(str: String): String {
         .replace(Regex("([a-z])([A-Z])"), "\$1_\$2")
         .toUpperCase()
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun exp(condition: Boolean, str: String): String {
+    return if (condition) str else ""
+}
