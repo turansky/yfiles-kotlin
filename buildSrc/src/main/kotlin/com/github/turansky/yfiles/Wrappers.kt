@@ -208,7 +208,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
         str += "$name: $type${modifiers.nullability}"
         if (!abstract) {
-            str += " = definedExternally"
+            str += EQ_DE
         }
         return str
     }
@@ -270,7 +270,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         if (!abstract) {
             returnType = returnType ?: ": ${UNIT}"
-            returnType += " = definedExternally"
+            returnType += EQ_DE
         }
 
         return returnType ?: ""
@@ -287,12 +287,12 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         require(!protected)
 
         val extParameters = kotlinParametersString()
-            .replace(" = definedExternally", " = null")
+            .replace(EQ_DE, EQ_NULL)
         val callParameters = parameters
             .byComma { it.name }
 
         val returnSignature = getReturnSignature()
-            .removeSuffix(" = definedExternally")
+            .removeSuffix(EQ_DE)
 
         val generics = getGenericString(typeparameters + this.typeparameters)
 
@@ -311,7 +311,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
         return parameters
             .byComma {
                 val modifiers = if (it.modifiers.vararg) "vararg " else ""
-                val body = if (it.modifiers.optional && !overridden) " = definedExternally" else ""
+                val body = if (it.modifiers.optional && !overridden) EQ_DE else ""
                 "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
             }
     }
