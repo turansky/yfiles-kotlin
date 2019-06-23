@@ -140,23 +140,22 @@ internal object Hacks {
         source.type("yfiles.lang.Class")
             .addStandardGeneric()
 
-        source.types()
-            .filter { it.has("methods") }
-            .flatMap { it.getJSONArray("methods").asSequence() }
-            .map { it as JSONObject }
-            .filter { it.getString("name") == "lookup" }
+        source.allMethods("lookup")
             .forEach {
                 it.addStandardGeneric()
 
-                val typeParameter = it.getJSONArray("parameters")
-                    .get(0) as JSONObject
-                typeParameter.put("type", "yfiles.lang.Class<T>")
+                it.firstParameter.put("type", "yfiles.lang.Class<T>")
 
                 it.getJSONObject("returns")
                     .put("type", "T")
 
                 it.getJSONArray("modifiers")
                     .put(CANBENULL)
+            }
+
+        source.allMethods("getDecoratorFor")
+            .forEach {
+                it.firstParameter.put("type", "yfiles.lang.Class<TInterface>")
             }
     }
 
