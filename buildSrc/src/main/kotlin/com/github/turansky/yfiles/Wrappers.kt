@@ -74,8 +74,9 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { parseType(it) }
     val summary: String by StringDelegate()
 
+    // TODO: remove temp nullability fix
     override fun toCode(): String {
-        return "$name: $type"
+        return "$name: $type" + exp(type == ANY, "?")
     }
 }
 
