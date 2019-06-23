@@ -137,7 +137,7 @@ internal object Hacks {
     private fun fixConstantGenerics(source: JSONObject) {
         source.type("yfiles.collections.IListEnumerable")
             .getJSONArray("constants")
-            .first { it.getString("name") == "EMPTY" }
+            .firstWithName("EMPTY")
             .also {
                 val type = it.getString("type")
                     .replace("<T>", "<Object>")
@@ -148,7 +148,7 @@ internal object Hacks {
     private fun fixFunctionGenerics(source: JSONObject) {
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")
-            .first { it.getString("name") == "fromArray" }
+            .firstWithName("fromArray")
             .also {
                 it.put(
                     "typeparameters", jArray(
@@ -160,13 +160,13 @@ internal object Hacks {
         // WA: generic 'TContext' is temporally unused (while Class has no generics)
         source.type("yfiles.graph.ILookupDecorator")
             .getJSONArray("methods")
-            .first { it.getString("name") == "addConstant" }
+            .firstWithName("addConstant")
             .getJSONArray("typeparameters")
             .remove(0)
 
         source.type("yfiles.collections.List")
             .getJSONArray("staticMethods")
-            .first { it.getString("name") == "from" }
+            .firstWithName("from")
             .getJSONArray("typeparameters")
             .put(jObject("name" to "T"))
     }
@@ -198,7 +198,7 @@ internal object Hacks {
             .map { source.type(it) }
             .forEach {
                 it.getJSONArray("properties")
-                    .first { it.getString("name") == "outEdgeComparers" }
+                    .firstWithName("outEdgeComparers")
                     .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
             }
     }
@@ -365,7 +365,7 @@ internal object Hacks {
             .forEach { (className, methodName), nullable ->
                 source.type(className)
                     .getJSONArray("methods")
-                    .first { it.getString("name") == methodName }
+                    .firstWithName(methodName)
                     .changeNullability(nullable)
             }
     }
@@ -762,7 +762,7 @@ internal object Hacks {
                     .getJSONArray("properties")
 
                 val property = properties
-                    .first { it.getString("name") == declaration.propertyName }
+                    .firstWithName(declaration.propertyName)
 
                 properties.remove(properties.indexOf(property))
             }
@@ -788,7 +788,7 @@ internal object Hacks {
                     .getJSONArray("methods")
 
                 val method = methods
-                    .first { it.getString("name") == declaration.methodName }
+                    .firstWithName(declaration.methodName)
 
                 methods.remove(methods.indexOf(method))
             }
