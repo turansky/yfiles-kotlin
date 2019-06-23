@@ -139,6 +139,25 @@ internal object Hacks {
     private fun addClassGeneric(source: JSONObject) {
         source.type("yfiles.lang.Class")
             .addStandardGeneric()
+
+        source.types()
+            .filter { it.has("methods") }
+            .flatMap { it.getJSONArray("methods").asSequence() }
+            .map { it as JSONObject }
+            .filter { it.getString("name") == "lookup" }
+            .forEach {
+                it.addStandardGeneric()
+
+                val typeParameter = it.getJSONArray("parameters")
+                    .get(0) as JSONObject
+                typeParameter.put("type", "yfiles.lang.Class<T>")
+
+                it.getJSONObject("returns")
+                    .put("type", "T")
+
+                it.getJSONArray("modifiers")
+                    .put(CANBENULL)
+            }
     }
 
     private fun fixConstantGenerics(source: JSONObject) {

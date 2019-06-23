@@ -9,6 +9,10 @@ internal fun parse(type: String, signature: String?): String {
 
 internal fun parseType(type: String): String {
     // TODO: remove class hack
+    if (type.startsWith("yfiles.lang.Class<T")) {
+        return type
+    }
+
     if (type == "yfiles.lang.Class") {
         return "yfiles.lang.Class<*>"
     }
