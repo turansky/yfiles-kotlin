@@ -21,11 +21,14 @@ internal fun JSONObject.addStandardGeneric() {
 }
 
 internal fun JSONObject.allMethods(vararg methodNames: String): Sequence<JSONObject> =
-    types()
-        .filter { it.has("methods") }
-        .flatMap { it.getJSONArray("methods").asSequence() }
-        .map { it as JSONObject }
+    (types().optionalArray("methods") + types().optionalArray("staticMethods"))
         .filter { it.getString("name") in methodNames }
+
+internal fun Sequence<JSONObject>.optionalArray(name: String): Sequence<JSONObject> =
+    filter { it.has(name) }
+        .flatMap { it.getJSONArray(name).asSequence() }
+        .map { it as JSONObject }
+
 
 internal val JSONObject.typeParameter: JSONObject
     get() {
