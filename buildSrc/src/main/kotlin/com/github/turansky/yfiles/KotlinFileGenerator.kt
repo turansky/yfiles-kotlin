@@ -190,13 +190,22 @@ internal class KotlinFileGenerator(
                 ""
             }
 
+            var generic = data.name
+            if (generic == JS_OBJECT) {
+                generic = ANY
+            }
+
+            if (typeparameters.isNotEmpty()) {
+                generic += "<" + (1..typeparameters.size).map { "*" }.joinToString(",") + ">"
+            }
+
             return """
                 |$companion
                 |
                 |$externalAnnotation
                 |internal external object ${data.name}Static {
                 |    @JsName("\${"$"}class")
-                |    val yclass: ${fixPackage("yfiles.lang.Class")}
+                |    val yclass: yfiles.lang.Class<$generic>
                 |}
             """.trimMargin()
         }
