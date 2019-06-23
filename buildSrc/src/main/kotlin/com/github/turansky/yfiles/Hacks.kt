@@ -182,7 +182,9 @@ internal object Hacks {
         source.allMethods(
             "addMapper",
             "addConstantMapper",
-            "addDelegateMapper"
+            "addDelegateMapper",
+            "createConstantMapper",
+            "createDelegateMapper"
         )
             .filter { it.firstParameter.getString("name") == "keyType" }
             .forEach {
