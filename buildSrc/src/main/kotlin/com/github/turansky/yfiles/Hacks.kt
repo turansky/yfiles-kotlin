@@ -268,6 +268,13 @@ internal object Hacks {
                             "edgeStyleType" -> it.addGeneric("TStyle")
                             "decoratedType" -> it.addGeneric("TDecoratedType")
                             "interfaceType" -> it.addGeneric("TInterface")
+                            "keyType" -> it.addGeneric(
+                                when (typeName) {
+                                    "DataMapAdapter" -> "K"
+                                    "ItemCollectionMapping" -> "TItem"
+                                    else -> "TKey"
+                                }
+                            )
                             "valueType" -> it.addGeneric(if (typeName == "DataMapAdapter") "V" else "TValue")
                             else -> println(name)
                         }
