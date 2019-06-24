@@ -67,9 +67,7 @@ private fun JSONObject.correctConstructors() {
     getJSONArray("constructors")
         .asSequence()
         .map { it as JSONObject }
-        .filter { it.has("parameters") }
-        .flatMap { it.getJSONArray("parameters").asSequence() }
-        .map { it as JSONObject }
+        .optionalArray("parameters")
         .filter { it.getString("type") == JS_NUMBER }
         .forEach { it.put("type", getConstructorParameterType(className, it.getString("name"))) }
 }
@@ -378,9 +376,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
                 .flatMap { type.getJSONArray(it).asSequence() }
         }
         .map { it as JSONObject }
-        .filter { it.has("parameters") }
-        .flatMap { it.getJSONArray("parameters").asSequence() }
-        .map { it as JSONObject }
+        .optionalArray("parameters")
         .filter { it.has("signature") }
         .forEach {
             val signature = it.getString("signature")

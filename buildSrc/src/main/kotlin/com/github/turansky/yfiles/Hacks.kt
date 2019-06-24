@@ -223,9 +223,7 @@ internal object Hacks {
                 (getJSONArray("methods") + getJSONArray("staticMethods"))
                     .asSequence()
                     .map { it as JSONObject }
-                    .filter { it.has("parameters") }
-                    .flatMap { it.getJSONArray("parameters").asSequence() }
-                    .map { it as JSONObject }
+                    .optionalArray("parameters")
                     .filter { it.getString("type") == "yfiles.lang.Class" }
                     .forEach {
                         when (it.getString("name")) {
@@ -452,9 +450,7 @@ internal object Hacks {
             }
 
         source.types()
-            .filter { it.has("methods") }
-            .flatMap { it.getJSONArray("methods").asSequence() }
-            .map { it as JSONObject }
+            .optionalArray("methods")
             .filter { it.get("name") in BROKEN_NULLABILITY_METHODS }
             .filter { it.getJSONArray("parameters").length() == 1 }
             .map { it.getJSONArray("parameters").single() }

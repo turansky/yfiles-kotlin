@@ -6,9 +6,7 @@ internal fun JSONObject.types(): Sequence<JSONObject> =
     getJSONArray("namespaces")
         .asSequence()
         .map { it as JSONObject }
-        .filter { it.has("namespaces") }
-        .flatMap { it.getJSONArray("namespaces").asSequence() }
-        .map { it as JSONObject }
+        .optionalArray("namespaces")
         .flatMap { it.getJSONArray("types").asSequence() }
         .map { it as JSONObject }
 
