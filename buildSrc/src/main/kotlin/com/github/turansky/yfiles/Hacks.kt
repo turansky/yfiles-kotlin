@@ -169,8 +169,19 @@ internal object Hacks {
 
         source.allMethods(
             "typedHitElementsAt",
-            "createHitTester"
+            "createHitTester",
+
+            "serializeCore",
+            "deserializeCore"
         )
+            .forEach {
+                it.firstParameter.addGeneric("T")
+            }
+
+        source.allMethods(
+            "getCurrent"
+        )
+            .filter { it.firstParameter.getString("type") == "yfiles.lang.Class" }
             .forEach {
                 it.firstParameter.addGeneric("T")
             }
