@@ -253,17 +253,25 @@ internal object Hacks {
             }
 
         source.types()
-            .optionalArray("constructors")
-            .optionalArray("parameters")
-            .filter { it.getString("type") == YCLASS }
-            .forEach {
-                val name = it.getString("name")
-                when (name) {
-                    "edgeStyleType" -> it.addGeneric("TStyle")
-                    "decoratedType" -> it.addGeneric("TDecoratedType")
-                    "interfaceType" -> it.addGeneric("TInterface")
-                    else -> println(name)
+            .forEach { type ->
+                val typeName = type.getString("name")
+                if (typeName == "MapperMetadata") {
+                    return@forEach
                 }
+
+                type.optionalArray("constructors")
+                    .optionalArray("parameters")
+                    .filter { it.getString("type") == YCLASS }
+                    .forEach {
+                        val name = it.getString("name")
+                        when (name) {
+                            "edgeStyleType" -> it.addGeneric("TStyle")
+                            "decoratedType" -> it.addGeneric("TDecoratedType")
+                            "interfaceType" -> it.addGeneric("TInterface")
+                            "valueType" -> it.addGeneric(if (typeName == "DataMapAdapter") "V" else "TValue")
+                            else -> println(name)
+                        }
+                    }
             }
     }
 
