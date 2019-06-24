@@ -276,6 +276,8 @@ internal object Hacks {
                                 }
                             )
                             "valueType" -> it.addGeneric(if (typeName == "DataMapAdapter") "V" else "TValue")
+                            "dataType" -> it.addGeneric("TData")
+                            "itemType" -> it.addGeneric("T")
                             else -> println(name)
                         }
                     }
