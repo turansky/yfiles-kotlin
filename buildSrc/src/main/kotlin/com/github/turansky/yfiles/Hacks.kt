@@ -264,21 +264,27 @@ internal object Hacks {
                     .filter { it.getString("type") == YCLASS }
                     .forEach {
                         val name = it.getString("name")
-                        when (name) {
-                            "edgeStyleType" -> it.addGeneric("TStyle")
-                            "decoratedType" -> it.addGeneric("TDecoratedType")
-                            "interfaceType" -> it.addGeneric("TInterface")
-                            "keyType" -> it.addGeneric(
+                        val generic = when (name) {
+                            "edgeStyleType" -> "TStyle"
+                            "decoratedType" -> "TDecoratedType"
+                            "interfaceType" -> "TInterface"
+                            "keyType" ->
                                 when (typeName) {
                                     "DataMapAdapter" -> "K"
                                     "ItemCollectionMapping" -> "TItem"
                                     else -> "TKey"
                                 }
-                            )
-                            "valueType" -> it.addGeneric(if (typeName == "DataMapAdapter") "V" else "TValue")
-                            "dataType" -> it.addGeneric("TData")
-                            "itemType" -> it.addGeneric("T")
-                            else -> println(name)
+                            "valueType" -> if (typeName == "DataMapAdapter") "V" else "TValue"
+                            "dataType" -> "TData"
+                            "itemType" -> "T"
+                            "type" -> if (typeName == "StripeDecorator") "TStripe" else null
+                            else -> null
+                        }
+
+                        if (generic != null) {
+                            it.addGeneric(generic)
+                        } else {
+                            println(name)
                         }
                     }
             }
