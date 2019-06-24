@@ -137,7 +137,7 @@ internal object Hacks {
     }
 
     private fun addClassGeneric(source: JSONObject) {
-        source.type("yfiles.lang.Class")
+        source.type(YCLASS)
             .addStandardGeneric()
 
         source.allMethods(
@@ -185,7 +185,7 @@ internal object Hacks {
             "setLookup"
         )
             .map { it.firstParameter }
-            .filter { it.getString("type") == "yfiles.lang.Class" }
+            .filter { it.getString("type") == YCLASS }
             .forEach {
                 it.addGeneric("T")
             }
@@ -222,7 +222,7 @@ internal object Hacks {
             .apply {
                 (jsequence("methods") + jsequence("staticMethods"))
                     .optionalArray("parameters")
-                    .filter { it.getString("type") == "yfiles.lang.Class" }
+                    .filter { it.getString("type") == YCLASS }
                     .forEach {
                         when (it.getString("name")) {
                             "keyType" -> it.addGeneric("TKey")

@@ -9,12 +9,12 @@ internal fun parse(type: String, signature: String?): String {
 
 internal fun parseType(type: String): String {
     // TODO: remove class hack
-    if (type.startsWith("yfiles.lang.Class<")) {
+    if (type.startsWith("$YCLASS<")) {
         return type
     }
 
-    if (type == "yfiles.lang.Class") {
-        return "yfiles.lang.Class<*>"
+    if (type == YCLASS) {
+        return "$YCLASS<*>"
     }
 
     getKotlinType(type)?.let {
