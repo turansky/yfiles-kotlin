@@ -251,6 +251,20 @@ internal object Hacks {
                 it.parameter("keyType").addGeneric("K")
                 it.parameter("valueType").addGeneric("V")
             }
+
+        source.types()
+            .optionalArray("constructors")
+            .optionalArray("parameters")
+            .filter { it.getString("type") == YCLASS }
+            .forEach {
+                val name = it.getString("name")
+                when (name) {
+                    "edgeStyleType" -> it.addGeneric("TStyle")
+                    "decoratedType" -> it.addGeneric("TDecoratedType")
+                    "interfaceType" -> it.addGeneric("TInterface")
+                    else -> println(name)
+                }
+            }
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
