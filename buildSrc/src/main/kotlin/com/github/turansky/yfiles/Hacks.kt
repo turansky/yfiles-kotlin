@@ -283,8 +283,6 @@ internal object Hacks {
 
                         if (generic != null) {
                             it.addGeneric(generic)
-                        } else {
-                            println(name)
                         }
                     }
             }
