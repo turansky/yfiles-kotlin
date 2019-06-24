@@ -179,11 +179,15 @@ internal object Hacks {
             }
 
         source.allMethods(
-            "getCurrent"
+            "getCurrent",
+            "serialize",
+            "deserialize",
+            "setLookup"
         )
-            .filter { it.firstParameter.getString("type") == "yfiles.lang.Class" }
+            .map { it.firstParameter }
+            .filter { it.getString("type") == "yfiles.lang.Class" }
             .forEach {
-                it.firstParameter.addGeneric("T")
+                it.addGeneric("T")
             }
 
         source.allMethods("factoryLookupChainLink", "add", "addConstant")
