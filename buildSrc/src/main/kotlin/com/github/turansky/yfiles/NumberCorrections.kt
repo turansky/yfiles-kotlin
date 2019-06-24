@@ -33,9 +33,7 @@ private fun JSONObject.correctConstants() {
     }
 
     val className = getString("name")
-    getJSONArray("constants")
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence("constants")
         .filter { it.getString("type") != JS_NUMBER }
         .filter { it.getString("type").contains(JS_NUMBER) }
         .forEach {
@@ -64,9 +62,7 @@ private fun JSONObject.correctConstructors() {
     }
 
     val className = getString("name")
-    getJSONArray("constructors")
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence("constructors")
         .optionalArray("parameters")
         .filter { it.getString("type") == JS_NUMBER }
         .forEach { it.put("type", getConstructorParameterType(className, it.getString("name"))) }
@@ -108,9 +104,7 @@ private fun JSONObject.correctProperties(key: String) {
     }
 
     val className = getString("name")
-    getJSONArray(key)
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence(key)
         .filter { it.getString("type") == JS_NUMBER }
         .forEach { it.put("type", getPropertyType(className, it.getString("name"))) }
 }
@@ -152,15 +146,11 @@ private fun JSONObject.correctPropertiesGeneric() {
         return
     }
 
-    getJSONArray("properties")
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence("properties")
         .filter { it.getString("type").contains("$JS_NUMBER>") }
         .forEach { it.put("type", getPropertyGenericType(it.getString("name"), it.getString("type"))) }
 
-    getJSONArray("properties")
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence("properties")
         .filter { it.has("signature") }
         .forEach {
             val signature = it.getString("signature")
@@ -201,9 +191,7 @@ private fun JSONObject.correctMethods(key: String) {
     }
 
     val className = getString("name")
-    getJSONArray(key)
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence(key)
         .filter { it.has("returns") }
         .forEach {
             val methodName = it.getString("name")
@@ -259,15 +247,11 @@ private fun JSONObject.correctMethodParameters(key: String) {
     }
 
     val className = getString("name")
-    getJSONArray(key)
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence(key)
         .filter { it.has("parameters") }
         .forEach { method ->
             val methodName = method.getString("name")
-            method.getJSONArray("parameters")
-                .asSequence()
-                .map { it as JSONObject }
+            method.jsequence("parameters")
                 .forEach {
                     val parameterName = it.getString("name")
                     when (it.getString("type")) {
@@ -373,9 +357,8 @@ private fun correctEnumerable(types: List<JSONObject>) {
         .flatMap { type ->
             sequenceOf("constructors", "methods", "staticMethods")
                 .filter { type.has(it) }
-                .flatMap { type.getJSONArray(it).asSequence() }
+                .flatMap { type.jsequence(it) }
         }
-        .map { it as JSONObject }
         .optionalArray("parameters")
         .filter { it.has("signature") }
         .forEach {

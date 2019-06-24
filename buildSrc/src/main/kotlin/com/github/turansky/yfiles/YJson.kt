@@ -3,12 +3,9 @@ package com.github.turansky.yfiles
 import org.json.JSONObject
 
 internal fun JSONObject.types(): Sequence<JSONObject> =
-    getJSONArray("namespaces")
-        .asSequence()
-        .map { it as JSONObject }
+    jsequence("namespaces")
         .optionalArray("namespaces")
-        .flatMap { it.getJSONArray("types").asSequence() }
-        .map { it as JSONObject }
+        .jsequence("types")
 
 internal fun JSONObject.addStandardGeneric() {
     put(
@@ -22,25 +19,27 @@ internal fun JSONObject.allMethods(vararg methodNames: String): Sequence<JSONObj
     (types().optionalArray("methods") + types().optionalArray("staticMethods"))
         .filter { it.getString("name") in methodNames }
 
-internal fun Sequence<JSONObject>.optionalArray(name: String): Sequence<JSONObject> =
-    filter { it.has(name) }
-        .flatMap { it.getJSONArray(name).asSequence() }
+internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
+    getJSONArray(name)
+        .asSequence()
         .map { it as JSONObject }
 
+internal fun Sequence<JSONObject>.jsequence(name: String): Sequence<JSONObject> =
+    flatMap { it.jsequence(name) }
+
+internal fun Sequence<JSONObject>.optionalArray(name: String): Sequence<JSONObject> =
+    filter { it.has(name) }
+        .jsequence(name)
 
 internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
-        return getJSONArray("parameters")
-            .asSequence()
-            .map { it as JSONObject }
+        return jsequence("parameters")
             .first { it.getString("name") in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
-    return getJSONArray("parameters")
-        .asSequence()
-        .map { it as JSONObject }
+    return jsequence("parameters")
         .first { it.getString("name") == name }
 }
 

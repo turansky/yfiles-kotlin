@@ -220,9 +220,7 @@ internal object Hacks {
 
         source.type("yfiles.graphml.GraphMLIOHandler")
             .apply {
-                (getJSONArray("methods") + getJSONArray("staticMethods"))
-                    .asSequence()
-                    .map { it as JSONObject }
+                (jsequence("methods") + jsequence("staticMethods"))
                     .optionalArray("parameters")
                     .filter { it.getString("type") == "yfiles.lang.Class" }
                     .forEach {
@@ -261,7 +259,7 @@ internal object Hacks {
             .firstWithName("EMPTY")
             .also {
                 val type = it.getString("type")
-                    .replace("<T>", "<Object>")
+                    .replace("<T>", "<$JS_OBJECT>")
                 it.put("type", type)
             }
     }
