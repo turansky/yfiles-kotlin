@@ -117,6 +117,7 @@ internal object Hacks {
         removeDuplicatedProperties(source)
         removeDuplicatedMethods(source)
 
+        fixUnionMethods(source)
         fixConstantGenerics(source)
         fixFunctionGenerics(source)
 
@@ -290,6 +291,31 @@ internal object Hacks {
                         }
                     }
             }
+    }
+
+    private fun fixUnionMethods(source: JSONObject) {
+        val methods = source.type("yfiles.view.GraphModelManager")
+            .getJSONArray("methods")
+
+        val unionMethods = methods
+            .asSequence()
+            .map { it as JSONObject }
+            .filter { it.getString("name") == "getCanvasObjectGroup" }
+            .toList()
+
+        unionMethods
+            .asSequence()
+            .drop(1)
+            .forEach { methods.remove(methods.indexOf(it)) }
+
+        unionMethods.first()
+            .firstParameter
+            .apply {
+                put("name", "item")
+                put("type", "yfiles.graph.IModelItem")
+            }
+
+        // TODO: remove documentation
     }
 
     private fun fixConstantGenerics(source: JSONObject) {
