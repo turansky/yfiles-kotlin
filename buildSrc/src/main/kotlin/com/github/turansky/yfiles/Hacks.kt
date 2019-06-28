@@ -126,6 +126,7 @@ internal object Hacks {
         fixPropertyType(source)
         fixPropertyNullability(source)
         fixMethodParameterName(source)
+        fixMethodParameterType(source)
         fixMethodParameterNullability(source)
         fixMethodNullability(source)
 
@@ -277,7 +278,10 @@ internal object Hacks {
                             "valueType" -> if (typeName == "DataMapAdapter") "V" else "TValue"
                             "dataType" -> "TData"
                             "itemType" -> "T"
-                            "type" -> if (typeName == "StripeDecorator") "TStripe" else null
+                            "type" -> when (typeName) {
+                                "StripeDecorator" -> "TStripe"
+                                else -> null
+                            }
                             else -> null
                         }
 
@@ -310,6 +314,11 @@ internal object Hacks {
             .firstWithName("from")
             .getJSONArray("typeparameters")
             .put(jObject("name" to "T"))
+
+        source.type("yfiles.graph.IContextLookupChainLink")
+            .getJSONArray("staticMethods")
+            .firstWithName("addingLookupChainLink")
+            .addStandardGeneric("TResult")
     }
 
     private fun fixReturnType(source: JSONObject) {
@@ -490,6 +499,14 @@ internal object Hacks {
             .map { it as JSONObject }
             .onEach { require(it.getString("type") == "yfiles.layout.LayoutGraph") }
             .forEach { it.changeNullability(false) }
+    }
+
+    private fun fixMethodParameterType(source: JSONObject) {
+        source.type("yfiles.graph.IContextLookupChainLink")
+            .getJSONArray("staticMethods")
+            .firstWithName("addingLookupChainLink")
+            .parameter("instance")
+            .put("type", "TResult")
     }
 
     private val METHOD_NULLABILITY_MAP = mapOf(

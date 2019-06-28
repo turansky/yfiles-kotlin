@@ -7,10 +7,10 @@ internal fun JSONObject.types(): Sequence<JSONObject> =
         .optionalArray("namespaces")
         .jsequence("types")
 
-internal fun JSONObject.addStandardGeneric() {
+internal fun JSONObject.addStandardGeneric(name: String = "T") {
     put(
         "typeparameters", jArray(
-            jObject("name" to "T")
+            jObject("name" to name)
         )
     )
 }
