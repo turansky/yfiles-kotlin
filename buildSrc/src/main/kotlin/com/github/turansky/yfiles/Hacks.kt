@@ -318,7 +318,10 @@ internal object Hacks {
         source.type("yfiles.graph.IContextLookupChainLink")
             .getJSONArray("staticMethods")
             .firstWithName("addingLookupChainLink")
-            .addStandardGeneric("TResult")
+            .apply {
+                addStandardGeneric("TResult")
+                firstParameter.addGeneric("TResult")
+            }
     }
 
     private fun fixReturnType(source: JSONObject) {
