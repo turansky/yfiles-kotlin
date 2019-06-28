@@ -85,7 +85,8 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     private val doc: String? by NullableStringDelegate()
 
     override fun toCode(): String {
-        return if (doc?.contains("or <code>null</code>") == true) {
+        // TODO: remove specific hack for MapperDelegate
+        return if (type == "V" || doc?.contains("or <code>null</code>") == true) {
             "$type?"
         } else {
             type
