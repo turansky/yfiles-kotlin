@@ -3,7 +3,7 @@ build/
 out/
 web/
 
-/api/src/
+yfiles-kotlin/src/
 
 # IDEA ignore list
 .idea/
