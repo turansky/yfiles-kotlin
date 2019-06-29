@@ -301,7 +301,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
 // TODO: support artificial parameters
 internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
-    val parameters: List<Parameter> by ArrayDelegate({ Parameter(it) }, { !it.modifiers.artificial })
+    val parameters: List<Parameter> by ArrayDelegate(::Parameter)
     val options: Boolean by BooleanDelegate()
 
     protected fun kotlinParametersString(
@@ -417,18 +417,7 @@ internal class EventListenerModifiers(flags: List<String>) {
     val abstract = flags.contains(ABSTRACT)
 }
 
-private class ArrayDelegate<T> {
-
-    private val transform: (JSONObject) -> T
-    private val filter: (T) -> Boolean
-
-    constructor(transform: (JSONObject) -> T) : this(transform, { true })
-
-    constructor(transform: (JSONObject) -> T, filter: (T) -> Boolean) {
-        this.transform = transform
-        this.filter = filter
-    }
-
+private class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
         val source = thisRef.source
         val key = property.name
@@ -443,14 +432,11 @@ private class ArrayDelegate<T> {
             return emptyList()
         }
 
-        val list = mutableListOf<T>()
-        for (i in 0 until length) {
-            val item = transform(array.getJSONObject(i))
-            if (filter(item)) {
-                list.add(item)
-            }
-        }
-        return list.toList()
+        return (0 until length)
+            .asSequence()
+            .map { array.getJSONObject(it) }
+            .map(transform)
+            .toList()
     }
 }
 

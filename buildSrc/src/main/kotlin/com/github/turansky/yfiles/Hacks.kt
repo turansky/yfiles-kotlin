@@ -106,6 +106,7 @@ internal object Hacks {
         removeDuplicatedProperties(source)
         removeDuplicatedMethods(source)
         removeSystemMethods(source)
+        removeArtifitialParameters(source)
 
         fixUnionMethods(source)
         fixConstantGenerics(source)
@@ -1013,6 +1014,26 @@ internal object Hacks {
 
                 systemMetods.forEach {
                     methods.remove(methods.indexOf(it))
+                }
+            }
+    }
+
+    private fun removeArtifitialParameters(source: JSONObject) {
+        sequenceOf("constructors", "methods")
+            .flatMap { parameter ->
+                source.types()
+                    .filter { it.has(parameter) }
+                    .jsequence(parameter)
+            }
+            .filter { it.has("parameters") }
+            .forEach {
+                val artifitialParameters = it.jsequence("parameters")
+                    .filter { it.getJSONArray("modifiers").contains(ARTIFICIAL) }
+                    .toList()
+
+                val parameters = it.getJSONArray("parameters")
+                artifitialParameters.forEach {
+                    parameters.remove(parameters.indexOf(it))
                 }
             }
     }
