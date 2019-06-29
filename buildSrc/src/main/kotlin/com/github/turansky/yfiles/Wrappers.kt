@@ -97,13 +97,13 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
 internal abstract class Type(source: JSONObject) : Declaration(source) {
     val es6name: String? by NullableStringDelegate()
 
-    val constants: List<Constant> by ArrayDelegate { Constant(this.fqn, it) }
+    val constants: List<Constant> by ArrayDelegate { Constant(fqn, it) }
 
-    val properties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
-    val staticProperties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
+    val properties: List<Property> by ArrayDelegate { Property(fqn, it) }
+    val staticProperties: List<Property> by ArrayDelegate { Property(fqn, it) }
 
-    val methods: List<Method> by ArrayDelegate { Method(this.fqn, it) }
-    val staticMethods: List<Method> by ArrayDelegate { Method(this.fqn, it) }
+    val methods: List<Method> by ArrayDelegate { Method(fqn, it) }
+    val staticMethods: List<Method> by ArrayDelegate { Method(fqn, it) }
 
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
 
