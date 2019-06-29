@@ -102,8 +102,8 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
     val properties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
     val staticProperties: List<Property> by ArrayDelegate { Property(this.fqn, it) }
 
-    val methods: List<Method> by ArrayDelegate({ Method(this.fqn, it) }, { !redundantMethod(it) })
-    val staticMethods: List<Method> by ArrayDelegate({ Method(this.fqn, it) }, { !redundantMethod(it) })
+    val methods: List<Method> by ArrayDelegate { Method(this.fqn, it) }
+    val staticMethods: List<Method> by ArrayDelegate { Method(this.fqn, it) }
 
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
 

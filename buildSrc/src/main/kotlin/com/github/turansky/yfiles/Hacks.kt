@@ -2,17 +2,6 @@ package com.github.turansky.yfiles
 
 import org.json.JSONObject
 
-
-private val SYSTEM_FUNCTIONS = listOf("hashCode", "toString")
-
-internal fun redundantMethod(method: Method): Boolean {
-    if (method.name == "equals") {
-        return true
-    }
-
-    return method.name in SYSTEM_FUNCTIONS && method.parameters.isEmpty()
-}
-
 private fun JSONObject.type(id: String): JSONObject {
     val rootPackage = id.substring(0, id.indexOf("."))
     val typePackage = id.substring(0, id.lastIndexOf("."))
@@ -116,6 +105,7 @@ internal object Hacks {
     fun applyHacks(source: JSONObject) {
         removeDuplicatedProperties(source)
         removeDuplicatedMethods(source)
+        removeSystemMethods(source)
 
         fixUnionMethods(source)
         fixConstantGenerics(source)
@@ -1002,6 +992,28 @@ internal object Hacks {
                     .firstWithName(declaration.methodName)
 
                 methods.remove(methods.indexOf(method))
+            }
+    }
+
+    private val SYSTEM_FUNCTIONS = listOf(
+        "equals",
+        "hashCode",
+        "toString"
+    )
+
+    private fun removeSystemMethods(source: JSONObject) {
+        source.types()
+            .filter { it.has("methods") }
+            .forEach {
+                val methods = it.getJSONArray("methods")
+                val systemMetods = methods.asSequence()
+                    .map { it as JSONObject }
+                    .filter { it.getString("name") in SYSTEM_FUNCTIONS }
+                    .toList()
+
+                systemMetods.forEach {
+                    methods.remove(methods.indexOf(it))
+                }
             }
     }
 
