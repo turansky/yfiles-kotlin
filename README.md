@@ -1,13 +1,7 @@
-<a href="https://travis-ci.org/turansky/yfiles-kotlin-api"><img src="https://travis-ci.org/turansky/yfiles-kotlin-api.svg?branch=master"></a>
+<a href="https://travis-ci.org/turansky/yfiles-kotlin"><img src="https://travis-ci.org/turansky/yfiles-kotlin.svg?branch=master"></a>
 
-# yFiles API JS to Kotlin declarations converter
-
-Current problems
-
-| Description   | Priority      | Plan       | Responsible |
-| ------------- |:-------------:| ---------- |:-----------:|
-| Single number type in yfiles-api.js. Int/Double specification required  | major | wait yfiles-api.js update | yWorks |
+# Kotlin/JS declarations generator for yFiles
 
 # Links
-* [yFiles](https://www.yworks.com/products/yfiles-for-html)
+* [yFiles for HTML](https://www.yworks.com/products/yfiles-for-html)
   * [Documentation](http://docs.yworks.com/yfileshtml/)
