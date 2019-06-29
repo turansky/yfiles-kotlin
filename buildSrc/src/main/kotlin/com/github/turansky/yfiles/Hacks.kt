@@ -124,8 +124,12 @@ internal object Hacks {
         fixReturnType(source)
         fixExtendedType(source)
         fixImplementedTypes(source)
+
+        fixConstructorParameterNullability(source)
+
         fixPropertyType(source)
         fixPropertyNullability(source)
+
         fixMethodParameterName(source)
         fixMethodParameterType(source)
         fixMethodParameterNullability(source)
@@ -370,6 +374,29 @@ internal object Hacks {
         sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
             .map { source.type(it) }
             .forEach { it.remove("implements") }
+    }
+
+    private val KEY_CLASSES = setOf(
+        "yfiles.algorithms.DpKeyBase",
+        "yfiles.algorithms.EdgeDpKey",
+        "yfiles.algorithms.GraphDpKey",
+        "yfiles.algorithms.GraphObjectDpKey",
+        "yfiles.algorithms.IEdgeLabelLayoutDpKey",
+        "yfiles.algorithms.IEdgeLabelLayoutDpKey",
+        "yfiles.algorithms.ILabelLayoutDpKey",
+        "yfiles.algorithms.INodeLabelLayoutDpKey",
+        "yfiles.algorithms.NodeDpKey"
+    )
+
+    private fun fixConstructorParameterNullability(source: JSONObject) {
+        KEY_CLASSES
+            .asSequence()
+            .map { source.type(it) }
+            .forEach {
+                it.jsequence("constructors")
+                    .jsequence("parameters")
+                    .forEach { it.changeNullability(false) }
+            }
     }
 
     private fun fixPropertyType(source: JSONObject) {
