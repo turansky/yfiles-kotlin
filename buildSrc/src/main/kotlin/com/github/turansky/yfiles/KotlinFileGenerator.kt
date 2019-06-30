@@ -39,7 +39,7 @@ internal class KotlinFileGenerator(
 
         val content = generatedFile.content()
             .clear(data)
-        file.writeText("$header\n\n$content")
+        file.writeText("$header\n$content")
 
         var companionContent = generatedFile.companionContent()
             ?: return
@@ -87,8 +87,10 @@ internal class KotlinFileGenerator(
 
     private fun String.clear(data: AbstractGeneratorData): String {
         var content = replace(data.packageName + ".", "")
+            .replace(Regex("(\\n\\s?){3,}"), "\n\n")
+            .replace(Regex("(\\n\\s?){2,}}"), "\n}")
 
-        val regex = Regex("yfiles.([a-z]+).([A-Za-z0-9]+)")
+        val regex = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)")
         val importedClasses = regex
             .findAll(content)
             .map { it.value }
