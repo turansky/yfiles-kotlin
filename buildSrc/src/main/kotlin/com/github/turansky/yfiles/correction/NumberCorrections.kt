@@ -195,10 +195,10 @@ private fun JSONObject.correctMethods(key: String) {
 
     val className = getString(J_NAME)
     jsequence(key)
-        .filter { it.has("returns") }
+        .filter { it.has(J_RETURNS) }
         .forEach {
             val methodName = it.getString(J_NAME)
-            val returns = it.getJSONObject("returns")
+            val returns = it.getJSONObject(J_RETURNS)
 
             when (returns.getString(J_TYPE)) {
                 JS_NUMBER -> returns.put(J_TYPE, getReturnType(className, methodName))

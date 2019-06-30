@@ -44,7 +44,7 @@ private fun JSONObject.addMethod(
                 .also {
                     if (result != null) {
                         it.put(
-                            "returns", mapOf(
+                            J_RETURNS, mapOf(
                                 J_TYPE to result.type
                             )
                         )
@@ -105,7 +105,7 @@ private fun addClassGeneric(source: Source) {
 
             it.typeParameter.addGeneric("T")
 
-            it.getJSONObject("returns")
+            it.getJSONObject(J_RETURNS)
                 .put(J_TYPE, "T")
 
             it.getJSONArray(J_MODIFIERS)
@@ -304,7 +304,7 @@ private fun fixReturnType(source: Source) {
         .forEach {
             it.getJSONArray(J_METHODS)
                 .firstWithName("getEnumerator")
-                .getJSONObject("returns")
+                .getJSONObject(J_RETURNS)
                 .put(J_TYPE, "yfiles.collections.IEnumerator<$JS_OBJECT>")
         }
 }
