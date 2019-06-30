@@ -37,10 +37,12 @@ internal fun JSONObject.addProperty(
 
 internal fun JSONObject.changeNullability(nullable: Boolean) {
     val modifiers = getJSONArray("modifiers")
+    val index = modifiers.indexOf(CANBENULL)
+    require((index == -1) == nullable)
     if (nullable) {
         modifiers.put(CANBENULL)
     } else {
-        modifiers.remove(modifiers.indexOf(CANBENULL))
+        modifiers.remove(index)
     }
 }
 
