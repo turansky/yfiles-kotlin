@@ -209,7 +209,7 @@ private fun addClassGeneric(source: Source) {
                 return@forEach
             }
 
-            type.optionalArray("constructors")
+            type.optionalArray(J_CONSTRUCTORS)
                 .optionalArray("parameters")
                 .filter { it.getString("type") == YCLASS }
                 .forEach {
@@ -325,7 +325,7 @@ private fun fixConstructorParameterNullability(source: Source) {
         .asSequence()
         .map { source.type(it) }
         .forEach {
-            it.jsequence("constructors")
+            it.jsequence(J_CONSTRUCTORS)
                 .jsequence("parameters")
                 .forEach { it.changeNullability(false, false) }
         }
@@ -463,7 +463,7 @@ private fun removeSystemMethods(source: Source) {
 }
 
 private fun removeArtifitialParameters(source: Source) {
-    sequenceOf("constructors", J_METHODS)
+    sequenceOf(J_CONSTRUCTORS, J_METHODS)
         .flatMap { parameter ->
             source.types()
                 .filter { it.has(parameter) }

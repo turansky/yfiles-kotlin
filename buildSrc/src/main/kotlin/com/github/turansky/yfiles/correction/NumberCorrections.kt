@@ -60,12 +60,12 @@ private fun JSONObject.correctConstants() {
 }
 
 private fun JSONObject.correctConstructors() {
-    if (!has("constructors")) {
+    if (!has(J_CONSTRUCTORS)) {
         return
     }
 
     val className = getString("name")
-    jsequence("constructors")
+    jsequence(J_CONSTRUCTORS)
         .optionalArray("parameters")
         .filter { it.getString("type") == JS_NUMBER }
         .forEach { it.put("type", getConstructorParameterType(className, it.getString("name"))) }
@@ -358,7 +358,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
         .filter { it.getString("name") in INT_SIGNATURE_CLASSES }
         .flatMap { type ->
-            sequenceOf("constructors", J_METHODS, "staticMethods")
+            sequenceOf(J_CONSTRUCTORS, J_METHODS, "staticMethods")
                 .filter { type.has(it) }
                 .flatMap { type.jsequence(it) }
         }
