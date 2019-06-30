@@ -170,7 +170,7 @@ private fun addClassGeneric(source: Source) {
 
     source.type("GraphMLIOHandler")
         .apply {
-            (jsequence(J_METHODS) + jsequence("staticMethods"))
+            (jsequence(J_METHODS) + jsequence(J_STATIC_METHODS))
                 .optionalArray("parameters")
                 .filter { it.getString("type") == YCLASS }
                 .forEach {
@@ -279,18 +279,18 @@ private fun fixConstantGenerics(source: Source) {
 
 private fun fixFunctionGenerics(source: Source) {
     source.type("List")
-        .getJSONArray("staticMethods")
+        .getJSONArray(J_STATIC_METHODS)
         .firstWithName("fromArray")
         .addStandardGeneric()
 
     source.type("List")
-        .getJSONArray("staticMethods")
+        .getJSONArray(J_STATIC_METHODS)
         .firstWithName("from")
         .getJSONArray("typeparameters")
         .put(jObject("name" to "T"))
 
     source.type("IContextLookupChainLink")
-        .getJSONArray("staticMethods")
+        .getJSONArray(J_STATIC_METHODS)
         .firstWithName("addingLookupChainLink")
         .apply {
             addStandardGeneric("TResult")
@@ -387,7 +387,7 @@ private fun fixMethodParameterNullability(source: Source) {
 
 private fun fixMethodParameterType(source: Source) {
     source.type("IContextLookupChainLink")
-        .getJSONArray("staticMethods")
+        .getJSONArray(J_STATIC_METHODS)
         .firstWithName("addingLookupChainLink")
         .parameter("instance")
         .put("type", "TResult")

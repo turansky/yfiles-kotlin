@@ -15,7 +15,7 @@ internal class Source(api: JSONObject) {
 
     fun allMethods(vararg methodNames: String): Sequence<JSONObject> =
         types.asSequence()
-            .map { it.optionalArray(J_METHODS) + it.optionalArray("staticMethods") }
+            .map { it.optionalArray(J_METHODS) + it.optionalArray(J_STATIC_METHODS) }
             .flatMap { it.asSequence() }
             .filter { it.getString("name") in methodNames }
 
