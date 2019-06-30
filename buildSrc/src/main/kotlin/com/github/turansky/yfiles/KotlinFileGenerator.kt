@@ -38,14 +38,14 @@ internal class KotlinFileGenerator(
         val header = generatedFile.header
 
         val content = generatedFile.content()
-            .clear(data.packageName)
+            .clear(data)
         file.writeText("$header\n\n$content")
 
         var companionContent = generatedFile.companionContent()
             ?: return
 
         companionContent = "package ${data.packageName}\n\n" +
-                companionContent.clear(data.packageName)
+                companionContent.clear(data)
 
         dir.resolve("${data.jsName}Companion.kt")
             .writeText(companionContent)
@@ -59,10 +59,8 @@ internal class KotlinFileGenerator(
         val dir = directory.resolve(firstData.path)
         dir.mkdirs()
 
-        val packageName = firstData.packageName
-
         val file = dir.resolve("Aliases.kt")
-        val header = "package $packageName"
+        val header = "package ${firstData.packageName}"
 
         val content = signatures
             .asSequence()
@@ -82,30 +80,38 @@ internal class KotlinFileGenerator(
                 "typealias ${data.name}$generics = ($parameters) -> $returns"
             }
             .joinToString("\n\n")
-            .clear(packageName)
+            .clear(firstData)
 
         file.writeText("$header\n\n$content")
     }
 
-    private fun String.clear(packageName: String): String {
-        val content = replace(packageName + ".", "")
+    private fun String.clear(data: AbstractGeneratorData): String {
+        var content = replace(data.packageName + ".", "")
 
         val regex = Regex("yfiles.([a-z]+).([A-Za-z0-9]+)")
-        val imports = regex
+        val importedClasses = regex
             .findAll(content)
             .map { it.value }
             .distinct()
             .sorted()
-            .map { "import $it" }
+            // TODO: remove after es6name use
+            // WA for duplicated class names (Insets for example)
+            .filterNot { it.endsWith("." + data.name) }
             .toList()
 
-        if (imports.isEmpty()) {
+        if (importedClasses.isEmpty()) {
             return content
         }
 
-        return imports.lines { it } +
-                "\n" +
-                content.replace(regex, "$2")
+        val imports = importedClasses
+            .lines { "import $it" }
+
+        for (className in importedClasses) {
+            val name = className.substringAfterLast(".")
+            content = content.replace(className, name)
+        }
+
+        return "$imports\n$content"
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
