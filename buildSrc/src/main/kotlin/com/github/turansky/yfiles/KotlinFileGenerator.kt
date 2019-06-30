@@ -26,25 +26,26 @@ internal class KotlinFileGenerator(
             .forEach { _, items -> generate(directory, items) }
     }
 
-    private fun generate(directory: File, generatedFile: GeneratedFile) {
+    private fun generate(
+        directory: File,
+        generatedFile: GeneratedFile
+    ) {
         val data = generatedFile.data
         val dir = directory.resolve(data.path)
         dir.mkdirs()
-
-        val redundantPackageDeclaration = data.packageName + "."
 
         val file = dir.resolve("${data.jsName}.kt")
         val header = generatedFile.header
 
         val content = generatedFile.content()
-            .replace(redundantPackageDeclaration, "")
+            .clear(data.packageName)
         file.writeText("$header\n\n$content")
 
         val companionContent = generatedFile.companionContent()
             ?: return
 
         dir.resolve("${data.jsName}Companion.kt")
-            .writeText(companionContent.replace(redundantPackageDeclaration, ""))
+            .writeText(companionContent.clear(data.packageName))
     }
 
     private fun generate(
@@ -56,7 +57,6 @@ internal class KotlinFileGenerator(
         dir.mkdirs()
 
         val packageName = firstData.packageName
-        val redundantPackageDeclaration = packageName + "."
 
         val file = dir.resolve("Aliases.kt")
         val header = "package $packageName"
@@ -77,11 +77,15 @@ internal class KotlinFileGenerator(
 
                 val data = GeneratorData(signature.fqn)
                 "typealias ${data.name}$generics = ($parameters) -> $returns"
-                    .replace(redundantPackageDeclaration, "")
             }
             .joinToString("\n\n")
+            .clear(packageName)
 
         file.writeText("$header\n\n$content")
+    }
+
+    private fun String.clear(packageName: String): String {
+        return replace(packageName + ".", "")
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
