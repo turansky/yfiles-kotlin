@@ -371,12 +371,31 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
     private val remove: EventListener by EventListenerDelegate(fqn)
     private val listeners = listOf(add, remove)
 
+    val overriden by lazy {
+        listeners.any { it.overriden }
+    }
+
     val listenerNames: List<String>
         get() = listeners.map { it.name }
 
     override fun toCode(): String {
         return listeners
             .lines { it.toCode() }
+    }
+
+    fun toExtensionCode(
+        classDeclaration: String,
+        typeparameters: List<TypeParameter>
+    ): String {
+        val generics = getGenericString(typeparameters)
+        val extensionName = "add${name}Handler"
+
+        return "inline fun $generics ${classDeclaration}.$extensionName(\n" +
+                "noinline ${add.parametersString}\n" +
+                "): () -> Unit {\n" +
+                "${add.name}(${add.parametersCall})\n" +
+                "return { ${remove.name}(${remove.parametersCall}) }\n" +
+                "}"
     }
 }
 
@@ -385,14 +404,20 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
 
+    val overriden by lazy {
+        ClassRegistry.instance
+            .listenerOverriden(fqn, name)
+    }
+
+    val parametersString: String
+        get() = parameters.byComma { "${it.name}: ${it.type}" }
+
+    val parametersCall: String
+        get() = parameters.byComma { it.name }
+
     private fun kotlinModificator(): String {
-        val classRegistry: ClassRegistry = ClassRegistry.instance
-
-        if (classRegistry.listenerOverriden(fqn, name)) {
-            return "override "
-        }
-
         return when {
+            overriden -> "override "
             modifiers.abstract -> "abstract "
             else -> ""
         }
@@ -404,9 +429,6 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         } else {
             ":${UNIT} = definedExternally"
         }
-
-        val parametersString = parameters
-            .byComma { "${it.name}: ${it.type}" }
 
         return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
     }

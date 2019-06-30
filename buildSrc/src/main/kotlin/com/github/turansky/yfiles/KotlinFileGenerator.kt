@@ -395,7 +395,8 @@ internal class KotlinFileGenerator(
         }
 
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
-                memberFunctions.filter { !it.abstract }
+                memberFunctions.filter { !it.abstract } +
+                memberEvents.filter { !it.overriden }
 
         override fun companionContent(): String? {
             var content = requireNotNull(super.companionContent())
@@ -422,6 +423,7 @@ internal class KotlinFileGenerator(
                     when (it) {
                         is Property -> it.toExtensionCode(classDeclaration, typeparameters)
                         is Method -> it.toExtensionCode(classDeclaration, typeparameters)
+                        is Event -> it.toExtensionCode(classDeclaration, typeparameters)
                         else -> throw IllegalStateException("Invalid default declaration")
                     }
                 }
