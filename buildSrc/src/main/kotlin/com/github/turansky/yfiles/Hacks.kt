@@ -2,50 +2,6 @@ package com.github.turansky.yfiles
 
 import org.json.JSONObject
 
-private fun JSONObject.type(id: String): JSONObject {
-    val rootPackage = id.substring(0, id.indexOf("."))
-    val typePackage = id.substring(0, id.lastIndexOf("."))
-    return this.getJSONArray("namespaces")
-        .firstWithId(rootPackage)
-        .getJSONArray("namespaces")
-        .firstWithId(typePackage)
-        .getJSONArray("types")
-        .firstWithId(id)
-}
-
-private fun JSONObject.methodParameters(
-    methodName: String,
-    parameterName: String,
-    parameterFilter: (JSONObject) -> Boolean
-): Iterable<JSONObject> {
-    val result = getJSONArray("methods")
-        .objects { it.getString("name") == methodName }
-        .flatMap {
-            it.getJSONArray("parameters")
-                .objects { it.getString("name") == parameterName }
-                .filter(parameterFilter)
-        }
-
-    require(result.isNotEmpty())
-    { "No method parameters found for object: $this, method: $methodName, parameter: $parameterName" }
-
-    return result
-}
-
-private fun JSONObject.addProperty(
-    propertyName: String,
-    type: String
-) {
-    getJSONArray("properties")
-        .put(
-            mapOf(
-                "name" to propertyName,
-                "modifiers" to listOf(PUBLIC, FINAL, RO),
-                "type" to type
-            )
-        )
-}
-
 private fun JSONObject.addMethod(
     methodData: MethodData
 ) {
@@ -92,966 +48,955 @@ private fun JSONObject.addMethod(
         )
 }
 
-private fun JSONObject.changeNullability(nullable: Boolean) {
-    val modifiers = getJSONArray("modifiers")
-    if (nullable) {
-        modifiers.put(CANBENULL)
-    } else {
-        modifiers.remove(modifiers.indexOf(CANBENULL))
+internal fun applyHacks(source: JSONObject) {
+    removeDuplicatedProperties(source)
+    removeDuplicatedMethods(source)
+    removeSystemMethods(source)
+    removeArtifitialParameters(source)
+
+    fixUnionMethods(source)
+    fixConstantGenerics(source)
+    fixFunctionGenerics(source)
+
+    fixReturnType(source)
+    fixExtendedType(source)
+    fixImplementedTypes(source)
+
+    fixConstructorParameterNullability(source)
+
+    fixPropertyType(source)
+    fixPropertyNullability(source)
+
+    fixMethodParameterName(source)
+    fixMethodParameterType(source)
+    fixMethodParameterNullability(source)
+    fixMethodNullability(source)
+
+    addMissedProperties(source)
+    addMissedMethods(source)
+    fieldToProperties(source)
+
+    addClassGeneric(source)
+}
+
+private fun addClassGeneric(source: JSONObject) {
+    source.type(YCLASS)
+        .addStandardGeneric()
+
+    source.allMethods(
+        "lookup",
+        "innerLookup",
+        "contextLookup",
+        "lookupContext",
+        "inputModeContextLookup",
+        "childInputModeContextLookup",
+        "getCopy",
+        "getOrCreateCopy"
+    )
+        .forEach {
+            it.addStandardGeneric()
+
+            it.typeParameter.addGeneric("T")
+
+            it.getJSONObject("returns")
+                .put("type", "T")
+
+            it.getJSONArray("modifiers")
+                .put(CANBENULL)
+        }
+
+    source.allMethods("getDecoratorFor")
+        .forEach {
+            it.firstParameter.addGeneric("TInterface")
+        }
+
+    source.allMethods(
+        "typedHitElementsAt",
+        "createHitTester",
+
+        "serializeCore",
+        "deserializeCore"
+    )
+        .forEach {
+            it.firstParameter.addGeneric("T")
+        }
+
+    source.allMethods(
+        "getCurrent",
+        "serialize",
+        "deserialize",
+        "setLookup"
+    )
+        .map { it.firstParameter }
+        .filter { it.getString("type") == YCLASS }
+        .forEach {
+            it.addGeneric("T")
+        }
+
+    source.allMethods("factoryLookupChainLink", "add", "addConstant")
+        .filter { it.firstParameter.getString("name") == "contextType" }
+        .forEach {
+            it.parameter("contextType").addGeneric("TContext")
+            it.parameter("resultType").addGeneric("TResult")
+        }
+
+    source.allMethods(
+        "addGraphInputData",
+        "addGraphOutputData"
+    )
+        .forEach {
+            it.firstParameter.addGeneric("TValue")
+        }
+
+    source.allMethods("addOutputMapper")
+        .forEach {
+            it.parameter("modelItemType").addGeneric("TModelItem")
+            it.parameter("dataType").addGeneric("TValue")
+        }
+
+    source.allMethods("addRegistryOutputMapper")
+        .filter { it.firstParameter.getString("name") == "modelItemType" }
+        .forEach {
+            it.parameter("modelItemType").addGeneric("TModelItem")
+            it.parameter("valueType").addGeneric("TValue")
+        }
+
+    source.type("yfiles.graphml.GraphMLIOHandler")
+        .apply {
+            (jsequence("methods") + jsequence("staticMethods"))
+                .optionalArray("parameters")
+                .filter { it.getString("type") == YCLASS }
+                .forEach {
+                    when (it.getString("name")) {
+                        "keyType" -> it.addGeneric("TKey")
+                        "modelItemType" -> it.addGeneric("TKey")
+                        "dataType" -> it.addGeneric("TData")
+                    }
+                }
+        }
+
+
+    source.allMethods(
+        "addMapper",
+        "addConstantMapper",
+        "addDelegateMapper",
+
+        // "createMapper",
+        "createConstantMapper",
+        "createDelegateMapper",
+
+        "addDataProvider",
+        "createDataMap",
+        "createDataProvider"
+    )
+        .filter { it.firstParameter.getString("name") == "keyType" }
+        .forEach {
+            it.parameter("keyType").addGeneric("K")
+            it.parameter("valueType").addGeneric("V")
+        }
+
+    source.types()
+        .forEach { type ->
+            val typeName = type.getString("name")
+            if (typeName == "MapperMetadata") {
+                return@forEach
+            }
+
+            type.optionalArray("constructors")
+                .optionalArray("parameters")
+                .filter { it.getString("type") == YCLASS }
+                .forEach {
+                    val name = it.getString("name")
+                    val generic = when (name) {
+                        "edgeStyleType" -> "TStyle"
+                        "decoratedType" -> "TDecoratedType"
+                        "interfaceType" -> "TInterface"
+                        "keyType" ->
+                            when (typeName) {
+                                "DataMapAdapter" -> "K"
+                                "ItemCollectionMapping" -> "TItem"
+                                else -> "TKey"
+                            }
+                        "valueType" -> if (typeName == "DataMapAdapter") "V" else "TValue"
+                        "dataType" -> "TData"
+                        "itemType" -> "T"
+                        "type" -> when (typeName) {
+                            "StripeDecorator" -> "TStripe"
+                            else -> null
+                        }
+                        else -> null
+                    }
+
+                    if (generic != null) {
+                        it.addGeneric(generic)
+                    }
+                }
+        }
+}
+
+private fun fixUnionMethods(source: JSONObject) {
+    val methods = source.type("yfiles.view.GraphModelManager")
+        .getJSONArray("methods")
+
+    val unionMethods = methods
+        .asSequence()
+        .map { it as JSONObject }
+        .filter { it.getString("name") == "getCanvasObjectGroup" }
+        .toList()
+
+    unionMethods
+        .asSequence()
+        .drop(1)
+        .forEach { methods.remove(methods.indexOf(it)) }
+
+    unionMethods.first()
+        .firstParameter
+        .apply {
+            put("name", "item")
+            put("type", "yfiles.graph.IModelItem")
+        }
+
+    // TODO: remove documentation
+}
+
+private fun fixConstantGenerics(source: JSONObject) {
+    source.type("yfiles.collections.IListEnumerable")
+        .getJSONArray("constants")
+        .firstWithName("EMPTY")
+        .also {
+            val type = it.getString("type")
+                .replace("<T>", "<$JS_OBJECT>")
+            it.put("type", type)
+        }
+}
+
+private fun fixFunctionGenerics(source: JSONObject) {
+    source.type("yfiles.collections.List")
+        .getJSONArray("staticMethods")
+        .firstWithName("fromArray")
+        .addStandardGeneric()
+
+    source.type("yfiles.collections.List")
+        .getJSONArray("staticMethods")
+        .firstWithName("from")
+        .getJSONArray("typeparameters")
+        .put(jObject("name" to "T"))
+
+    source.type("yfiles.graph.IContextLookupChainLink")
+        .getJSONArray("staticMethods")
+        .firstWithName("addingLookupChainLink")
+        .apply {
+            addStandardGeneric("TResult")
+            firstParameter.addGeneric("TResult")
+        }
+}
+
+private fun fixReturnType(source: JSONObject) {
+    sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+        .map { source.type(it) }
+        .forEach {
+            it.getJSONArray("methods")
+                .firstWithName("getEnumerator")
+                .getJSONObject("returns")
+                .put("type", "yfiles.collections.IEnumerator<${JS_OBJECT}>")
+        }
+}
+
+private fun fixExtendedType(source: JSONObject) {
+    source.type("yfiles.lang.Exception")
+        .remove("extends")
+}
+
+private fun fixImplementedTypes(source: JSONObject) {
+    sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+        .map { source.type(it) }
+        .forEach { it.remove("implements") }
+}
+
+private val KEY_CLASSES = setOf(
+    "yfiles.algorithms.DpKeyBase",
+    "yfiles.algorithms.EdgeDpKey",
+    "yfiles.algorithms.GraphDpKey",
+    "yfiles.algorithms.GraphObjectDpKey",
+    "yfiles.algorithms.IEdgeLabelLayoutDpKey",
+    "yfiles.algorithms.IEdgeLabelLayoutDpKey",
+    "yfiles.algorithms.ILabelLayoutDpKey",
+    "yfiles.algorithms.INodeLabelLayoutDpKey",
+    "yfiles.algorithms.NodeDpKey"
+)
+
+private fun fixConstructorParameterNullability(source: JSONObject) {
+    KEY_CLASSES
+        .asSequence()
+        .map { source.type(it) }
+        .forEach {
+            it.jsequence("constructors")
+                .jsequence("parameters")
+                .forEach { it.changeNullability(false) }
+        }
+}
+
+private fun fixPropertyType(source: JSONObject) {
+    sequenceOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
+        .map { source.type(it) }
+        .forEach {
+            it.getJSONArray("properties")
+                .firstWithName("outEdgeComparers")
+                .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
+        }
+}
+
+private val PROPERTY_NULLABILITY_CORRECTION = mapOf(
+    PropertyDeclaration("yfiles.graph.DefaultGraph", "tag") to true,
+    PropertyDeclaration("yfiles.graph.GraphWrapperBase", "tag") to true,
+    PropertyDeclaration("yfiles.graph.SimpleBend", "tag") to true,
+    PropertyDeclaration("yfiles.graph.SimpleEdge", "tag") to true,
+    PropertyDeclaration("yfiles.graph.SimpleLabel", "tag") to true,
+    PropertyDeclaration("yfiles.graph.SimpleNode", "tag") to true,
+    PropertyDeclaration("yfiles.graph.SimplePort", "tag") to true,
+
+    PropertyDeclaration("yfiles.graph.IEdge", "sourcePort") to false,
+    PropertyDeclaration("yfiles.graph.IEdge", "targetPort") to false
+)
+
+private fun fixPropertyNullability(source: JSONObject) {
+    PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
+        source
+            .type(className)
+            .getJSONArray("properties")
+            .first { it.get("name") == propertyName }
+            .changeNullability(nullable)
     }
 }
 
-internal object Hacks {
-    fun applyHacks(source: JSONObject) {
-        removeDuplicatedProperties(source)
-        removeDuplicatedMethods(source)
-        removeSystemMethods(source)
-        removeArtifitialParameters(source)
+private val PARAMETERS_CORRECTION = mapOf(
+    ParameterData("yfiles.lang.IComparable", "compareTo", "obj") to "o",
+    ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
+    ParameterData("yfiles.collections.IEnumerable", "includes", "value") to "item",
 
-        fixUnionMethods(source)
-        fixConstantGenerics(source)
-        fixFunctionGenerics(source)
+    ParameterData("yfiles.algorithms.YList", "indexOf", "obj") to "item",
+    ParameterData("yfiles.algorithms.YList", "insert", "element") to "item",
+    ParameterData("yfiles.algorithms.YList", "remove", "o") to "item",
 
-        fixReturnType(source)
-        fixExtendedType(source)
-        fixImplementedTypes(source)
+    ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
 
-        fixConstructorParameterNullability(source)
+    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
+    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",
+    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedNode") to "node",
+    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedEdge") to "edge",
 
-        fixPropertyType(source)
-        fixPropertyNullability(source)
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "label") to "labelLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "sourceNode") to "sourceLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "targetNode") to "targetLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
 
-        fixMethodParameterName(source)
-        fixMethodParameterType(source)
-        fixMethodParameterNullability(source)
-        fixMethodNullability(source)
+    ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+    ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+    ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
 
-        addMissedProperties(source)
-        addMissedMethods(source)
-        fieldToProperties(source)
+    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
+    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
+    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "para") to "parameter",
 
-        addClassGeneric(source)
+    ParameterData("yfiles.layout.INodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+    ParameterData("yfiles.layout.FreeNodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+
+    ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge1") to "x",
+    ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge2") to "y",
+    ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o1") to "x",
+    ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o2") to "y",
+
+    ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o1") to "x",
+    ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o2") to "y",
+
+    ParameterData("yfiles.view.LinearGradient", "accept", "item") to "node",
+    ParameterData("yfiles.view.RadialGradient", "accept", "item") to "node",
+
+    ParameterData("yfiles.graphml.GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
+    ParameterData("yfiles.graphml.GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
+
+    ParameterData("yfiles.layout.LayoutData", "apply", "layoutGraphAdapter") to "adapter",
+    ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
+
+    ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
+    ParameterData("yfiles.hierarchic.IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
+    ParameterData("yfiles.hierarchic.LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
+    ParameterData("yfiles.hierarchic.SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
+
+    ParameterData("yfiles.input.ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
+    ParameterData("yfiles.input.StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
+
+    ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
+    ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
+    ParameterData("yfiles.styles.PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
+    ParameterData("yfiles.styles.IArrow", "getBoundsProvider", "directionVector") to "direction",
+    ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
+)
+
+private fun fixMethodParameterName(source: JSONObject) {
+    PARAMETERS_CORRECTION.forEach { data, fixedName ->
+        source.type(data.className)
+            .methodParameters(data.methodName, data.parameterName, { it.getString("name") != fixedName })
+            .first()
+            .put("name", fixedName)
     }
+}
 
-    private fun addClassGeneric(source: JSONObject) {
-        source.type(YCLASS)
-            .addStandardGeneric()
+private val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
+    ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false,
+    ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to false,
 
-        source.allMethods(
-            "lookup",
-            "innerLookup",
-            "contextLookup",
-            "lookupContext",
-            "inputModeContextLookup",
-            "childInputModeContextLookup",
-            "getCopy",
-            "getOrCreateCopy"
-        )
-            .forEach {
-                it.addStandardGeneric()
+    ParameterData("yfiles.graph.IGraph", "addPortAt", "style") to true,
+    ParameterData("yfiles.graph.ILookupDecorator", "add", "nullIsFallback") to true,
+    ParameterData("yfiles.graph.ILookupDecorator", "add", "decorateNull", true) to true,
 
-                it.typeParameter.addGeneric("T")
+    ParameterData("yfiles.graphml.CreationProperties", "get", "key") to true,
+    ParameterData("yfiles.graphml.CreationProperties", "set", "key") to true,
 
-                it.getJSONObject("returns")
-                    .put("type", "T")
+    ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "context") to false,
+    ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
 
-                it.getJSONArray("modifiers")
-                    .put(CANBENULL)
+    ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeIn") to true,
+    ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeOut") to true,
+    ParameterData("yfiles.view.FocusIndicatorManager", "getInstaller", "item") to true
+)
+
+private val BROKEN_NULLABILITY_METHODS = setOf("applyLayout", "applyLayoutCore")
+
+private fun fixMethodParameterNullability(source: JSONObject) {
+    PARAMETERS_NULLABILITY_CORRECTION
+        .forEach { data, nullable ->
+            val parameters = source.type(data.className)
+                .methodParameters(data.methodName, data.parameterName, { true })
+
+            val parameter = if (data.last) {
+                parameters.last()
+            } else {
+                parameters.first()
             }
 
-        source.allMethods("getDecoratorFor")
-            .forEach {
-                it.firstParameter.addGeneric("TInterface")
-            }
+            parameter.changeNullability(nullable)
+        }
 
-        source.allMethods(
-            "typedHitElementsAt",
-            "createHitTester",
+    source.types()
+        .optionalArray("methods")
+        .filter { it.get("name") in BROKEN_NULLABILITY_METHODS }
+        .filter { it.getJSONArray("parameters").length() == 1 }
+        .map { it.getJSONArray("parameters").single() }
+        .map { it as JSONObject }
+        .onEach { require(it.getString("type") == "yfiles.layout.LayoutGraph") }
+        .forEach { it.changeNullability(false) }
+}
 
-            "serializeCore",
-            "deserializeCore"
-        )
-            .forEach {
-                it.firstParameter.addGeneric("T")
-            }
+private fun fixMethodParameterType(source: JSONObject) {
+    source.type("yfiles.graph.IContextLookupChainLink")
+        .getJSONArray("staticMethods")
+        .firstWithName("addingLookupChainLink")
+        .parameter("instance")
+        .put("type", "TResult")
+}
 
-        source.allMethods(
-            "getCurrent",
-            "serialize",
-            "deserialize",
-            "setLookup"
-        )
-            .map { it.firstParameter }
-            .filter { it.getString("type") == YCLASS }
-            .forEach {
-                it.addGeneric("T")
-            }
+private val METHOD_NULLABILITY_MAP = mapOf(
+    MethodDeclaration(className = "yfiles.algorithms.Graph", methodName = "getDataProvider") to true,
+    MethodDeclaration(className = "yfiles.view.ViewportLimiter", methodName = "getCurrentBounds") to true,
+    MethodDeclaration(className = "yfiles.collections.IEnumerable", methodName = "first") to false
+)
 
-        source.allMethods("factoryLookupChainLink", "add", "addConstant")
-            .filter { it.firstParameter.getString("name") == "contextType" }
-            .forEach {
-                it.parameter("contextType").addGeneric("TContext")
-                it.parameter("resultType").addGeneric("TResult")
-            }
-
-        source.allMethods(
-            "addGraphInputData",
-            "addGraphOutputData"
-        )
-            .forEach {
-                it.firstParameter.addGeneric("TValue")
-            }
-
-        source.allMethods("addOutputMapper")
-            .forEach {
-                it.parameter("modelItemType").addGeneric("TModelItem")
-                it.parameter("dataType").addGeneric("TValue")
-            }
-
-        source.allMethods("addRegistryOutputMapper")
-            .filter { it.firstParameter.getString("name") == "modelItemType" }
-            .forEach {
-                it.parameter("modelItemType").addGeneric("TModelItem")
-                it.parameter("valueType").addGeneric("TValue")
-            }
-
-        source.type("yfiles.graphml.GraphMLIOHandler")
-            .apply {
-                (jsequence("methods") + jsequence("staticMethods"))
-                    .optionalArray("parameters")
-                    .filter { it.getString("type") == YCLASS }
-                    .forEach {
-                        when (it.getString("name")) {
-                            "keyType" -> it.addGeneric("TKey")
-                            "modelItemType" -> it.addGeneric("TKey")
-                            "dataType" -> it.addGeneric("TData")
-                        }
-                    }
-            }
-
-
-        source.allMethods(
-            "addMapper",
-            "addConstantMapper",
-            "addDelegateMapper",
-
-            // "createMapper",
-            "createConstantMapper",
-            "createDelegateMapper",
-
-            "addDataProvider",
-            "createDataMap",
-            "createDataProvider"
-        )
-            .filter { it.firstParameter.getString("name") == "keyType" }
-            .forEach {
-                it.parameter("keyType").addGeneric("K")
-                it.parameter("valueType").addGeneric("V")
-            }
-
-        source.types()
-            .forEach { type ->
-                val typeName = type.getString("name")
-                if (typeName == "MapperMetadata") {
-                    return@forEach
-                }
-
-                type.optionalArray("constructors")
-                    .optionalArray("parameters")
-                    .filter { it.getString("type") == YCLASS }
-                    .forEach {
-                        val name = it.getString("name")
-                        val generic = when (name) {
-                            "edgeStyleType" -> "TStyle"
-                            "decoratedType" -> "TDecoratedType"
-                            "interfaceType" -> "TInterface"
-                            "keyType" ->
-                                when (typeName) {
-                                    "DataMapAdapter" -> "K"
-                                    "ItemCollectionMapping" -> "TItem"
-                                    else -> "TKey"
-                                }
-                            "valueType" -> if (typeName == "DataMapAdapter") "V" else "TValue"
-                            "dataType" -> "TData"
-                            "itemType" -> "T"
-                            "type" -> when (typeName) {
-                                "StripeDecorator" -> "TStripe"
-                                else -> null
-                            }
-                            else -> null
-                        }
-
-                        if (generic != null) {
-                            it.addGeneric(generic)
-                        }
-                    }
-            }
-    }
-
-    private fun fixUnionMethods(source: JSONObject) {
-        val methods = source.type("yfiles.view.GraphModelManager")
-            .getJSONArray("methods")
-
-        val unionMethods = methods
-            .asSequence()
-            .map { it as JSONObject }
-            .filter { it.getString("name") == "getCanvasObjectGroup" }
-            .toList()
-
-        unionMethods
-            .asSequence()
-            .drop(1)
-            .forEach { methods.remove(methods.indexOf(it)) }
-
-        unionMethods.first()
-            .firstParameter
-            .apply {
-                put("name", "item")
-                put("type", "yfiles.graph.IModelItem")
-            }
-
-        // TODO: remove documentation
-    }
-
-    private fun fixConstantGenerics(source: JSONObject) {
-        source.type("yfiles.collections.IListEnumerable")
-            .getJSONArray("constants")
-            .firstWithName("EMPTY")
-            .also {
-                val type = it.getString("type")
-                    .replace("<T>", "<$JS_OBJECT>")
-                it.put("type", type)
-            }
-    }
-
-    private fun fixFunctionGenerics(source: JSONObject) {
-        source.type("yfiles.collections.List")
-            .getJSONArray("staticMethods")
-            .firstWithName("fromArray")
-            .addStandardGeneric()
-
-        source.type("yfiles.collections.List")
-            .getJSONArray("staticMethods")
-            .firstWithName("from")
-            .getJSONArray("typeparameters")
-            .put(jObject("name" to "T"))
-
-        source.type("yfiles.graph.IContextLookupChainLink")
-            .getJSONArray("staticMethods")
-            .firstWithName("addingLookupChainLink")
-            .apply {
-                addStandardGeneric("TResult")
-                firstParameter.addGeneric("TResult")
-            }
-    }
-
-    private fun fixReturnType(source: JSONObject) {
-        sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
-            .map { source.type(it) }
-            .forEach {
-                it.getJSONArray("methods")
-                    .firstWithName("getEnumerator")
-                    .getJSONObject("returns")
-                    .put("type", "yfiles.collections.IEnumerator<${JS_OBJECT}>")
-            }
-    }
-
-    private fun fixExtendedType(source: JSONObject) {
-        source.type("yfiles.lang.Exception")
-            .remove("extends")
-    }
-
-    private fun fixImplementedTypes(source: JSONObject) {
-        sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
-            .map { source.type(it) }
-            .forEach { it.remove("implements") }
-    }
-
-    private val KEY_CLASSES = setOf(
-        "yfiles.algorithms.DpKeyBase",
-        "yfiles.algorithms.EdgeDpKey",
-        "yfiles.algorithms.GraphDpKey",
-        "yfiles.algorithms.GraphObjectDpKey",
-        "yfiles.algorithms.IEdgeLabelLayoutDpKey",
-        "yfiles.algorithms.IEdgeLabelLayoutDpKey",
-        "yfiles.algorithms.ILabelLayoutDpKey",
-        "yfiles.algorithms.INodeLabelLayoutDpKey",
-        "yfiles.algorithms.NodeDpKey"
-    )
-
-    private fun fixConstructorParameterNullability(source: JSONObject) {
-        KEY_CLASSES
-            .asSequence()
-            .map { source.type(it) }
-            .forEach {
-                it.jsequence("constructors")
-                    .jsequence("parameters")
-                    .forEach { it.changeNullability(false) }
-            }
-    }
-
-    private fun fixPropertyType(source: JSONObject) {
-        sequenceOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
-            .map { source.type(it) }
-            .forEach {
-                it.getJSONArray("properties")
-                    .firstWithName("outEdgeComparers")
-                    .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
-            }
-    }
-
-    private val PROPERTY_NULLABILITY_CORRECTION = mapOf(
-        PropertyDeclaration("yfiles.graph.DefaultGraph", "tag") to true,
-        PropertyDeclaration("yfiles.graph.GraphWrapperBase", "tag") to true,
-        PropertyDeclaration("yfiles.graph.SimpleBend", "tag") to true,
-        PropertyDeclaration("yfiles.graph.SimpleEdge", "tag") to true,
-        PropertyDeclaration("yfiles.graph.SimpleLabel", "tag") to true,
-        PropertyDeclaration("yfiles.graph.SimpleNode", "tag") to true,
-        PropertyDeclaration("yfiles.graph.SimplePort", "tag") to true,
-
-        PropertyDeclaration("yfiles.graph.IEdge", "sourcePort") to false,
-        PropertyDeclaration("yfiles.graph.IEdge", "targetPort") to false
-    )
-
-    private fun fixPropertyNullability(source: JSONObject) {
-        PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
-            source
-                .type(className)
-                .getJSONArray("properties")
-                .first { it.get("name") == propertyName }
+private fun fixMethodNullability(source: JSONObject) {
+    METHOD_NULLABILITY_MAP
+        .forEach { (className, methodName), nullable ->
+            source.type(className)
+                .getJSONArray("methods")
+                .firstWithName(methodName)
                 .changeNullability(nullable)
         }
-    }
+}
 
-    private val PARAMETERS_CORRECTION = mapOf(
-        ParameterData("yfiles.lang.IComparable", "compareTo", "obj") to "o",
-        ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
-        ParameterData("yfiles.collections.IEnumerable", "includes", "value") to "item",
+private val MISSED_PROPERTIES = listOf(
+    PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
+    PropertyData(className = "yfiles.styles.Arrow", propertyName = "length", type = JS_NUMBER)
+)
 
-        ParameterData("yfiles.algorithms.YList", "indexOf", "obj") to "item",
-        ParameterData("yfiles.algorithms.YList", "insert", "element") to "item",
-        ParameterData("yfiles.algorithms.YList", "remove", "o") to "item",
+private val MISSED_METHODS = listOf(
+    MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "yfiles.geometry.MutableRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "yfiles.geometry.OrientedRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
 
-        ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
-
-        ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
-        ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",
-        ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedNode") to "node",
-        ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedEdge") to "edge",
-
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "label") to "labelLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "sourceNode") to "sourceLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "targetNode") to "targetLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
-        ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
-
-        ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
-        ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
-        ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
-
-        ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
-        ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
-        ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
-        ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
-        ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "para") to "parameter",
-
-        ParameterData("yfiles.layout.INodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
-        ParameterData("yfiles.layout.FreeNodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
-
-        ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge1") to "x",
-        ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge2") to "y",
-        ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o1") to "x",
-        ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o2") to "y",
-
-        ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o1") to "x",
-        ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o2") to "y",
-
-        ParameterData("yfiles.view.LinearGradient", "accept", "item") to "node",
-        ParameterData("yfiles.view.RadialGradient", "accept", "item") to "node",
-
-        ParameterData("yfiles.graphml.GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
-        ParameterData("yfiles.graphml.GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
-
-        ParameterData("yfiles.layout.LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-        ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
-
-        ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
-        ParameterData("yfiles.hierarchic.IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
-        ParameterData("yfiles.hierarchic.LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
-        ParameterData("yfiles.hierarchic.SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
-
-        ParameterData("yfiles.input.ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
-        ParameterData("yfiles.input.StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
-
-        ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
-        ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
-        ParameterData("yfiles.styles.PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
-        ParameterData("yfiles.styles.IArrow", "getBoundsProvider", "directionVector") to "direction",
-        ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
-    )
-
-    private fun fixMethodParameterName(source: JSONObject) {
-        PARAMETERS_CORRECTION.forEach { data, fixedName ->
-            source.type(data.className)
-                .methodParameters(data.methodName, data.parameterName, { it.getString("name") != fixedName })
-                .first()
-                .put("name", fixedName)
-        }
-    }
-
-    private val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
-        ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false,
-        ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to false,
-
-        ParameterData("yfiles.graph.IGraph", "addPortAt", "style") to true,
-        ParameterData("yfiles.graph.ILookupDecorator", "add", "nullIsFallback") to true,
-        ParameterData("yfiles.graph.ILookupDecorator", "add", "decorateNull", true) to true,
-
-        ParameterData("yfiles.graphml.CreationProperties", "get", "key") to true,
-        ParameterData("yfiles.graphml.CreationProperties", "set", "key") to true,
-
-        ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "context") to false,
-        ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
-
-        ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeIn") to true,
-        ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeOut") to true,
-        ParameterData("yfiles.view.FocusIndicatorManager", "getInstaller", "item") to true
-    )
-
-    private val BROKEN_NULLABILITY_METHODS = setOf("applyLayout", "applyLayoutCore")
-
-    private fun fixMethodParameterNullability(source: JSONObject) {
-        PARAMETERS_NULLABILITY_CORRECTION
-            .forEach { data, nullable ->
-                val parameters = source.type(data.className)
-                    .methodParameters(data.methodName, data.parameterName, { true })
-
-                val parameter = if (data.last) {
-                    parameters.last()
-                } else {
-                    parameters.first()
-                }
-
-                parameter.changeNullability(nullable)
-            }
-
-        source.types()
-            .optionalArray("methods")
-            .filter { it.get("name") in BROKEN_NULLABILITY_METHODS }
-            .filter { it.getJSONArray("parameters").length() == 1 }
-            .map { it.getJSONArray("parameters").single() }
-            .map { it as JSONObject }
-            .onEach { require(it.getString("type") == "yfiles.layout.LayoutGraph") }
-            .forEach { it.changeNullability(false) }
-    }
-
-    private fun fixMethodParameterType(source: JSONObject) {
-        source.type("yfiles.graph.IContextLookupChainLink")
-            .getJSONArray("staticMethods")
-            .firstWithName("addingLookupChainLink")
-            .parameter("instance")
-            .put("type", "TResult")
-    }
-
-    private val METHOD_NULLABILITY_MAP = mapOf(
-        MethodDeclaration(className = "yfiles.algorithms.Graph", methodName = "getDataProvider") to true,
-        MethodDeclaration(className = "yfiles.view.ViewportLimiter", methodName = "getCurrentBounds") to true,
-        MethodDeclaration(className = "yfiles.collections.IEnumerable", methodName = "first") to false
-    )
-
-    private fun fixMethodNullability(source: JSONObject) {
-        METHOD_NULLABILITY_MAP
-            .forEach { (className, methodName), nullable ->
-                source.type(className)
-                    .getJSONArray("methods")
-                    .firstWithName(methodName)
-                    .changeNullability(nullable)
-            }
-    }
-
-    private val MISSED_PROPERTIES = listOf(
-        PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
-        PropertyData(className = "yfiles.styles.Arrow", propertyName = "length", type = JS_NUMBER)
-    )
-
-    private val MISSED_METHODS = listOf(
-        MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
-        MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
-        MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
-        MethodData(className = "yfiles.geometry.MutableRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
-        MethodData(className = "yfiles.geometry.OrientedRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
-
-        MethodData(
-            className = "yfiles.algorithms.YList",
-            methodName = "add",
-            parameters = listOf(
-                MethodParameterData("item", JS_OBJECT, true)
-            )
-        ),
-
-        MethodData(
-            className = "yfiles.graph.CompositeUndoUnit",
-            methodName = "tryMergeUnit",
-            parameters = listOf(
-                MethodParameterData("unit", "IUndoUnit")
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-        MethodData(
-            className = "yfiles.graph.CompositeUndoUnit",
-            methodName = "tryReplaceUnit",
-            parameters = listOf(
-                MethodParameterData("unit", "IUndoUnit")
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-
-        MethodData(
-            className = "yfiles.graph.EdgePathLabelModel",
-            methodName = "findBestParameter",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("model", "ILabelModel"),
-                MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
-            ),
-            result = ResultData("ILabelModelParameter")
-        ),
-        MethodData(
-            className = "yfiles.graph.EdgePathLabelModel",
-            methodName = "getParameters",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("model", "ILabelModel")
-            ),
-            result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
-        ),
-        MethodData(
-            className = "yfiles.graph.EdgePathLabelModel",
-            methodName = "getGeometry",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("layoutParameter", "ILabelModelParameter")
-            ),
-            result = ResultData("yfiles.geometry.IOrientedRectangle")
-        ),
-
-        MethodData(
-            className = "yfiles.graph.EdgeSegmentLabelModel",
-            methodName = "findBestParameter",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("model", "ILabelModel"),
-                MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
-            ),
-            result = ResultData("ILabelModelParameter")
-        ),
-        MethodData(
-            className = "yfiles.graph.EdgeSegmentLabelModel",
-            methodName = "getParameters",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("model", "ILabelModel")
-            ),
-            result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
-        ),
-        MethodData(
-            className = "yfiles.graph.EdgeSegmentLabelModel",
-            methodName = "getGeometry",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("layoutParameter", "ILabelModelParameter")
-            ),
-            result = ResultData("yfiles.geometry.IOrientedRectangle")
-        ),
-
-        MethodData(
-            className = "yfiles.graph.FreeLabelModel",
-            methodName = "findBestParameter",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("model", "ILabelModel"),
-                MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
-            ),
-            result = ResultData("ILabelModelParameter")
-        ),
-
-        MethodData(
-            className = "yfiles.graph.GenericLabelModel",
-            methodName = "canConvert",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", JS_OBJECT)
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-        MethodData(
-            className = "yfiles.graph.GenericLabelModel",
-            methodName = "getParameters",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("model", "ILabelModel")
-            ),
-            result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
-        ),
-        MethodData(
-            className = "yfiles.graph.GenericLabelModel",
-            methodName = "convert",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", JS_OBJECT)
-            ),
-            result = ResultData("yfiles.graphml.MarkupExtension")
-        ),
-        MethodData(
-            className = "yfiles.graph.GenericLabelModel",
-            methodName = "getGeometry",
-            parameters = listOf(
-                MethodParameterData("label", "ILabel"),
-                MethodParameterData("layoutParameter", "ILabelModelParameter")
-            ),
-            result = ResultData("yfiles.geometry.IOrientedRectangle")
-        ),
-
-        MethodData(
-            className = "yfiles.graph.GenericPortLocationModel",
-            methodName = "canConvert",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", JS_OBJECT)
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-        MethodData(
-            className = "yfiles.graph.GenericPortLocationModel",
-            methodName = "convert",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-                MethodParameterData("value", JS_OBJECT)
-            ),
-            result = ResultData("yfiles.graphml.MarkupExtension")
-        ),
-        MethodData(
-            className = "yfiles.graph.GenericPortLocationModel",
-            methodName = "getEnumerator",
-            result = ResultData("yfiles.collections.IEnumerator<IPortLocationModelParameter>")
-        ),
-
-        MethodData(
-            className = "yfiles.input.PortRelocationHandleProvider",
-            methodName = "getHandle",
-            parameters = listOf(
-                MethodParameterData("context", "IInputModeContext"),
-                MethodParameterData("edge", "yfiles.graph.IEdge"),
-                MethodParameterData("sourceHandle", JS_BOOLEAN)
-            ),
-            result = ResultData("IHandle", true)
-        ),
-
-        MethodData(
-            className = "yfiles.styles.Arrow",
-            methodName = "getBoundsProvider",
-            parameters = listOf(
-                MethodParameterData("edge", "yfiles.graph.IEdge"),
-                MethodParameterData("atSource", JS_BOOLEAN),
-                MethodParameterData("anchor", "yfiles.geometry.Point"),
-                MethodParameterData("direction", "yfiles.geometry.Point")
-            ),
-            result = ResultData("yfiles.view.IBoundsProvider")
-        ),
-        MethodData(
-            className = "yfiles.styles.Arrow",
-            methodName = "getVisualCreator",
-            parameters = listOf(
-                MethodParameterData("edge", "yfiles.graph.IEdge"),
-                MethodParameterData("atSource", JS_BOOLEAN),
-                MethodParameterData("anchor", "yfiles.geometry.Point"),
-                MethodParameterData("direction", "yfiles.geometry.Point")
-            ),
-            result = ResultData("yfiles.view.IVisualCreator")
-        ),
-        MethodData(className = "yfiles.styles.Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
-
-        MethodData(
-            className = "yfiles.styles.GraphOverviewSvgVisualCreator",
-            methodName = "createVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext")
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-        MethodData(
-            className = "yfiles.styles.GraphOverviewSvgVisualCreator",
-            methodName = "updateVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-
-        MethodData(
-            className = "yfiles.view.GraphOverviewCanvasVisualCreator",
-            methodName = "createVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext")
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-        MethodData(
-            className = "yfiles.view.GraphOverviewCanvasVisualCreator",
-            methodName = "updateVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "createVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext")
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "updateVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "isInBox",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.input.IInputModeContext"),
-                MethodParameterData("rectangle", "yfiles.geometry.Rect")
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "isVisible",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.ICanvasContext"),
-                MethodParameterData("rectangle", "yfiles.geometry.Rect")
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "getBounds",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.ICanvasContext")
-            ),
-            result = ResultData("yfiles.geometry.Rect")
-        ),
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "isHit",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.input.IInputModeContext"),
-                MethodParameterData("location", "yfiles.geometry.Point")
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-        MethodData(
-            className = "yfiles.view.DefaultPortCandidateDescriptor",
-            methodName = "isInPath",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.input.IInputModeContext"),
-                MethodParameterData("lassoPath", "yfiles.geometry.GeneralPath")
-            ),
-            result = ResultData(JS_BOOLEAN)
-        ),
-
-        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath", true)),
-        MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
-        MethodData(
-            className = "yfiles.styles.VoidPathGeometry",
-            methodName = "getTangent",
-            parameters = listOf(
-                MethodParameterData("ratio", JS_NUMBER)
-            ),
-            result = ResultData("yfiles.geometry.Tangent", true)
-        ),
-        MethodData(
-            className = "yfiles.styles.VoidPathGeometry",
-            methodName = "getTangent",
-            parameters = listOf(
-                MethodParameterData("segmentIndex", JS_NUMBER),
-                MethodParameterData("ratio", JS_NUMBER)
-            ),
-            result = ResultData("yfiles.geometry.Tangent", true)
-        ),
-        MethodData(
-            className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
-            methodName = "createVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext")
-            ),
-            result = ResultData("yfiles.view.Visual", true)
-        ),
-        MethodData(
-            className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
-            methodName = "updateVisual",
-            parameters = listOf(
-                MethodParameterData("context", "yfiles.view.IRenderContext"),
-                MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-            ),
-            result = ResultData("yfiles.view.Visual", true)
+    MethodData(
+        className = "yfiles.algorithms.YList",
+        methodName = "add",
+        parameters = listOf(
+            MethodParameterData("item", JS_OBJECT, true)
         )
+    ),
+
+    MethodData(
+        className = "yfiles.graph.CompositeUndoUnit",
+        methodName = "tryMergeUnit",
+        parameters = listOf(
+            MethodParameterData("unit", "IUndoUnit")
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+    MethodData(
+        className = "yfiles.graph.CompositeUndoUnit",
+        methodName = "tryReplaceUnit",
+        parameters = listOf(
+            MethodParameterData("unit", "IUndoUnit")
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+
+    MethodData(
+        className = "yfiles.graph.EdgePathLabelModel",
+        methodName = "findBestParameter",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("model", "ILabelModel"),
+            MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
+        ),
+        result = ResultData("ILabelModelParameter")
+    ),
+    MethodData(
+        className = "yfiles.graph.EdgePathLabelModel",
+        methodName = "getParameters",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("model", "ILabelModel")
+        ),
+        result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
+    ),
+    MethodData(
+        className = "yfiles.graph.EdgePathLabelModel",
+        methodName = "getGeometry",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("layoutParameter", "ILabelModelParameter")
+        ),
+        result = ResultData("yfiles.geometry.IOrientedRectangle")
+    ),
+
+    MethodData(
+        className = "yfiles.graph.EdgeSegmentLabelModel",
+        methodName = "findBestParameter",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("model", "ILabelModel"),
+            MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
+        ),
+        result = ResultData("ILabelModelParameter")
+    ),
+    MethodData(
+        className = "yfiles.graph.EdgeSegmentLabelModel",
+        methodName = "getParameters",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("model", "ILabelModel")
+        ),
+        result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
+    ),
+    MethodData(
+        className = "yfiles.graph.EdgeSegmentLabelModel",
+        methodName = "getGeometry",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("layoutParameter", "ILabelModelParameter")
+        ),
+        result = ResultData("yfiles.geometry.IOrientedRectangle")
+    ),
+
+    MethodData(
+        className = "yfiles.graph.FreeLabelModel",
+        methodName = "findBestParameter",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("model", "ILabelModel"),
+            MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
+        ),
+        result = ResultData("ILabelModelParameter")
+    ),
+
+    MethodData(
+        className = "yfiles.graph.GenericLabelModel",
+        methodName = "canConvert",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
+            MethodParameterData("value", JS_OBJECT)
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+    MethodData(
+        className = "yfiles.graph.GenericLabelModel",
+        methodName = "getParameters",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("model", "ILabelModel")
+        ),
+        result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
+    ),
+    MethodData(
+        className = "yfiles.graph.GenericLabelModel",
+        methodName = "convert",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
+            MethodParameterData("value", JS_OBJECT)
+        ),
+        result = ResultData("yfiles.graphml.MarkupExtension")
+    ),
+    MethodData(
+        className = "yfiles.graph.GenericLabelModel",
+        methodName = "getGeometry",
+        parameters = listOf(
+            MethodParameterData("label", "ILabel"),
+            MethodParameterData("layoutParameter", "ILabelModelParameter")
+        ),
+        result = ResultData("yfiles.geometry.IOrientedRectangle")
+    ),
+
+    MethodData(
+        className = "yfiles.graph.GenericPortLocationModel",
+        methodName = "canConvert",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
+            MethodParameterData("value", JS_OBJECT)
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+    MethodData(
+        className = "yfiles.graph.GenericPortLocationModel",
+        methodName = "convert",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
+            MethodParameterData("value", JS_OBJECT)
+        ),
+        result = ResultData("yfiles.graphml.MarkupExtension")
+    ),
+    MethodData(
+        className = "yfiles.graph.GenericPortLocationModel",
+        methodName = "getEnumerator",
+        result = ResultData("yfiles.collections.IEnumerator<IPortLocationModelParameter>")
+    ),
+
+    MethodData(
+        className = "yfiles.input.PortRelocationHandleProvider",
+        methodName = "getHandle",
+        parameters = listOf(
+            MethodParameterData("context", "IInputModeContext"),
+            MethodParameterData("edge", "yfiles.graph.IEdge"),
+            MethodParameterData("sourceHandle", JS_BOOLEAN)
+        ),
+        result = ResultData("IHandle", true)
+    ),
+
+    MethodData(
+        className = "yfiles.styles.Arrow",
+        methodName = "getBoundsProvider",
+        parameters = listOf(
+            MethodParameterData("edge", "yfiles.graph.IEdge"),
+            MethodParameterData("atSource", JS_BOOLEAN),
+            MethodParameterData("anchor", "yfiles.geometry.Point"),
+            MethodParameterData("direction", "yfiles.geometry.Point")
+        ),
+        result = ResultData("yfiles.view.IBoundsProvider")
+    ),
+    MethodData(
+        className = "yfiles.styles.Arrow",
+        methodName = "getVisualCreator",
+        parameters = listOf(
+            MethodParameterData("edge", "yfiles.graph.IEdge"),
+            MethodParameterData("atSource", JS_BOOLEAN),
+            MethodParameterData("anchor", "yfiles.geometry.Point"),
+            MethodParameterData("direction", "yfiles.geometry.Point")
+        ),
+        result = ResultData("yfiles.view.IVisualCreator")
+    ),
+    MethodData(className = "yfiles.styles.Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
+
+    MethodData(
+        className = "yfiles.styles.GraphOverviewSvgVisualCreator",
+        methodName = "createVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext")
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+    MethodData(
+        className = "yfiles.styles.GraphOverviewSvgVisualCreator",
+        methodName = "updateVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext"),
+            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+
+    MethodData(
+        className = "yfiles.view.GraphOverviewCanvasVisualCreator",
+        methodName = "createVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext")
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+    MethodData(
+        className = "yfiles.view.GraphOverviewCanvasVisualCreator",
+        methodName = "updateVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext"),
+            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "createVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext")
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "updateVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext"),
+            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "isInBox",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.input.IInputModeContext"),
+            MethodParameterData("rectangle", "yfiles.geometry.Rect")
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "isVisible",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.ICanvasContext"),
+            MethodParameterData("rectangle", "yfiles.geometry.Rect")
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "getBounds",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.ICanvasContext")
+        ),
+        result = ResultData("yfiles.geometry.Rect")
+    ),
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "isHit",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.input.IInputModeContext"),
+            MethodParameterData("location", "yfiles.geometry.Point")
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+    MethodData(
+        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        methodName = "isInPath",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.input.IInputModeContext"),
+            MethodParameterData("lassoPath", "yfiles.geometry.GeneralPath")
+        ),
+        result = ResultData(JS_BOOLEAN)
+    ),
+
+    MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath", true)),
+    MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
+    MethodData(
+        className = "yfiles.styles.VoidPathGeometry",
+        methodName = "getTangent",
+        parameters = listOf(
+            MethodParameterData("ratio", JS_NUMBER)
+        ),
+        result = ResultData("yfiles.geometry.Tangent", true)
+    ),
+    MethodData(
+        className = "yfiles.styles.VoidPathGeometry",
+        methodName = "getTangent",
+        parameters = listOf(
+            MethodParameterData("segmentIndex", JS_NUMBER),
+            MethodParameterData("ratio", JS_NUMBER)
+        ),
+        result = ResultData("yfiles.geometry.Tangent", true)
+    ),
+    MethodData(
+        className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
+        methodName = "createVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext")
+        ),
+        result = ResultData("yfiles.view.Visual", true)
+    ),
+    MethodData(
+        className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
+        methodName = "updateVisual",
+        parameters = listOf(
+            MethodParameterData("context", "yfiles.view.IRenderContext"),
+            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
+        ),
+        result = ResultData("yfiles.view.Visual", true)
     )
+)
 
-    private fun addMissedProperties(source: JSONObject) {
-        MISSED_PROPERTIES
-            .forEach { data ->
-                source.type(data.className)
-                    .addProperty(data.propertyName, data.type)
-            }
-    }
-
-    private fun addMissedMethods(source: JSONObject) {
-        MISSED_METHODS.forEach { data ->
+private fun addMissedProperties(source: JSONObject) {
+    MISSED_PROPERTIES
+        .forEach { data ->
             source.type(data.className)
-                .addMethod(data)
+                .addProperty(data.propertyName, data.type)
         }
+}
+
+private fun addMissedMethods(source: JSONObject) {
+    MISSED_METHODS.forEach { data ->
+        source.type(data.className)
+            .addMethod(data)
     }
+}
 
-    private val DUPLICATED_PROPERTIES = listOf(
-        PropertyDeclaration(className = "yfiles.algorithms.YList", propertyName = "size"),
+private val DUPLICATED_PROPERTIES = listOf(
+    PropertyDeclaration(className = "yfiles.algorithms.YList", propertyName = "size"),
 
-        PropertyDeclaration(className = "yfiles.analysis.ResultItemCollection", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.analysis.ResultItemMapping", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.analysis.ResultItemCollection", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.analysis.ResultItemMapping", propertyName = "size"),
 
-        PropertyDeclaration(className = "yfiles.collections.ICollection", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.collections.IListEnumerable", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.collections.List", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.collections.ListEnumerable", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.collections.ICollection", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.collections.IListEnumerable", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.collections.List", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.collections.ListEnumerable", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size"),
 
-        PropertyDeclaration(className = "yfiles.geometry.MutableRectangle", propertyName = "isEmpty"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomLeft"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomRight"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "center"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "isEmpty"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxX"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxY"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topLeft"),
-        PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topRight"),
+    PropertyDeclaration(className = "yfiles.geometry.MutableRectangle", propertyName = "isEmpty"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomLeft"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomRight"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "center"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "isEmpty"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxX"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxY"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topLeft"),
+    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topRight"),
 
-        PropertyDeclaration(className = "yfiles.graph.DefaultGraph", propertyName = "undoEngineEnabled"),
+    PropertyDeclaration(className = "yfiles.graph.DefaultGraph", propertyName = "undoEngineEnabled"),
 
-        PropertyDeclaration(className = "yfiles.view.DefaultSelectionModel", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.view.GraphSelection", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.view.ISelectionModel", propertyName = "size"),
-        PropertyDeclaration(className = "yfiles.view.StripeSelection", propertyName = "size")
-    )
+    PropertyDeclaration(className = "yfiles.view.DefaultSelectionModel", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.view.GraphSelection", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.view.ISelectionModel", propertyName = "size"),
+    PropertyDeclaration(className = "yfiles.view.StripeSelection", propertyName = "size")
+)
 
-    private fun removeDuplicatedProperties(source: JSONObject) {
-        DUPLICATED_PROPERTIES
-            .forEach { declaration ->
-                val properties = source
-                    .type(declaration.className)
-                    .getJSONArray("properties")
+private fun removeDuplicatedProperties(source: JSONObject) {
+    DUPLICATED_PROPERTIES
+        .forEach { declaration ->
+            val properties = source
+                .type(declaration.className)
+                .getJSONArray("properties")
 
-                val property = properties
-                    .firstWithName(declaration.propertyName)
+            val property = properties
+                .firstWithName(declaration.propertyName)
 
-                properties.remove(properties.indexOf(property))
+            properties.remove(properties.indexOf(property))
+        }
+}
+
+private val DUPLICATED_METHODS = listOf(
+    MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "elementAt"),
+    MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "includes"),
+    MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "toArray"),
+
+    MethodDeclaration(className = "yfiles.collections.ICollection", methodName = "includes"),
+    MethodDeclaration(className = "yfiles.collections.List", methodName = "includes"),
+    MethodDeclaration(className = "yfiles.collections.List", methodName = "toArray"),
+    MethodDeclaration(className = "yfiles.collections.Map", methodName = "includes"),
+    MethodDeclaration(className = "yfiles.collections.ObservableCollection", methodName = "includes")
+)
+
+private fun removeDuplicatedMethods(source: JSONObject) {
+    DUPLICATED_METHODS
+        .forEach { declaration ->
+            val methods = source
+                .type(declaration.className)
+                .getJSONArray("methods")
+
+            val method = methods
+                .firstWithName(declaration.methodName)
+
+            methods.remove(methods.indexOf(method))
+        }
+}
+
+private val SYSTEM_FUNCTIONS = listOf(
+    "equals",
+    "hashCode",
+    "toString"
+)
+
+private fun removeSystemMethods(source: JSONObject) {
+    source.types()
+        .filter { it.has("methods") }
+        .forEach {
+            val methods = it.getJSONArray("methods")
+            val systemMetods = methods.asSequence()
+                .map { it as JSONObject }
+                .filter { it.getString("name") in SYSTEM_FUNCTIONS }
+                .toList()
+
+            systemMetods.forEach {
+                methods.remove(methods.indexOf(it))
             }
-    }
+        }
+}
 
-    private val DUPLICATED_METHODS = listOf(
-        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "elementAt"),
-        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "includes"),
-        MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "toArray"),
+private fun removeArtifitialParameters(source: JSONObject) {
+    sequenceOf("constructors", "methods")
+        .flatMap { parameter ->
+            source.types()
+                .filter { it.has(parameter) }
+                .jsequence(parameter)
+        }
+        .filter { it.has("parameters") }
+        .forEach {
+            val artifitialParameters = it.jsequence("parameters")
+                .filter { it.getJSONArray("modifiers").contains(ARTIFICIAL) }
+                .toList()
 
-        MethodDeclaration(className = "yfiles.collections.ICollection", methodName = "includes"),
-        MethodDeclaration(className = "yfiles.collections.List", methodName = "includes"),
-        MethodDeclaration(className = "yfiles.collections.List", methodName = "toArray"),
-        MethodDeclaration(className = "yfiles.collections.Map", methodName = "includes"),
-        MethodDeclaration(className = "yfiles.collections.ObservableCollection", methodName = "includes")
-    )
-
-    private fun removeDuplicatedMethods(source: JSONObject) {
-        DUPLICATED_METHODS
-            .forEach { declaration ->
-                val methods = source
-                    .type(declaration.className)
-                    .getJSONArray("methods")
-
-                val method = methods
-                    .firstWithName(declaration.methodName)
-
-                methods.remove(methods.indexOf(method))
+            val parameters = it.getJSONArray("parameters")
+            artifitialParameters.forEach {
+                parameters.remove(parameters.indexOf(it))
             }
-    }
+        }
+}
 
-    private val SYSTEM_FUNCTIONS = listOf(
-        "equals",
-        "hashCode",
-        "toString"
-    )
-
-    private fun removeSystemMethods(source: JSONObject) {
-        source.types()
-            .filter { it.has("methods") }
-            .forEach {
-                val methods = it.getJSONArray("methods")
-                val systemMetods = methods.asSequence()
-                    .map { it as JSONObject }
-                    .filter { it.getString("name") in SYSTEM_FUNCTIONS }
-                    .toList()
-
-                systemMetods.forEach {
-                    methods.remove(methods.indexOf(it))
-                }
+private fun fieldToProperties(source: JSONObject) {
+    source.types()
+        .filter { it.has("fields") }
+        .forEach { type ->
+            val fields = type.getJSONArray("fields")
+            if (type.has("properties")) {
+                val properties = type.getJSONArray("properties")
+                fields.forEach { properties.put(it) }
+            } else {
+                type.put("properties", fields)
             }
-    }
-
-    private fun removeArtifitialParameters(source: JSONObject) {
-        sequenceOf("constructors", "methods")
-            .flatMap { parameter ->
-                source.types()
-                    .filter { it.has(parameter) }
-                    .jsequence(parameter)
-            }
-            .filter { it.has("parameters") }
-            .forEach {
-                val artifitialParameters = it.jsequence("parameters")
-                    .filter { it.getJSONArray("modifiers").contains(ARTIFICIAL) }
-                    .toList()
-
-                val parameters = it.getJSONArray("parameters")
-                artifitialParameters.forEach {
-                    parameters.remove(parameters.indexOf(it))
-                }
-            }
-    }
-
-    private fun fieldToProperties(source: JSONObject) {
-        source.types()
-            .filter { it.has("fields") }
-            .forEach { type ->
-                val fields = type.getJSONArray("fields")
-                if (type.has("properties")) {
-                    val properties = type.getJSONArray("properties")
-                    fields.forEach { properties.put(it) }
-                } else {
-                    type.put("properties", fields)
-                }
-                type.remove("fields")
-            }
-    }
+            type.remove("fields")
+        }
 }
 
 private data class ParameterData(

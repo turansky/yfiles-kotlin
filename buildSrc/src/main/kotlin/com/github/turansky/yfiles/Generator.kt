@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.Hacks.applyHacks
 import org.json.JSONObject
 import java.io.File
 import java.net.URL

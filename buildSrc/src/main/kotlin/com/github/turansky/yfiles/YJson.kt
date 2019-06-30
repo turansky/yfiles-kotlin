@@ -7,6 +7,59 @@ internal fun JSONObject.types(): Sequence<JSONObject> =
         .optionalArray("namespaces")
         .jsequence("types")
 
+internal fun JSONObject.type(id: String): JSONObject {
+    val rootPackage = id.substring(0, id.indexOf("."))
+    val typePackage = id.substring(0, id.lastIndexOf("."))
+    return this.getJSONArray("namespaces")
+        .firstWithId(rootPackage)
+        .getJSONArray("namespaces")
+        .firstWithId(typePackage)
+        .getJSONArray("types")
+        .firstWithId(id)
+}
+
+internal fun JSONObject.methodParameters(
+    methodName: String,
+    parameterName: String,
+    parameterFilter: (JSONObject) -> Boolean
+): Iterable<JSONObject> {
+    val result = getJSONArray("methods")
+        .objects { it.getString("name") == methodName }
+        .flatMap {
+            it.getJSONArray("parameters")
+                .objects { it.getString("name") == parameterName }
+                .filter(parameterFilter)
+        }
+
+    require(result.isNotEmpty())
+    { "No method parameters found for object: $this, method: $methodName, parameter: $parameterName" }
+
+    return result
+}
+
+internal fun JSONObject.addProperty(
+    propertyName: String,
+    type: String
+) {
+    getJSONArray("properties")
+        .put(
+            mapOf(
+                "name" to propertyName,
+                "modifiers" to listOf(PUBLIC, FINAL, RO),
+                "type" to type
+            )
+        )
+}
+
+internal fun JSONObject.changeNullability(nullable: Boolean) {
+    val modifiers = getJSONArray("modifiers")
+    if (nullable) {
+        modifiers.put(CANBENULL)
+    } else {
+        modifiers.remove(modifiers.indexOf(CANBENULL))
+    }
+}
+
 internal fun JSONObject.addStandardGeneric(name: String = "T") {
     put(
         "typeparameters", jArray(
