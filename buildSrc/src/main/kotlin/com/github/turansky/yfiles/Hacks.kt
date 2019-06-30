@@ -82,7 +82,7 @@ internal fun applyHacks(api: JSONObject) {
 }
 
 private fun addClassGeneric(source: Source) {
-    source.type(YCLASS)
+    source.type("Class")
         .addStandardGeneric()
 
     source.allMethods(
@@ -163,7 +163,7 @@ private fun addClassGeneric(source: Source) {
             it.parameter("valueType").addGeneric("TValue")
         }
 
-    source.type("yfiles.graphml.GraphMLIOHandler")
+    source.type("GraphMLIOHandler")
         .apply {
             (jsequence("methods") + jsequence("staticMethods"))
                 .optionalArray("parameters")
@@ -237,7 +237,7 @@ private fun addClassGeneric(source: Source) {
 }
 
 private fun fixUnionMethods(source: Source) {
-    val methods = source.type("yfiles.view.GraphModelManager")
+    val methods = source.type("GraphModelManager")
         .getJSONArray("methods")
 
     val unionMethods = methods
@@ -262,7 +262,7 @@ private fun fixUnionMethods(source: Source) {
 }
 
 private fun fixConstantGenerics(source: Source) {
-    source.type("yfiles.collections.IListEnumerable")
+    source.type("IListEnumerable")
         .getJSONArray("constants")
         .firstWithName("EMPTY")
         .also {
@@ -273,18 +273,18 @@ private fun fixConstantGenerics(source: Source) {
 }
 
 private fun fixFunctionGenerics(source: Source) {
-    source.type("yfiles.collections.List")
+    source.type("List")
         .getJSONArray("staticMethods")
         .firstWithName("fromArray")
         .addStandardGeneric()
 
-    source.type("yfiles.collections.List")
+    source.type("List")
         .getJSONArray("staticMethods")
         .firstWithName("from")
         .getJSONArray("typeparameters")
         .put(jObject("name" to "T"))
 
-    source.type("yfiles.graph.IContextLookupChainLink")
+    source.type("IContextLookupChainLink")
         .getJSONArray("staticMethods")
         .firstWithName("addingLookupChainLink")
         .apply {
@@ -294,7 +294,7 @@ private fun fixFunctionGenerics(source: Source) {
 }
 
 private fun fixReturnType(source: Source) {
-    sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+    sequenceOf("EdgeList", "YNodeList")
         .map { source.type(it) }
         .forEach {
             it.getJSONArray("methods")
@@ -305,26 +305,26 @@ private fun fixReturnType(source: Source) {
 }
 
 private fun fixExtendedType(source: Source) {
-    source.type("yfiles.lang.Exception")
+    source.type("Exception")
         .remove("extends")
 }
 
 private fun fixImplementedTypes(source: Source) {
-    sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
+    sequenceOf("EdgeList", "YNodeList")
         .map { source.type(it) }
         .forEach { it.remove("implements") }
 }
 
 private val KEY_CLASSES = setOf(
-    "yfiles.algorithms.DpKeyBase",
-    "yfiles.algorithms.EdgeDpKey",
-    "yfiles.algorithms.GraphDpKey",
-    "yfiles.algorithms.GraphObjectDpKey",
-    "yfiles.algorithms.IEdgeLabelLayoutDpKey",
-    "yfiles.algorithms.IEdgeLabelLayoutDpKey",
-    "yfiles.algorithms.ILabelLayoutDpKey",
-    "yfiles.algorithms.INodeLabelLayoutDpKey",
-    "yfiles.algorithms.NodeDpKey"
+    "DpKeyBase",
+    "EdgeDpKey",
+    "GraphDpKey",
+    "GraphObjectDpKey",
+    "IEdgeLabelLayoutDpKey",
+    "IEdgeLabelLayoutDpKey",
+    "ILabelLayoutDpKey",
+    "INodeLabelLayoutDpKey",
+    "NodeDpKey"
 )
 
 private fun fixConstructorParameterNullability(source: Source) {
@@ -339,7 +339,7 @@ private fun fixConstructorParameterNullability(source: Source) {
 }
 
 private fun fixPropertyType(source: Source) {
-    sequenceOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
+    sequenceOf("SeriesParallelLayoutData", "TreeLayoutData")
         .map { source.type(it) }
         .forEach {
             it.getJSONArray("properties")
@@ -349,16 +349,16 @@ private fun fixPropertyType(source: Source) {
 }
 
 private val PROPERTY_NULLABILITY_CORRECTION = mapOf(
-    PropertyDeclaration("yfiles.graph.DefaultGraph", "tag") to true,
-    PropertyDeclaration("yfiles.graph.GraphWrapperBase", "tag") to true,
-    PropertyDeclaration("yfiles.graph.SimpleBend", "tag") to true,
-    PropertyDeclaration("yfiles.graph.SimpleEdge", "tag") to true,
-    PropertyDeclaration("yfiles.graph.SimpleLabel", "tag") to true,
-    PropertyDeclaration("yfiles.graph.SimpleNode", "tag") to true,
-    PropertyDeclaration("yfiles.graph.SimplePort", "tag") to true,
+    PropertyDeclaration("DefaultGraph", "tag") to true,
+    PropertyDeclaration("GraphWrapperBase", "tag") to true,
+    PropertyDeclaration("SimpleBend", "tag") to true,
+    PropertyDeclaration("SimpleEdge", "tag") to true,
+    PropertyDeclaration("SimpleLabel", "tag") to true,
+    PropertyDeclaration("SimpleNode", "tag") to true,
+    PropertyDeclaration("SimplePort", "tag") to true,
 
-    PropertyDeclaration("yfiles.graph.IEdge", "sourcePort") to false,
-    PropertyDeclaration("yfiles.graph.IEdge", "targetPort") to false
+    PropertyDeclaration("IEdge", "sourcePort") to false,
+    PropertyDeclaration("IEdge", "targetPort") to false
 )
 
 private fun fixPropertyNullability(source: Source) {
@@ -372,73 +372,73 @@ private fun fixPropertyNullability(source: Source) {
 }
 
 private val PARAMETERS_CORRECTION = mapOf(
-    ParameterData("yfiles.lang.IComparable", "compareTo", "obj") to "o",
-    ParameterData("yfiles.lang.TimeSpan", "compareTo", "obj") to "o",
-    ParameterData("yfiles.collections.IEnumerable", "includes", "value") to "item",
+    ParameterData("IComparable", "compareTo", "obj") to "o",
+    ParameterData("TimeSpan", "compareTo", "obj") to "o",
+    ParameterData("IEnumerable", "includes", "value") to "item",
 
-    ParameterData("yfiles.algorithms.YList", "indexOf", "obj") to "item",
-    ParameterData("yfiles.algorithms.YList", "insert", "element") to "item",
-    ParameterData("yfiles.algorithms.YList", "remove", "o") to "item",
+    ParameterData("YList", "indexOf", "obj") to "item",
+    ParameterData("YList", "insert", "element") to "item",
+    ParameterData("YList", "remove", "o") to "item",
 
-    ParameterData("yfiles.graph.DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
+    ParameterData("DefaultGraph", "setLabelPreferredSize", "size") to "preferredSize",
 
-    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
-    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",
-    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedNode") to "node",
-    ParameterData("yfiles.layout.CopiedLayoutGraph", "getLayout", "copiedEdge") to "edge",
+    ParameterData("CopiedLayoutGraph", "getLabelLayout", "copiedNode") to "node",
+    ParameterData("CopiedLayoutGraph", "getLabelLayout", "copiedEdge") to "edge",
+    ParameterData("CopiedLayoutGraph", "getLayout", "copiedNode") to "node",
+    ParameterData("CopiedLayoutGraph", "getLayout", "copiedEdge") to "edge",
 
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "label") to "labelLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "sourceNode") to "sourceLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "targetNode") to "targetLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
-    ParameterData("yfiles.layout.DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "label") to "labelLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "sourceNode") to "sourceLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "getLabelCandidates", "targetNode") to "targetLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+    ParameterData("DiscreteEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
 
-    ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
-    ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
-    ParameterData("yfiles.layout.FreeEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+    ParameterData("FreeEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+    ParameterData("FreeEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+    ParameterData("FreeEdgeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
 
-    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
-    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
-    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
-    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
-    ParameterData("yfiles.layout.SliderEdgeLabelLayoutModel", "getLabelPlacement", "para") to "parameter",
+    ParameterData("SliderEdgeLabelLayoutModel", "createModelParameter", "sourceNode") to "sourceLayout",
+    ParameterData("SliderEdgeLabelLayoutModel", "createModelParameter", "targetNode") to "targetLayout",
+    ParameterData("SliderEdgeLabelLayoutModel", "getLabelPlacement", "sourceNode") to "sourceLayout",
+    ParameterData("SliderEdgeLabelLayoutModel", "getLabelPlacement", "targetNode") to "targetLayout",
+    ParameterData("SliderEdgeLabelLayoutModel", "getLabelPlacement", "para") to "parameter",
 
-    ParameterData("yfiles.layout.INodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
-    ParameterData("yfiles.layout.FreeNodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+    ParameterData("INodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
+    ParameterData("FreeNodeLabelLayoutModel", "getLabelPlacement", "param") to "parameter",
 
-    ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge1") to "x",
-    ParameterData("yfiles.tree.NodeOrderComparer", "compare", "edge2") to "y",
-    ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o1") to "x",
-    ParameterData("yfiles.tree.NodeWeightComparer", "compare", "o2") to "y",
+    ParameterData("NodeOrderComparer", "compare", "edge1") to "x",
+    ParameterData("NodeOrderComparer", "compare", "edge2") to "y",
+    ParameterData("NodeWeightComparer", "compare", "o1") to "x",
+    ParameterData("NodeWeightComparer", "compare", "o2") to "y",
 
-    ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o1") to "x",
-    ParameterData("yfiles.seriesparallel.DefaultOutEdgeComparer", "compare", "o2") to "y",
+    ParameterData("DefaultOutEdgeComparer", "compare", "o1") to "x",
+    ParameterData("DefaultOutEdgeComparer", "compare", "o2") to "y",
 
-    ParameterData("yfiles.view.LinearGradient", "accept", "item") to "node",
-    ParameterData("yfiles.view.RadialGradient", "accept", "item") to "node",
+    ParameterData("LinearGradient", "accept", "item") to "node",
+    ParameterData("RadialGradient", "accept", "item") to "node",
 
-    ParameterData("yfiles.graphml.GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
-    ParameterData("yfiles.graphml.GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
+    ParameterData("GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
+    ParameterData("GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
-    ParameterData("yfiles.layout.LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("yfiles.layout.MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
+    ParameterData("LayoutData", "apply", "layoutGraphAdapter") to "adapter",
+    ParameterData("MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
 
-    ParameterData("yfiles.hierarchic.DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
-    ParameterData("yfiles.hierarchic.IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
-    ParameterData("yfiles.hierarchic.LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("yfiles.hierarchic.SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
+    ParameterData("DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
+    ParameterData("IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
+    ParameterData("LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
+    ParameterData("SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
 
-    ParameterData("yfiles.input.ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
-    ParameterData("yfiles.input.StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
+    ParameterData("ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
+    ParameterData("StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
 
-    ParameterData("yfiles.multipage.IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
-    ParameterData("yfiles.router.DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
-    ParameterData("yfiles.styles.PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
-    ParameterData("yfiles.styles.IArrow", "getBoundsProvider", "directionVector") to "direction",
-    ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
+    ParameterData("IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
+    ParameterData("DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
+    ParameterData("PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
+    ParameterData("IArrow", "getBoundsProvider", "directionVector") to "direction",
+    ParameterData("StripeSelection", "isSelected", "stripe") to "item"
 )
 
 private fun fixMethodParameterName(source: Source) {
@@ -451,22 +451,22 @@ private fun fixMethodParameterName(source: Source) {
 }
 
 private val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
-    ParameterData("yfiles.algorithms.YList", "copyTo", "array") to false,
-    ParameterData("yfiles.collections.ObservableCollection", "copyTo", "array") to false,
+    ParameterData("YList", "copyTo", "array") to false,
+    ParameterData("ObservableCollection", "copyTo", "array") to false,
 
-    ParameterData("yfiles.graph.IGraph", "addPortAt", "style") to true,
-    ParameterData("yfiles.graph.ILookupDecorator", "add", "nullIsFallback") to true,
-    ParameterData("yfiles.graph.ILookupDecorator", "add", "decorateNull", true) to true,
+    ParameterData("IGraph", "addPortAt", "style") to true,
+    ParameterData("ILookupDecorator", "add", "nullIsFallback") to true,
+    ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
 
-    ParameterData("yfiles.graphml.CreationProperties", "get", "key") to true,
-    ParameterData("yfiles.graphml.CreationProperties", "set", "key") to true,
+    ParameterData("CreationProperties", "get", "key") to true,
+    ParameterData("CreationProperties", "set", "key") to true,
 
-    ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "context") to false,
-    ParameterData("yfiles.styles.TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
+    ParameterData("TemplatePortStyleRenderer", "updateVisual", "context") to false,
+    ParameterData("TemplatePortStyleRenderer", "updateVisual", "oldVisual") to true,
 
-    ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeIn") to true,
-    ParameterData("yfiles.view.IAnimation", "createEasedAnimation", "easeOut") to true,
-    ParameterData("yfiles.view.FocusIndicatorManager", "getInstaller", "item") to true
+    ParameterData("IAnimation", "createEasedAnimation", "easeIn") to true,
+    ParameterData("IAnimation", "createEasedAnimation", "easeOut") to true,
+    ParameterData("FocusIndicatorManager", "getInstaller", "item") to true
 )
 
 private val BROKEN_NULLABILITY_METHODS = setOf("applyLayout", "applyLayoutCore")
@@ -497,7 +497,7 @@ private fun fixMethodParameterNullability(source: Source) {
 }
 
 private fun fixMethodParameterType(source: Source) {
-    source.type("yfiles.graph.IContextLookupChainLink")
+    source.type("IContextLookupChainLink")
         .getJSONArray("staticMethods")
         .firstWithName("addingLookupChainLink")
         .parameter("instance")
@@ -505,9 +505,9 @@ private fun fixMethodParameterType(source: Source) {
 }
 
 private val METHOD_NULLABILITY_MAP = mapOf(
-    MethodDeclaration(className = "yfiles.algorithms.Graph", methodName = "getDataProvider") to true,
-    MethodDeclaration(className = "yfiles.view.ViewportLimiter", methodName = "getCurrentBounds") to true,
-    MethodDeclaration(className = "yfiles.collections.IEnumerable", methodName = "first") to false
+    MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
+    MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
+    MethodDeclaration(className = "IEnumerable", methodName = "first") to false
 )
 
 private fun fixMethodNullability(source: Source) {
@@ -521,19 +521,19 @@ private fun fixMethodNullability(source: Source) {
 }
 
 private val MISSED_PROPERTIES = listOf(
-    PropertyData(className = "yfiles.algorithms.YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
-    PropertyData(className = "yfiles.styles.Arrow", propertyName = "length", type = JS_NUMBER)
+    PropertyData(className = "YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
+    PropertyData(className = "Arrow", propertyName = "length", type = JS_NUMBER)
 )
 
 private val MISSED_METHODS = listOf(
-    MethodData(className = "yfiles.geometry.Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "yfiles.geometry.MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "yfiles.geometry.MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "yfiles.geometry.MutableRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "yfiles.geometry.OrientedRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "MutableRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "OrientedRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
 
     MethodData(
-        className = "yfiles.algorithms.YList",
+        className = "YList",
         methodName = "add",
         parameters = listOf(
             MethodParameterData("item", JS_OBJECT, true)
@@ -541,7 +541,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.graph.CompositeUndoUnit",
+        className = "CompositeUndoUnit",
         methodName = "tryMergeUnit",
         parameters = listOf(
             MethodParameterData("unit", "IUndoUnit")
@@ -549,7 +549,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
     MethodData(
-        className = "yfiles.graph.CompositeUndoUnit",
+        className = "CompositeUndoUnit",
         methodName = "tryReplaceUnit",
         parameters = listOf(
             MethodParameterData("unit", "IUndoUnit")
@@ -558,7 +558,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.graph.EdgePathLabelModel",
+        className = "EdgePathLabelModel",
         methodName = "findBestParameter",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -568,7 +568,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("ILabelModelParameter")
     ),
     MethodData(
-        className = "yfiles.graph.EdgePathLabelModel",
+        className = "EdgePathLabelModel",
         methodName = "getParameters",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -577,7 +577,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
     ),
     MethodData(
-        className = "yfiles.graph.EdgePathLabelModel",
+        className = "EdgePathLabelModel",
         methodName = "getGeometry",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -587,7 +587,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.graph.EdgeSegmentLabelModel",
+        className = "EdgeSegmentLabelModel",
         methodName = "findBestParameter",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -597,7 +597,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("ILabelModelParameter")
     ),
     MethodData(
-        className = "yfiles.graph.EdgeSegmentLabelModel",
+        className = "EdgeSegmentLabelModel",
         methodName = "getParameters",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -606,7 +606,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
     ),
     MethodData(
-        className = "yfiles.graph.EdgeSegmentLabelModel",
+        className = "EdgeSegmentLabelModel",
         methodName = "getGeometry",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -616,7 +616,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.graph.FreeLabelModel",
+        className = "FreeLabelModel",
         methodName = "findBestParameter",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -627,7 +627,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.graph.GenericLabelModel",
+        className = "GenericLabelModel",
         methodName = "canConvert",
         parameters = listOf(
             MethodParameterData("context", "yfiles.graphml.IWriteContext"),
@@ -636,7 +636,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
     MethodData(
-        className = "yfiles.graph.GenericLabelModel",
+        className = "GenericLabelModel",
         methodName = "getParameters",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -645,7 +645,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
     ),
     MethodData(
-        className = "yfiles.graph.GenericLabelModel",
+        className = "GenericLabelModel",
         methodName = "convert",
         parameters = listOf(
             MethodParameterData("context", "yfiles.graphml.IWriteContext"),
@@ -654,7 +654,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.graphml.MarkupExtension")
     ),
     MethodData(
-        className = "yfiles.graph.GenericLabelModel",
+        className = "GenericLabelModel",
         methodName = "getGeometry",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -664,7 +664,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.graph.GenericPortLocationModel",
+        className = "GenericPortLocationModel",
         methodName = "canConvert",
         parameters = listOf(
             MethodParameterData("context", "yfiles.graphml.IWriteContext"),
@@ -673,7 +673,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
     MethodData(
-        className = "yfiles.graph.GenericPortLocationModel",
+        className = "GenericPortLocationModel",
         methodName = "convert",
         parameters = listOf(
             MethodParameterData("context", "yfiles.graphml.IWriteContext"),
@@ -682,13 +682,13 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.graphml.MarkupExtension")
     ),
     MethodData(
-        className = "yfiles.graph.GenericPortLocationModel",
+        className = "GenericPortLocationModel",
         methodName = "getEnumerator",
         result = ResultData("yfiles.collections.IEnumerator<IPortLocationModelParameter>")
     ),
 
     MethodData(
-        className = "yfiles.input.PortRelocationHandleProvider",
+        className = "PortRelocationHandleProvider",
         methodName = "getHandle",
         parameters = listOf(
             MethodParameterData("context", "IInputModeContext"),
@@ -699,7 +699,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.styles.Arrow",
+        className = "Arrow",
         methodName = "getBoundsProvider",
         parameters = listOf(
             MethodParameterData("edge", "yfiles.graph.IEdge"),
@@ -710,7 +710,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.view.IBoundsProvider")
     ),
     MethodData(
-        className = "yfiles.styles.Arrow",
+        className = "Arrow",
         methodName = "getVisualCreator",
         parameters = listOf(
             MethodParameterData("edge", "yfiles.graph.IEdge"),
@@ -720,10 +720,10 @@ private val MISSED_METHODS = listOf(
         ),
         result = ResultData("yfiles.view.IVisualCreator")
     ),
-    MethodData(className = "yfiles.styles.Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(className = "Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
 
     MethodData(
-        className = "yfiles.styles.GraphOverviewSvgVisualCreator",
+        className = "GraphOverviewSvgVisualCreator",
         methodName = "createVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext")
@@ -731,7 +731,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.view.Visual", true)
     ),
     MethodData(
-        className = "yfiles.styles.GraphOverviewSvgVisualCreator",
+        className = "GraphOverviewSvgVisualCreator",
         methodName = "updateVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext"),
@@ -741,7 +741,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.view.GraphOverviewCanvasVisualCreator",
+        className = "GraphOverviewCanvasVisualCreator",
         methodName = "createVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext")
@@ -749,7 +749,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.view.Visual", true)
     ),
     MethodData(
-        className = "yfiles.view.GraphOverviewCanvasVisualCreator",
+        className = "GraphOverviewCanvasVisualCreator",
         methodName = "updateVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext"),
@@ -759,7 +759,7 @@ private val MISSED_METHODS = listOf(
     ),
 
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "createVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext")
@@ -767,7 +767,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.view.Visual", true)
     ),
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "updateVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext"),
@@ -776,7 +776,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.view.Visual", true)
     ),
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "isInBox",
         parameters = listOf(
             MethodParameterData("context", "yfiles.input.IInputModeContext"),
@@ -785,7 +785,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "isVisible",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.ICanvasContext"),
@@ -794,7 +794,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "getBounds",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.ICanvasContext")
@@ -802,7 +802,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.geometry.Rect")
     ),
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "isHit",
         parameters = listOf(
             MethodParameterData("context", "yfiles.input.IInputModeContext"),
@@ -811,7 +811,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
     MethodData(
-        className = "yfiles.view.DefaultPortCandidateDescriptor",
+        className = "DefaultPortCandidateDescriptor",
         methodName = "isInPath",
         parameters = listOf(
             MethodParameterData("context", "yfiles.input.IInputModeContext"),
@@ -820,10 +820,10 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
 
-    MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath", true)),
-    MethodData(className = "yfiles.styles.VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
+    MethodData(className = "VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath", true)),
+    MethodData(className = "VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
     MethodData(
-        className = "yfiles.styles.VoidPathGeometry",
+        className = "VoidPathGeometry",
         methodName = "getTangent",
         parameters = listOf(
             MethodParameterData("ratio", JS_NUMBER)
@@ -831,7 +831,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.geometry.Tangent", true)
     ),
     MethodData(
-        className = "yfiles.styles.VoidPathGeometry",
+        className = "VoidPathGeometry",
         methodName = "getTangent",
         parameters = listOf(
             MethodParameterData("segmentIndex", JS_NUMBER),
@@ -840,7 +840,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.geometry.Tangent", true)
     ),
     MethodData(
-        className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
+        className = "GraphOverviewWebGLVisualCreator",
         methodName = "createVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext")
@@ -848,7 +848,7 @@ private val MISSED_METHODS = listOf(
         result = ResultData("yfiles.view.Visual", true)
     ),
     MethodData(
-        className = "yfiles.styles.GraphOverviewWebGLVisualCreator",
+        className = "GraphOverviewWebGLVisualCreator",
         methodName = "updateVisual",
         parameters = listOf(
             MethodParameterData("context", "yfiles.view.IRenderContext"),
@@ -874,34 +874,34 @@ private fun addMissedMethods(source: Source) {
 }
 
 private val DUPLICATED_PROPERTIES = listOf(
-    PropertyDeclaration(className = "yfiles.algorithms.YList", propertyName = "size"),
+    PropertyDeclaration(className = "YList", propertyName = "size"),
 
-    PropertyDeclaration(className = "yfiles.analysis.ResultItemCollection", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.analysis.ResultItemMapping", propertyName = "size"),
+    PropertyDeclaration(className = "ResultItemCollection", propertyName = "size"),
+    PropertyDeclaration(className = "ResultItemMapping", propertyName = "size"),
 
-    PropertyDeclaration(className = "yfiles.collections.ICollection", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.collections.IListEnumerable", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.collections.List", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.collections.ListEnumerable", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.collections.Map", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.collections.ObservableCollection", propertyName = "size"),
+    PropertyDeclaration(className = "ICollection", propertyName = "size"),
+    PropertyDeclaration(className = "IListEnumerable", propertyName = "size"),
+    PropertyDeclaration(className = "List", propertyName = "size"),
+    PropertyDeclaration(className = "ListEnumerable", propertyName = "size"),
+    PropertyDeclaration(className = "HashMap", propertyName = "size"),
+    PropertyDeclaration(className = "ObservableCollection", propertyName = "size"),
 
-    PropertyDeclaration(className = "yfiles.geometry.MutableRectangle", propertyName = "isEmpty"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomLeft"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "bottomRight"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "center"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "isEmpty"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxX"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "maxY"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topLeft"),
-    PropertyDeclaration(className = "yfiles.geometry.Rect", propertyName = "topRight"),
+    PropertyDeclaration(className = "MutableRectangle", propertyName = "isEmpty"),
+    PropertyDeclaration(className = "Rect", propertyName = "bottomLeft"),
+    PropertyDeclaration(className = "Rect", propertyName = "bottomRight"),
+    PropertyDeclaration(className = "Rect", propertyName = "center"),
+    PropertyDeclaration(className = "Rect", propertyName = "isEmpty"),
+    PropertyDeclaration(className = "Rect", propertyName = "maxX"),
+    PropertyDeclaration(className = "Rect", propertyName = "maxY"),
+    PropertyDeclaration(className = "Rect", propertyName = "topLeft"),
+    PropertyDeclaration(className = "Rect", propertyName = "topRight"),
 
-    PropertyDeclaration(className = "yfiles.graph.DefaultGraph", propertyName = "undoEngineEnabled"),
+    PropertyDeclaration(className = "DefaultGraph", propertyName = "undoEngineEnabled"),
 
-    PropertyDeclaration(className = "yfiles.view.DefaultSelectionModel", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.view.GraphSelection", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.view.ISelectionModel", propertyName = "size"),
-    PropertyDeclaration(className = "yfiles.view.StripeSelection", propertyName = "size")
+    PropertyDeclaration(className = "DefaultSelectionModel", propertyName = "size"),
+    PropertyDeclaration(className = "GraphSelection", propertyName = "size"),
+    PropertyDeclaration(className = "ISelectionModel", propertyName = "size"),
+    PropertyDeclaration(className = "StripeSelection", propertyName = "size")
 )
 
 private fun removeDuplicatedProperties(source: Source) {
@@ -919,15 +919,15 @@ private fun removeDuplicatedProperties(source: Source) {
 }
 
 private val DUPLICATED_METHODS = listOf(
-    MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "elementAt"),
-    MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "includes"),
-    MethodDeclaration(className = "yfiles.algorithms.YList", methodName = "toArray"),
+    MethodDeclaration(className = "YList", methodName = "elementAt"),
+    MethodDeclaration(className = "YList", methodName = "includes"),
+    MethodDeclaration(className = "YList", methodName = "toArray"),
 
-    MethodDeclaration(className = "yfiles.collections.ICollection", methodName = "includes"),
-    MethodDeclaration(className = "yfiles.collections.List", methodName = "includes"),
-    MethodDeclaration(className = "yfiles.collections.List", methodName = "toArray"),
-    MethodDeclaration(className = "yfiles.collections.Map", methodName = "includes"),
-    MethodDeclaration(className = "yfiles.collections.ObservableCollection", methodName = "includes")
+    MethodDeclaration(className = "ICollection", methodName = "includes"),
+    MethodDeclaration(className = "List", methodName = "includes"),
+    MethodDeclaration(className = "List", methodName = "toArray"),
+    MethodDeclaration(className = "HashMap", methodName = "includes"),
+    MethodDeclaration(className = "ObservableCollection", methodName = "includes")
 )
 
 private fun removeDuplicatedMethods(source: Source) {
