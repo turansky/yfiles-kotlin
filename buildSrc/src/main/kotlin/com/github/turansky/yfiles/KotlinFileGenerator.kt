@@ -103,7 +103,9 @@ internal class KotlinFileGenerator(
             return content
         }
 
-        return imports.lines { it } + "\n\n" + content
+        return imports.lines { it } +
+                "\n" +
+                content.replace(regex, "$2")
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
