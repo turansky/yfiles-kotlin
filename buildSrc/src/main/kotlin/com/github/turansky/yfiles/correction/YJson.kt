@@ -36,7 +36,7 @@ internal fun JSONObject.addProperty(
         .put(
             mapOf(
                 J_NAME to propertyName,
-                "modifiers" to listOf(PUBLIC, FINAL, RO),
+                J_MODIFIERS to listOf(PUBLIC, FINAL, RO),
                 J_TYPE to type
             )
         )
@@ -46,7 +46,7 @@ internal fun JSONObject.changeNullability(
     nullable: Boolean,
     strictMode: Boolean = true
 ) {
-    val modifiers = getJSONArray("modifiers")
+    val modifiers = getJSONArray(J_MODIFIERS)
     val index = modifiers.indexOf(CANBENULL)
 
     if (strictMode) {

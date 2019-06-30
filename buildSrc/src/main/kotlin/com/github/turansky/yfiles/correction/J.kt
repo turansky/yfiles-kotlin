@@ -9,3 +9,4 @@ val J_METHODS = "methods"
 
 val J_NAME = "name"
 val J_TYPE = "type"
+val J_MODIFIERS = "modifiers"

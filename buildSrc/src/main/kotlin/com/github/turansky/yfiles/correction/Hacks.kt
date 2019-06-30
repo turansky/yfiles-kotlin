@@ -24,7 +24,7 @@ private fun JSONObject.addMethod(
         .put(
             mutableMapOf(
                 J_NAME to methodData.methodName,
-                "modifiers" to modifiers
+                J_MODIFIERS to modifiers
             )
                 .also {
                     val parameters = methodData.parameters
@@ -35,7 +35,7 @@ private fun JSONObject.addMethod(
                                 mapOf(
                                     J_NAME to it.name,
                                     J_TYPE to it.type,
-                                    "modifiers" to it.modifiers
+                                    J_MODIFIERS to it.modifiers
                                 )
                             }
                         )
@@ -108,7 +108,7 @@ private fun addClassGeneric(source: Source) {
             it.getJSONObject("returns")
                 .put(J_TYPE, "T")
 
-            it.getJSONArray("modifiers")
+            it.getJSONArray(J_MODIFIERS)
                 .put(CANBENULL)
         }
 
@@ -472,7 +472,7 @@ private fun removeArtifitialParameters(source: Source) {
         .filter { it.has("parameters") }
         .forEach {
             val artifitialParameters = it.jsequence("parameters")
-                .filter { it.getJSONArray("modifiers").contains(ARTIFICIAL) }
+                .filter { it.getJSONArray(J_MODIFIERS).contains(ARTIFICIAL) }
                 .toList()
 
             val parameters = it.getJSONArray("parameters")
