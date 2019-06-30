@@ -95,10 +95,15 @@ internal class KotlinFileGenerator(
             .findAll(content)
             .map { it.value }
             .distinct()
-            .sorted()
             // TODO: remove after es6name use
             // WA for duplicated class names (Insets for example)
             .filterNot { it.endsWith("." + data.name) }
+            .plus(
+                STANDARD_IMPORTED_TYPES
+                    .asSequence()
+                    .filter { content.contains(it) }
+            )
+            .sorted()
             .toList()
 
         if (importedClasses.isEmpty()) {

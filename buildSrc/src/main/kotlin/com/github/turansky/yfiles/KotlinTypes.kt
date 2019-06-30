@@ -38,3 +38,8 @@ private val STANDARD_TYPE_MAP = mapOf(
 
     "Promise" to "kotlin.js.Promise"
 )
+
+val STANDARD_IMPORTED_TYPES = STANDARD_TYPE_MAP
+    .values
+    .filter { it.contains(".") }
+    .toSet()
