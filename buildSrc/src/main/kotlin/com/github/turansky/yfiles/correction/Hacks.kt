@@ -484,15 +484,15 @@ private fun removeArtifitialParameters(source: Source) {
 
 private fun fieldToProperties(source: Source) {
     source.types()
-        .filter { it.has("fields") }
+        .filter { it.has(J_FIELDS) }
         .forEach { type ->
-            val fields = type.getJSONArray("fields")
+            val fields = type.getJSONArray(J_FIELDS)
             if (type.has(J_PROPERTIES)) {
                 val properties = type.getJSONArray(J_PROPERTIES)
                 fields.forEach { properties.put(it) }
             } else {
                 type.put(J_PROPERTIES, fields)
             }
-            type.remove("fields")
+            type.remove(J_FIELDS)
         }
 }
