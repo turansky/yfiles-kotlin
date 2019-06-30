@@ -1,5 +1,7 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.JS_NUMBER
+import com.github.turansky.yfiles.Source
 import org.json.JSONObject
 
 private val INT = "Int"

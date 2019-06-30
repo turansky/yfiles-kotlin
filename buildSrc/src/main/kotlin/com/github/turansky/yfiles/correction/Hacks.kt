@@ -1,6 +1,11 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.json.first
+import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.jObject
 import org.json.JSONObject
+import kotlin.collections.first
 
 private fun JSONObject.addMethod(
     methodData: MethodData
@@ -300,7 +305,7 @@ private fun fixReturnType(source: Source) {
             it.getJSONArray("methods")
                 .firstWithName("getEnumerator")
                 .getJSONObject("returns")
-                .put("type", "yfiles.collections.IEnumerator<${JS_OBJECT}>")
+                .put("type", "yfiles.collections.IEnumerator<$JS_OBJECT>")
         }
 }
 
@@ -531,8 +536,16 @@ private val MISSED_METHODS = listOf(
     MethodData(className = "Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
     MethodData(className = "MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
     MethodData(className = "MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "MutableRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "OrientedRectangle", methodName = "clone", result = ResultData(JS_OBJECT)),
+    MethodData(
+        className = "MutableRectangle",
+        methodName = "clone",
+        result = ResultData(JS_OBJECT)
+    ),
+    MethodData(
+        className = "OrientedRectangle",
+        methodName = "clone",
+        result = ResultData(JS_OBJECT)
+    ),
 
     MethodData(
         className = "YList",
@@ -822,8 +835,16 @@ private val MISSED_METHODS = listOf(
         result = ResultData(JS_BOOLEAN)
     ),
 
-    MethodData(className = "VoidPathGeometry", methodName = "getPath", result = ResultData("yfiles.geometry.GeneralPath", true)),
-    MethodData(className = "VoidPathGeometry", methodName = "getSegmentCount", result = ResultData(JS_NUMBER)),
+    MethodData(
+        className = "VoidPathGeometry",
+        methodName = "getPath",
+        result = ResultData("yfiles.geometry.GeneralPath", true)
+    ),
+    MethodData(
+        className = "VoidPathGeometry",
+        methodName = "getSegmentCount",
+        result = ResultData(JS_NUMBER)
+    ),
     MethodData(
         className = "VoidPathGeometry",
         methodName = "getTangent",

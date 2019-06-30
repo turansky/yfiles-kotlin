@@ -1,5 +1,12 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.CANBENULL
+import com.github.turansky.yfiles.FINAL
+import com.github.turansky.yfiles.PUBLIC
+import com.github.turansky.yfiles.RO
+import com.github.turansky.yfiles.json.jArray
+import com.github.turansky.yfiles.json.jObject
+import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
 internal fun JSONObject.methodParameters(

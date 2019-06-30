@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.correction
 
 internal val DOUBLE_CONSTRUCTOR_PARAMETERS = setOf(
     "from", "to",

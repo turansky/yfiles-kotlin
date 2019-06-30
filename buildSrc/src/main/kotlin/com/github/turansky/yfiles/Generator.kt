@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.applyHacks
+import com.github.turansky.yfiles.correction.correctNumbers
 import org.json.JSONObject
 import java.io.File
 import java.net.URL

@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.json
 
 import org.json.JSONArray
 import org.json.JSONObject
