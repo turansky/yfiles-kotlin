@@ -35,7 +35,7 @@ private fun JSONObject.correctConstants() {
         return
     }
 
-    val className = getString("name")
+    val className = getString(J_NAME)
     jsequence("constants")
         .filter { it.getString(J_TYPE) != JS_NUMBER }
         .filter { it.getString(J_TYPE).contains(JS_NUMBER) }
@@ -49,7 +49,7 @@ private fun JSONObject.correctConstants() {
             val type = it.getString(J_TYPE)
             check(type.endsWith("DpKey<$JS_NUMBER>"))
 
-            val name = it.getString("name")
+            val name = it.getString(J_NAME)
             val generic = if (name.contains("_ID_") || name.contains("_INDEX_")) {
                 INT
             } else {
@@ -64,11 +64,11 @@ private fun JSONObject.correctConstructors() {
         return
     }
 
-    val className = getString("name")
+    val className = getString(J_NAME)
     jsequence(J_CONSTRUCTORS)
         .optionalArray("parameters")
         .filter { it.getString(J_TYPE) == JS_NUMBER }
-        .forEach { it.put(J_TYPE, getConstructorParameterType(className, it.getString("name"))) }
+        .forEach { it.put(J_TYPE, getConstructorParameterType(className, it.getString(J_NAME))) }
 }
 
 private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
@@ -106,10 +106,10 @@ private fun JSONObject.correctProperties(key: String) {
         return
     }
 
-    val className = getString("name")
+    val className = getString(J_NAME)
     jsequence(key)
         .filter { it.getString(J_TYPE) == JS_NUMBER }
-        .forEach { it.put(J_TYPE, getPropertyType(className, it.getString("name"))) }
+        .forEach { it.put(J_TYPE, getPropertyType(className, it.getString(J_NAME))) }
 }
 
 private fun getPropertyType(className: String, propertyName: String): String {
@@ -151,7 +151,7 @@ private fun JSONObject.correctPropertiesGeneric() {
 
     jsequence("properties")
         .filter { it.getString(J_TYPE).contains("$JS_NUMBER>") }
-        .forEach { it.put(J_TYPE, getPropertyGenericType(it.getString("name"), it.getString(J_TYPE))) }
+        .forEach { it.put(J_TYPE, getPropertyGenericType(it.getString(J_NAME), it.getString(J_TYPE))) }
 
     jsequence("properties")
         .filter { it.has("signature") }
@@ -161,7 +161,7 @@ private fun JSONObject.correctPropertiesGeneric() {
                 return@forEach
             }
 
-            val name = it.getString("name")
+            val name = it.getString(J_NAME)
             check(name == "metric" || name == "heuristic")
             it.put("signature", signature.replace("$JS_NUMBER>", "$DOUBLE>"))
         }
@@ -193,11 +193,11 @@ private fun JSONObject.correctMethods(key: String) {
         return
     }
 
-    val className = getString("name")
+    val className = getString(J_NAME)
     jsequence(key)
         .filter { it.has("returns") }
         .forEach {
-            val methodName = it.getString("name")
+            val methodName = it.getString(J_NAME)
             val returns = it.getJSONObject("returns")
 
             when (returns.getString(J_TYPE)) {
@@ -249,14 +249,14 @@ private fun JSONObject.correctMethodParameters(key: String) {
         return
     }
 
-    val className = getString("name")
+    val className = getString(J_NAME)
     jsequence(key)
         .filter { it.has("parameters") }
         .forEach { method ->
-            val methodName = method.getString("name")
+            val methodName = method.getString(J_NAME)
             method.jsequence("parameters")
                 .forEach {
-                    val parameterName = it.getString("name")
+                    val parameterName = it.getString(J_NAME)
                     when (it.getString(J_TYPE)) {
                         JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
                         "Array<$JS_NUMBER>" -> {
@@ -356,7 +356,7 @@ private val INT_SIGNATURE_CLASSES = setOf(
 
 private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
-        .filter { it.getString("name") in INT_SIGNATURE_CLASSES }
+        .filter { it.getString(J_NAME) in INT_SIGNATURE_CLASSES }
         .flatMap { type ->
             sequenceOf(J_CONSTRUCTORS, J_METHODS, J_STATIC_METHODS)
                 .filter { type.has(it) }

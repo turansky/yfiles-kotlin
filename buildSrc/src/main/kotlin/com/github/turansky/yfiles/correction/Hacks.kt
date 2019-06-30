@@ -23,7 +23,7 @@ private fun JSONObject.addMethod(
     getJSONArray(J_METHODS)
         .put(
             mutableMapOf(
-                "name" to methodData.methodName,
+                J_NAME to methodData.methodName,
                 "modifiers" to modifiers
             )
                 .also {
@@ -33,7 +33,7 @@ private fun JSONObject.addMethod(
                             "parameters",
                             parameters.map {
                                 mapOf(
-                                    "name" to it.name,
+                                    J_NAME to it.name,
                                     J_TYPE to it.type,
                                     "modifiers" to it.modifiers
                                 )
@@ -141,7 +141,7 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.allMethods("factoryLookupChainLink", "add", "addConstant")
-        .filter { it.firstParameter.getString("name") == "contextType" }
+        .filter { it.firstParameter.getString(J_NAME) == "contextType" }
         .forEach {
             it.parameter("contextType").addGeneric("TContext")
             it.parameter("resultType").addGeneric("TResult")
@@ -162,7 +162,7 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.allMethods("addRegistryOutputMapper")
-        .filter { it.firstParameter.getString("name") == "modelItemType" }
+        .filter { it.firstParameter.getString(J_NAME) == "modelItemType" }
         .forEach {
             it.parameter("modelItemType").addGeneric("TModelItem")
             it.parameter("valueType").addGeneric("TValue")
@@ -174,7 +174,7 @@ private fun addClassGeneric(source: Source) {
                 .optionalArray("parameters")
                 .filter { it.getString(J_TYPE) == YCLASS }
                 .forEach {
-                    when (it.getString("name")) {
+                    when (it.getString(J_NAME)) {
                         "keyType" -> it.addGeneric("TKey")
                         "modelItemType" -> it.addGeneric("TKey")
                         "dataType" -> it.addGeneric("TData")
@@ -196,7 +196,7 @@ private fun addClassGeneric(source: Source) {
         "createDataMap",
         "createDataProvider"
     )
-        .filter { it.firstParameter.getString("name") == "keyType" }
+        .filter { it.firstParameter.getString(J_NAME) == "keyType" }
         .forEach {
             it.parameter("keyType").addGeneric("K")
             it.parameter("valueType").addGeneric("V")
@@ -204,7 +204,7 @@ private fun addClassGeneric(source: Source) {
 
     source.types()
         .forEach { type ->
-            val typeName = type.getString("name")
+            val typeName = type.getString(J_NAME)
             if (typeName == "MapperMetadata") {
                 return@forEach
             }
@@ -213,7 +213,7 @@ private fun addClassGeneric(source: Source) {
                 .optionalArray("parameters")
                 .filter { it.getString(J_TYPE) == YCLASS }
                 .forEach {
-                    val name = it.getString("name")
+                    val name = it.getString(J_NAME)
                     val generic = when (name) {
                         "edgeStyleType" -> "TStyle"
                         "decoratedType" -> "TDecoratedType"
@@ -248,7 +248,7 @@ private fun fixUnionMethods(source: Source) {
     val unionMethods = methods
         .asSequence()
         .map { it as JSONObject }
-        .filter { it.getString("name") == "getCanvasObjectGroup" }
+        .filter { it.getString(J_NAME) == "getCanvasObjectGroup" }
         .toList()
 
     unionMethods
@@ -259,7 +259,7 @@ private fun fixUnionMethods(source: Source) {
     unionMethods.first()
         .firstParameter
         .apply {
-            put("name", "item")
+            put(J_NAME, "item")
             put(J_TYPE, "yfiles.graph.IModelItem")
         }
 
@@ -287,7 +287,7 @@ private fun fixFunctionGenerics(source: Source) {
         .getJSONArray(J_STATIC_METHODS)
         .firstWithName("from")
         .getJSONArray(J_TYPE_PARAMETERS)
-        .put(jObject("name" to "T"))
+        .put(jObject(J_NAME to "T"))
 
     source.type("IContextLookupChainLink")
         .getJSONArray(J_STATIC_METHODS)
@@ -346,7 +346,7 @@ private fun fixPropertyNullability(source: Source) {
         source
             .type(className)
             .getJSONArray("properties")
-            .first { it.get("name") == propertyName }
+            .first { it.get(J_NAME) == propertyName }
             .changeNullability(nullable)
     }
 }
@@ -354,9 +354,9 @@ private fun fixPropertyNullability(source: Source) {
 private fun fixMethodParameterName(source: Source) {
     PARAMETERS_CORRECTION.forEach { data, fixedName ->
         source.type(data.className)
-            .methodParameters(data.methodName, data.parameterName, { it.getString("name") != fixedName })
+            .methodParameters(data.methodName, data.parameterName, { it.getString(J_NAME) != fixedName })
             .first()
-            .put("name", fixedName)
+            .put(J_NAME, fixedName)
     }
 }
 
@@ -377,7 +377,7 @@ private fun fixMethodParameterNullability(source: Source) {
 
     source.types()
         .optionalArray(J_METHODS)
-        .filter { it.get("name") in BROKEN_NULLABILITY_METHODS }
+        .filter { it.get(J_NAME) in BROKEN_NULLABILITY_METHODS }
         .filter { it.getJSONArray("parameters").length() == 1 }
         .map { it.getJSONArray("parameters").single() }
         .map { it as JSONObject }
@@ -453,7 +453,7 @@ private fun removeSystemMethods(source: Source) {
             val methods = it.getJSONArray(J_METHODS)
             val systemMetods = methods.asSequence()
                 .map { it as JSONObject }
-                .filter { it.getString("name") in SYSTEM_FUNCTIONS }
+                .filter { it.getString(J_NAME) in SYSTEM_FUNCTIONS }
                 .toList()
 
             systemMetods.forEach {

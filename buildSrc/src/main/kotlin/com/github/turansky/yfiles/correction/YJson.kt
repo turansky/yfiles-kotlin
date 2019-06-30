@@ -15,10 +15,10 @@ internal fun JSONObject.methodParameters(
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
     val result = getJSONArray(J_METHODS)
-        .objects { it.getString("name") == methodName }
+        .objects { it.getString(J_NAME) == methodName }
         .flatMap {
             it.getJSONArray("parameters")
-                .objects { it.getString("name") == parameterName }
+                .objects { it.getString(J_NAME) == parameterName }
                 .filter(parameterFilter)
         }
 
@@ -35,7 +35,7 @@ internal fun JSONObject.addProperty(
     getJSONArray("properties")
         .put(
             mapOf(
-                "name" to propertyName,
+                J_NAME to propertyName,
                 "modifiers" to listOf(PUBLIC, FINAL, RO),
                 J_TYPE to type
             )
@@ -63,7 +63,7 @@ internal fun JSONObject.changeNullability(
 internal fun JSONObject.addStandardGeneric(name: String = "T") {
     put(
         J_TYPE_PARAMETERS, jArray(
-            jObject("name" to name)
+            jObject(J_NAME to name)
         )
     )
 }
@@ -91,12 +91,12 @@ internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
         return jsequence("parameters")
-            .first { it.getString("name") in typeNames }
+            .first { it.getString(J_NAME) in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
     return jsequence("parameters")
-        .first { it.getString("name") == name }
+        .first { it.getString(J_NAME) == name }
 }
 
 

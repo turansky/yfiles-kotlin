@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.json
 
+import com.github.turansky.yfiles.correction.J_NAME
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -20,7 +21,7 @@ internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
 }
 
 internal fun JSONArray.firstWithName(name: String): JSONObject =
-    first { it.getString("name") == name }
+    first { it.getString(J_NAME) == name }
 
 internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSONObject> {
     return (0 until this.length())
