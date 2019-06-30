@@ -186,7 +186,7 @@ private fun getPropertyGenericType(propertyName: String, type: String): String {
 
 private fun JSONObject.correctMethods() {
     correctMethods("staticMethods")
-    correctMethods("methods")
+    correctMethods(J_METHODS)
 }
 
 private fun JSONObject.correctMethods(key: String) {
@@ -242,7 +242,7 @@ private fun getReturnType(className: String, methodName: String): String {
 
 private fun JSONObject.correctMethodParameters() {
     correctMethodParameters("staticMethods")
-    correctMethodParameters("methods")
+    correctMethodParameters(J_METHODS)
 }
 
 private fun JSONObject.correctMethodParameters(key: String) {
@@ -359,7 +359,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
         .filter { it.getString("name") in INT_SIGNATURE_CLASSES }
         .flatMap { type ->
-            sequenceOf("constructors", "methods", "staticMethods")
+            sequenceOf("constructors", J_METHODS, "staticMethods")
                 .filter { type.has(it) }
                 .flatMap { type.jsequence(it) }
         }

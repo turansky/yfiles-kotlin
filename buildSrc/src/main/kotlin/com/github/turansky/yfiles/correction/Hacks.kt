@@ -10,8 +10,8 @@ import kotlin.collections.first
 private fun JSONObject.addMethod(
     methodData: MethodData
 ) {
-    if (!has("methods")) {
-        put("methods", emptyList<Any>())
+    if (!has(J_METHODS)) {
+        put(J_METHODS, emptyList<Any>())
     }
 
     val result = methodData.result
@@ -20,7 +20,7 @@ private fun JSONObject.addMethod(
         modifiers += result.modifiers
     }
 
-    getJSONArray("methods")
+    getJSONArray(J_METHODS)
         .put(
             mutableMapOf(
                 "name" to methodData.methodName,
@@ -170,7 +170,7 @@ private fun addClassGeneric(source: Source) {
 
     source.type("GraphMLIOHandler")
         .apply {
-            (jsequence("methods") + jsequence("staticMethods"))
+            (jsequence(J_METHODS) + jsequence("staticMethods"))
                 .optionalArray("parameters")
                 .filter { it.getString("type") == YCLASS }
                 .forEach {
@@ -243,7 +243,7 @@ private fun addClassGeneric(source: Source) {
 
 private fun fixUnionMethods(source: Source) {
     val methods = source.type("GraphModelManager")
-        .getJSONArray("methods")
+        .getJSONArray(J_METHODS)
 
     val unionMethods = methods
         .asSequence()
@@ -302,7 +302,7 @@ private fun fixReturnType(source: Source) {
     sequenceOf("EdgeList", "YNodeList")
         .map { source.type(it) }
         .forEach {
-            it.getJSONArray("methods")
+            it.getJSONArray(J_METHODS)
                 .firstWithName("getEnumerator")
                 .getJSONObject("returns")
                 .put("type", "yfiles.collections.IEnumerator<$JS_OBJECT>")
@@ -376,7 +376,7 @@ private fun fixMethodParameterNullability(source: Source) {
         }
 
     source.types()
-        .optionalArray("methods")
+        .optionalArray(J_METHODS)
         .filter { it.get("name") in BROKEN_NULLABILITY_METHODS }
         .filter { it.getJSONArray("parameters").length() == 1 }
         .map { it.getJSONArray("parameters").single() }
@@ -397,7 +397,7 @@ private fun fixMethodNullability(source: Source) {
     METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .getJSONArray("methods")
+                .getJSONArray(J_METHODS)
                 .firstWithName(methodName)
                 .changeNullability(nullable)
         }
@@ -437,7 +437,7 @@ private fun removeDuplicatedMethods(source: Source) {
         .forEach { declaration ->
             val methods = source
                 .type(declaration.className)
-                .getJSONArray("methods")
+                .getJSONArray(J_METHODS)
 
             val method = methods
                 .firstWithName(declaration.methodName)
@@ -448,9 +448,9 @@ private fun removeDuplicatedMethods(source: Source) {
 
 private fun removeSystemMethods(source: Source) {
     source.types()
-        .filter { it.has("methods") }
+        .filter { it.has(J_METHODS) }
         .forEach {
-            val methods = it.getJSONArray("methods")
+            val methods = it.getJSONArray(J_METHODS)
             val systemMetods = methods.asSequence()
                 .map { it as JSONObject }
                 .filter { it.getString("name") in SYSTEM_FUNCTIONS }
@@ -463,7 +463,7 @@ private fun removeSystemMethods(source: Source) {
 }
 
 private fun removeArtifitialParameters(source: Source) {
-    sequenceOf("constructors", "methods")
+    sequenceOf("constructors", J_METHODS)
         .flatMap { parameter ->
             source.types()
                 .filter { it.has(parameter) }

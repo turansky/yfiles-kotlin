@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.J_METHODS
 import com.github.turansky.yfiles.correction.jsequence
 import com.github.turansky.yfiles.correction.optionalArray
 import org.json.JSONObject
@@ -17,7 +18,7 @@ internal class Source(api: JSONObject) {
 
     fun allMethods(vararg methodNames: String): Sequence<JSONObject> =
         types.asSequence()
-            .map { it.optionalArray("methods") + it.optionalArray("staticMethods") }
+            .map { it.optionalArray(J_METHODS) + it.optionalArray("staticMethods") }
             .flatMap { it.asSequence() }
             .filter { it.getString("name") in methodNames }
 

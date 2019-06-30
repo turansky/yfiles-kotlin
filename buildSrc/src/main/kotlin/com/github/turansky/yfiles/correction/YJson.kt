@@ -14,7 +14,7 @@ internal fun JSONObject.methodParameters(
     parameterName: String,
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
-    val result = getJSONArray("methods")
+    val result = getJSONArray(J_METHODS)
         .objects { it.getString("name") == methodName }
         .flatMap {
             it.getJSONArray("parameters")
