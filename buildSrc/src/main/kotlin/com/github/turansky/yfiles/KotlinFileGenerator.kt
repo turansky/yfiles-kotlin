@@ -348,14 +348,23 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
-            val companionContent = super.companionContent()
+            var companionContent = super.companionContent()
                 ?: return null
+
+            val generics = genericParameters()
+            val events = memberEvents
+                .filter { !it.overriden }
+
+            if (events.isNotEmpty()) {
+                val classDeclaration = data.name + generics
+                companionContent += "\n\n" + events
+                    .lines { it.toExtensionCode(classDeclaration, typeparameters) }
+            }
 
             if (data.primitive || data.name == data.jsName) {
                 return companionContent
             }
 
-            val generics = genericParameters()
             return companionContent + "\n\n" +
                     "typealias ${data.jsName}$generics = ${data.name}$generics"
         }
