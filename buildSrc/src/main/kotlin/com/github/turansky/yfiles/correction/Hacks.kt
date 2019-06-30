@@ -30,7 +30,7 @@ private fun JSONObject.addMethod(
                     val parameters = methodData.parameters
                     if (parameters.isNotEmpty()) {
                         it.put(
-                            "parameters",
+                            J_PARAMETERS,
                             parameters.map {
                                 mapOf(
                                     J_NAME to it.name,
@@ -171,7 +171,7 @@ private fun addClassGeneric(source: Source) {
     source.type("GraphMLIOHandler")
         .apply {
             (jsequence(J_METHODS) + jsequence(J_STATIC_METHODS))
-                .optionalArray("parameters")
+                .optionalArray(J_PARAMETERS)
                 .filter { it.getString(J_TYPE) == YCLASS }
                 .forEach {
                     when (it.getString(J_NAME)) {
@@ -210,7 +210,7 @@ private fun addClassGeneric(source: Source) {
             }
 
             type.optionalArray(J_CONSTRUCTORS)
-                .optionalArray("parameters")
+                .optionalArray(J_PARAMETERS)
                 .filter { it.getString(J_TYPE) == YCLASS }
                 .forEach {
                     val name = it.getString(J_NAME)
@@ -326,7 +326,7 @@ private fun fixConstructorParameterNullability(source: Source) {
         .map { source.type(it) }
         .forEach {
             it.jsequence(J_CONSTRUCTORS)
-                .jsequence("parameters")
+                .jsequence(J_PARAMETERS)
                 .forEach { it.changeNullability(false, false) }
         }
 }
@@ -378,8 +378,8 @@ private fun fixMethodParameterNullability(source: Source) {
     source.types()
         .optionalArray(J_METHODS)
         .filter { it.get(J_NAME) in BROKEN_NULLABILITY_METHODS }
-        .filter { it.getJSONArray("parameters").length() == 1 }
-        .map { it.getJSONArray("parameters").single() }
+        .filter { it.getJSONArray(J_PARAMETERS).length() == 1 }
+        .map { it.getJSONArray(J_PARAMETERS).single() }
         .map { it as JSONObject }
         .onEach { require(it.getString(J_TYPE) == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
@@ -469,13 +469,13 @@ private fun removeArtifitialParameters(source: Source) {
                 .filter { it.has(parameter) }
                 .jsequence(parameter)
         }
-        .filter { it.has("parameters") }
+        .filter { it.has(J_PARAMETERS) }
         .forEach {
-            val artifitialParameters = it.jsequence("parameters")
+            val artifitialParameters = it.jsequence(J_PARAMETERS)
                 .filter { it.getJSONArray(J_MODIFIERS).contains(ARTIFICIAL) }
                 .toList()
 
-            val parameters = it.getJSONArray("parameters")
+            val parameters = it.getJSONArray(J_PARAMETERS)
             artifitialParameters.forEach {
                 parameters.remove(parameters.indexOf(it))
             }

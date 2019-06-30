@@ -17,7 +17,7 @@ internal fun JSONObject.methodParameters(
     val result = getJSONArray(J_METHODS)
         .objects { it.getString(J_NAME) == methodName }
         .flatMap {
-            it.getJSONArray("parameters")
+            it.getJSONArray(J_PARAMETERS)
                 .objects { it.getString(J_NAME) == parameterName }
                 .filter(parameterFilter)
         }
@@ -90,18 +90,18 @@ internal fun Sequence<JSONObject>.optionalArray(name: String): Sequence<JSONObje
 internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
-        return jsequence("parameters")
+        return jsequence(J_PARAMETERS)
             .first { it.getString(J_NAME) in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
-    return jsequence("parameters")
+    return jsequence(J_PARAMETERS)
         .first { it.getString(J_NAME) == name }
 }
 
 
 internal val JSONObject.firstParameter: JSONObject
-    get() = getJSONArray("parameters")
+    get() = getJSONArray(J_PARAMETERS)
         .get(0) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {

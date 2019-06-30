@@ -24,7 +24,7 @@ internal fun correctNumbers(source: JSONObject) {
     (source
         .getJSONObject("functionSignatures")
         .getJSONObject("yfiles.view.AnimationCallback")
-        .getJSONArray("parameters")
+        .getJSONArray(J_PARAMETERS)
         .single() as JSONObject)
         .put(J_TYPE, DOUBLE)
 
@@ -66,7 +66,7 @@ private fun JSONObject.correctConstructors() {
 
     val className = getString(J_NAME)
     jsequence(J_CONSTRUCTORS)
-        .optionalArray("parameters")
+        .optionalArray(J_PARAMETERS)
         .filter { it.getString(J_TYPE) == JS_NUMBER }
         .forEach { it.put(J_TYPE, getConstructorParameterType(className, it.getString(J_NAME))) }
 }
@@ -251,10 +251,10 @@ private fun JSONObject.correctMethodParameters(key: String) {
 
     val className = getString(J_NAME)
     jsequence(key)
-        .filter { it.has("parameters") }
+        .filter { it.has(J_PARAMETERS) }
         .forEach { method ->
             val methodName = method.getString(J_NAME)
-            method.jsequence("parameters")
+            method.jsequence(J_PARAMETERS)
                 .forEach {
                     val parameterName = it.getString(J_NAME)
                     when (it.getString(J_TYPE)) {
@@ -362,7 +362,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
                 .filter { type.has(it) }
                 .flatMap { type.jsequence(it) }
         }
-        .optionalArray("parameters")
+        .optionalArray(J_PARAMETERS)
         .filter { it.has("signature") }
         .forEach {
             val signature = it.getString("signature")
