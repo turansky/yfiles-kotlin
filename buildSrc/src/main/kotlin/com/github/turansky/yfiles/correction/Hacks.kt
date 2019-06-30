@@ -286,7 +286,7 @@ private fun fixFunctionGenerics(source: Source) {
     source.type("List")
         .getJSONArray(J_STATIC_METHODS)
         .firstWithName("from")
-        .getJSONArray("typeparameters")
+        .getJSONArray(J_TYPE_PARAMETERS)
         .put(jObject("name" to "T"))
 
     source.type("IContextLookupChainLink")
