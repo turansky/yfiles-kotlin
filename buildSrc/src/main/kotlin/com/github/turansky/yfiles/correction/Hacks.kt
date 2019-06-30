@@ -66,7 +66,6 @@ internal fun applyHacks(api: JSONObject) {
     fixFunctionGenerics(source)
 
     fixReturnType(source)
-    fixExtendedType(source)
     fixImplementedTypes(source)
 
     fixConstructorParameterNullability(source)
@@ -307,11 +306,6 @@ private fun fixReturnType(source: Source) {
                 .getJSONObject(J_RETURNS)
                 .put(J_TYPE, "yfiles.collections.IEnumerator<$JS_OBJECT>")
         }
-}
-
-private fun fixExtendedType(source: Source) {
-    source.type("Exception")
-        .remove("extends")
 }
 
 private fun fixImplementedTypes(source: Source) {
