@@ -34,7 +34,7 @@ private fun JSONObject.addMethod(
                             parameters.map {
                                 mapOf(
                                     "name" to it.name,
-                                    "type" to it.type,
+                                    J_TYPE to it.type,
                                     "modifiers" to it.modifiers
                                 )
                             }
@@ -45,7 +45,7 @@ private fun JSONObject.addMethod(
                     if (result != null) {
                         it.put(
                             "returns", mapOf(
-                                "type" to result.type
+                                J_TYPE to result.type
                             )
                         )
                     }
@@ -106,7 +106,7 @@ private fun addClassGeneric(source: Source) {
             it.typeParameter.addGeneric("T")
 
             it.getJSONObject("returns")
-                .put("type", "T")
+                .put(J_TYPE, "T")
 
             it.getJSONArray("modifiers")
                 .put(CANBENULL)
@@ -135,7 +135,7 @@ private fun addClassGeneric(source: Source) {
         "setLookup"
     )
         .map { it.firstParameter }
-        .filter { it.getString("type") == YCLASS }
+        .filter { it.getString(J_TYPE) == YCLASS }
         .forEach {
             it.addGeneric("T")
         }
@@ -172,7 +172,7 @@ private fun addClassGeneric(source: Source) {
         .apply {
             (jsequence(J_METHODS) + jsequence(J_STATIC_METHODS))
                 .optionalArray("parameters")
-                .filter { it.getString("type") == YCLASS }
+                .filter { it.getString(J_TYPE) == YCLASS }
                 .forEach {
                     when (it.getString("name")) {
                         "keyType" -> it.addGeneric("TKey")
@@ -211,7 +211,7 @@ private fun addClassGeneric(source: Source) {
 
             type.optionalArray(J_CONSTRUCTORS)
                 .optionalArray("parameters")
-                .filter { it.getString("type") == YCLASS }
+                .filter { it.getString(J_TYPE) == YCLASS }
                 .forEach {
                     val name = it.getString("name")
                     val generic = when (name) {
@@ -260,7 +260,7 @@ private fun fixUnionMethods(source: Source) {
         .firstParameter
         .apply {
             put("name", "item")
-            put("type", "yfiles.graph.IModelItem")
+            put(J_TYPE, "yfiles.graph.IModelItem")
         }
 
     // TODO: remove documentation
@@ -271,9 +271,9 @@ private fun fixConstantGenerics(source: Source) {
         .getJSONArray("constants")
         .firstWithName("EMPTY")
         .also {
-            val type = it.getString("type")
+            val type = it.getString(J_TYPE)
                 .replace("<T>", "<$JS_OBJECT>")
-            it.put("type", type)
+            it.put(J_TYPE, type)
         }
 }
 
@@ -305,7 +305,7 @@ private fun fixReturnType(source: Source) {
             it.getJSONArray(J_METHODS)
                 .firstWithName("getEnumerator")
                 .getJSONObject("returns")
-                .put("type", "yfiles.collections.IEnumerator<$JS_OBJECT>")
+                .put(J_TYPE, "yfiles.collections.IEnumerator<$JS_OBJECT>")
         }
 }
 
@@ -337,7 +337,7 @@ private fun fixPropertyType(source: Source) {
         .forEach {
             it.getJSONArray("properties")
                 .firstWithName("outEdgeComparers")
-                .put("type", "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
+                .put(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
         }
 }
 
@@ -381,7 +381,7 @@ private fun fixMethodParameterNullability(source: Source) {
         .filter { it.getJSONArray("parameters").length() == 1 }
         .map { it.getJSONArray("parameters").single() }
         .map { it as JSONObject }
-        .onEach { require(it.getString("type") == "yfiles.layout.LayoutGraph") }
+        .onEach { require(it.getString(J_TYPE) == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
 }
 
@@ -390,7 +390,7 @@ private fun fixMethodParameterType(source: Source) {
         .getJSONArray(J_STATIC_METHODS)
         .firstWithName("addingLookupChainLink")
         .parameter("instance")
-        .put("type", "TResult")
+        .put(J_TYPE, "TResult")
 }
 
 private fun fixMethodNullability(source: Source) {

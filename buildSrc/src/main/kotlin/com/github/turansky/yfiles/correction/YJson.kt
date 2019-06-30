@@ -37,7 +37,7 @@ internal fun JSONObject.addProperty(
             mapOf(
                 "name" to propertyName,
                 "modifiers" to listOf(PUBLIC, FINAL, RO),
-                "type" to type
+                J_TYPE to type
             )
         )
 }
@@ -105,6 +105,6 @@ internal val JSONObject.firstParameter: JSONObject
         .get(0) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {
-    val type = getString("type")
-    put("type", "$type<$generic>")
+    val type = getString(J_TYPE)
+    put(J_TYPE, "$type<$generic>")
 }

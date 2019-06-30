@@ -6,3 +6,5 @@ val J_CONSTRUCTORS = "constructors"
 
 val J_STATIC_METHODS = "staticMethods"
 val J_METHODS = "methods"
+
+val J_TYPE = "type"
