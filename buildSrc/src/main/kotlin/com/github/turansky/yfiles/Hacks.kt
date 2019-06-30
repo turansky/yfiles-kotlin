@@ -315,7 +315,7 @@ private fun fixImplementedTypes(source: Source) {
         .forEach { it.remove("implements") }
 }
 
-private val KEY_CLASSES = setOf(
+private val STRICT_CONSTRUCTOR_CLASSES = setOf(
     "DpKeyBase",
     "EdgeDpKey",
     "GraphDpKey",
@@ -324,17 +324,19 @@ private val KEY_CLASSES = setOf(
     "IEdgeLabelLayoutDpKey",
     "ILabelLayoutDpKey",
     "INodeLabelLayoutDpKey",
-    "NodeDpKey"
+    "NodeDpKey",
+
+    "DataMapAdapter"
 )
 
 private fun fixConstructorParameterNullability(source: Source) {
-    KEY_CLASSES
+    STRICT_CONSTRUCTOR_CLASSES
         .asSequence()
         .map { source.type(it) }
         .forEach {
             it.jsequence("constructors")
                 .jsequence("parameters")
-                .forEach { it.changeNullability(false) }
+                .forEach { it.changeNullability(false, false) }
         }
 }
 
