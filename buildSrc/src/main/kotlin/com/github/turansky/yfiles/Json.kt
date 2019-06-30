@@ -19,9 +19,6 @@ internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
         .first()
 }
 
-internal fun JSONArray.firstWithId(id: String): JSONObject =
-    first { it.getString("id") == id }
-
 internal fun JSONArray.firstWithName(name: String): JSONObject =
     first { it.getString("name") == name }
 
