@@ -41,11 +41,14 @@ internal class KotlinFileGenerator(
             .clear(data.packageName)
         file.writeText("$header\n\n$content")
 
-        val companionContent = generatedFile.companionContent()
+        var companionContent = generatedFile.companionContent()
             ?: return
 
+        companionContent = "package ${data.packageName}\n\n" +
+                companionContent.clear(data.packageName)
+
         dir.resolve("${data.jsName}Companion.kt")
-            .writeText(companionContent.clear(data.packageName))
+            .writeText(companionContent)
     }
 
     private fun generate(
@@ -85,7 +88,22 @@ internal class KotlinFileGenerator(
     }
 
     private fun String.clear(packageName: String): String {
-        return replace(packageName + ".", "")
+        val content = replace(packageName + ".", "")
+
+        val regex = Regex("yfiles.([a-z]+).([A-Za-z0-9]+)")
+        val imports = regex
+            .findAll(content)
+            .map { it.value }
+            .distinct()
+            .sorted()
+            .map { "import $it" }
+            .toList()
+
+        if (imports.isEmpty()) {
+            return content
+        }
+
+        return imports.lines { it } + "\n\n" + content
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
@@ -222,11 +240,7 @@ internal class KotlinFileGenerator(
             val className = data.name
             val yclass = "${className}Static.yclass"
 
-            val result = """
-                |package ${data.packageName}
-                |
-                |val ${constName(className)}_CLASS = $yclass
-            """.trimMargin()
+            val result = "val ${constName(className)}_CLASS = $yclass"
 
             if (data.primitive) {
                 return result
