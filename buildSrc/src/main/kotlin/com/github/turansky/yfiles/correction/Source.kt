@@ -1,8 +1,5 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.correction.J_METHODS
-import com.github.turansky.yfiles.correction.jsequence
-import com.github.turansky.yfiles.correction.optionalArray
 import org.json.JSONObject
 
 internal class Source(api: JSONObject) {
