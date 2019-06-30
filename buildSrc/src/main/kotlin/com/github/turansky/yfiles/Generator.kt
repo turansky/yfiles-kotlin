@@ -27,7 +27,7 @@ private val EXCLUDED_TYPES = sequenceOf(
 private fun loadApiJson(path: String): String {
     return URL(path)
         .readText(DEFAULT_CHARSET)
-        .removePrefix("var apiData=")
+        .run { substring(indexOf("{")) }
 }
 
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
