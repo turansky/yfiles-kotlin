@@ -335,7 +335,7 @@ private fun fixPropertyType(source: Source) {
     sequenceOf("SeriesParallelLayoutData", "TreeLayoutData")
         .map { source.type(it) }
         .forEach {
-            it.getJSONArray("properties")
+            it.getJSONArray(J_PROPERTIES)
                 .firstWithName("outEdgeComparers")
                 .put(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
         }
@@ -345,7 +345,7 @@ private fun fixPropertyNullability(source: Source) {
     PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
         source
             .type(className)
-            .getJSONArray("properties")
+            .getJSONArray(J_PROPERTIES)
             .first { it.get(J_NAME) == propertyName }
             .changeNullability(nullable)
     }
@@ -423,7 +423,7 @@ private fun removeDuplicatedProperties(source: Source) {
         .forEach { declaration ->
             val properties = source
                 .type(declaration.className)
-                .getJSONArray("properties")
+                .getJSONArray(J_PROPERTIES)
 
             val property = properties
                 .firstWithName(declaration.propertyName)
@@ -487,11 +487,11 @@ private fun fieldToProperties(source: Source) {
         .filter { it.has("fields") }
         .forEach { type ->
             val fields = type.getJSONArray("fields")
-            if (type.has("properties")) {
-                val properties = type.getJSONArray("properties")
+            if (type.has(J_PROPERTIES)) {
+                val properties = type.getJSONArray(J_PROPERTIES)
                 fields.forEach { properties.put(it) }
             } else {
-                type.put("properties", fields)
+                type.put(J_PROPERTIES, fields)
             }
             type.remove("fields")
         }

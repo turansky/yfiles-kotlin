@@ -32,7 +32,7 @@ internal fun JSONObject.addProperty(
     propertyName: String,
     type: String
 ) {
-    getJSONArray("properties")
+    getJSONArray(J_PROPERTIES)
         .put(
             mapOf(
                 J_NAME to propertyName,

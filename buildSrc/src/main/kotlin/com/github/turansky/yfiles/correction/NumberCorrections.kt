@@ -98,7 +98,7 @@ private fun getConstructorParameterType(className: String, parameterName: String
 
 private fun JSONObject.correctProperties() {
     correctProperties("staticProperties")
-    correctProperties("properties")
+    correctProperties(J_PROPERTIES)
 }
 
 private fun JSONObject.correctProperties(key: String) {
@@ -145,15 +145,15 @@ private fun getPropertyType(className: String, propertyName: String): String {
 }
 
 private fun JSONObject.correctPropertiesGeneric() {
-    if (!has("properties")) {
+    if (!has(J_PROPERTIES)) {
         return
     }
 
-    jsequence("properties")
+    jsequence(J_PROPERTIES)
         .filter { it.getString(J_TYPE).contains("$JS_NUMBER>") }
         .forEach { it.put(J_TYPE, getPropertyGenericType(it.getString(J_NAME), it.getString(J_TYPE))) }
 
-    jsequence("properties")
+    jsequence(J_PROPERTIES)
         .filter { it.has("signature") }
         .forEach {
             val signature = it.getString("signature")
