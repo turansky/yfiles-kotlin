@@ -390,12 +390,41 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
         val generics = getGenericString(typeparameters)
         val extensionName = "add${name}Handler"
 
-        return "inline fun $generics ${classDeclaration}.$extensionName(\n" +
-                "noinline ${add.parametersString}\n" +
-                "): () -> Unit {\n" +
-                "${add.name}(${add.parametersCall})\n" +
-                "return { ${remove.name}(${remove.parametersCall}) }\n" +
-                "}"
+        val listenerType = add.parameters.single().type
+        lateinit var handlerType: String
+        lateinit var listenerBody: String
+        when {
+            listenerType == "yfiles.lang.EventHandler" -> {
+                handlerType = "() -> Unit"
+                listenerBody = "{ _, _ -> handler() }"
+            }
+
+            listenerType.startsWith("yfiles.lang.EventHandler1<") -> {
+                val argsType = between(listenerType, "<", ">")
+                handlerType = "($argsType) -> Unit"
+                listenerBody = "{ _, args -> handler(args) }"
+            }
+
+            listenerType == "yfiles.lang.PropertyChangedEventHandler" -> {
+                handlerType = "(String) -> Unit"
+                listenerBody = "{ _, args -> handler(args.propertyName) }"
+            }
+
+            else -> {
+                handlerType = listenerType
+                listenerBody = "handler"
+            }
+        }
+
+        return """
+                inline fun $generics ${classDeclaration}.$extensionName(
+                noinline handler: $handlerType
+                ): () -> Unit {
+                val listener: $listenerType = $listenerBody
+                ${add.name}(listener)
+                return { ${remove.name}(listener) }
+                }
+        """.trimIndent()
     }
 }
 
@@ -408,12 +437,6 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         ClassRegistry.instance
             .listenerOverriden(fqn, name)
     }
-
-    val parametersString: String
-        get() = parameters.byComma { "${it.name}: ${it.type}" }
-
-    val parametersCall: String
-        get() = parameters.byComma { it.name }
 
     private fun kotlinModificator(): String {
         return when {
@@ -429,6 +452,9 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
         } else {
             ":${UNIT} = definedExternally"
         }
+
+        val parametersString = parameters
+            .byComma { "${it.name}: ${it.type}" }
 
         return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
     }
