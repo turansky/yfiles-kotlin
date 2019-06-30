@@ -48,7 +48,9 @@ private fun JSONObject.addMethod(
         )
 }
 
-internal fun applyHacks(source: JSONObject) {
+internal fun applyHacks(api: JSONObject) {
+    val source = Source(api)
+
     removeDuplicatedProperties(source)
     removeDuplicatedMethods(source)
     removeSystemMethods(source)
@@ -79,7 +81,7 @@ internal fun applyHacks(source: JSONObject) {
     addClassGeneric(source)
 }
 
-private fun addClassGeneric(source: JSONObject) {
+private fun addClassGeneric(source: Source) {
     source.type(YCLASS)
         .addStandardGeneric()
 
@@ -234,7 +236,7 @@ private fun addClassGeneric(source: JSONObject) {
         }
 }
 
-private fun fixUnionMethods(source: JSONObject) {
+private fun fixUnionMethods(source: Source) {
     val methods = source.type("yfiles.view.GraphModelManager")
         .getJSONArray("methods")
 
@@ -259,7 +261,7 @@ private fun fixUnionMethods(source: JSONObject) {
     // TODO: remove documentation
 }
 
-private fun fixConstantGenerics(source: JSONObject) {
+private fun fixConstantGenerics(source: Source) {
     source.type("yfiles.collections.IListEnumerable")
         .getJSONArray("constants")
         .firstWithName("EMPTY")
@@ -270,7 +272,7 @@ private fun fixConstantGenerics(source: JSONObject) {
         }
 }
 
-private fun fixFunctionGenerics(source: JSONObject) {
+private fun fixFunctionGenerics(source: Source) {
     source.type("yfiles.collections.List")
         .getJSONArray("staticMethods")
         .firstWithName("fromArray")
@@ -291,7 +293,7 @@ private fun fixFunctionGenerics(source: JSONObject) {
         }
 }
 
-private fun fixReturnType(source: JSONObject) {
+private fun fixReturnType(source: Source) {
     sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
         .map { source.type(it) }
         .forEach {
@@ -302,12 +304,12 @@ private fun fixReturnType(source: JSONObject) {
         }
 }
 
-private fun fixExtendedType(source: JSONObject) {
+private fun fixExtendedType(source: Source) {
     source.type("yfiles.lang.Exception")
         .remove("extends")
 }
 
-private fun fixImplementedTypes(source: JSONObject) {
+private fun fixImplementedTypes(source: Source) {
     sequenceOf("yfiles.algorithms.EdgeList", "yfiles.algorithms.NodeList")
         .map { source.type(it) }
         .forEach { it.remove("implements") }
@@ -325,7 +327,7 @@ private val KEY_CLASSES = setOf(
     "yfiles.algorithms.NodeDpKey"
 )
 
-private fun fixConstructorParameterNullability(source: JSONObject) {
+private fun fixConstructorParameterNullability(source: Source) {
     KEY_CLASSES
         .asSequence()
         .map { source.type(it) }
@@ -336,7 +338,7 @@ private fun fixConstructorParameterNullability(source: JSONObject) {
         }
 }
 
-private fun fixPropertyType(source: JSONObject) {
+private fun fixPropertyType(source: Source) {
     sequenceOf("yfiles.seriesparallel.SeriesParallelLayoutData", "yfiles.tree.TreeLayoutData")
         .map { source.type(it) }
         .forEach {
@@ -359,7 +361,7 @@ private val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("yfiles.graph.IEdge", "targetPort") to false
 )
 
-private fun fixPropertyNullability(source: JSONObject) {
+private fun fixPropertyNullability(source: Source) {
     PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
         source
             .type(className)
@@ -439,7 +441,7 @@ private val PARAMETERS_CORRECTION = mapOf(
     ParameterData("yfiles.view.StripeSelection", "isSelected", "stripe") to "item"
 )
 
-private fun fixMethodParameterName(source: JSONObject) {
+private fun fixMethodParameterName(source: Source) {
     PARAMETERS_CORRECTION.forEach { data, fixedName ->
         source.type(data.className)
             .methodParameters(data.methodName, data.parameterName, { it.getString("name") != fixedName })
@@ -469,7 +471,7 @@ private val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
 
 private val BROKEN_NULLABILITY_METHODS = setOf("applyLayout", "applyLayoutCore")
 
-private fun fixMethodParameterNullability(source: JSONObject) {
+private fun fixMethodParameterNullability(source: Source) {
     PARAMETERS_NULLABILITY_CORRECTION
         .forEach { data, nullable ->
             val parameters = source.type(data.className)
@@ -494,7 +496,7 @@ private fun fixMethodParameterNullability(source: JSONObject) {
         .forEach { it.changeNullability(false) }
 }
 
-private fun fixMethodParameterType(source: JSONObject) {
+private fun fixMethodParameterType(source: Source) {
     source.type("yfiles.graph.IContextLookupChainLink")
         .getJSONArray("staticMethods")
         .firstWithName("addingLookupChainLink")
@@ -508,7 +510,7 @@ private val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "yfiles.collections.IEnumerable", methodName = "first") to false
 )
 
-private fun fixMethodNullability(source: JSONObject) {
+private fun fixMethodNullability(source: Source) {
     METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
@@ -856,7 +858,7 @@ private val MISSED_METHODS = listOf(
     )
 )
 
-private fun addMissedProperties(source: JSONObject) {
+private fun addMissedProperties(source: Source) {
     MISSED_PROPERTIES
         .forEach { data ->
             source.type(data.className)
@@ -864,7 +866,7 @@ private fun addMissedProperties(source: JSONObject) {
         }
 }
 
-private fun addMissedMethods(source: JSONObject) {
+private fun addMissedMethods(source: Source) {
     MISSED_METHODS.forEach { data ->
         source.type(data.className)
             .addMethod(data)
@@ -902,7 +904,7 @@ private val DUPLICATED_PROPERTIES = listOf(
     PropertyDeclaration(className = "yfiles.view.StripeSelection", propertyName = "size")
 )
 
-private fun removeDuplicatedProperties(source: JSONObject) {
+private fun removeDuplicatedProperties(source: Source) {
     DUPLICATED_PROPERTIES
         .forEach { declaration ->
             val properties = source
@@ -928,7 +930,7 @@ private val DUPLICATED_METHODS = listOf(
     MethodDeclaration(className = "yfiles.collections.ObservableCollection", methodName = "includes")
 )
 
-private fun removeDuplicatedMethods(source: JSONObject) {
+private fun removeDuplicatedMethods(source: Source) {
     DUPLICATED_METHODS
         .forEach { declaration ->
             val methods = source
@@ -948,7 +950,7 @@ private val SYSTEM_FUNCTIONS = listOf(
     "toString"
 )
 
-private fun removeSystemMethods(source: JSONObject) {
+private fun removeSystemMethods(source: Source) {
     source.types()
         .filter { it.has("methods") }
         .forEach {
@@ -964,7 +966,7 @@ private fun removeSystemMethods(source: JSONObject) {
         }
 }
 
-private fun removeArtifitialParameters(source: JSONObject) {
+private fun removeArtifitialParameters(source: Source) {
     sequenceOf("constructors", "methods")
         .flatMap { parameter ->
             source.types()
@@ -984,7 +986,7 @@ private fun removeArtifitialParameters(source: JSONObject) {
         }
 }
 
-private fun fieldToProperties(source: JSONObject) {
+private fun fieldToProperties(source: Source) {
     source.types()
         .filter { it.has("fields") }
         .forEach { type ->

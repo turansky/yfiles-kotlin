@@ -6,7 +6,9 @@ private val INT = "Int"
 private val DOUBLE = "Double"
 
 internal fun correctNumbers(source: JSONObject) {
-    val types = source.types().toList()
+    val types = Source(source)
+        .types()
+        .toList()
 
     correctEnumerable(types)
 

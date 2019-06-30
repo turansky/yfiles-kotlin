@@ -2,22 +2,6 @@ package com.github.turansky.yfiles
 
 import org.json.JSONObject
 
-internal fun JSONObject.types(): Sequence<JSONObject> =
-    jsequence("namespaces")
-        .optionalArray("namespaces")
-        .jsequence("types")
-
-internal fun JSONObject.type(id: String): JSONObject {
-    val rootPackage = id.substring(0, id.indexOf("."))
-    val typePackage = id.substring(0, id.lastIndexOf("."))
-    return this.getJSONArray("namespaces")
-        .firstWithId(rootPackage)
-        .getJSONArray("namespaces")
-        .firstWithId(typePackage)
-        .getJSONArray("types")
-        .firstWithId(id)
-}
-
 internal fun JSONObject.methodParameters(
     methodName: String,
     parameterName: String,
@@ -67,10 +51,6 @@ internal fun JSONObject.addStandardGeneric(name: String = "T") {
         )
     )
 }
-
-internal fun JSONObject.allMethods(vararg methodNames: String): Sequence<JSONObject> =
-    (types().optionalArray("methods") + types().optionalArray("staticMethods"))
-        .filter { it.getString("name") in methodNames }
 
 internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
     getJSONArray(name)
