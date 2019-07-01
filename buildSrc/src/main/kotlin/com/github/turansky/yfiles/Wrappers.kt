@@ -391,42 +391,13 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
         val extensionName = "add${name}Handler"
 
         val listenerType = add.parameters.single().type
-        lateinit var handlerType: String
-        lateinit var listenerBody: String
-
-        when {
-            listenerType == "yfiles.lang.EventHandler" || listenerType == "yfiles.lang.EventHandler1<yfiles.lang.EventArgs>" -> {
-                handlerType = "() -> Unit"
-                listenerBody = "{ _, _ -> handler() }"
-            }
-
-            listenerType.startsWith("yfiles.lang.EventHandler1<") -> {
-                val argsType = between(listenerType, "<", ">")
-                handlerType = "(args:$argsType) -> Unit"
-                listenerBody = "{ _, args -> handler(args) }"
-            }
-
-            listenerType == "yfiles.lang.PropertyChangedEventHandler" -> {
-                handlerType = "(propertyName:String) -> Unit"
-                listenerBody = "{ _, args -> handler(args.propertyName) }"
-            }
-
-            listenerType == "yfiles.graph.NodeLayoutChangedHandler" -> {
-                handlerType = "(node: yfiles.graph.INode, oldLayout: yfiles.geometry.Rect) -> Unit"
-                listenerBody = "{ _, node, oldLayout -> handler(node, oldLayout) }"
-            }
-
-            listenerType == "yfiles.graph.BendLocationChangedHandler" -> {
-                handlerType = "(bend: yfiles.graph.IBend, oldLocation: yfiles.geometry.Point) -> Unit"
-                listenerBody = "{ _, bend, oldLocation -> handler(bend, oldLocation) }"
-            }
-        }
+        val data = getHandlerData(listenerType)
 
         return """
                 inline fun $generics ${classDeclaration}.$extensionName(
-                crossinline handler: $handlerType
+                crossinline handler: ${data.handlerType}
                 ): () -> Unit {
-                val listener: $listenerType = $listenerBody
+                val listener: $listenerType = ${data.listenerBody}
                 ${add.name}(listener)
                 return { ${remove.name}(listener) }
                 }
