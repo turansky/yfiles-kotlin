@@ -393,8 +393,9 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
         val listenerType = add.parameters.single().type
         lateinit var handlerType: String
         lateinit var listenerBody: String
+
         when {
-            listenerType == "yfiles.lang.EventHandler" -> {
+            listenerType == "yfiles.lang.EventHandler" || listenerType == "yfiles.lang.EventHandler1<yfiles.lang.EventArgs>" -> {
                 handlerType = "() -> Unit"
                 listenerBody = "{ _, _ -> handler() }"
             }
