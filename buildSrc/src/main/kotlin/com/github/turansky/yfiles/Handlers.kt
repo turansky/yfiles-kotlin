@@ -66,19 +66,19 @@ private val PROPERTY_HANDLER_DATA =
 
 private val INPUT_MODE_HANDLER_DATA =
     HandlerData(
-        handlerType = "(context:IInputModeContext) -> Unit",
+        handlerType = "(context:yfiles.input.IInputModeContext) -> Unit",
         listenerBody = "{ _, args -> handler(args.context) }"
     )
 
 private val MARQUEE_HANDLER_DATA =
     HandlerData(
-        handlerType = "(rectangle: Rect) -> Unit",
+        handlerType = "(rectangle:yfiles.geometry.Rect) -> Unit",
         listenerBody = "{ _, args -> handler(args.rectangle) }"
     )
 
 private val LASSO_HANDLER_DATA =
     HandlerData(
-        handlerType = "(selectionPath: GeneralPath) -> Unit",
+        handlerType = "(selectionPath:yfiles.geometry.GeneralPath) -> Unit",
         listenerBody = "{ _, args -> handler(args.selectionPath) }"
     )
 
