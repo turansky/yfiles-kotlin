@@ -423,7 +423,7 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
 
         return """
                 inline fun $generics ${classDeclaration}.$extensionName(
-                noinline handler: $handlerType
+                crossinline handler: $handlerType
                 ): () -> Unit {
                 val listener: $listenerType = $listenerBody
                 ${add.name}(listener)
