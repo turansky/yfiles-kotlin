@@ -401,7 +401,7 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
 
             listenerType.startsWith("yfiles.lang.EventHandler1<") -> {
                 val argsType = between(listenerType, "<", ">")
-                handlerType = "($argsType) -> Unit"
+                handlerType = "(args:$argsType) -> Unit"
                 listenerBody = "{ _, args -> handler(args) }"
             }
 
