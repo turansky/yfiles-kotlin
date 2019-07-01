@@ -36,11 +36,16 @@ private fun getEventHandlerData(argsType: String): HandlerData =
         "yfiles.lang.PropertyChangedEventArgs" ->
             PROPERTY_HANDLER_DATA
 
-        else ->
+        "yfiles.input.InputModeEventArgs" ->
+            INPUT_MODE_HANDLER_DATA
+
+        else -> {
+            println(argsType)
             HandlerData(
                 handlerType = "(args:$argsType) -> Unit",
                 listenerBody = "{ _, args -> handler(args) }"
             )
+        }
     }
 
 private val EMPTY_HANDLER_DATA =
@@ -53,6 +58,12 @@ private val PROPERTY_HANDLER_DATA =
     HandlerData(
         handlerType = "(propertyName:String) -> Unit",
         listenerBody = "{ _, args -> handler(args.propertyName) }"
+    )
+
+private val INPUT_MODE_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(context:IInputModeContext) -> Unit",
+        listenerBody = "{ _, args -> handler(args.context) }"
     )
 
 internal data class HandlerData(
