@@ -45,20 +45,18 @@ private fun getEventHandlerData(argsType: String): HandlerData =
         "yfiles.input.LassoSelectionEventArgs" ->
             LASSO_HANDLER_DATA
 
-        else -> {
-            println(argsType)
+        else ->
             HandlerData(
                 handlerType = "(args:$argsType) -> Unit",
                 listenerBody = "{ _, args -> handler(args) }"
             )
-        }
     }
 
 private val EMPTY_HANDLER_DATA =
     HandlerData(
-    handlerType = "() -> Unit",
-    listenerBody = "{ _, _ -> handler() }"
-)
+        handlerType = "() -> Unit",
+        listenerBody = "{ _, _ -> handler() }"
+    )
 
 private val PROPERTY_HANDLER_DATA =
     HandlerData(
