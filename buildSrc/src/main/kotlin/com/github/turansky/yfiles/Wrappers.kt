@@ -406,7 +406,7 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
             }
 
             listenerType == "yfiles.lang.PropertyChangedEventHandler" -> {
-                handlerType = "(String) -> Unit"
+                handlerType = "(propertyName:String) -> Unit"
                 listenerBody = "{ _, args -> handler(args.propertyName) }"
             }
 
