@@ -39,6 +39,12 @@ private fun getEventHandlerData(argsType: String): HandlerData =
         "yfiles.input.InputModeEventArgs" ->
             INPUT_MODE_HANDLER_DATA
 
+        "yfiles.input.MarqueeSelectionEventArgs" ->
+            MARQUEE_HANDLER_DATA
+
+        "yfiles.input.LassoSelectionEventArgs" ->
+            LASSO_HANDLER_DATA
+
         else -> {
             println(argsType)
             HandlerData(
@@ -64,6 +70,18 @@ private val INPUT_MODE_HANDLER_DATA =
     HandlerData(
         handlerType = "(context:IInputModeContext) -> Unit",
         listenerBody = "{ _, args -> handler(args.context) }"
+    )
+
+private val MARQUEE_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(rectangle: Rect) -> Unit",
+        listenerBody = "{ _, args -> handler(args.rectangle) }"
+    )
+
+private val LASSO_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(selectionPath: GeneralPath) -> Unit",
+        listenerBody = "{ _, args -> handler(args.selectionPath) }"
     )
 
 internal data class HandlerData(
