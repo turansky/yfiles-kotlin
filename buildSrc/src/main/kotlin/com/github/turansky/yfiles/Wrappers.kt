@@ -410,9 +410,14 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
                 listenerBody = "{ _, args -> handler(args.propertyName) }"
             }
 
-            else -> {
-                handlerType = listenerType
-                listenerBody = "handler"
+            listenerType == "yfiles.graph.NodeLayoutChangedHandler" -> {
+                handlerType = "(node: yfiles.graph.INode, oldLayout: yfiles.geometry.Rect) -> Unit"
+                listenerBody = "{ _, node, oldLayout -> handler(node, oldLayout) }"
+            }
+
+            listenerType == "yfiles.graph.BendLocationChangedHandler" -> {
+                handlerType = "(bend: yfiles.graph.IBend, oldLocation: yfiles.geometry.Point) -> Unit"
+                listenerBody = "{ _, bend, oldLocation -> handler(bend, oldLocation) }"
             }
         }
 
