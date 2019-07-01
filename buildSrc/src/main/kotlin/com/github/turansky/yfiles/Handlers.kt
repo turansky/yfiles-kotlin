@@ -28,8 +28,16 @@ internal fun getHandlerData(listenerType: String): HandlerData {
     }
 }
 
-private fun getEventHandlerData(argsType: String): HandlerData =
-    when (argsType) {
+private fun getEventHandlerData(argsType: String): HandlerData {
+    if (argsType.startsWith("yfiles.collections.ItemEventArgs<")) {
+        val itemType = between(argsType, "<", ">")
+        return HandlerData(
+            handlerType = "(item:$itemType) -> Unit",
+            listenerBody = "{ _, args -> handler(args.item) }"
+        )
+    }
+
+    return when (argsType) {
         "yfiles.lang.EventArgs" ->
             EMPTY_HANDLER_DATA
 
@@ -51,6 +59,7 @@ private fun getEventHandlerData(argsType: String): HandlerData =
                 listenerBody = "{ _, args -> handler(args) }"
             )
     }
+}
 
 private val EMPTY_HANDLER_DATA =
     HandlerData(
