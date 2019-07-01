@@ -10,10 +10,7 @@ internal fun getHandlerData(listenerType: String): HandlerData {
             EMPTY_HANDLER_DATA
 
         "yfiles.lang.PropertyChangedEventHandler" ->
-            HandlerData(
-                handlerType = "(propertyName:String) -> Unit",
-                listenerBody = "{ _, args -> handler(args.propertyName) }"
-            )
+            PROPERTY_HANDLER_DATA
 
         "yfiles.graph.NodeLayoutChangedHandler" ->
             HandlerData(
@@ -36,6 +33,9 @@ private fun getEventHandlerData(argsType: String): HandlerData =
         "yfiles.lang.EventArgs" ->
             EMPTY_HANDLER_DATA
 
+        "yfiles.lang.PropertyChangedEventArgs" ->
+            PROPERTY_HANDLER_DATA
+
         else ->
             HandlerData(
                 handlerType = "(args:$argsType) -> Unit",
@@ -43,10 +43,17 @@ private fun getEventHandlerData(argsType: String): HandlerData =
             )
     }
 
-private val EMPTY_HANDLER_DATA = HandlerData(
+private val EMPTY_HANDLER_DATA =
+    HandlerData(
     handlerType = "() -> Unit",
     listenerBody = "{ _, _ -> handler() }"
 )
+
+private val PROPERTY_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(propertyName:String) -> Unit",
+        listenerBody = "{ _, args -> handler(args.propertyName) }"
+    )
 
 internal data class HandlerData(
     val handlerType: String,
