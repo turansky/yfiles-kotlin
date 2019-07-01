@@ -1,45 +1,52 @@
 package com.github.turansky.yfiles
 
-internal fun getHandlerData(listenerType: String): HandlerData =
-    when {
-        listenerType == "yfiles.lang.EventHandler" || listenerType == "yfiles.lang.EventHandler1<yfiles.lang.EventArgs>" -> {
-            HandlerData(
-                handlerType = "() -> Unit",
-                listenerBody = "{ _, _ -> handler() }"
-            )
-        }
+internal fun getHandlerData(listenerType: String): HandlerData {
+    if (listenerType.startsWith("yfiles.lang.EventHandler1<")) {
+        return getEventHandlerData(between(listenerType, "<", ">"))
+    }
 
-        listenerType.startsWith("yfiles.lang.EventHandler1<") -> {
-            val argsType = between(listenerType, "<", ">")
-            HandlerData(
-                handlerType = "(args:$argsType) -> Unit",
-                listenerBody = "{ _, args -> handler(args) }"
-            )
-        }
+    return when (listenerType) {
+        "yfiles.lang.EventHandler" ->
+            EMPTY_HANDLER_DATA
 
-        listenerType == "yfiles.lang.PropertyChangedEventHandler" -> {
+        "yfiles.lang.PropertyChangedEventHandler" ->
             HandlerData(
                 handlerType = "(propertyName:String) -> Unit",
                 listenerBody = "{ _, args -> handler(args.propertyName) }"
             )
-        }
 
-        listenerType == "yfiles.graph.NodeLayoutChangedHandler" -> {
+        "yfiles.graph.NodeLayoutChangedHandler" ->
             HandlerData(
                 handlerType = "(node: yfiles.graph.INode, oldLayout: yfiles.geometry.Rect) -> Unit",
                 listenerBody = "{ _, node, oldLayout -> handler(node, oldLayout) }"
             )
-        }
 
-        listenerType == "yfiles.graph.BendLocationChangedHandler" -> {
+        "yfiles.graph.BendLocationChangedHandler" ->
             HandlerData(
                 handlerType = "(bend: yfiles.graph.IBend, oldLocation: yfiles.geometry.Point) -> Unit",
                 listenerBody = "{ _, bend, oldLocation -> handler(bend, oldLocation) }"
             )
-        }
 
         else -> throw IllegalArgumentException("No handler data for $listenerType")
     }
+}
+
+private fun getEventHandlerData(argsType: String): HandlerData =
+    when (argsType) {
+        "yfiles.lang.EventArgs" ->
+            EMPTY_HANDLER_DATA
+
+        else ->
+            HandlerData(
+                handlerType = "(args:$argsType) -> Unit",
+                listenerBody = "{ _, args -> handler(args) }"
+            )
+    }
+
+private val EMPTY_HANDLER_DATA = HandlerData(
+    handlerType = "() -> Unit",
+    listenerBody = "{ _, _ -> handler() }"
+)
 
 internal data class HandlerData(
     val handlerType: String,
