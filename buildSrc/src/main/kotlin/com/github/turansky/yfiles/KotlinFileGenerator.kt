@@ -206,7 +206,7 @@ internal class KotlinFileGenerator(
 
         protected open fun staticContentItems(): List<Declaration> = emptyList()
 
-        protected open fun staticContent(): String {
+        protected fun staticContent(): String {
             if (isObject()) {
                 return ""
             }
@@ -428,43 +428,19 @@ internal class KotlinFileGenerator(
 
         override fun staticContentItems(): List<Declaration> = staticDeclarations
 
-        override fun staticContent(): String {
-            val staticContent = super.staticContent()
-
-            val generics = genericParameters()
-            return """
-                |$staticContent
-                |
-                |$externalAnnotation
-                |internal external class ${data.name}Delegate$generics(source: ${data.name}$generics)
-                |
-            """.trimMargin()
-        }
-
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract } +
                 memberEvents.filter { !it.overriden }
 
         override fun companionContent(): String? {
-            var content = requireNotNull(super.companionContent())
-
-            val generics = genericParameters()
-            val classDeclaration = data.name + generics
-            val delegateClassDeclaration = data.name + "Delegate" + generics
-
-            content += """
-                |
-                |fun $generics yy(source:$classDeclaration) : $classDeclaration {
-                |   return $delegateClassDeclaration(source).unsafeCast<$classDeclaration>()
-                |}
-                |
-                |fun $generics $classDeclaration.yCast() = yy(this)
-            """.trimMargin()
+            val content = requireNotNull(super.companionContent())
 
             if (defaultDeclarations.isEmpty()) {
                 return content
             }
 
+            val generics = genericParameters()
+            val classDeclaration = data.name + generics
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
