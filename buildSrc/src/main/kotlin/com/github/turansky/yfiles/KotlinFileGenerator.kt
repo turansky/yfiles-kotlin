@@ -209,8 +209,8 @@ internal class KotlinFileGenerator(
             return generic
         }
 
-        protected val yclass: String
-            get() = """
+        protected fun yclass() =
+            """
                     |@JsName("\${"$"}class")
                     |val yclass: yfiles.lang.Class<${getGeneric()}>
                 """.trimMargin()
@@ -222,28 +222,14 @@ internal class KotlinFileGenerator(
                 .lines { it.toCode() }
         }
 
-        protected open val companionObjectContent = exp(
-            staticDeclarations.isNotEmpty(),
+        protected open val companionObjectContent =
             """
                 |companion object {
+                |${yclass()}
+                |
                 |${staticDeclarations.lines { it.toCode() }}
                 |}
             """.trimMargin()
-        )
-
-        protected fun staticContent(): String {
-            if (isObject()) {
-                return ""
-            }
-
-            return """
-                |$externalAnnotation
-                |internal external object ${data.name}Static {
-                |    @JsName("\${"$"}class")
-                |    val yclass: yfiles.lang.Class<${getGeneric()}>
-                |}
-            """.trimMargin()
-        }
 
         open fun companionContent(): String? {
             if (isObject()) {
@@ -251,20 +237,12 @@ internal class KotlinFileGenerator(
             }
 
             val className = data.name
-            val yclass = "${className}Static.yclass"
-
-            val result = "val ${constName(className)}_CLASS = $yclass"
-
-            if (data.primitive) {
-                return result
-            }
+            val yclass = "${className}.yclass"
 
             val generics = genericParameters()
             val classDeclaration = className + generics
 
             return """
-                |$result
-                |
                 |fun Any?.is$className() = ${yclass}.isInstance(this)
                 |
                 |fun $generics Any?.as$className(): $classDeclaration? =
@@ -350,13 +328,12 @@ internal class KotlinFileGenerator(
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
-                    "}\n\n\n" +
-                    staticContent()
+                    "}"
         }
 
         private fun objectContent(): String {
             val code = if (data.primitive) {
-                yclass
+                yclass()
             } else {
                 staticDeclarations.map {
                     it.toCode()
@@ -406,20 +383,11 @@ internal class KotlinFileGenerator(
 
             return "$externalAnnotation\n" +
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
-                    content + "\n" +
+                    content + "\n\n" +
+                    "@Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n" +
                     companionObjectContent + "\n" +
-                    "}\n\n" +
-                    staticContent()
+                    "}"
         }
-
-        override val companionObjectContent: String
-            get() = super.companionObjectContent.run {
-                if (isNotEmpty()) {
-                    "@Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n$this"
-                } else {
-                    this
-                }
-            }
 
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract } +
