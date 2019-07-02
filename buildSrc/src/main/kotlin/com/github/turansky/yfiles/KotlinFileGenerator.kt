@@ -204,27 +204,18 @@ internal class KotlinFileGenerator(
                 .lines { it.toCode() }
         }
 
-        protected open fun staticContentItems(): List<Declaration> = emptyList()
+        protected open val companionObjectContent = exp(
+            staticDeclarations.isNotEmpty(),
+            """
+                |companion object {
+                |${staticDeclarations.lines { it.toCode() }}
+                |}
+            """.trimMargin()
+        )
 
         protected fun staticContent(): String {
             if (isObject()) {
                 return ""
-            }
-
-            val items = staticContentItems()
-            val companion = if (items.isNotEmpty()) {
-                val code = items.lines {
-                    it.toCode()
-                }
-
-                """
-                |$externalAnnotation
-                |external object ${data.name}s {
-                |$code
-                |}
-            """.trimMargin()
-            } else {
-                ""
             }
 
             var generic = data.name
@@ -237,8 +228,6 @@ internal class KotlinFileGenerator(
             }
 
             return """
-                |$companion
-                |
                 |$externalAnnotation
                 |internal external object ${data.name}Static {
                 |    @JsName("\${"$"}class")
@@ -343,20 +332,6 @@ internal class KotlinFileGenerator(
                 ""
             }
 
-            val companionObjectContent = if (staticDeclarations.isNotEmpty()) {
-                val content = staticDeclarations.lines {
-                    it.toCode()
-                }
-
-                """
-                |companion object {
-                |$content
-                |}
-            """.trimMargin()
-            } else {
-                ""
-            }
-
             // TODO: add ticket on "UNREACHABLE"
             val suppress = exp(
                 properties.isNotEmpty(),
@@ -422,11 +397,19 @@ internal class KotlinFileGenerator(
             return "$externalAnnotation\n" +
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n" +
+                    companionObjectContent + "\n" +
                     "}\n\n" +
                     staticContent()
         }
 
-        override fun staticContentItems(): List<Declaration> = staticDeclarations
+        override val companionObjectContent: String
+            get() = super.companionObjectContent.run {
+                if (isNotEmpty()) {
+                    "@Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n$this"
+                } else {
+                    this
+                }
+            }
 
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract } +
