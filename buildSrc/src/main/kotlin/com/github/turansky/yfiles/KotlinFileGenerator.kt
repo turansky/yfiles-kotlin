@@ -358,7 +358,12 @@ internal class KotlinFileGenerator(
             }
 
             // TODO: add ticket on "UNREACHABLE"
-            return "@Suppress(\"UNREACHABLE_CODE\")\n" +
+            val suppress = exp(
+                properties.isNotEmpty(),
+                "@Suppress(\"UNREACHABLE_CODE\")\n"
+            )
+
+            return suppress +
                     "$externalAnnotation\n" +
                     "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
