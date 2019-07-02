@@ -44,7 +44,8 @@ internal class KotlinFileGenerator(
         var companionContent = generatedFile.companionContent()
             ?: return
 
-        companionContent = "package ${data.packageName}\n\n" +
+        companionContent = "@file:Suppress(\"NOTHING_TO_INLINE\")\n" +
+                "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
         dir.resolve("${data.jsName}Companion.kt")
@@ -243,17 +244,18 @@ internal class KotlinFileGenerator(
             val classDeclaration = className + generics
 
             return """
-                |fun Any?.is$className() = ${yclass}.isInstance(this)
+                |inline fun Any?.is$className() = 
+                |   ${yclass}.isInstance(this)
                 |
-                |fun $generics Any?.as$className(): $classDeclaration? =
-                |   if (this.is$className()) {
-                |       this.unsafeCast<$classDeclaration>()
+                |inline fun $generics Any?.as$className(): $classDeclaration? =
+                |   if ( is$className() ) {
+                |       unsafeCast<$classDeclaration>()
                 |   } else {
                 |       null
                 |   }
                 |
-                |fun $generics Any?.to$className(): $classDeclaration =
-                |   requireNotNull(this.as$className())
+                |inline fun $generics Any?.to$className(): $classDeclaration =
+                |   as$className()!!
             """.trimMargin()
         }
     }
