@@ -197,6 +197,24 @@ internal class KotlinFileGenerator(
             return declaration.genericParameters()
         }
 
+        protected fun getGeneric(): String {
+            var generic = data.name
+            if (generic == JS_OBJECT) {
+                generic = ANY
+            }
+
+            if (typeparameters.isNotEmpty()) {
+                generic += "<" + (1..typeparameters.size).map { "*" }.joinToString(",") + ">"
+            }
+            return generic
+        }
+
+        protected val yclass: String
+            get() = """
+                    |@JsName("\${"$"}class")
+                    |val yclass: yfiles.lang.Class<${getGeneric()}>
+                """.trimMargin()
+
         open fun isObject() = false
 
         open fun content(): String {
@@ -218,20 +236,11 @@ internal class KotlinFileGenerator(
                 return ""
             }
 
-            var generic = data.name
-            if (generic == JS_OBJECT) {
-                generic = ANY
-            }
-
-            if (typeparameters.isNotEmpty()) {
-                generic += "<" + (1..typeparameters.size).map { "*" }.joinToString(",") + ">"
-            }
-
             return """
                 |$externalAnnotation
                 |internal external object ${data.name}Static {
                 |    @JsName("\${"$"}class")
-                |    val yclass: yfiles.lang.Class<$generic>
+                |    val yclass: yfiles.lang.Class<${getGeneric()}>
                 |}
             """.trimMargin()
         }
@@ -310,16 +319,13 @@ internal class KotlinFileGenerator(
         override fun isObject(): Boolean {
             return declaration.constructors.isEmpty() &&
                     memberDeclarations.isEmpty() &&
-                    !data.marker
+                    !data.marker ||
+                    data.primitive
         }
 
         override fun content(): String {
             if (isObject()) {
                 return objectContent()
-            }
-
-            if (data.primitive) {
-                return staticContent()
             }
 
             val lastConstructor = declaration.constructors
@@ -349,13 +355,17 @@ internal class KotlinFileGenerator(
         }
 
         private fun objectContent(): String {
-            val items = staticDeclarations.map {
-                it.toCode()
+            val code = if (data.primitive) {
+                yclass
+            } else {
+                staticDeclarations.map {
+                    it.toCode()
+                }.lines()
             }
 
             return """
                 |external object ${data.jsName} {
-                |    ${items.lines()}
+                |$code
                 |}
             """.trimMargin()
         }
