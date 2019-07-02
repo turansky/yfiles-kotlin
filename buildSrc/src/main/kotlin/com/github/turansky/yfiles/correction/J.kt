@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles.correction
 
+val J_FUNCTION_SIGNATURES = "functionSignatures"
+
 val J_TYPE_PARAMETERS = "typeparameters"
 
 val J_CONSTRUCTORS = "constructors"

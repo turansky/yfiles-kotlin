@@ -5,6 +5,12 @@ import com.github.turansky.yfiles.JS_BOOLEAN
 import com.github.turansky.yfiles.JS_NUMBER
 import com.github.turansky.yfiles.JS_OBJECT
 
+internal val UNUSED_FUNCTION_SIGNATURES = setOf(
+    "system.Action1",
+    "system.Action4",
+    "yfiles.input.KeyEventHandler"
+)
+
 internal val STRICT_CONSTRUCTOR_CLASSES = setOf(
     "DpKeyBase",
     "EdgeDpKey",

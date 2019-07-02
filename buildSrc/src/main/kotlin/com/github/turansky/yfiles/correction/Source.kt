@@ -2,7 +2,10 @@ package com.github.turansky.yfiles.correction
 
 import org.json.JSONObject
 
-internal class Source(api: JSONObject) {
+internal class Source(private val api: JSONObject) {
+    val functionSignatures: JSONObject
+        get() = api.getJSONObject(J_FUNCTION_SIGNATURES)
+
     private val types = api
         .jsequence("namespaces")
         .optionalArray("namespaces")

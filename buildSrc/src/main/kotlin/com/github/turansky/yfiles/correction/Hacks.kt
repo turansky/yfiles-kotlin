@@ -56,6 +56,7 @@ private fun JSONObject.addMethod(
 internal fun applyHacks(api: JSONObject) {
     val source = Source(api)
 
+    removeUnusedFunctionSignatures(source)
     removeDuplicatedProperties(source)
     removeDuplicatedMethods(source)
     removeSystemMethods(source)
@@ -83,6 +84,14 @@ internal fun applyHacks(api: JSONObject) {
     fieldToProperties(source)
 
     addClassGeneric(source)
+}
+
+private fun removeUnusedFunctionSignatures(source: Source) {
+    source.functionSignatures.apply {
+        UNUSED_FUNCTION_SIGNATURES.forEach {
+            requireNotNull(remove(it))
+        }
+    }
 }
 
 private fun addClassGeneric(source: Source) {
