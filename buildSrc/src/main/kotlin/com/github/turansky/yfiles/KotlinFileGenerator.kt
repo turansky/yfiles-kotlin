@@ -311,6 +311,13 @@ internal class KotlinFileGenerator(
                     data.primitive
         }
 
+        // TODO: add ticket on "UNREACHABLE"
+        override val suppress: String
+            get() = exp(
+                !isObject() && properties.isNotEmpty(),
+                "@file:Suppress(\"UNREACHABLE_CODE\")\n"
+            )
+
         override fun content(): String {
             if (isObject()) {
                 return objectContent()
@@ -326,14 +333,7 @@ internal class KotlinFileGenerator(
                 ""
             }
 
-            // TODO: add ticket on "UNREACHABLE"
-            val suppress = exp(
-                properties.isNotEmpty(),
-                "@Suppress(\"UNREACHABLE_CODE\")\n"
-            )
-
-            return suppress +
-                    externalAnnotation +
+            return externalAnnotation +
                     "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
