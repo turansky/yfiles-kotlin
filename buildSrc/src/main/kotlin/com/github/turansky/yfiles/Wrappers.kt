@@ -233,6 +233,11 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     }
 }
 
+private val OPERATOR_NAMES = setOf(
+    "get",
+    "contains"
+)
+
 internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
     val abstract = modifiers.abstract
     val static = modifiers.static
@@ -277,7 +282,12 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     }
 
     override fun toCode(): String {
-        return "${kotlinModificator()}fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
+        val operator = exp(
+            name in OPERATOR_NAMES && parameters.size == 1,
+            " operator "
+        )
+
+        return "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
     fun toExtensionCode(
