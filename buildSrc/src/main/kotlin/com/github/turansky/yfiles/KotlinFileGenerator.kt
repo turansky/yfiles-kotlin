@@ -176,9 +176,13 @@ internal class KotlinFileGenerator(
         protected val externalAnnotation: String
             get() = "@JsName(\"${data.jsName}\")"
 
+        protected open val suppress: String
+            get() = ""
+
         val header: String
             get() {
-                return "@file:JsModule(\"${data.modulePath}\")\n\n" +
+                return "@file:JsModule(\"${data.modulePath}\")\n" +
+                        suppress +
                         "package ${data.packageName}\n"
             }
 
@@ -379,6 +383,9 @@ internal class KotlinFileGenerator(
                     memberEvents
         }
 
+        override val suppress: String
+            get() = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
+
         override fun content(): String {
             val content = super.content()
                 .replace("abstract ", "")
@@ -386,7 +393,6 @@ internal class KotlinFileGenerator(
             return "$externalAnnotation\n" +
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n\n" +
-                    "@Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n" +
                     companionObjectContent + "\n" +
                     "}"
         }
