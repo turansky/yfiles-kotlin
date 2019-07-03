@@ -174,7 +174,11 @@ internal class KotlinFileGenerator(
         }
 
         protected val externalAnnotation: String
-            get() = "@JsName(\"${data.jsName}\")"
+            get() = if (data.name != data.jsName) {
+                "@JsName(\"${data.jsName}\")\n"
+            } else {
+                ""
+            }
 
         protected open val suppress: String
             get() = ""
@@ -329,7 +333,7 @@ internal class KotlinFileGenerator(
             )
 
             return suppress +
-                    "$externalAnnotation\n" +
+                    externalAnnotation +
                     "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
@@ -390,7 +394,7 @@ internal class KotlinFileGenerator(
             val content = super.content()
                 .replace("abstract ", "")
 
-            return "$externalAnnotation\n" +
+            return externalAnnotation +
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
@@ -431,7 +435,7 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return "$externalAnnotation\n" +
+            return externalAnnotation +
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +
