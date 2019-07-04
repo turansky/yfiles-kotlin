@@ -16,6 +16,7 @@ subprojects {
         tasks.withType<KotlinJsCompile>().configureEach {
             kotlinOptions {
                 moduleKind = "commonjs"
+                allWarningsAsErrors = true
             }
         }
     }
