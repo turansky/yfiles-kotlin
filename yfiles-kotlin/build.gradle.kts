@@ -12,6 +12,14 @@ dependencies {
     implementation(kotlin("stdlib-js"))
 }
 
+val kotlinSourceDir: File
+    get() = kotlin
+        .sourceSets
+        .getByName("main")
+        .resources
+        .sourceDirectories
+        .singleFile
+
 tasks {
     clean {
         doLast {
@@ -22,7 +30,7 @@ tasks {
     val generateDeclarations by registering {
         doLast {
             val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
-            generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
+            generateKotlinWrappers(apiPath, kotlinSourceDir)
         }
     }
 
@@ -37,7 +45,7 @@ val mainJar by tasks.registering(Jar::class) {
 }
 
 val sourceJar by tasks.registering(Jar::class) {
-    from("$projectDir/src/main/kotlin")
+    from(kotlinSourceDir)
     classifier = "sources"
 }
 
