@@ -15,8 +15,8 @@ dependencies {
 val kotlinSourceDir: File
     get() = kotlin
         .sourceSets
-        .getByName("main")
-        .resources
+        .get("main")
+        .kotlin
         .sourceDirectories
         .singleFile
 
@@ -29,8 +29,11 @@ tasks {
 
     val generateDeclarations by registering {
         doLast {
+            val sourceDir = kotlinSourceDir
+            delete(sourceDir)
+
             val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
-            generateKotlinWrappers(apiPath, kotlinSourceDir)
+            generateKotlinWrappers(apiPath, sourceDir)
         }
     }
 
