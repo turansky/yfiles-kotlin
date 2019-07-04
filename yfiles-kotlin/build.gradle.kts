@@ -26,12 +26,6 @@ val generateDeclarations by tasks.register("generateDeclarations") {
 }
 
 tasks.compileKotlinJs {
-    kotlinOptions {
-        outputFile = "$projectDir/out/yfiles-kotlin.js"
-        moduleKind = "amd"
-        metaInfo = true
-    }
-
     dependsOn(generateDeclarations)
     finalizedBy("publishToMavenLocal")
 }
