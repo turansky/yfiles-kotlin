@@ -12,22 +12,24 @@ dependencies {
     implementation(kotlin("stdlib-js"))
 }
 
-tasks.clean {
-    doLast {
-        delete("src", "out")
+tasks {
+    clean {
+        doLast {
+            delete("src", "out")
+        }
     }
-}
 
-val generateDeclarations by tasks.register("generateDeclarations") {
-    doLast {
-        val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
-        generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
+    val generateDeclarations by registering {
+        doLast {
+            val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
+            generateKotlinWrappers(apiPath, File(projectDir, "src/main/kotlin"))
+        }
     }
-}
 
-tasks.compileKotlinJs {
-    dependsOn(generateDeclarations)
-    finalizedBy("publishToMavenLocal")
+    compileKotlinJs {
+        dependsOn(generateDeclarations)
+        finalizedBy("publishToMavenLocal")
+    }
 }
 
 val mainJar by tasks.registering(Jar::class) {
