@@ -314,7 +314,7 @@ internal class KotlinFileGenerator(
         // TODO: add ticket on "UNREACHABLE"
         override val suppress: String
             get() = exp(
-                !isObject() && properties.isNotEmpty(),
+                !isObject() && properties.isNotEmpty() && declaration.constructors.size > 1,
                 "@file:Suppress(\"UNREACHABLE_CODE\")\n"
             )
 
