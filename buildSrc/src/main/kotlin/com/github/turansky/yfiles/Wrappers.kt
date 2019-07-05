@@ -431,16 +431,10 @@ private class EventListener(private val fqn: String, source: JSONObject) : JsonW
     }
 
     override fun toCode(): String {
-        val returnSignature = if (modifiers.abstract) {
-            ""
-        } else {
-            ":${UNIT} = definedExternally"
-        }
-
         val parametersString = parameters
             .byComma { "${it.name}: ${it.type}" }
 
-        return "${kotlinModificator()}fun $name($parametersString)$returnSignature"
+        return "${kotlinModificator()}fun $name($parametersString)"
     }
 }
 
