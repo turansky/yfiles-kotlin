@@ -266,17 +266,10 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     }
 
     // https://youtrack.jetbrains.com/issue/KT-31249
-    private fun getReturnSignature(extensionMode: Boolean = false): String {
-        val returnType = returns?.let {
+    private fun getReturnSignature(): String =
+        returns?.let {
             ":" + it.type + modifiers.nullability
-        }
-
-        if (abstract || extensionMode) {
-            return returnType ?: ""
-        }
-
-        return (returnType ?: ": ${UNIT}")
-    }
+        } ?: ""
 
     override fun toCode(): String {
         val operator = exp(
@@ -297,7 +290,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         val callParameters = parameters
             .byComma { it.name }
 
-        val returnSignature = getReturnSignature(extensionMode = true)
+        val returnSignature = getReturnSignature()
 
         val generics = getGenericString(typeparameters + this.typeparameters)
 
