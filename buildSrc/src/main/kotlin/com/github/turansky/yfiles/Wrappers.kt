@@ -94,7 +94,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     }
 }
 
-internal abstract class Type(source: JSONObject) : Declaration(source) {
+§internal sealed class Type(source: JSONObject) : Declaration(source) {
     val es6name: String? by NullableStringDelegate()
 
     val constants: List<Constant> by ArrayDelegate { Constant(fqn, it) }
@@ -124,7 +124,7 @@ internal abstract class Type(source: JSONObject) : Declaration(source) {
     }
 }
 
-internal abstract class ExtendedType(source: JSONObject) : Type(source) {
+internal sealed class ExtendedType(source: JSONObject) : Type(source) {
     val events: List<Event> by ArrayDelegate { Event(fqn, it) }
 }
 

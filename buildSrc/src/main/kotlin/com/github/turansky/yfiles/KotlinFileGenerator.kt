@@ -15,7 +15,6 @@ internal class KotlinFileGenerator(
                 is Class -> ClassFile(it)
                 is Interface -> InterfaceFile(it)
                 is Enum -> EnumFile(it)
-                else -> throw IllegalStateException("Undefined type for generation: " + it)
             }
 
             generate(directory, generatedFile)
