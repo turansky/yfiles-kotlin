@@ -208,9 +208,6 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
         str += if (getterSetter) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        if (!abstract) {
-            str += EQ_DE
-        }
         return str
     }
 
@@ -278,7 +275,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
             return returnType ?: ""
         }
 
-        return (returnType ?: ": ${UNIT}") + EQ_DE
+        return (returnType ?: ": ${UNIT}")
     }
 
     override fun toCode(): String {
