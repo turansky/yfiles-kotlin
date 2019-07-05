@@ -13,8 +13,11 @@ tasks {
 }
 
 dependencies {
-    implementation(gradleApi())
+    implementation(kotlin("gradle-plugin-api"))
+
     implementation(kotlin("stdlib"))
+
+    compileOnly("com.google.auto.service", "auto-service", "1.0-rc5")
 }
 
 gradlePlugin {
