@@ -240,6 +240,9 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val static = modifiers.static
     val protected = modifiers.protected
 
+    val final = modifiers.final
+    val open = !static && !final
+
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val returns: Returns? by ReturnsDelegate()
 
@@ -251,12 +254,13 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         // TODO: add abstract modificator if needed
         if (classRegistry.functionOverriden(fqn, name)) {
-            return "override "
+            return "override " + exp(final, "final ")
         }
 
         val result = when {
             abstract -> "abstract "
-            !static && !classRegistry.isFinalClass(fqn) -> "open "
+            final -> "final "
+            open && !classRegistry.isFinalClass(fqn) -> "open "
             else -> ""
         }
         return result + when {
