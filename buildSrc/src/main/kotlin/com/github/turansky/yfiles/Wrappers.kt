@@ -203,7 +203,7 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
             str += when {
                 abstract -> "abstract "
                 final -> "final "
-                open && !classRegistry.isFinalClass(fqn) -> "open "
+                open -> "open "
                 else -> ""
             }
         }
