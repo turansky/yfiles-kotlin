@@ -176,7 +176,7 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
 
 internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
     override fun toCode(): String {
-        return "val $name: $type = definedExternally"
+        return "val $name: $type"
     }
 }
 
