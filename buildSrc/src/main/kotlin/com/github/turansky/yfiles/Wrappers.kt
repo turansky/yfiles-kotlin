@@ -94,7 +94,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     }
 }
 
-§internal sealed class Type(source: JSONObject) : Declaration(source) {
+internal sealed class Type(source: JSONObject) : Declaration(source) {
     val es6name: String? by NullableStringDelegate()
 
     val constants: List<Constant> by ArrayDelegate { Constant(fqn, it) }
