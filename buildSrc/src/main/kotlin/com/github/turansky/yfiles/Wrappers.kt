@@ -186,13 +186,15 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
+    val final = modifiers.final
+    val open = !static && !final
 
     override fun toCode(): String {
         var str = ""
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
         if (classRegistry.propertyOverriden(fqn, name)) {
-            str += "override "
+            str += "override " + exp(final, "final ")
         } else {
             if (protected) {
                 str += "protected "
@@ -200,7 +202,8 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
 
             str += when {
                 abstract -> "abstract "
-                !static && !classRegistry.isFinalClass(fqn) -> "open "
+                final -> "final "
+                open && !classRegistry.isFinalClass(fqn) -> "open "
                 else -> ""
             }
         }
