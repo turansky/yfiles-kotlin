@@ -11,6 +11,8 @@ private val YFILES_NAMESPACE = "yfiles"
 private val EXCLUDED_TYPES = sequenceOf(
     "yfiles.lang.Struct",
 
+    "yfiles.lang.AttributeDefinition",
+
     "yfiles.lang.Enum",
     "yfiles.lang.EnumDefinition",
 
