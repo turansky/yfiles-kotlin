@@ -350,6 +350,10 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
+            if (data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
+                return null
+            }
+
             var companionContent = super.companionContent()
                 ?: return null
 
