@@ -2,6 +2,8 @@ package com.github.turansky.yfiles
 
 import java.io.File
 
+private const val MODULE = "@JsModule(\"yfiles\")"
+
 internal class KotlinFileGenerator(
     private val types: Iterable<Type>,
     private val functionSignatures: Iterable<FunctionSignature>
@@ -176,7 +178,7 @@ internal class KotlinFileGenerator(
             get() = exp(
                 data.name != data.jsName,
                 "@JsName(\"${data.jsName}\")\n"
-            ) + "@JsModule(\"yfiles\")\n"
+            ) + "$MODULE\n"
 
         protected open val suppress: String
             get() = ""
@@ -341,6 +343,7 @@ internal class KotlinFileGenerator(
             }
 
             return """
+                |$MODULE
                 |external object ${data.jsName} {
                 |$code
                 |}
