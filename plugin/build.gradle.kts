@@ -3,6 +3,10 @@ plugins {
     kotlin("jvm") version "1.3.41"
 }
 
+repositories {
+    jcenter()
+}
+
 tasks {
     compileKotlin {
         kotlinOptions {
