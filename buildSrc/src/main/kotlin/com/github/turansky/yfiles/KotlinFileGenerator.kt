@@ -176,15 +176,14 @@ internal class KotlinFileGenerator(
             get() = exp(
                 data.name != data.jsName,
                 "@JsName(\"${data.jsName}\")\n"
-            )
+            ) + "@JsModule(\"yfiles\")\n"
 
         protected open val suppress: String
             get() = ""
 
         val header: String
             get() {
-                return "@file:JsModule(\"${data.modulePath}\")\n" +
-                        suppress +
+                return suppress +
                         "package ${data.packageName}\n"
             }
 

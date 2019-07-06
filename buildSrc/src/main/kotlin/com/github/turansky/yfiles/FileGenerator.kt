@@ -23,7 +23,6 @@ internal data class GeneratorData(
 
 internal data class TypeGeneratorData(
     private val fqn: String,
-    val modulePath: String,
     private val alias: String?
 ) : AbstractGeneratorData(fqn) {
     val jsName = alias ?: name
@@ -39,6 +38,5 @@ internal fun es6GeneratorData(
     declaration: Type
 ) = TypeGeneratorData(
     fqn = declaration.fqn,
-    modulePath = "yfiles",
     alias = declaration.es6name
 )
