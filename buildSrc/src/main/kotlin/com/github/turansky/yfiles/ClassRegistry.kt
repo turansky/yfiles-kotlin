@@ -73,11 +73,6 @@ internal class ClassRegistry(
         }
     }
 
-    fun isFinalClass(className: String): Boolean {
-        val instance = instances[className]
-        return instance is Class && instance.final
-    }
-
     fun functionOverriden(className: String, functionName: String): Boolean {
         return functionOverriden(className, functionName, false)
     }

@@ -246,6 +246,8 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val final = modifiers.final
     val open = !static && !final
 
+    val isExtension by BooleanDelegate()
+
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val returns: Returns? by ReturnsDelegate()
 
@@ -253,6 +255,13 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         get() = getGenericString(typeparameters)
 
     private fun kotlinModificator(): String {
+        // TODO: support class extensions
+        if (isExtension) {
+            require(!protected)
+            require(!abstract)
+            return ""
+        }
+
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
         // TODO: add abstract modificator if needed
@@ -263,7 +272,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         val result = when {
             abstract -> "abstract "
             final -> "final "
-            open && !classRegistry.isFinalClass(fqn) -> "open "
+            open -> "open "
             else -> ""
         }
         return result + when {
