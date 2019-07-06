@@ -5,24 +5,25 @@ import yfiles.hierarchic.HierarchicLayout
 import yfiles.input.GraphViewerInputMode
 import yfiles.view.GraphComponent
 
-fun create(): HTMLDivElement {
-    val component = GraphComponent()
-    component.inputMode = GraphViewerInputMode()
+fun create(): HTMLDivElement =
+    GraphComponent().run {
+        inputMode = GraphViewerInputMode()
 
-    val container = component.div
-    container.style.width = "100%"
-    container.style.height = "100%"
-    container.style.backgroundColor = "#CCCCCC"
+        div.style.apply {
+            width = "100%"
+            height = "100%"
+            backgroundColor = "#CCCCCC"
+        }
 
-    val graph = DefaultGraph()
-    val node1 = graph.createNode()
-    val node2 = graph.createNode()
-    graph.createEdge(node1, node2)
+        graph = DefaultGraph().apply {
+            val node1 = createNode()
+            val node2 = createNode()
+            createEdge(node1, node2)
 
-    graph.applyLayout(HierarchicLayout())
+            applyLayout(HierarchicLayout())
+        }
 
-    component.graph = graph
-    component.fitGraphBounds()
+        fitGraphBounds()
 
-    return container
-}
+        div
+    }
