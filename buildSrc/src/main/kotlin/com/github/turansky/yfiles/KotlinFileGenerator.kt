@@ -47,7 +47,7 @@ internal class KotlinFileGenerator(
                 "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
-        dir.resolve("${data.jsName}Companion.kt")
+        dir.resolve("${data.jsName}.ext.kt")
             .writeText(companionContent)
     }
 
@@ -173,11 +173,10 @@ internal class KotlinFileGenerator(
         }
 
         protected val externalAnnotation: String
-            get() = if (data.name != data.jsName) {
+            get() = exp(
+                data.name != data.jsName,
                 "@JsName(\"${data.jsName}\")\n"
-            } else {
-                ""
-            }
+            )
 
         protected open val suppress: String
             get() = ""
