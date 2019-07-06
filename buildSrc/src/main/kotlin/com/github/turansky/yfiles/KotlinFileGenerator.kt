@@ -36,21 +36,22 @@ internal class KotlinFileGenerator(
         dir.mkdirs()
 
         val file = dir.resolve("${data.jsName}.kt")
-        val header = generatedFile.header
 
-        val content = generatedFile.content()
-            .clear(data)
+        val suppressNames = generatedFile.suppressNames.toMutableList()
+        var header = generatedFile.header
+        var content = generatedFile.content()
+
+        val companionContent = generatedFile.companionContent()
+        if (companionContent != null) {
+            suppressNames.add(0, "NOTHING_TO_INLINE")
+            content += "\n\n" + companionContent
+        }
+        if (suppressNames.isNotEmpty()) {
+            header = "@file:Suppress(${suppressNames.byComma { "\"$it\"" }})\n" + header
+        }
+        content = content.clear(data)
+
         file.writeText("$header\n$content")
-
-        var companionContent = generatedFile.companionContent()
-            ?: return
-
-        companionContent = "@file:Suppress(\"NOTHING_TO_INLINE\")\n" +
-                "package ${data.packageName}\n\n" +
-                companionContent.clear(data)
-
-        dir.resolve("${data.jsName}.ext.kt")
-            .writeText(companionContent)
     }
 
     private fun generate(
@@ -180,14 +181,11 @@ internal class KotlinFileGenerator(
                 "@JsName(\"${data.jsName}\")\n"
             ) + "$MODULE\n"
 
-        protected open val suppress: String
-            get() = ""
+        open val suppressNames: List<String>
+            get() = emptyList()
 
         val header: String
-            get() {
-                return suppress +
-                        "package ${data.packageName}\n"
-            }
+            get() = "package ${data.packageName}\n"
 
         protected open fun parentTypes(): List<String> {
             return declaration.implementedTypes()
@@ -384,8 +382,8 @@ internal class KotlinFileGenerator(
                     memberEvents
         }
 
-        override val suppress: String
-            get() = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
+        override val suppressNames: List<String>
+            get() = listOf("NESTED_CLASS_IN_EXTERNAL_INTERFACE")
 
         override fun content(): String {
             val content = super.content()
