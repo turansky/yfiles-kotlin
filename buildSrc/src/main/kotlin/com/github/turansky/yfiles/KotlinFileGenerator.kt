@@ -173,10 +173,13 @@ internal class KotlinFileGenerator(
         }
 
         protected val externalAnnotation: String
-            get() = exp(
-                data.name != data.jsName,
-                "@JsName(\"${data.jsName}\")\n"
-            ) + "$MODULE\n"
+            get() = if (data.name != data.jsName) {
+                val generics = genericParameters()
+                "typealias ${data.jsName}$generics = ${data.name}$generics\n\n" +
+                        "@JsName(\"${data.jsName}\")\n"
+            } else {
+                ""
+            } + "$MODULE\n"
 
         open val suppressNames: List<String>
             get() = emptyList()
@@ -370,12 +373,7 @@ internal class KotlinFileGenerator(
                     .lines { it.toExtensionCode(classDeclaration, typeparameters) }
             }
 
-            if (data.primitive || data.name == data.jsName) {
-                return content
-            }
-
-            return content + "\n\n" +
-                    "typealias ${data.jsName}$generics = ${data.name}$generics"
+            return content
         }
     }
 
