@@ -60,20 +60,7 @@ internal class KotlinFileGenerator(
         val content = signatures
             .asSequence()
             .sortedBy { it.fqn }
-            .map { signature ->
-                val typeparameters = signature.typeparameters
-                val generics = if (typeparameters.isNotEmpty()) {
-                    "<${typeparameters.byComma { it.name }}>"
-                } else {
-                    ""
-                }
-                val parameters = signature.parameters
-                    .byComma { it.toCode() }
-                val returns = signature.returns?.toCode() ?: UNIT
-
-                val data = GeneratorData(signature.fqn)
-                "typealias ${data.name}$generics = ($parameters) -> $returns"
-            }
+            .map { it.toCode() }
             .joinToString("\n\n")
             .clear(firstData)
 

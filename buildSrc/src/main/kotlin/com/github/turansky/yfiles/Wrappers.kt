@@ -64,9 +64,24 @@ internal class Namespace(source: JSONObject) : JsonWrapper(source) {
 internal class FunctionSignature(fqn: String, source: JSONObject) : JsonWrapper(source) {
     val fqn = fixPackage(fqn)
     val summary: String by StringDelegate()
-    val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
-    val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
-    val returns: SignatureReturns? by SignatureReturnsDelegate()
+    private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
+    private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    private val returns: SignatureReturns? by SignatureReturnsDelegate()
+
+    override fun toCode(): String {
+        val typeparameters = typeparameters
+        val generics = if (typeparameters.isNotEmpty()) {
+            "<${typeparameters.byComma { it.name }}>"
+        } else {
+            ""
+        }
+        val parameters = parameters
+            .byComma { it.toCode() }
+        val returns = returns?.toCode() ?: UNIT
+
+        val data = GeneratorData(fqn)
+        return "typealias ${data.name}$generics = ($parameters) -> $returns"
+    }
 }
 
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
