@@ -23,6 +23,7 @@ class YGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
+        println("Hallo from yFiles subplugin!")
         return emptyList()
     }
 

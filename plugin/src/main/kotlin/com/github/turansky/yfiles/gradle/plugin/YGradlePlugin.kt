@@ -5,6 +5,6 @@ import org.gradle.api.Project
 
 class YGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        println("Hallo from yFiles plugin!")
+        // do nothing
     }
 }
