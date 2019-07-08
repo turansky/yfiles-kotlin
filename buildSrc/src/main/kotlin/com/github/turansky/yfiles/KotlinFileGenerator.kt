@@ -175,7 +175,8 @@ internal class KotlinFileGenerator(
 
         val header: String
             get() {
-                return suppress +
+                return MODULE + "\n" +
+                        suppress +
                         "package ${data.packageName}\n"
             }
 
