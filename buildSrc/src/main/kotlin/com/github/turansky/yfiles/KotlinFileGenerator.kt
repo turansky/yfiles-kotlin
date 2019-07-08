@@ -39,9 +39,14 @@ internal class KotlinFileGenerator(
 
         val file = dir.resolve("${data.jsName}.kt")
 
-        val header = generatedFile.header
+        var header = generatedFile.header
         val content = generatedFile.content()
             .clear(data)
+
+        val suppressNames = generatedFile.suppressNames
+        if (suppressNames.isNotEmpty()) {
+            header = "@file:Suppress(${suppressNames.byComma { "\"$it\"" }})\n" + header
+        }
 
         file.writeText("$header\n$content")
     }
@@ -163,14 +168,11 @@ internal class KotlinFileGenerator(
                 ""
             } + "$MODULE\n"
 
-        protected open val suppressNames: List<String>
+        open val suppressNames: List<String>
             get() = emptyList()
 
         val header: String
-            get() = exp(
-                suppressNames.isNotEmpty(),
-                "@file:Suppress(${suppressNames.byComma { "\"$it\"" }})\n"
-            ) + "package ${data.packageName}\n"
+            get() = "package ${data.packageName}\n"
 
         protected open fun parentTypes(): List<String> {
             return declaration.implementedTypes()
