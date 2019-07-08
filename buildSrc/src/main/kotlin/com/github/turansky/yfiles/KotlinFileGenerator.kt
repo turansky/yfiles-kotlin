@@ -333,7 +333,6 @@ internal class KotlinFileGenerator(
             }
 
             return """
-                |$MODULE
                 |external object ${data.jsName} {
                 |$code
                 |}
