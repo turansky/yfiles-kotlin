@@ -342,8 +342,8 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
         val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters
             .byCommaLine {
-                val modifiers = exp(extensionMode && it.lambda, "noinline ")
-                exp(it.modifiers.vararg, "vararg ")
+                val modifiers = exp(extensionMode && it.lambda, "noinline ") +
+                        exp(it.modifiers.vararg, "vararg ")
 
                 val body = if (it.modifiers.optional && !overridden) {
                     if (extensionMode) EQ_NULL else EQ_DE
@@ -369,7 +369,7 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 
 internal class ParameterModifiers(flags: List<String>) {
     val artificial = flags.contains(ARTIFICIAL)
-    val vararg = flags.contains(VARARG)
+    val vararg = flags.contains(VARARGS)
     val optional = flags.contains(OPTIONAL)
     val conversion = flags.contains(CONVERSION)
 

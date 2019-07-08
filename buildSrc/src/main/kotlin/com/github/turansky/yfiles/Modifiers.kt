@@ -9,7 +9,7 @@ internal val ABSTRACT = "abstract"
 internal val PROTECTED = "protected"
 
 internal val ARTIFICIAL = "artificial"
-internal val VARARG = "vararg"
+internal val VARARGS = "varargs"
 internal val OPTIONAL = "optional"
 internal val CONVERSION = "conversion"
 
