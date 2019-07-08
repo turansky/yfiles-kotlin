@@ -4,8 +4,6 @@ import java.io.File
 
 private const val MODULE = "@JsModule(\"yfiles\")"
 
-private const val NOTHING_TO_INLINE = "NOTHING_TO_INLINE"
-
 internal class KotlinFileGenerator(
     private val types: Iterable<Type>,
     private val functionSignatures: Iterable<FunctionSignature>
@@ -39,14 +37,19 @@ internal class KotlinFileGenerator(
 
         val file = dir.resolve("${data.jsName}.kt")
 
+        val suppressNames = generatedFile.suppressNames.toMutableList()
         var header = generatedFile.header
-        val content = generatedFile.content()
-            .clear(data)
+        var content = generatedFile.content()
 
-        val suppressNames = generatedFile.suppressNames
+        val companionContent = generatedFile.companionContent()
+        if (companionContent != null) {
+            suppressNames.add(0, "NOTHING_TO_INLINE")
+            content += "\n\n" + companionContent
+        }
         if (suppressNames.isNotEmpty()) {
             header = "@file:Suppress(${suppressNames.byComma { "\"$it\"" }})\n" + header
         }
+        content = content.clear(data)
 
         file.writeText("$header\n$content")
     }
@@ -208,6 +211,8 @@ internal class KotlinFileGenerator(
                     |val yclass: yfiles.lang.Class<${getGeneric()}>
                 """.trimMargin()
 
+        open fun isObject() = false
+
         open fun content(): String {
             return memberDeclarations
                 .lines { it.toCode() }
@@ -222,7 +227,11 @@ internal class KotlinFileGenerator(
                 |}
             """.trimMargin()
 
-        protected fun castExtensions(): String? {
+        open fun companionContent(): String? {
+            if (isObject()) {
+                return null
+            }
+
             val className = data.name
             val yclass = "${className}.yclass"
 
@@ -282,7 +291,7 @@ internal class KotlinFileGenerator(
                 .toList()
         }
 
-        private fun isObject(): Boolean {
+        override fun isObject(): Boolean {
             return declaration.constructors.isEmpty() &&
                     memberDeclarations.isEmpty() &&
                     !data.marker ||
@@ -309,8 +318,7 @@ internal class KotlinFileGenerator(
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
-                    "}" +
-                    extensionContent()
+                    "}"
         }
 
         private fun objectContent(): String {
@@ -330,25 +338,13 @@ internal class KotlinFileGenerator(
             """.trimMargin()
         }
 
-        override val suppressNames: List<String>
-            get() {
-                val names = super.suppressNames
-                return if (isObject() || hasNoCastExtensions()) {
-                    names
-                } else {
-                    names + NOTHING_TO_INLINE
-                }
+        override fun companionContent(): String? {
+            if (data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
+                return null
             }
 
-        private fun hasNoCastExtensions(): Boolean =
-            data.packageName == "yfiles.lang" || data.name.endsWith("Args")
-
-        private fun extensionContent(): String {
-            if (hasNoCastExtensions()) {
-                return ""
-            }
-
-            var content = "\n\n" + castExtensions()
+            var companionContent = super.companionContent()
+                ?: return null
 
             val generics = genericParameters()
             val events = memberEvents
@@ -356,11 +352,11 @@ internal class KotlinFileGenerator(
 
             if (events.isNotEmpty()) {
                 val classDeclaration = data.name + generics
-                content += "\n\n" + events
+                companionContent += "\n\n" + events
                     .lines { it.toExtensionCode(classDeclaration, typeparameters) }
             }
 
-            return content
+            return companionContent
         }
     }
 
@@ -372,7 +368,7 @@ internal class KotlinFileGenerator(
         }
 
         override val suppressNames: List<String>
-            get() = super.suppressNames + listOf(NOTHING_TO_INLINE, "NESTED_CLASS_IN_EXTERNAL_INTERFACE")
+            get() = listOf("NESTED_CLASS_IN_EXTERNAL_INTERFACE")
 
         override fun content(): String {
             val content = super.content()
@@ -382,16 +378,15 @@ internal class KotlinFileGenerator(
                     "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
-                    "}" +
-                    extensionContent()
+                    "}"
         }
 
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract } +
                 memberEvents.filter { !it.overriden }
 
-        private fun extensionContent(): String? {
-            val content = "\n\n" + castExtensions()
+        override fun companionContent(): String? {
+            val content = requireNotNull(super.companionContent())
 
             if (defaultDeclarations.isEmpty()) {
                 return content
@@ -426,5 +421,7 @@ internal class KotlinFileGenerator(
                     super.content() + "\n" +
                     "}"
         }
+
+        override fun isObject() = true
     }
 }
