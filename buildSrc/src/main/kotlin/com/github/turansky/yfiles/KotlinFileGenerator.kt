@@ -391,23 +391,25 @@ internal class KotlinFileGenerator(
                 memberEvents.filter { !it.overriden }
 
         private fun extensionContent(): String? {
-            val content = if (defaultDeclarations.isNotEmpty()) {
-                val generics = genericParameters()
-                val classDeclaration = data.name + generics
-                "\n\n" + defaultDeclarations
-                    .lines {
-                        when (it) {
-                            is Property -> it.toExtensionCode(classDeclaration, typeparameters)
-                            is Method -> it.toExtensionCode(classDeclaration, typeparameters)
-                            is Event -> it.toExtensionCode(classDeclaration, typeparameters)
-                            else -> throw IllegalStateException("Invalid default declaration")
-                        }
-                    }
-            } else {
-                ""
+            val content = "\n\n" + castExtensions()
+
+            if (defaultDeclarations.isEmpty()) {
+                return content
             }
 
-            return content + "\n\n" + castExtensions()
+            val generics = genericParameters()
+            val classDeclaration = data.name + generics
+            val extensions = defaultDeclarations
+                .lines {
+                    when (it) {
+                        is Property -> it.toExtensionCode(classDeclaration, typeparameters)
+                        is Method -> it.toExtensionCode(classDeclaration, typeparameters)
+                        is Event -> it.toExtensionCode(classDeclaration, typeparameters)
+                        else -> throw IllegalStateException("Invalid default declaration")
+                    }
+                }
+
+            return "$content\n\n$extensions"
         }
     }
 
