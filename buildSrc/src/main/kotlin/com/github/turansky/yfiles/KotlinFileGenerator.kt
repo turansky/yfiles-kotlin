@@ -2,7 +2,7 @@ package com.github.turansky.yfiles
 
 import java.io.File
 
-private const val MODULE = "@JsModule(\"yfiles\")"
+private const val MODULE = "@file:JsModule(\"yfiles\")"
 
 internal class KotlinFileGenerator(
     private val types: Iterable<Type>,
@@ -162,13 +162,10 @@ internal class KotlinFileGenerator(
         }
 
         protected val externalAnnotation: String
-            get() = if (data.name != data.jsName) {
-                val generics = genericParameters()
-                "typealias ${data.jsName}$generics = ${data.name}$generics\n\n" +
-                        "@JsName(\"${data.jsName}\")\n"
-            } else {
-                ""
-            } + "$MODULE\n"
+            get() = exp(
+                data.name != data.jsName,
+                "@JsName(\"${data.jsName}\")\n"
+            )
 
         protected open val suppress: String
             get() = ""
