@@ -61,6 +61,7 @@ internal fun applyHacks(api: JSONObject) {
     removeDuplicatedMethods(source)
     removeSystemMethods(source)
     removeArtifitialParameters(source)
+    removeThisParameters(source)
 
     fixUnionMethods(source)
     fixConstantGenerics(source)
@@ -481,6 +482,29 @@ private fun removeArtifitialParameters(source: Source) {
             val parameters = it.getJSONArray(J_PARAMETERS)
             artifitialParameters.forEach {
                 parameters.remove(parameters.indexOf(it))
+            }
+        }
+}
+
+private val THIS_TYPES = setOf(
+    "IEnumerable",
+    "List"
+)
+
+private fun removeThisParameters(source: Source) {
+    sequenceOf(J_CONSTRUCTORS, J_STATIC_METHODS, J_METHODS)
+        .flatMap { parameter ->
+            THIS_TYPES.asSequence()
+                .map { source.type(it) }
+                .filter { it.has(parameter) }
+                .jsequence(parameter)
+        }
+        .filter { it.has(J_PARAMETERS) }
+        .map { it.getJSONArray(J_PARAMETERS) }
+        .filter { it.length() > 0 }
+        .forEach {
+            if ((it.last() as JSONObject).getString(J_NAME) == "thisArg") {
+                it.remove(it.length() - 1)
             }
         }
 }
