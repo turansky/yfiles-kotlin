@@ -40,9 +40,9 @@ private fun JSONObject.correctConstants() {
         .filter { it.getString(J_TYPE) != JS_NUMBER }
         .filter { it.getString(J_TYPE).contains(JS_NUMBER) }
         .forEach {
-            if (it.has("signature")) {
+            if (it.has(J_SIGNATURE)) {
                 check(className == "HierarchicalClustering")
-                it.put("signature", it.getString("signature").replace(",$JS_NUMBER>", ",$DOUBLE>"))
+                it.put(J_SIGNATURE, it.getString("signature").replace(",$JS_NUMBER>", ",$DOUBLE>"))
                 return@forEach
             }
 
@@ -154,9 +154,9 @@ private fun JSONObject.correctPropertiesGeneric() {
         .forEach { it.put(J_TYPE, getPropertyGenericType(it.getString(J_NAME), it.getString(J_TYPE))) }
 
     jsequence(J_PROPERTIES)
-        .filter { it.has("signature") }
+        .filter { it.has(J_SIGNATURE) }
         .forEach {
-            val signature = it.getString("signature")
+            val signature = it.getString(J_SIGNATURE)
             if (!signature.endsWith(",$JS_NUMBER>")) {
                 return@forEach
             }

@@ -17,4 +17,5 @@ val J_RETURNS = "returns"
 
 val J_NAME = "name"
 val J_TYPE = "type"
+val J_SIGNATURE = "signature"
 val J_MODIFIERS = "modifiers"
