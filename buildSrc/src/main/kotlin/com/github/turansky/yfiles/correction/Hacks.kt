@@ -519,6 +519,7 @@ private fun removeThisParameters(source: Source) {
                 signature = signature
                     .replace(FUNC_RUDIMENT, "")
                     .replace("Action3<T>", "Action1<T>")
+                    .replace("Func4<T,boolean>", "Predicate<T>")
                     .replace("Func4<", "Func2<")
                     .replace("Func5<", "Func3<")
 
