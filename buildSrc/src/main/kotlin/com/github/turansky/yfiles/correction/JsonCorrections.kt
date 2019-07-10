@@ -8,6 +8,7 @@ import com.github.turansky.yfiles.JS_OBJECT
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "system.Action1",
     "system.Action4",
+    "system.Func1",
     "yfiles.input.KeyEventHandler"
 )
 
