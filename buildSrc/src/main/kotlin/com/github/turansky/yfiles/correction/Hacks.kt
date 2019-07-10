@@ -491,6 +491,9 @@ private val THIS_TYPES = setOf(
     "List"
 )
 
+private val FUNC_RUDIMENT = ",number,yfiles.collections.IEnumerable<T>"
+private val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
+
 private fun removeThisParameters(source: Source) {
     sequenceOf(J_CONSTRUCTORS, J_STATIC_METHODS, J_METHODS)
         .flatMap { parameter ->
@@ -502,9 +505,26 @@ private fun removeThisParameters(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .map { it.getJSONArray(J_PARAMETERS) }
         .filter { it.length() > 0 }
-        .forEach {
+        .onEach {
             if ((it.last() as JSONObject).getString(J_NAME) == "thisArg") {
                 it.remove(it.length() - 1)
+            }
+        }
+        .flatMap { it.asSequence() }
+        .map { it as JSONObject }
+        .filter { it.has(J_SIGNATURE) }
+        .forEach {
+            var signature = it.getString(J_SIGNATURE)
+            if (signature.contains(FUNC_RUDIMENT)) {
+                signature = signature
+                    .replace(FUNC_RUDIMENT, "")
+                    .replace("Action3<T>", "Action1<T>")
+                    .replace("Func4<", "Func2<")
+                    .replace("Func5<", "Func3<")
+
+                it.put(J_SIGNATURE, signature)
+            } else if (signature.contains(FROM_FUNC_RUDIMENT)) {
+                it.put(J_SIGNATURE, signature.replace(FROM_FUNC_RUDIMENT, "Func2<TSource,T>"))
             }
         }
 }
