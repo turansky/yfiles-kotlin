@@ -149,7 +149,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     val abstract = modifiers.abstract
 
     val kotlinModificator = when {
-        abstract -> "abstract" // no such cases (JS specific?)
+        abstract -> "abstract"
         open -> "open"
         else -> ""
     }
@@ -270,7 +270,6 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         get() = getGenericString(typeparameters)
 
     private fun kotlinModificator(): String {
-        // TODO: support class extensions
         if (isExtension) {
             require(!protected)
             require(!abstract)
@@ -279,7 +278,6 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 
         val classRegistry: ClassRegistry = ClassRegistry.instance
 
-        // TODO: add abstract modificator if needed
         if (classRegistry.functionOverriden(fqn, name)) {
             return "override " + exp(final, "final ")
         }
