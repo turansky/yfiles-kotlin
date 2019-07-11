@@ -7,9 +7,9 @@ internal class Source(private val api: JSONObject) {
         get() = api.getJSONObject(J_FUNCTION_SIGNATURES)
 
     private val types = api
-        .jsequence("namespaces")
-        .optionalArray("namespaces")
-        .jsequence("types")
+        .jsequence(J_NAMESPACES)
+        .optionalArray(J_NAMESPACES)
+        .jsequence(J_TYPES)
 
     private val typeMap = types.associateBy { it.uid }
 

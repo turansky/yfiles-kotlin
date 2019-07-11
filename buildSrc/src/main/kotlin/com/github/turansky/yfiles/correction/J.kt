@@ -1,5 +1,8 @@
 package com.github.turansky.yfiles.correction
 
+val J_NAMESPACES = "namespaces"
+val J_TYPES = "types"
+
 val J_FUNCTION_SIGNATURES = "functionSignatures"
 
 val J_TYPE_PARAMETERS = "typeparameters"
