@@ -7,13 +7,15 @@ import org.json.JSONObject
 import java.io.File
 import java.net.URL
 
-private val YFILES_NAMESPACE = "yfiles"
-
-private fun loadApiJson(path: String): String {
-    return URL(path)
+private fun loadApiJson(path: String): String =
+    URL(path)
         .readText(DEFAULT_CHARSET)
         .run { substring(indexOf("{")) }
-}
+        .run { JSONObject(this) }
+        .apply(::applyHacks)
+        .apply(::excludeUnusedTypes)
+        .apply(::correctNumbers)
+        .run { toString() }
 
 fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
     generateWrappers(
@@ -29,10 +31,6 @@ private fun generateWrappers(
     createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
 ) {
     val source = JSONObject(loadApiJson(apiPath))
-
-    applyHacks(source)
-    excludeUnusedTypes(source)
-    correctNumbers(source)
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.types
