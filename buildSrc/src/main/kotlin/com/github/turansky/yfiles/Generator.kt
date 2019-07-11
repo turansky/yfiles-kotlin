@@ -2,31 +2,12 @@ package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.correction.applyHacks
 import com.github.turansky.yfiles.correction.correctNumbers
+import com.github.turansky.yfiles.correction.excludeUnusedTypes
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
 
 private val YFILES_NAMESPACE = "yfiles"
-
-private val EXCLUDED_TYPES = sequenceOf(
-    "yfiles.lang.Struct",
-
-    "yfiles.lang.AttributeDefinition",
-
-    "yfiles.lang.Enum",
-    "yfiles.lang.EnumDefinition",
-
-    "yfiles.lang.Interface",
-    "yfiles.lang.InterfaceDefinition",
-
-    "yfiles.lang.ClassDefinition",
-
-    "yfiles.lang.delegate",
-    "yfiles.lang.Exception",
-    "yfiles.lang.Trait"
-)
-    .map(::fixPackage)
-    .toSet()
 
 private fun loadApiJson(path: String): String {
     return URL(path)
@@ -50,6 +31,7 @@ private fun generateWrappers(
     val source = JSONObject(loadApiJson(apiPath))
 
     applyHacks(source)
+    excludeUnusedTypes(source)
     correctNumbers(source)
 
     val apiRoot = ApiRoot(source)
@@ -59,7 +41,6 @@ private fun generateWrappers(
         .first { it.id == YFILES_NAMESPACE }
         .namespaces
         .flatMap { it.types }
-        .filterNot { EXCLUDED_TYPES.contains(it.fqn) }
 
     val functionSignatures = apiRoot.functionSignatures
 
