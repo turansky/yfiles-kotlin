@@ -114,8 +114,8 @@ private fun addClassGeneric(source: Source) {
 
             it.typeParameter.addGeneric("T")
 
-            it.getJSONObject(J_RETURNS)
-                .put(J_TYPE, "T")
+            // TODO: fix return type after ticket resolving
+            //  https://youtrack.jetbrains.com/issue/KT-3257
 
             it.getJSONArray(J_MODIFIERS)
                 .put(CANBENULL)
