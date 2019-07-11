@@ -175,6 +175,8 @@ internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Decl
 internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
     val protected = modifiers.protected
 
+    override val overridden: Boolean = false
+
     override fun toCode(): String {
         val modificator: String = when {
             protected -> "protected"
@@ -265,6 +267,9 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
     val generics: String
         get() = getGenericString(typeparameters)
 
+    override val overridden: Boolean
+        get() = ClassRegistry.instance.functionOverriden(fqn, name)
+
     private fun kotlinModificator(): String {
         if (isExtension) {
             require(!protected)
@@ -272,22 +277,16 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
             return ""
         }
 
-        val classRegistry: ClassRegistry = ClassRegistry.instance
-
-        if (classRegistry.functionOverriden(fqn, name)) {
+        if (overridden) {
             return "override " + exp(final, "final ")
         }
 
-        val result = when {
+        return when {
             abstract -> "abstract "
             final -> "final "
             open -> "open "
             else -> ""
-        }
-        return result + when {
-            protected -> "protected "
-            else -> ""
-        }
+        } + exp(protected, "protected ")
     }
 
     // https://youtrack.jetbrains.com/issue/KT-31249
@@ -329,11 +328,11 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
     val options: Boolean by BooleanDelegate()
 
+    protected abstract val overridden: Boolean
+
     protected fun kotlinParametersString(
-        checkOverriding: Boolean = true,
         extensionMode: Boolean = false
     ): String {
-        val overridden = checkOverriding && ClassRegistry.instance.functionOverriden(fqn, name)
         return parameters
             .byCommaLine {
                 val modifiers = exp(extensionMode && it.lambda, "noinline ") +
