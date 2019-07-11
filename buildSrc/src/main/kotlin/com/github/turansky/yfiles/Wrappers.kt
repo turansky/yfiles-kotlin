@@ -23,16 +23,13 @@ internal abstract class Declaration : JsonWrapper {
     val remarks: String by StringDelegate()
 
     val fqn: String
-    val nameOfClass: String
 
     constructor(source: JSONObject) : super(source) {
         this.fqn = fixPackage(id)
-        this.nameOfClass = fqn.split(".").last()
     }
 
     constructor(fqn: String, source: JSONObject) : super(source) {
         this.fqn = fixPackage(fqn)
-        this.nameOfClass = fqn.split(".").last()
     }
 }
 
