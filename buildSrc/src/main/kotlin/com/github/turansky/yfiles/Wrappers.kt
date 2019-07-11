@@ -33,11 +33,18 @@ internal abstract class Declaration : JsonWrapper {
 }
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
-    val namespaces: List<Namespace> by ArrayDelegate(::Namespace)
+    private val namespaces: List<Namespace> by ArrayDelegate(::Namespace)
+    val types: List<Type>
+        get() = namespaces
+            .asSequence()
+            .flatMap { it.namespaces.asSequence() }
+            .flatMap { it.types.asSequence() }
+            .toList()
+
     val functionSignatures: Map<String, FunctionSignature> by MapDelegate { name, source -> FunctionSignature(name, source) }
 }
 
-internal class Namespace(source: JSONObject) : JsonWrapper(source) {
+private class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
         fun parseType(source: JSONObject): Type {
             val group = source.getString("group")
@@ -50,7 +57,6 @@ internal class Namespace(source: JSONObject) : JsonWrapper(source) {
         }
     }
 
-    val id: String by StringDelegate()
     val name: String by StringDelegate()
 
     val namespaces: List<Namespace> by ArrayDelegate { Namespace(it) }

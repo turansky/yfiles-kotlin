@@ -35,13 +35,7 @@ private fun generateWrappers(
     correctNumbers(source)
 
     val apiRoot = ApiRoot(source)
-    val types = apiRoot
-        .namespaces
-        .asSequence()
-        .first { it.id == YFILES_NAMESPACE }
-        .namespaces
-        .flatMap { it.types }
-
+    val types = apiRoot.types
     val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types)
