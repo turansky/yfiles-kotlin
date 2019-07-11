@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles
 
 import org.json.JSONObject
-import java.util.*
 import kotlin.reflect.KProperty
 
 internal abstract class JsonWrapper(val source: JSONObject) {
@@ -348,17 +347,6 @@ internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaratio
 
                 "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
             }
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(fqn, name, kotlinParametersString(false))
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is MethodBase
-                && fqn == other.fqn
-                && name == other.name
-                && kotlinParametersString(false) == other.kotlinParametersString(false)
     }
 }
 
