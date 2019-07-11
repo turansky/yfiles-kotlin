@@ -202,11 +202,13 @@ internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn,
     val final = modifiers.final
     val open = !static && !final
 
+    private val overridden: Boolean
+        get() = !static && ClassRegistry.instance.propertyOverriden(fqn, name)
+
     override fun toCode(): String {
         var str = ""
-        val classRegistry: ClassRegistry = ClassRegistry.instance
 
-        if (classRegistry.propertyOverriden(fqn, name)) {
+        if (overridden) {
             str += "override " + exp(final, "final ")
         } else {
             if (protected) {
@@ -268,7 +270,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
         get() = getGenericString(typeparameters)
 
     override val overridden: Boolean
-        get() = ClassRegistry.instance.functionOverriden(fqn, name)
+        get() = !static && ClassRegistry.instance.functionOverriden(fqn, name)
 
     private fun kotlinModificator(): String {
         if (isExtension) {
