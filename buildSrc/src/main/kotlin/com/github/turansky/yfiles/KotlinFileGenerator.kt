@@ -23,7 +23,7 @@ internal class KotlinFileGenerator(
         }
 
         functionSignatures
-            .groupBy { it.fqn.substringBeforeLast(".") }
+            .groupBy { it.classId.substringBeforeLast(".") }
             .forEach { _, items -> generate(directory, items) }
     }
 
@@ -57,7 +57,7 @@ internal class KotlinFileGenerator(
         directory: File,
         signatures: List<FunctionSignature>
     ) {
-        val firstData = GeneratorData(signatures.first().fqn)
+        val firstData = GeneratorData(signatures.first().classId)
         val dir = directory.resolve(firstData.path)
         dir.mkdirs()
 
@@ -66,7 +66,7 @@ internal class KotlinFileGenerator(
 
         val content = signatures
             .asSequence()
-            .sortedBy { it.fqn }
+            .sortedBy { it.classId }
             .map { it.toCode() }
             .joinToString("\n\n")
             .clear(firstData)

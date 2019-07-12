@@ -64,7 +64,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source) {
-    val fqn = fixPackage(fqn)
+    val classId = fixPackage(fqn)
     val summary: String by StringDelegate()
     private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
@@ -81,7 +81,7 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
             .byComma { it.toCode() }
         val returns = returns?.toCode() ?: UNIT
 
-        val data = GeneratorData(fqn)
+        val data = GeneratorData(classId)
         return "typealias ${data.name}$generics = ($parameters) -> $returns"
     }
 }
