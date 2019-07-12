@@ -177,6 +177,8 @@ internal class KotlinFileGenerator(
                         "package ${data.packageName}\n"
             }
 
+        protected val classDeclaration = data.name + genericParameters()
+
         protected open fun parentTypes(): List<String> {
             return declaration.implementedTypes()
         }
@@ -211,8 +213,6 @@ internal class KotlinFileGenerator(
                     |val yclass: yfiles.lang.Class<${getGeneric()}>
                 """.trimMargin()
 
-        open fun isObject() = false
-
         open fun content(): String {
             return memberDeclarations
                 .lines { it.toCode() }
@@ -227,16 +227,7 @@ internal class KotlinFileGenerator(
                 |}
             """.trimMargin()
 
-        open fun companionContent(): String? {
-            if (isObject()) {
-                return null
-            }
-
-            return classCastExtensions(
-                className = data.name,
-                generics = genericParameters()
-            )
-        }
+        abstract fun companionContent(): String?
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
@@ -275,7 +266,7 @@ internal class KotlinFileGenerator(
                 .toList()
         }
 
-        override fun isObject(): Boolean {
+        private fun isObject(): Boolean {
             return declaration.constructors.isEmpty() &&
                     memberDeclarations.isEmpty() &&
                     !data.marker ||
@@ -298,7 +289,7 @@ internal class KotlinFileGenerator(
             }
 
             return externalAnnotation +
-                    "external ${type()} ${data.name}${genericParameters()} $constructor ${parentString()} {\n" +
+                    "external ${type()} $classDeclaration $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
@@ -322,24 +313,24 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
-            if (data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
+            if (isObject() || data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
                 return null
             }
 
-            var companionContent = super.companionContent()
-                ?: return null
+            var content = classCastExtensions(
+                className = data.name,
+                generics = genericParameters()
+            )
 
-            val generics = genericParameters()
             val events = memberEvents
                 .filter { !it.overriden }
 
             if (events.isNotEmpty()) {
-                val classDeclaration = data.name + generics
-                companionContent += "\n\n" + events
+                content += "\n\n" + events
                     .lines { it.toExtensionCode(classDeclaration, typeparameters) }
             }
 
-            return companionContent
+            return content
         }
     }
 
@@ -358,7 +349,7 @@ internal class KotlinFileGenerator(
                 .replace("abstract ", "")
 
             return externalAnnotation +
-                    "external interface ${data.name}${genericParameters()}${parentString()} {\n" +
+                    "external interface $classDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
                     "}"
@@ -369,14 +360,15 @@ internal class KotlinFileGenerator(
                 memberEvents.filter { !it.overriden }
 
         override fun companionContent(): String? {
-            val content = requireNotNull(super.companionContent())
+            val content = classCastExtensions(
+                className = data.name,
+                generics = genericParameters()
+            )
 
             if (defaultDeclarations.isEmpty()) {
                 return content
             }
 
-            val generics = genericParameters()
-            val classDeclaration = data.name + generics
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
@@ -405,6 +397,6 @@ internal class KotlinFileGenerator(
                     "}"
         }
 
-        override fun isObject() = true
+        override fun companionContent(): String? = null
     }
 }
