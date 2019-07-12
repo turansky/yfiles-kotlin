@@ -1,9 +1,10 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 import kotlin.reflect.KProperty
 
-internal abstract class JsonWrapper(val source: JSONObject) {
+internal abstract class JsonWrapper(override val source: JSONObject) : HasSource {
     open fun toCode(): String {
         throw IllegalStateException("toCode() method must be overridden")
     }
@@ -458,117 +459,6 @@ private class EventListener(
 internal class EventListenerModifiers(flags: List<String>) {
     val public = flags.contains(PUBLIC)
     val abstract = flags.contains(ABSTRACT)
-}
-
-private class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<T> {
-        val source = thisRef.source
-        val key = property.name
-
-        if (!source.has(key)) {
-            return emptyList()
-        }
-
-        val array = source.getJSONArray(key)
-        val length = array.length()
-        if (length == 0) {
-            return emptyList()
-        }
-
-        return (0 until length)
-            .asSequence()
-            .map { array.getJSONObject(it) }
-            .map(transform)
-            .toList()
-    }
-}
-
-private class StringArrayDelegate {
-    companion object {
-        fun value(thisRef: JsonWrapper, property: KProperty<*>): List<String> {
-            val source = thisRef.source
-            val key = property.name
-
-            if (!source.has(key)) {
-                return emptyList()
-            }
-
-            val array = source.getJSONArray(key)
-            val length = array.length()
-            if (length == 0) {
-                return emptyList()
-            }
-
-            val list = mutableListOf<String>()
-            for (i in 0..length - 1) {
-                list.add(array.getString(i))
-            }
-            return list.toList()
-        }
-    }
-
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): List<String> {
-        return value(thisRef, property)
-    }
-}
-
-private class MapDelegate<T>(private val transform: (name: String, source: JSONObject) -> T) {
-
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Map<String, T> {
-        val source = thisRef.source
-        val key = property.name
-
-        if (!source.has(key)) {
-            return emptyMap()
-        }
-
-        val data = source.getJSONObject(key)
-        val keys: List<String> = data.keySet()?.toList() ?: emptyList<String>()
-        if (keys.isEmpty()) {
-            return emptyMap()
-        }
-
-        return keys.associateBy({ it }, { transform(it, data.getJSONObject(it)) })
-    }
-}
-
-private class NullableStringDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String? {
-        val source = thisRef.source
-        val key = property.name
-
-        return if (source.has(key)) source.getString(key) else null
-    }
-}
-
-private class StringDelegate {
-    companion object {
-        fun value(thisRef: JsonWrapper, property: KProperty<*>): String {
-            return thisRef.source.getString(property.name)
-        }
-    }
-
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
-        return value(thisRef, property)
-    }
-}
-
-private class BooleanDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Boolean {
-        val source = thisRef.source
-        val key = property.name
-
-        if (!source.has(key)) {
-            return false
-        }
-
-        val value = source.getString(key)
-        return when (value) {
-            "!0" -> true
-            "!1" -> false
-            else -> source.getBoolean(key)
-        }
-    }
 }
 
 private class TypeDelegate(private val parse: (String) -> String) {
