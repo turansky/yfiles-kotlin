@@ -21,13 +21,13 @@ internal abstract class Declaration : JsonWrapper {
     val summary: String by StringDelegate()
     val remarks: String by StringDelegate()
 
-    val fqn: String
+    val fqn: ClassId
 
     constructor(source: JSONObject) : super(source) {
         this.fqn = fixPackage(id)
     }
 
-    constructor(fqn: String, source: JSONObject) : super(source) {
+    constructor(fqn: ClassId, source: JSONObject) : super(source) {
         this.fqn = fixPackage(fqn)
     }
 }
@@ -63,7 +63,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-internal class FunctionSignature(fqn: String, source: JSONObject) : JsonWrapper(source) {
+internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source) {
     val fqn = fixPackage(fqn)
     val summary: String by StringDelegate()
     private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
@@ -173,12 +173,12 @@ internal class Modifiers(flags: List<String>) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
 
-internal abstract class TypedDeclaration(fqn: String, source: JSONObject) : Declaration(fqn, source) {
+internal abstract class TypedDeclaration(fqn: ClassId, source: JSONObject) : Declaration(fqn, source) {
     private val signature: String? by NullableStringDelegate()
     protected val type: String by TypeDelegate { parse(it, signature) }
 }
 
-internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
+internal class Constructor(fqn: ClassId, source: JSONObject) : MethodBase(fqn, source) {
     val protected = modifiers.protected
 
     override val overridden: Boolean = false
@@ -193,13 +193,13 @@ internal class Constructor(fqn: String, source: JSONObject) : MethodBase(fqn, so
     }
 }
 
-internal class Constant(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
+internal class Constant(fqn: ClassId, source: JSONObject) : TypedDeclaration(fqn, source) {
     override fun toCode(): String {
         return "val $name: $type"
     }
 }
 
-internal class Property(fqn: String, source: JSONObject) : TypedDeclaration(fqn, source) {
+internal class Property(fqn: ClassId, source: JSONObject) : TypedDeclaration(fqn, source) {
     val static = modifiers.static
     val protected = modifiers.protected
     val getterSetter = !modifiers.readOnly
@@ -259,7 +259,7 @@ private val OPERATOR_NAMES = setOf(
     "contains"
 )
 
-internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source) {
+internal class Method(fqn: ClassId, source: JSONObject) : MethodBase(fqn, source) {
     val abstract = modifiers.abstract
     val static = modifiers.static
     val protected = modifiers.protected
@@ -332,7 +332,7 @@ internal class Method(fqn: String, source: JSONObject) : MethodBase(fqn, source)
 }
 
 // TODO: support artificial parameters
-internal abstract class MethodBase(fqn: String, source: JSONObject) : Declaration(fqn, source) {
+internal abstract class MethodBase(fqn: ClassId, source: JSONObject) : Declaration(fqn, source) {
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
     val options: Boolean by BooleanDelegate()
 
@@ -385,7 +385,7 @@ internal class Returns(source: JSONObject) : JsonWrapper(source) {
     val type: String by TypeDelegate { parse(it, signature) }
 }
 
-internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
+internal class Event(fqn: ClassId, source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val summary: String by StringDelegate()
     private val add: EventListener by EventListenerDelegate(fqn)
@@ -426,7 +426,7 @@ internal class Event(fqn: String, source: JSONObject) : JsonWrapper(source) {
     }
 }
 
-private class EventListener(private val fqn: String, source: JSONObject) : JsonWrapper(source) {
+private class EventListener(private val fqn: ClassId, source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
@@ -612,7 +612,7 @@ private class ReturnsDelegate {
     }
 }
 
-private class EventListenerDelegate(private val fqn: String) {
+private class EventListenerDelegate(private val fqn: ClassId) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListener {
         return EventListener(fqn, thisRef.source.getJSONObject(property.name))
     }
