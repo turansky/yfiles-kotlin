@@ -63,8 +63,9 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source) {
-    val classId = fixPackage(fqn)
+internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
+    override val classId = fixPackage(fqn)
+
     val summary: String by StringDelegate()
     private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
@@ -111,7 +112,9 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     }
 }
 
-internal sealed class Type(source: JSONObject) : Declaration(source) {
+internal sealed class Type(source: JSONObject) : Declaration(source), HasClassId {
+    override val classId: ClassId = fixPackage(id)
+
     val es6name: String? by NullableStringDelegate()
 
     val constants: List<Constant> by ArrayDelegate { Constant(fqn, it) }

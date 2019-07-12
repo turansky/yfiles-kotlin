@@ -7,15 +7,15 @@ internal class ClassRegistry(
         lateinit var instance: ClassRegistry
     }
 
-    private val instances = types.associateBy({ it.fqn }, { it })
+    private val instances = types.associateBy({ it.classId }, { it })
 
     private val functionsMap = types.associateBy(
-        { it.fqn },
+        { it.classId },
         { it.methods.map { it.name } }
     )
 
     private val propertiesMap = types.associateBy(
-        { it.fqn },
+        { it.classId },
         { it.properties.map { it.name } }
     )
 
@@ -23,7 +23,7 @@ internal class ClassRegistry(
         .asSequence()
         .filterIsInstance<ExtendedType>()
         .associateBy(
-            { it.fqn },
+            { it.classId },
             { it.events.flatMap { it.listenerNames } }
         )
 

@@ -37,6 +37,6 @@ internal data class TypeGeneratorData(
 internal fun es6GeneratorData(
     declaration: Type
 ) = TypeGeneratorData(
-    fqn = declaration.fqn,
+    fqn = declaration.classId,
     alias = declaration.es6name
 )
