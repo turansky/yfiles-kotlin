@@ -14,7 +14,6 @@ internal abstract class JsonWrapper(val source: JSONObject) {
 }
 
 internal abstract class Declaration(source: JSONObject) : JsonWrapper(source) {
-    val id: String by StringDelegate()
     val name: String by StringDelegate()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
@@ -103,6 +102,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal sealed class Type(source: JSONObject) : Declaration(source), HasClassId {
+    private val id: String by StringDelegate()
     override val classId: ClassId = fixPackage(id)
 
     val es6name: String? by NullableStringDelegate()
