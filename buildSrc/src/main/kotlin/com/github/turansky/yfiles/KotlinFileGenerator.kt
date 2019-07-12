@@ -232,26 +232,10 @@ internal class KotlinFileGenerator(
                 return null
             }
 
-            val className = data.name
-            val yclass = "${className}.yclass"
-
-            val generics = genericParameters()
-            val classDeclaration = className + generics
-
-            return """
-                |inline fun Any?.is$className() = 
-                |   ${yclass}.isInstance(this)
-                |
-                |inline fun $generics Any?.as$className(): $classDeclaration? =
-                |   if ( is$className() ) {
-                |       unsafeCast<$classDeclaration>()
-                |   } else {
-                |       null
-                |   }
-                |
-                |inline fun $generics Any?.to$className(): $classDeclaration =
-                |   as$className()!!
-            """.trimMargin()
+            return classCastExtensions(
+                className = data.name,
+                generics = genericParameters()
+            )
         }
     }
 
