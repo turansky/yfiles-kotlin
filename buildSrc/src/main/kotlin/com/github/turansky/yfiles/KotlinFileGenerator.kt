@@ -35,7 +35,13 @@ internal class KotlinFileGenerator(
         val dir = directory.resolve(data.path)
         dir.mkdirs()
 
-        val file = dir.resolve("${data.jsName}.kt")
+        val fileName = if (generatedFile.useJsName) {
+            data.jsName
+        } else {
+            data.name
+        }
+
+        val file = dir.resolve("$fileName.kt")
         val header = generatedFile.header
 
         val content = generatedFile.content()
@@ -49,7 +55,7 @@ internal class KotlinFileGenerator(
                 "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
-        dir.resolve("${data.jsName}.ext.kt")
+        dir.resolve("$fileName.ext.kt")
             .writeText(companionContent)
     }
 
@@ -112,6 +118,7 @@ internal class KotlinFileGenerator(
 
     abstract inner class GeneratedFile(private val declaration: Type) {
         val data = es6GeneratorData(declaration)
+        open val useJsName = true
 
         protected val typeparameters: List<TypeParameter>
             get() = declaration.typeparameters
@@ -231,6 +238,8 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
+        override val useJsName = isObject()
+
         private fun type(): String {
             val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
                 "abstract"
