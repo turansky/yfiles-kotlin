@@ -388,7 +388,7 @@ internal class KotlinFileGenerator(
                     }
                 }
 
-            return "$content\n\n$extensions"
+            return "$extensions\n\n$content"
         }
     }
 
