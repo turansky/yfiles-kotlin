@@ -335,8 +335,10 @@ internal class KotlinFileGenerator(
                 .filter { !it.overriden }
 
             if (events.isNotEmpty()) {
-                content += "\n\n" + events
-                    .lines { it.toExtensionCode(classDeclaration, typeparameters) }
+                content = events
+                    .lines { it.toExtensionCode(classDeclaration, typeparameters) } +
+                        "\n\n" +
+                        content
             }
 
             return content
