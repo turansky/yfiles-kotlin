@@ -45,8 +45,7 @@ private fun addDpKeyGeneric(source: Source) {
     }
 
     source.type("DpKeyItemCollection")
-        .jsequence(J_PROPERTIES)
-        .first { it.getString(J_NAME) == "dpKey" }
+        .property("dpKey")
         .updateDpKeyGeneric(J_TYPE, "T")
 }
 

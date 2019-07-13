@@ -3,13 +3,11 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.ARTIFICIAL
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.PUBLIC
-import com.github.turansky.yfiles.json.first
 import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeItem
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
-import kotlin.collections.first
 
 private fun JSONObject.addMethod(
     methodData: MethodData
@@ -188,8 +186,7 @@ private fun fixPropertyType(source: Source) {
     sequenceOf("SeriesParallelLayoutData", "TreeLayoutData")
         .map { source.type(it) }
         .forEach {
-            it.getJSONArray(J_PROPERTIES)
-                .firstWithName("outEdgeComparers")
+            it.property("outEdgeComparers")
                 .put(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
         }
 }
@@ -198,8 +195,7 @@ private fun fixPropertyNullability(source: Source) {
     PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
         source
             .type(className)
-            .getJSONArray(J_PROPERTIES)
-            .first { it.get(J_NAME) == propertyName }
+            .property(propertyName)
             .changeNullability(nullable)
     }
 }

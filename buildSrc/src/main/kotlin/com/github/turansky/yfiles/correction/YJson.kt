@@ -4,6 +4,7 @@ import com.github.turansky.yfiles.CANBENULL
 import com.github.turansky.yfiles.FINAL
 import com.github.turansky.yfiles.PUBLIC
 import com.github.turansky.yfiles.RO
+import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jArray
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.objects
@@ -27,6 +28,10 @@ internal fun JSONObject.methodParameters(
 
     return result
 }
+
+internal fun JSONObject.property(name: String): JSONObject =
+    getJSONArray(J_PROPERTIES)
+        .firstWithName(name)
 
 internal fun JSONObject.addProperty(
     propertyName: String,
