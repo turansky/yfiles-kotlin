@@ -9,6 +9,7 @@ internal fun applyClassHacks(source: Source) {
 
     addClassGeneric(source)
     addConstructorClassGeneric(source)
+    addMethodClassGeneric(source)
 
     removeUnusedTypeParameters(source)
 }
@@ -226,6 +227,16 @@ private fun addConstructorClassGeneric(source: Source) {
                         it.addGeneric(generic)
                     }
                 }
+        }
+}
+
+private fun addMethodClassGeneric(source: Source) {
+    source.type("ILookup")
+        .staticMethod("createSingleLookup")
+        .apply {
+            setSingleTypeParameter()
+            firstParameter.put(J_TYPE, "T")
+            secondParameter.addGeneric("T")
         }
 }
 
