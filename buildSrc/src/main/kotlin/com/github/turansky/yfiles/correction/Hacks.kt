@@ -6,6 +6,7 @@ import com.github.turansky.yfiles.PUBLIC
 import com.github.turansky.yfiles.json.first
 import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jObject
+import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
 import kotlin.collections.first
 
@@ -92,7 +93,7 @@ internal fun applyHacks(api: JSONObject) {
 private fun removeUnusedFunctionSignatures(source: Source) {
     source.functionSignatures.apply {
         UNUSED_FUNCTION_SIGNATURES.forEach {
-            requireNotNull(remove(it))
+            strictRemove(it)
         }
     }
 }
@@ -168,7 +169,7 @@ private fun fixReturnType(source: Source) {
 private fun fixImplementedTypes(source: Source) {
     sequenceOf("EdgeList", "YNodeList")
         .map { source.type(it) }
-        .forEach { it.remove("implements") }
+        .forEach { it.strictRemove("implements") }
 }
 
 private fun fixConstructorParameterNullability(source: Source) {
@@ -354,7 +355,7 @@ private fun removeThisParameters(source: Source) {
         .filter { it.length() > 0 }
         .onEach {
             if ((it.last() as JSONObject).getString(J_NAME) == "thisArg") {
-                it.remove(it.length() - 1)
+                it.strictRemove(it.length() - 1)
             }
         }
         .flatMap { it.asSequence() }
@@ -388,6 +389,6 @@ private fun fieldToProperties(source: Source) {
             } else {
                 type.put(J_PROPERTIES, fields)
             }
-            type.remove(J_FIELDS)
+            type.strictRemove(J_FIELDS)
         }
 }

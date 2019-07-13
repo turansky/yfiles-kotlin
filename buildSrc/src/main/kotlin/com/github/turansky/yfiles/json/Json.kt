@@ -28,3 +28,11 @@ internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSO
         .map(this::getJSONObject)
         .filter(predicate)
 }
+
+internal fun JSONObject.strictRemove(key: String) {
+    requireNotNull(remove(key))
+}
+
+internal fun JSONArray.strictRemove(index: Int) {
+    requireNotNull(remove(index))
+}
