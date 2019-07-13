@@ -26,22 +26,31 @@ private val DP_KEY_GENERIC_MAP = mapOf(
 )
 
 private fun addDpKeyGeneric(source: Source) {
-    val baseType = source.type(DP_KEY_BASE)
-    baseType.addFirstTypeParameter(DP_KEY_BASE_KEY)
-    baseType.methodParameters(
-        "equalsCore",
-        "other",
-        { true }
-    ).single()
-        .updateDpKeyGeneric(J_TYPE, DP_KEY_BASE_KEY)
+    source.type(DP_KEY_BASE).apply {
+        addFirstTypeParameter(DP_KEY_BASE_KEY)
+        methodParameters(
+            "equalsCore",
+            "other",
+            { true }
+        ).single()
+            .updateDpKeyGeneric(J_TYPE, DP_KEY_BASE_KEY)
 
-    for ((type, generic) in DP_KEY_GENERIC_MAP) {
-        if (type == DP_KEY_BASE) {
+        property("declaringType")
+            .addGeneric(DP_KEY_BASE_KEY)
+    }
+
+    for ((className, generic) in DP_KEY_GENERIC_MAP) {
+        val type = source.type(className)
+
+        type.jsequence(J_CONSTRUCTORS)
+            .map { it.parameter("declaringType") }
+            .forEach { it.addGeneric(generic) }
+
+        if (className == DP_KEY_BASE) {
             continue
         }
 
-        source.type(type)
-            .updateDpKeyGeneric(J_EXTENDS, generic)
+        type.updateDpKeyGeneric(J_EXTENDS, generic)
     }
 
     source.type("DpKeyItemCollection")
