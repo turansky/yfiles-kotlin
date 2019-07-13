@@ -6,7 +6,9 @@ import org.json.JSONObject
 
 internal fun applyClassHacks(source: Source) {
     addDpKeyGeneric(source)
+
     addClassGeneric(source)
+    addConstructorClassGeneric(source)
 
     removeUnusedTypeParameters(source)
 }
@@ -185,7 +187,9 @@ private fun addClassGeneric(source: Source) {
             it.parameter("keyType").addGeneric("K")
             it.parameter("valueType").addGeneric("V")
         }
+}
 
+private fun addConstructorClassGeneric(source: Source) {
     source.types()
         .forEach { type ->
             val typeName = type.getString(J_NAME)
