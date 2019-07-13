@@ -6,6 +6,7 @@ import com.github.turansky.yfiles.PUBLIC
 import com.github.turansky.yfiles.json.first
 import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jObject
+import com.github.turansky.yfiles.json.removeItem
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
 import kotlin.collections.first
@@ -111,7 +112,7 @@ private fun fixUnionMethods(source: Source) {
     unionMethods
         .asSequence()
         .drop(1)
-        .forEach { methods.remove(methods.indexOf(it)) }
+        .forEach { methods.removeItem(it) }
 
     unionMethods.first()
         .firstParameter
@@ -280,7 +281,7 @@ private fun removeDuplicatedProperties(source: Source) {
             val property = properties
                 .firstWithName(declaration.propertyName)
 
-            properties.remove(properties.indexOf(property))
+            properties.removeItem(property)
         }
 }
 
@@ -294,7 +295,7 @@ private fun removeDuplicatedMethods(source: Source) {
             val method = methods
                 .firstWithName(declaration.methodName)
 
-            methods.remove(methods.indexOf(method))
+            methods.removeItem(method)
         }
 }
 
@@ -309,7 +310,7 @@ private fun removeSystemMethods(source: Source) {
                 .toList()
 
             systemMetods.forEach {
-                methods.remove(methods.indexOf(it))
+                methods.removeItem(it)
             }
         }
 }
@@ -329,7 +330,7 @@ private fun removeArtifitialParameters(source: Source) {
 
             val parameters = it.getJSONArray(J_PARAMETERS)
             artifitialParameters.forEach {
-                parameters.remove(parameters.indexOf(it))
+                parameters.removeItem(it)
             }
         }
 }
