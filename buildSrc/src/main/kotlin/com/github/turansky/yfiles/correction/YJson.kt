@@ -10,6 +10,10 @@ import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
+internal fun JSONObject.staticMethod(name: String): JSONObject =
+    getJSONArray(J_STATIC_METHODS)
+        .firstWithName(name)
+
 internal fun JSONObject.methodParameters(
     methodName: String,
     parameterName: String,

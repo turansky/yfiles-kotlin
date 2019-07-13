@@ -135,19 +135,16 @@ private fun fixConstantGenerics(source: Source) {
 
 private fun fixFunctionGenerics(source: Source) {
     source.type("List")
-        .getJSONArray(J_STATIC_METHODS)
-        .firstWithName("fromArray")
+        .staticMethod("fromArray")
         .setSingleTypeParameter()
 
     source.type("List")
-        .getJSONArray(J_STATIC_METHODS)
-        .firstWithName("from")
+        .staticMethod("from")
         .getJSONArray(J_TYPE_PARAMETERS)
         .put(jObject(J_NAME to "T"))
 
     source.type("IContextLookupChainLink")
-        .getJSONArray(J_STATIC_METHODS)
-        .firstWithName("addingLookupChainLink")
+        .staticMethod("addingLookupChainLink")
         .apply {
             setSingleTypeParameter("TResult")
             firstParameter.addGeneric("TResult")
@@ -236,8 +233,7 @@ private fun fixMethodParameterNullability(source: Source) {
 
 private fun fixMethodParameterType(source: Source) {
     source.type("IContextLookupChainLink")
-        .getJSONArray(J_STATIC_METHODS)
-        .firstWithName("addingLookupChainLink")
+        .staticMethod("addingLookupChainLink")
         .parameter("instance")
         .put(J_TYPE, "TResult")
 }
