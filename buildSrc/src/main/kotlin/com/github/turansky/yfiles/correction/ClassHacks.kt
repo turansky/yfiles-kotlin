@@ -2,9 +2,61 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.CANBENULL
 import com.github.turansky.yfiles.YCLASS
+import org.json.JSONObject
 
 internal fun applyClassHacks(source: Source) {
+    addDpKeyGeneric(source)
     addClassGeneric(source)
+}
+
+private val DP_KEY_BASE = "DpKeyBase"
+private val DP_KEY_BASE_KEY = "TKey"
+
+private val DP_KEY_BASE_DECLARATION = "yfiles.algorithms.DpKeyBase<"
+
+private val DP_KEY_GENERIC_MAP = mapOf(
+    DP_KEY_BASE to "TKey",
+    "EdgeDpKey" to "yfiles.graph.IEdge",
+    "GraphDpKey" to "yfiles.graph.IGraph",
+    "GraphObjectDpKey" to "yfiles.algorithms.GraphObject", // TODO: check generic
+    "IEdgeLabelLayoutDpKey" to "yfiles.layout.IEdgeLabelLayout",
+    "ILabelLayoutDpKey" to "yfiles.layout.ILabelLayout",
+    "INodeLabelLayoutDpKey" to "yfiles.layout.INodeLabelLayout",
+    "NodeDpKey" to "yfiles.graph.INode"
+)
+
+private fun addDpKeyGeneric(source: Source) {
+    val baseType = source.type(DP_KEY_BASE)
+    baseType.addFirstTypeParameter(DP_KEY_BASE_KEY)
+    baseType.methodParameters(
+        "equalsCore",
+        "other",
+        { true }
+    ).single()
+        .updateDpKeyGeneric(J_TYPE, DP_KEY_BASE_KEY)
+
+    for ((type, generic) in DP_KEY_GENERIC_MAP) {
+        if (type == DP_KEY_BASE) {
+            continue
+        }
+
+        source.type(type)
+            .updateDpKeyGeneric(J_EXTENDS, generic)
+    }
+
+    source.type("DpKeyItemCollection")
+        .jsequence(J_PROPERTIES)
+        .first { it.getString(J_NAME) == "dpKey" }
+        .updateDpKeyGeneric(J_TYPE, "T")
+}
+
+private fun JSONObject.updateDpKeyGeneric(
+    field: String,
+    generic: String
+) {
+    val value = getString(field)
+    require(value.startsWith(DP_KEY_BASE_DECLARATION))
+    put(field, value.replace(DP_KEY_BASE_DECLARATION, "$DP_KEY_BASE_DECLARATION$generic,"))
 }
 
 private fun addClassGeneric(source: Source) {
