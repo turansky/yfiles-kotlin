@@ -121,10 +121,13 @@ internal fun JSONObject.parameter(name: String): JSONObject {
         .first { it.getString(J_NAME) == name }
 }
 
-
 internal val JSONObject.firstParameter: JSONObject
     get() = getJSONArray(J_PARAMETERS)
         .get(0) as JSONObject
+
+internal val JSONObject.secondParameter: JSONObject
+    get() = getJSONArray(J_PARAMETERS)
+        .get(1) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {
     val type = getString(J_TYPE)

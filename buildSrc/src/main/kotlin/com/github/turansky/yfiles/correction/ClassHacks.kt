@@ -171,6 +171,7 @@ private fun addClassGeneric(source: Source) {
         "addConstantMapper",
         "addDelegateMapper",
 
+        "createMapper",
         "createConstantMapper",
         "createDelegateMapper",
 
@@ -179,6 +180,7 @@ private fun addClassGeneric(source: Source) {
         "createDataProvider"
     )
         .filter { it.firstParameter.getString(J_NAME) == "keyType" }
+        .filter { it.secondParameter.getString(J_NAME) == "valueType" }
         .forEach {
             it.parameter("keyType").addGeneric("K")
             it.parameter("valueType").addGeneric("V")
