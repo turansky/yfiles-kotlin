@@ -133,6 +133,11 @@ private fun addClassGeneric(source: Source) {
             it.parameter("resultType").addGeneric("TResult")
         }
 
+    source.allMethods("addConstant", "ofType")
+        .map { it.firstParameter }
+        .filter { it.getString(J_NAME) == "resultType" }
+        .forEach { it.addGeneric("TResult") }
+
     source.allMethods(
         "addGraphInputData",
         "addGraphOutputData"
