@@ -9,7 +9,7 @@ internal fun applyClassHacks(source: Source) {
 
 private fun addClassGeneric(source: Source) {
     source.type("Class")
-        .addStandardGeneric()
+        .setSingleTypeParameter()
 
     source.allMethods(
         "lookup",
@@ -22,7 +22,7 @@ private fun addClassGeneric(source: Source) {
         "getOrCreateCopy"
     )
         .forEach {
-            it.addStandardGeneric()
+            it.setSingleTypeParameter()
 
             it.typeParameter.addGeneric("T")
 

@@ -139,7 +139,7 @@ private fun fixFunctionGenerics(source: Source) {
     source.type("List")
         .getJSONArray(J_STATIC_METHODS)
         .firstWithName("fromArray")
-        .addStandardGeneric()
+        .setSingleTypeParameter()
 
     source.type("List")
         .getJSONArray(J_STATIC_METHODS)
@@ -151,7 +151,7 @@ private fun fixFunctionGenerics(source: Source) {
         .getJSONArray(J_STATIC_METHODS)
         .firstWithName("addingLookupChainLink")
         .apply {
-            addStandardGeneric("TResult")
+            setSingleTypeParameter("TResult")
             firstParameter.addGeneric("TResult")
         }
 }

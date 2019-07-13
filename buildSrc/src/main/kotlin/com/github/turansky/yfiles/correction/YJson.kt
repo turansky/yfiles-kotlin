@@ -60,9 +60,10 @@ internal fun JSONObject.changeNullability(
     }
 }
 
-internal fun JSONObject.addStandardGeneric(name: String = "T") {
+internal fun JSONObject.setSingleTypeParameter(name: String = "T") {
     put(
-        J_TYPE_PARAMETERS, jArray(
+        J_TYPE_PARAMETERS,
+        jArray(
             jObject(J_NAME to name)
         )
     )
