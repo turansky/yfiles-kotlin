@@ -3,7 +3,11 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.CANBENULL
 import com.github.turansky.yfiles.YCLASS
 
-internal fun addClassGeneric(source: Source) {
+internal fun applyClassHacks(source: Source) {
+    addClassGeneric(source)
+}
+
+private fun addClassGeneric(source: Source) {
     source.type("Class")
         .addStandardGeneric()
 

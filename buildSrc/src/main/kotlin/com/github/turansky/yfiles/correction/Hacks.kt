@@ -86,7 +86,7 @@ internal fun applyHacks(api: JSONObject) {
     addMissedMethods(source)
     fieldToProperties(source)
 
-    addClassGeneric(source)
+    applyClassHacks(source)
 }
 
 private fun removeUnusedFunctionSignatures(source: Source) {
