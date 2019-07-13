@@ -7,6 +7,8 @@ import org.json.JSONObject
 internal fun applyClassHacks(source: Source) {
     addDpKeyGeneric(source)
     addClassGeneric(source)
+
+    removeUnusedTypeParameters(source)
 }
 
 private val DP_KEY_BASE = "DpKeyBase"
@@ -220,4 +222,9 @@ private fun addClassGeneric(source: Source) {
                     }
                 }
         }
+}
+
+private fun removeUnusedTypeParameters(source: Source) {
+    source.allMethods("removeLookup")
+        .forEach { it.remove(J_TYPE_PARAMETERS) }
 }
