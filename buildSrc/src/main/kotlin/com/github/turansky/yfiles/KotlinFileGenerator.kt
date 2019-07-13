@@ -51,9 +51,13 @@ internal class KotlinFileGenerator(
         var companionContent = generatedFile.companionContent()
             ?: return
 
-        companionContent = "@file:Suppress(\"NOTHING_TO_INLINE\")\n" +
-                "package ${data.packageName}\n\n" +
+        companionContent = "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
+
+        if (generatedFile !is EnumFile) {
+            companionContent = "@file:Suppress(\"NOTHING_TO_INLINE\")\n\n" +
+                    companionContent
+        }
 
         dir.resolve("$fileName.ext.kt")
             .writeText(companionContent)
@@ -220,6 +224,14 @@ internal class KotlinFileGenerator(
                     |val yclass: yfiles.lang.Class<${getGeneric()}>
                 """.trimMargin()
 
+        protected fun typealiasDeclaration(): String? =
+            if (data.name != data.jsName) {
+                val generics = genericParameters()
+                "typealias ${data.jsName}$generics = ${data.name}$generics"
+            } else {
+                null
+            }
+
         open fun content(): String {
             return memberDeclarations
                 .lines { it.toCode() }
@@ -341,6 +353,10 @@ internal class KotlinFileGenerator(
                         content
             }
 
+            typealiasDeclaration()?.also {
+                content = it + "\n\n" + content
+            }
+
             return content
         }
     }
@@ -408,6 +424,7 @@ internal class KotlinFileGenerator(
                     "}"
         }
 
-        override fun companionContent(): String? = null
+        override fun companionContent(): String? =
+            typealiasDeclaration()
     }
 }
