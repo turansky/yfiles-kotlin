@@ -550,6 +550,9 @@ private class SummaryDelegate {
             .replace("</b>", "**")
             .replace("<i>", "*")
             .replace("</i>", "*")
+            .replace("<ul><li>", "\n+ ")
+            .replace("</li><li>", "\n+ ")
+            .replace("</li></ul>", "")
 }
 
 private class ModifiersDelegate {
@@ -626,7 +629,7 @@ private fun getDocumentation(
     }
 
     returns?.doc?.let {
-        lines.add("@return $it")
+        lines.addAll("@return $it".split("\n"))
     }
 
     if (lines.isEmpty()) {
