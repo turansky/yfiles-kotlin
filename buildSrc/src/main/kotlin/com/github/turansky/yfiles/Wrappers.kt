@@ -546,8 +546,11 @@ private class SummaryDelegate {
     }
 
     private fun String.fixApiLinks(): String {
-        val regex = Regex("<api-link data-type=\"([a-zA-Z.]+)\"></api-link>")
-        return this.replace(regex, "[$1]")
+        val typeRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\"></api-link>")
+        val memberRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z_]+)\"></api-link>")
+        return this
+            .replace(typeRegex, "[$1]")
+            .replace(memberRegex, "[$1.$2]")
     }
 
     private fun String.fixMarkdown(): String =
