@@ -585,11 +585,10 @@ private fun getDocumentation(
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null
 ): String {
-    if (summary == null) {
-        return ""
+    val lines = mutableListOf<String>()
+    if (summary != null) {
+        lines.add(summary)
     }
-
-    val lines = mutableListOf(summary)
 
     typeparameters?.apply {
         asSequence()
