@@ -30,7 +30,7 @@ fun interfaceCastExtensions(
     val classDeclaration = className + generics
 
     return """
-        |inline fun Any?.is$className() = 
+        |inline fun Any?.is$className():Boolean = 
         |   ${yclass}.isInstance(this)
         |
         |inline fun $generics Any?.as$className(): $classDeclaration? =
