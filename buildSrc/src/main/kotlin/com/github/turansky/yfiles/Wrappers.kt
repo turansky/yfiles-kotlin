@@ -590,7 +590,7 @@ private fun getDocumentation(
     val lines = mutableListOf(summary ?: "no summary")
 
     typeparameters?.mapTo(lines) {
-        "[${it.name}] - ${it.summary ?: UNDOCUMENTED}"
+        "@param ${it.name} ${it.summary ?: UNDOCUMENTED}"
     }
 
     parameters?.mapTo(lines) {
