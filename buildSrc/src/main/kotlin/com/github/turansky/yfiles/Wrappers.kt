@@ -114,11 +114,11 @@ internal interface IReturns {
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val type: String by TypeDelegate { parseType(it) }
-    override val doc: String? by NullableStringDelegate()
+    override val doc: String? by SummaryDelegate()
 
     override fun toCode(): String {
         // TODO: remove specific hack for MapperDelegate
-        return if (type == "V" || doc?.contains("or <code>null</code>") == true) {
+        return if (type == "V" || doc?.contains("or `null`") == true) {
             "$type?"
         } else {
             type
@@ -446,7 +446,7 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { parse(it, signature) }
-    override val doc: String? by NullableStringDelegate()
+    override val doc: String? by SummaryDelegate()
 }
 
 internal class Event(
