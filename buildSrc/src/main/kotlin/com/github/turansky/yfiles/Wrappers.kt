@@ -22,7 +22,7 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
     val name: String by StringDelegate()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
-    val summary: String? by NullableStringDelegate()
+    val summary: String? by SummaryDelegate()
     val remarks: String by StringDelegate()
 
     override fun compareTo(other: Declaration): Int =
@@ -63,7 +63,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
     override val classId = fixPackage(fqn)
 
-    val summary: String? by NullableStringDelegate()
+    val summary: String? by SummaryDelegate()
     private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     private val returns: SignatureReturns? by SignatureReturnsDelegate()
@@ -100,7 +100,7 @@ internal interface IParameter {
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by StringDelegate()
     val type: String by TypeDelegate { parseType(it) }
-    override val summary: String? by NullableStringDelegate()
+    override val summary: String? by SummaryDelegate()
 
     // TODO: remove temp nullability fix
     override fun toCode(): String {
@@ -434,13 +434,13 @@ internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
     private val signature: String? by NullableStringDelegate()
     val lambda: Boolean = signature != null
     val type: String by TypeDelegate { parse(it, signature) }
-    override val summary: String? by NullableStringDelegate()
+    override val summary: String? by SummaryDelegate()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val summary: String? by NullableStringDelegate()
+    val summary: String? by SummaryDelegate()
 }
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
@@ -454,7 +454,7 @@ internal class Event(
     private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val summary: String? by NullableStringDelegate()
+    val summary: String? by SummaryDelegate()
     private val add: EventListener by EventListenerDelegate(parent)
     private val remove: EventListener by EventListenerDelegate(parent)
     private val listeners = listOf(add, remove)
@@ -532,6 +532,12 @@ internal class EventListenerModifiers(flags: List<String>) {
 private class TypeDelegate(private val parse: (String) -> String) {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
         return parse(StringDelegate.value(thisRef, property))
+    }
+}
+
+private class SummaryDelegate {
+    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String? {
+        return NullableStringDelegate.value(thisRef, property)
     }
 }
 

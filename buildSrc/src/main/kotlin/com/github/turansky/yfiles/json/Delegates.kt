@@ -80,11 +80,17 @@ internal class MapDelegate<T>(private val transform: (name: String, source: JSON
 }
 
 internal class NullableStringDelegate {
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): String? {
-        val source = thisRef.source
-        val key = property.name
+    companion object {
+        fun value(thisRef: HasSource, property: KProperty<*>): String? {
+            val source = thisRef.source
+            val key = property.name
 
-        return if (source.has(key)) source.getString(key) else null
+            return if (source.has(key)) source.getString(key) else null
+        }
+    }
+
+    operator fun getValue(thisRef: HasSource, property: KProperty<*>): String? {
+        return value(thisRef, property)
     }
 }
 
