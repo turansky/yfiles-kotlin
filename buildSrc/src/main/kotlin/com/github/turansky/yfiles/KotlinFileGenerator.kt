@@ -90,8 +90,15 @@ internal class KotlinFileGenerator(
             .replace(Regex("(\\n\\s?){2,}}"), "\n}")
 
         val regex = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)")
+
+        val code = content
+            .split("\n")
+            .asSequence()
+            .filterNot { it.startsWith(" *") }
+            .joinToString("\n")
+
         val importedClasses = regex
-            .findAll(content)
+            .findAll(code)
             .map { it.value }
             .distinct()
             // TODO: remove after es6name use
@@ -100,7 +107,7 @@ internal class KotlinFileGenerator(
             .plus(
                 STANDARD_IMPORTED_TYPES
                     .asSequence()
-                    .filter { content.contains(it) }
+                    .filter { code.contains(it) }
             )
             .sorted()
             .toList()
