@@ -543,6 +543,10 @@ private class SummaryDelegate {
         return value
             .replace("<code>", "`")
             .replace("</code>", "`")
+            .replace("<b>", "**")
+            .replace("</b>", "**")
+            .replace("<i>", "*")
+            .replace("</i>", "*")
     }
 }
 
