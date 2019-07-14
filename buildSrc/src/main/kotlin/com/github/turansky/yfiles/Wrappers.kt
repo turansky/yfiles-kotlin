@@ -540,7 +540,14 @@ private class SummaryDelegate {
         val value = NullableStringDelegate.value(thisRef, property)
             ?: return null
 
-        return value.fixMarkdown()
+        return value
+            .fixApiLinks()
+            .fixMarkdown()
+    }
+
+    private fun String.fixApiLinks(): String {
+        val regex = Regex("<api-link data-type=\"([a-zA-Z.]+)\"></api-link>")
+        return this.replace(regex, "[$1]")
     }
 
     private fun String.fixMarkdown(): String =
