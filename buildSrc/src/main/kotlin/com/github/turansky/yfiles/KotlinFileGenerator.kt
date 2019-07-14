@@ -198,6 +198,9 @@ internal class KotlinFileGenerator(
         protected val classDeclaration
             get() = declaration.classDeclaration
 
+        protected val documentation
+            get() = declaration.documentation
+
         protected open fun parentTypes(): List<String> {
             return declaration.implementedTypes()
         }
@@ -317,7 +320,8 @@ internal class KotlinFileGenerator(
                 ""
             }
 
-            return externalAnnotation +
+            return documentation +
+                    externalAnnotation +
                     "external ${type()} $classDeclaration $constructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
@@ -334,11 +338,12 @@ internal class KotlinFileGenerator(
                 }.lines()
             }
 
-            return """
-                |external object ${data.jsName} {
-                |$code
-                |}
-            """.trimMargin()
+            return documentation +
+                    """
+                        |external object ${data.jsName} {
+                        |$code
+                        |}
+                    """.trimMargin()
         }
 
         override fun companionContent(): String? {
@@ -383,7 +388,8 @@ internal class KotlinFileGenerator(
             val content = super.content()
                 .replace("abstract ", "")
 
-            return externalAnnotation +
+            return documentation +
+                    externalAnnotation +
                     "external interface $classDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
@@ -418,7 +424,8 @@ internal class KotlinFileGenerator(
                 .map { "    ${it.name}" }
                 .joinToString(separator = ",\n", postfix = ";\n")
 
-            return externalAnnotation +
+            return documentation +
+                    externalAnnotation +
                     "external enum class ${data.name} {\n" +
                     values + "\n" +
                     super.content() + "\n" +

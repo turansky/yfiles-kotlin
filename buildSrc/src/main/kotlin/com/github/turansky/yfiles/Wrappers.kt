@@ -149,7 +149,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     override val classDeclaration = name + genericParameters()
 
-    private val documentation: String
+    val documentation: String
         get() = getDocumentation(
             summary = summary,
             typeparameters = typeparameters
