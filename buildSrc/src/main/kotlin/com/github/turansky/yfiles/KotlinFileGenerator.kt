@@ -136,19 +136,19 @@ internal class KotlinFileGenerator(
 
         protected val properties: List<Property>
             get() = declaration.properties
-                .sortedBy { it.name }
+                .sorted()
 
         protected val staticConstants: List<Constant>
             get() = declaration.constants
-                .sortedBy { it.name }
+                .sorted()
 
         protected val staticProperties: List<Property>
             get() = declaration.staticProperties
-                .sortedBy { it.name }
+                .sorted()
 
         protected val staticFunctions: List<Method>
             get() = declaration.staticMethods
-                .sortedBy { it.name }
+                .sorted()
 
         protected val staticDeclarations: List<Declaration>
             get() {
@@ -164,7 +164,7 @@ internal class KotlinFileGenerator(
 
         protected val memberFunctions: List<Method>
             get() = declaration.methods
-                .sortedBy { it.name }
+                .sorted()
 
         protected val memberEvents: List<Event>
             get() = if (declaration is ExtendedType) {
@@ -421,8 +421,8 @@ internal class KotlinFileGenerator(
         override fun content(): String {
             val values = declaration.constants
                 .asSequence()
-                .map { "    ${it.name}" }
-                .joinToString(separator = ",\n", postfix = ";\n")
+                .map { it.toEnumValue() }
+                .joinToString(separator = ",\n\n", postfix = ";\n")
 
             return documentation +
                     externalAnnotation +

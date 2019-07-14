@@ -18,12 +18,15 @@ internal abstract class JsonWrapper(override val source: JSONObject) : HasSource
     }
 }
 
-internal abstract class Declaration(source: JSONObject) : JsonWrapper(source) {
+internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
     val name: String by StringDelegate()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
     val summary: String? by NullableStringDelegate()
     val remarks: String by StringDelegate()
+
+    override fun compareTo(other: Declaration): Int =
+        name.compareTo(other.name)
 }
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
@@ -237,6 +240,9 @@ internal class Constant(source: JSONObject) : TypedDeclaration(source) {
         return documentation +
                 "val $name: $type"
     }
+
+    fun toEnumValue(): String =
+        documentation + name
 }
 
 internal class Property(
