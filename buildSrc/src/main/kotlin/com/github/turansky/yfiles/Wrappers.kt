@@ -9,6 +9,10 @@ internal abstract class JsonWrapper(override val source: JSONObject) : HasSource
         throw IllegalStateException("toCode() method must be overridden")
     }
 
+    open fun toExtensionCode(): String {
+        throw IllegalStateException("toExtensionCode() method must be overridden")
+    }
+
     final override fun toString(): String {
         throw IllegalStateException("Use method toCode() instead")
     }
@@ -238,7 +242,7 @@ internal class Property(
         return str
     }
 
-    fun toExtensionCode(): String {
+    override fun toExtensionCode(): String {
         require(!protected)
         requireNotNull(parent)
 
@@ -316,7 +320,7 @@ internal class Method(
         return "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
-    fun toExtensionCode(): String {
+    override fun toExtensionCode(): String {
         require(!protected)
         requireNotNull(parent)
 
@@ -408,7 +412,7 @@ internal class Event(
             .lines { it.toCode() }
     }
 
-    fun toExtensionCode(): String {
+    override fun toExtensionCode(): String {
         val generics = getGenericString(parent.typeparameters)
         val extensionName = "add${name}Handler"
 

@@ -398,14 +398,7 @@ internal class KotlinFileGenerator(
             }
 
             val extensions = defaultDeclarations
-                .lines {
-                    when (it) {
-                        is Property -> it.toExtensionCode()
-                        is Method -> it.toExtensionCode()
-                        is Event -> it.toExtensionCode()
-                        else -> throw IllegalStateException("Invalid default declaration")
-                    }
-                }
+                .lines { it.toExtensionCode() }
 
             return "$extensions\n\n$content"
         }
