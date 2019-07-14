@@ -65,6 +65,13 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     private val returns: SignatureReturns? by SignatureReturnsDelegate()
 
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            parameters = parameters,
+            typeparameters = typeparameters
+        )
+
     override fun toCode(): String {
         val generics = if (typeparameters.isNotEmpty()) {
             "<${typeparameters.byComma { it.name }}>"
@@ -80,10 +87,15 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
     }
 }
 
-internal class SignatureParameter(source: JSONObject) : JsonWrapper(source) {
-    val name: String by StringDelegate()
+internal interface IParameter {
+    val name: String
+    val summary: String?
+}
+
+internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
+    override val name: String by StringDelegate()
     val type: String by TypeDelegate { parseType(it) }
-    val summary: String by StringDelegate()
+    override val summary: String by StringDelegate()
 
     // TODO: remove temp nullability fix
     override fun toCode(): String {
@@ -130,6 +142,12 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val implements: List<String> by StringArrayDelegate()
 
     override val classDeclaration = name + genericParameters()
+
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            typeparameters = typeparameters
+        )
 
     fun genericParameters(): String {
         return getGenericString(typeparameters)
@@ -187,6 +205,12 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
 
     override val overridden: Boolean = false
 
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            parameters = parameters
+        )
+
     override fun toCode(): String {
         val modificator: String = when {
             protected -> "protected"
@@ -198,6 +222,11 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
 }
 
 internal class Constant(source: JSONObject) : TypedDeclaration(source) {
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary
+        )
+
     override fun toCode(): String {
         return "val $name: $type"
     }
@@ -217,6 +246,11 @@ internal class Property(
 
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverriden(parent!!.classId, name)
+
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary
+        )
 
     override fun toCode(): String {
         var str = ""
@@ -285,6 +319,13 @@ internal class Method(
 
     override val overridden: Boolean
         get() = !static && ClassRegistry.instance.functionOverriden(parent!!.classId, name)
+
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            parameters = parameters,
+            typeparameters = typeparameters
+        )
 
     private fun kotlinModificator(): String {
         if (isExtension) {
@@ -372,12 +413,12 @@ internal class ParameterModifiers(flags: List<String>) {
     val nullability = if (canbenull) "?" else ""
 }
 
-internal class Parameter(source: JSONObject) : JsonWrapper(source) {
-    val name: String by StringDelegate()
+internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
+    override val name: String by StringDelegate()
     private val signature: String? by NullableStringDelegate()
     val lambda: Boolean = signature != null
     val type: String by TypeDelegate { parse(it, signature) }
-    val summary: String? by NullableStringDelegate()
+    override val summary: String? by NullableStringDelegate()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
@@ -406,6 +447,11 @@ internal class Event(
 
     val listenerNames: List<String>
         get() = listeners.map { it.name }
+
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary
+        )
 
     override fun toCode(): String {
         return listeners
@@ -518,5 +564,13 @@ private class EventListenerModifiersDelegate {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListenerModifiers {
         return EventListenerModifiers(StringArrayDelegate.value(thisRef, property))
     }
+}
+
+private fun getDocumentation(
+    summary: String,
+    parameters: List<IParameter>? = null,
+    typeparameters: List<TypeParameter>? = null
+): String {
+    return ""
 }
 
