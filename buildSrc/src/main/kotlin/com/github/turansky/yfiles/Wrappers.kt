@@ -102,6 +102,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal interface TypeDeclaration : HasClassId {
+    val classDeclaration: String
     val typeparameters: List<TypeParameter>
 }
 
@@ -123,6 +124,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     private val extends: String? by NullableStringDelegate()
     private val implements: List<String> by StringArrayDelegate()
+
+    override val classDeclaration = name + genericParameters()
 
     fun genericParameters(): String {
         return getGenericString(typeparameters)
@@ -235,16 +238,14 @@ internal class Property(
         return str
     }
 
-    fun toExtensionCode(
-        classDeclaration: String
-    ): String {
+    fun toExtensionCode(): String {
         require(!protected)
         requireNotNull(parent)
 
         val generics = getGenericString(parent.typeparameters)
 
         var str = "inline " + if (getterSetter) "var " else "val "
-        str += "$generics ${classDeclaration}.$name: $type${modifiers.nullability}\n" +
+        str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $AS_DYNAMIC.$name"
         if (getterSetter) {
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
@@ -315,9 +316,7 @@ internal class Method(
         return "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
-    fun toExtensionCode(
-        classDeclaration: String
-    ): String {
+    fun toExtensionCode(): String {
         require(!protected)
         requireNotNull(parent)
 
@@ -329,7 +328,7 @@ internal class Method(
 
         val generics = getGenericString(parent.typeparameters + typeparameters)
 
-        return "inline fun $generics ${classDeclaration}.$name($extParameters)$returnSignature =\n" +
+        return "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature =\n" +
                 "$AS_DYNAMIC.$name($callParameters)"
     }
 }
@@ -409,9 +408,7 @@ internal class Event(
             .lines { it.toCode() }
     }
 
-    fun toExtensionCode(
-        classDeclaration: String
-    ): String {
+    fun toExtensionCode(): String {
         val generics = getGenericString(parent.typeparameters)
         val extensionName = "add${name}Handler"
 
@@ -419,7 +416,7 @@ internal class Event(
         val data = getHandlerData(listenerType)
 
         return """
-                inline fun $generics ${classDeclaration}.$extensionName(
+                inline fun $generics ${parent.classDeclaration}.$extensionName(
                 crossinline handler: ${data.handlerType}
                 ): () -> Unit {
                 val listener: $listenerType = ${data.listenerBody}

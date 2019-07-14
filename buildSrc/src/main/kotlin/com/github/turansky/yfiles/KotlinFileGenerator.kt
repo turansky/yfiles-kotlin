@@ -188,7 +188,8 @@ internal class KotlinFileGenerator(
                         "package ${data.packageName}\n"
             }
 
-        protected val classDeclaration = data.name + genericParameters()
+        protected val classDeclaration
+            get() = declaration.classDeclaration
 
         protected open fun parentTypes(): List<String> {
             return declaration.implementedTypes()
@@ -348,7 +349,7 @@ internal class KotlinFileGenerator(
 
             if (events.isNotEmpty()) {
                 content = events
-                    .lines { it.toExtensionCode(classDeclaration) } +
+                    .lines { it.toExtensionCode() } +
                         "\n\n" +
                         content
             }
@@ -399,9 +400,9 @@ internal class KotlinFileGenerator(
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
-                        is Property -> it.toExtensionCode(classDeclaration)
-                        is Method -> it.toExtensionCode(classDeclaration)
-                        is Event -> it.toExtensionCode(classDeclaration)
+                        is Property -> it.toExtensionCode()
+                        is Method -> it.toExtensionCode()
+                        is Event -> it.toExtensionCode()
                         else -> throw IllegalStateException("Invalid default declaration")
                     }
                 }
