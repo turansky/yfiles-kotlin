@@ -551,7 +551,7 @@ private class SummaryDelegate {
         val typeTextRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-text=\"([^\"]+)\"></api-link>")
         val memberRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z_]+)\"></api-link>")
         return this
-            .replace("&lt;T&gt;\"", "")
+            .replace("&lt;T&gt;\"", "\"")
             .replace(typeCleanRegex, "$1")
             .replace(typeRegex, "[$1]")
             .replace(typeTextRegex, "[$2][$1]")
