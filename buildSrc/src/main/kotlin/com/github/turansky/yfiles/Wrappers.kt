@@ -69,7 +69,8 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
         get() = getDocumentation(
             summary = summary,
             parameters = parameters,
-            typeparameters = typeparameters
+            typeparameters = typeparameters,
+            returns = returns
         )
 
     override fun toCode(): String {
@@ -104,9 +105,13 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IPa
     }
 }
 
-internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
+internal interface IReturns {
+    val doc: String?
+}
+
+internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val type: String by TypeDelegate { parseType(it) }
-    private val doc: String? by NullableStringDelegate()
+    override val doc: String? by NullableStringDelegate()
 
     override fun toCode(): String {
         // TODO: remove specific hack for MapperDelegate
@@ -326,7 +331,8 @@ internal class Method(
         get() = getDocumentation(
             summary = summary,
             parameters = parameters,
-            typeparameters = typeparameters
+            typeparameters = typeparameters,
+            returns = returns
         )
 
     private fun kotlinModificator(): String {
@@ -431,9 +437,10 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val summary: String? by NullableStringDelegate()
 }
 
-internal class Returns(source: JSONObject) : JsonWrapper(source) {
+internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { parse(it, signature) }
+    override val doc: String? by NullableStringDelegate()
 }
 
 internal class Event(
@@ -577,7 +584,8 @@ private val UNDOCUMENTED = "<undocumented>"
 private fun getDocumentation(
     summary: String?,
     parameters: List<IParameter>? = null,
-    typeparameters: List<TypeParameter>? = null
+    typeparameters: List<TypeParameter>? = null,
+    returns: IReturns? = null
 ): String {
     val lines = mutableListOf(summary ?: "[no summary]")
 
@@ -587,6 +595,10 @@ private fun getDocumentation(
 
     parameters?.mapTo(lines) {
         "@param ${it.name} ${it.summary ?: UNDOCUMENTED}"
+    }
+
+    returns?.apply {
+        "@return ${doc ?: UNDOCUMENTED}"
     }
 
     return "/**\n" +
