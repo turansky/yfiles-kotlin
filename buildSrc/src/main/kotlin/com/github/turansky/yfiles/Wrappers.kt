@@ -537,7 +537,12 @@ private class TypeDelegate(private val parse: (String) -> String) {
 
 private class SummaryDelegate {
     operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String? {
-        return NullableStringDelegate.value(thisRef, property)
+        val value = NullableStringDelegate.value(thisRef, property)
+            ?: return null
+
+        return value
+            .replace("<code>", "`")
+            .replace("</code>", "`")
     }
 }
 
