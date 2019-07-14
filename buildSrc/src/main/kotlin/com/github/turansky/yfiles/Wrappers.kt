@@ -22,7 +22,7 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
-    val summary: String by StringDelegate()
+    val summary: String? by NullableStringDelegate()
     val remarks: String by StringDelegate()
 }
 
@@ -60,7 +60,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
     override val classId = fixPackage(fqn)
 
-    val summary: String by StringDelegate()
+    val summary: String? by NullableStringDelegate()
     private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     private val returns: SignatureReturns? by SignatureReturnsDelegate()
@@ -83,7 +83,8 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
         val returns = returns?.toCode() ?: UNIT
 
         val data = GeneratorData(classId)
-        return "typealias ${data.name}$generics = ($parameters) -> $returns"
+        return "$documentation\n" +
+                "typealias ${data.name}$generics = ($parameters) -> $returns"
     }
 }
 
@@ -95,7 +96,7 @@ internal interface IParameter {
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by StringDelegate()
     val type: String by TypeDelegate { parseType(it) }
-    override val summary: String by StringDelegate()
+    override val summary: String? by NullableStringDelegate()
 
     // TODO: remove temp nullability fix
     override fun toCode(): String {
@@ -228,7 +229,8 @@ internal class Constant(source: JSONObject) : TypedDeclaration(source) {
         )
 
     override fun toCode(): String {
-        return "val $name: $type"
+        return "$documentation\n" +
+                "val $name: $type"
     }
 }
 
@@ -273,7 +275,7 @@ internal class Property(
         str += if (getterSetter) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        return str
+        return "$documentation\n$str"
     }
 
     override fun toExtensionCode(): String {
@@ -289,7 +291,7 @@ internal class Property(
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
-        return str
+        return "$documentation\n$str"
     }
 }
 
@@ -358,7 +360,8 @@ internal class Method(
             " operator "
         )
 
-        return "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
+        return "$documentation\n" +
+                "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
     override fun toExtensionCode(): String {
@@ -373,7 +376,8 @@ internal class Method(
 
         val generics = getGenericString(parent.typeparameters + typeparameters)
 
-        return "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature =\n" +
+        return "$documentation\n" +
+                "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature =\n" +
                 "$AS_DYNAMIC.$name($callParameters)"
     }
 }
@@ -424,6 +428,7 @@ internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
+    val summary: String? by NullableStringDelegate()
 }
 
 internal class Returns(source: JSONObject) : JsonWrapper(source) {
@@ -436,7 +441,7 @@ internal class Event(
     private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val summary: String by StringDelegate()
+    val summary: String? by NullableStringDelegate()
     private val add: EventListener by EventListenerDelegate(parent)
     private val remove: EventListener by EventListenerDelegate(parent)
     private val listeners = listOf(add, remove)
@@ -454,8 +459,8 @@ internal class Event(
         )
 
     override fun toCode(): String {
-        return listeners
-            .lines { it.toCode() }
+        return "$documentation\n" +
+                listeners.lines { it.toCode() }
     }
 
     override fun toExtensionCode(): String {
@@ -466,6 +471,7 @@ internal class Event(
         val data = getHandlerData(listenerType)
 
         return """
+                $documentation
                 inline fun $generics ${parent.classDeclaration}.$extensionName(
                 crossinline handler: ${data.handlerType}
                 ): () -> Unit {
@@ -566,11 +572,25 @@ private class EventListenerModifiersDelegate {
     }
 }
 
+private val UNDOCUMENTED = "<undocumented>"
+
 private fun getDocumentation(
-    summary: String,
+    summary: String?,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null
 ): String {
-    return ""
+    val lines = mutableListOf(summary ?: "[no summary]")
+
+    typeparameters?.mapTo(lines) {
+        "[${it.name}] - ${it.summary ?: UNDOCUMENTED}"
+    }
+
+    parameters?.mapTo(lines) {
+        "@param ${it.name} ${it.summary ?: UNDOCUMENTED}"
+    }
+
+    return "/**\n" +
+            lines.lines { " * $it" } +
+            " */"
 }
 
