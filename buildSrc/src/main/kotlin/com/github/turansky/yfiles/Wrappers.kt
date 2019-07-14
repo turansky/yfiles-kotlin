@@ -84,7 +84,7 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
         val returns = returns?.toCode() ?: UNIT
 
         val data = GeneratorData(classId)
-        return "$documentation\n" +
+        return documentation +
                 "typealias ${data.name}$generics = ($parameters) -> $returns"
     }
 }
@@ -234,7 +234,7 @@ internal class Constant(source: JSONObject) : TypedDeclaration(source) {
         )
 
     override fun toCode(): String {
-        return "$documentation\n" +
+        return documentation +
                 "val $name: $type"
     }
 }
@@ -280,7 +280,7 @@ internal class Property(
         str += if (getterSetter) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        return "$documentation\n$str"
+        return "$documentation$str"
     }
 
     override fun toExtensionCode(): String {
@@ -296,7 +296,7 @@ internal class Property(
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
-        return "$documentation\n$str"
+        return "$documentation$str"
     }
 }
 
@@ -366,7 +366,7 @@ internal class Method(
             " operator "
         )
 
-        return "$documentation\n" +
+        return documentation +
                 "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
@@ -382,7 +382,7 @@ internal class Method(
 
         val generics = getGenericString(parent.typeparameters + typeparameters)
 
-        return "$documentation\n" +
+        return documentation +
                 "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature =\n" +
                 "$AS_DYNAMIC.$name($callParameters)"
     }
@@ -466,7 +466,7 @@ internal class Event(
         )
 
     override fun toCode(): String {
-        return "$documentation\n" +
+        return documentation +
                 listeners.lines { it.toCode() }
     }
 
@@ -477,16 +477,16 @@ internal class Event(
         val listenerType = add.parameters.single().type
         val data = getHandlerData(listenerType)
 
-        return """
-                $documentation
-                inline fun $generics ${parent.classDeclaration}.$extensionName(
-                crossinline handler: ${data.handlerType}
-                ): () -> Unit {
-                val listener: $listenerType = ${data.listenerBody}
-                ${add.name}(listener)
-                return { ${remove.name}(listener) }
-                }
-        """.trimIndent()
+        return documentation +
+                """
+                    inline fun $generics ${parent.classDeclaration}.$extensionName(
+                        crossinline handler: ${data.handlerType}
+                    ): () -> Unit {
+                        val listener: $listenerType = ${data.listenerBody}
+                        ${add.name}(listener)
+                        return { ${remove.name}(listener) }
+                    }
+                """.trimIndent()
     }
 }
 
@@ -603,6 +603,6 @@ private fun getDocumentation(
 
     return "/**\n" +
             lines.lines { " * $it" } +
-            " */"
+            " */\n"
 }
 
