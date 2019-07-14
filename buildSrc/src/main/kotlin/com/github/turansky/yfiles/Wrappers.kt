@@ -550,12 +550,14 @@ private class SummaryDelegate {
         val typeRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\"></api-link>")
         val typeTextRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-text=\"([^\"]+)\"></api-link>")
         val memberRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z_]+)\"></api-link>")
+        val memberTextRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z_]+)\" data-text=\"([^\"]+)\"></api-link>")
         return this
             .replace("&lt;T&gt;\"", "\"")
             .replace(typeCleanRegex, "$1")
             .replace(typeRegex, "[$1]")
             .replace(typeTextRegex, "[$2][$1]")
             .replace(memberRegex, "[$1.$2]")
+            .replace(memberTextRegex, "[$3][$1.$2]")
     }
 
     private fun String.fixMarkdown(): String =
