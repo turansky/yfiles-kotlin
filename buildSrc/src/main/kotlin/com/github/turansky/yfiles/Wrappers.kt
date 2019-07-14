@@ -579,7 +579,7 @@ private class EventListenerModifiersDelegate {
     }
 }
 
-private val UNDOCUMENTED = "<undocumented>"
+private val UNDOCUMENTED = "undocumented"
 
 private fun getDocumentation(
     summary: String?,
@@ -587,7 +587,7 @@ private fun getDocumentation(
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null
 ): String {
-    val lines = mutableListOf(summary ?: "[no summary]")
+    val lines = mutableListOf(summary ?: "no summary")
 
     typeparameters?.mapTo(lines) {
         "[${it.name}] - ${it.summary ?: UNDOCUMENTED}"
