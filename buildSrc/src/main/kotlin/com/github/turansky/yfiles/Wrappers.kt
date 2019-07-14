@@ -540,14 +540,16 @@ private class SummaryDelegate {
         val value = NullableStringDelegate.value(thisRef, property)
             ?: return null
 
-        return value
-            .replace("<code>", "`")
+        return value.fixMarkdown()
+    }
+
+    private fun String.fixMarkdown(): String =
+        replace("<code>", "`")
             .replace("</code>", "`")
             .replace("<b>", "**")
             .replace("</b>", "**")
             .replace("<i>", "*")
             .replace("</i>", "*")
-    }
 }
 
 private class ModifiersDelegate {
