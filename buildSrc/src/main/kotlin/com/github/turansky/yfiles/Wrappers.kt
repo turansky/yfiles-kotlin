@@ -53,7 +53,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
+internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), TypeDeclaration {
     override val classId = fixPackage(fqn)
 
     val summary: String by StringDelegate()
@@ -102,7 +102,9 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     }
 }
 
-internal sealed class Type(source: JSONObject) : Declaration(source), HasClassId {
+internal interface TypeDeclaration : HasClassId
+
+internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclaration {
     private val id: String by StringDelegate()
     override val classId: ClassId = fixPackage(id)
 
@@ -195,7 +197,7 @@ internal class Constant(source: JSONObject) : TypedDeclaration(source) {
 
 internal class Property(
     source: JSONObject,
-    private val parent: HasClassId? = null
+    private val parent: TypeDeclaration? = null
 ) : TypedDeclaration(source) {
     val static = modifiers.static
     val protected = modifiers.protected
@@ -258,7 +260,7 @@ private val OPERATOR_NAMES = setOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: HasClassId? = null
+    private val parent: TypeDeclaration? = null
 ) : MethodBase(source) {
     val abstract = modifiers.abstract
     val static = modifiers.static
@@ -386,7 +388,7 @@ internal class Returns(source: JSONObject) : JsonWrapper(source) {
 
 internal class Event(
     source: JSONObject,
-    parent: HasClassId
+    parent: TypeDeclaration
 ) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val summary: String by StringDelegate()
