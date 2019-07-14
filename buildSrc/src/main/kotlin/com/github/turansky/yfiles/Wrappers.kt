@@ -579,26 +579,36 @@ private class EventListenerModifiersDelegate {
     }
 }
 
-private val UNDOCUMENTED = "undocumented"
-
 private fun getDocumentation(
     summary: String?,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null
 ): String {
-    val lines = mutableListOf(summary ?: "no summary")
-
-    typeparameters?.mapTo(lines) {
-        "@param ${it.name} ${it.summary ?: UNDOCUMENTED}"
+    if (summary == null) {
+        return ""
     }
 
-    parameters?.mapTo(lines) {
-        "@param ${it.name} ${it.summary ?: UNDOCUMENTED}"
+    val lines = mutableListOf(summary)
+
+    typeparameters?.apply {
+        asSequence()
+            .filter { it.summary != null }
+            .mapTo(lines) { "@param ${it.name} ${it.summary}" }
     }
 
-    returns?.apply {
-        "@return ${doc ?: UNDOCUMENTED}"
+    parameters?.apply {
+        asSequence()
+            .filter { it.summary != null }
+            .mapTo(lines) { "@param ${it.name} ${it.summary}" }
+    }
+
+    returns?.doc?.let {
+        lines.add("@return $it")
+    }
+
+    if (lines.isEmpty()) {
+        return ""
     }
 
     return "/**\n" +
