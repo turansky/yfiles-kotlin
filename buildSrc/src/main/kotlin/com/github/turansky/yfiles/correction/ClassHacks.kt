@@ -243,6 +243,13 @@ private fun addMethodClassGeneric(source: Source) {
             firstParameter.put(J_TYPE, "T")
             secondParameter.addGeneric("T")
         }
+
+    source.type("MapperMetadata")
+        .staticMethod("create")
+        .apply {
+            parameter("keyType").addGeneric("TKey")
+            parameter("valueType").addGeneric("TValue")
+        }
 }
 
 private fun removeUnusedTypeParameters(source: Source) {
