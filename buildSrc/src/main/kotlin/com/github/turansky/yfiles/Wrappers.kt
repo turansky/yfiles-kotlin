@@ -53,7 +53,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by ArrayDelegate { parseType(it) }
 }
 
-internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), TypeDeclaration {
+internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
     override val classId = fixPackage(fqn)
 
     val summary: String by StringDelegate()
@@ -62,7 +62,6 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
     private val returns: SignatureReturns? by SignatureReturnsDelegate()
 
     override fun toCode(): String {
-        val typeparameters = typeparameters
         val generics = if (typeparameters.isNotEmpty()) {
             "<${typeparameters.byComma { it.name }}>"
         } else {
@@ -102,7 +101,9 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source) {
     }
 }
 
-internal interface TypeDeclaration : HasClassId
+internal interface TypeDeclaration : HasClassId {
+    val typeparameters: List<TypeParameter>
+}
 
 internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclaration {
     private val id: String by StringDelegate()
@@ -118,7 +119,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val methods: List<Method> by ArrayDelegate { Method(it, this) }
     val staticMethods: List<Method> by ArrayDelegate { Method(it) }
 
-    val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    override val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
 
     private val extends: String? by NullableStringDelegate()
     private val implements: List<String> by StringArrayDelegate()
@@ -235,12 +236,12 @@ internal class Property(
     }
 
     fun toExtensionCode(
-        classDeclaration: String,
-        typeparameters: List<TypeParameter>
+        classDeclaration: String
     ): String {
         require(!protected)
+        requireNotNull(parent)
 
-        val generics = getGenericString(typeparameters)
+        val generics = getGenericString(parent.typeparameters)
 
         var str = "inline " + if (getterSetter) "var " else "val "
         str += "$generics ${classDeclaration}.$name: $type${modifiers.nullability}\n" +
@@ -315,10 +316,10 @@ internal class Method(
     }
 
     fun toExtensionCode(
-        classDeclaration: String,
-        typeparameters: List<TypeParameter>
+        classDeclaration: String
     ): String {
         require(!protected)
+        requireNotNull(parent)
 
         val extParameters = kotlinParametersString(extensionMode = true)
         val callParameters = parameters
@@ -326,7 +327,7 @@ internal class Method(
 
         val returnSignature = getReturnSignature()
 
-        val generics = getGenericString(typeparameters + this.typeparameters)
+        val generics = getGenericString(parent.typeparameters + typeparameters)
 
         return "inline fun $generics ${classDeclaration}.$name($extParameters)$returnSignature =\n" +
                 "$AS_DYNAMIC.$name($callParameters)"
@@ -388,7 +389,7 @@ internal class Returns(source: JSONObject) : JsonWrapper(source) {
 
 internal class Event(
     source: JSONObject,
-    parent: TypeDeclaration
+    private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val summary: String by StringDelegate()
@@ -409,10 +410,9 @@ internal class Event(
     }
 
     fun toExtensionCode(
-        classDeclaration: String,
-        typeparameters: List<TypeParameter>
+        classDeclaration: String
     ): String {
-        val generics = getGenericString(typeparameters)
+        val generics = getGenericString(parent.typeparameters)
         val extensionName = "add${name}Handler"
 
         val listenerType = add.parameters.single().type

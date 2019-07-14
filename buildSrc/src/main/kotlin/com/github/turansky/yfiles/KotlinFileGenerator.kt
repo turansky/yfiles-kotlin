@@ -124,7 +124,7 @@ internal class KotlinFileGenerator(
         val data = es6GeneratorData(declaration)
         open val useJsName = true
 
-        protected val typeparameters: List<TypeParameter>
+        private val typeparameters: List<TypeParameter>
             get() = declaration.typeparameters
 
         protected val properties: List<Property>
@@ -348,7 +348,7 @@ internal class KotlinFileGenerator(
 
             if (events.isNotEmpty()) {
                 content = events
-                    .lines { it.toExtensionCode(classDeclaration, typeparameters) } +
+                    .lines { it.toExtensionCode(classDeclaration) } +
                         "\n\n" +
                         content
             }
@@ -399,9 +399,9 @@ internal class KotlinFileGenerator(
             val extensions = defaultDeclarations
                 .lines {
                     when (it) {
-                        is Property -> it.toExtensionCode(classDeclaration, typeparameters)
-                        is Method -> it.toExtensionCode(classDeclaration, typeparameters)
-                        is Event -> it.toExtensionCode(classDeclaration, typeparameters)
+                        is Property -> it.toExtensionCode(classDeclaration)
+                        is Method -> it.toExtensionCode(classDeclaration)
+                        is Event -> it.toExtensionCode(classDeclaration)
                         else -> throw IllegalStateException("Invalid default declaration")
                     }
                 }
