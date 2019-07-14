@@ -546,14 +546,15 @@ private class SummaryDelegate {
     }
 
     private fun String.fixApiLinks(): String {
-        val typeCleanRegex = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
+        val typeCleanRegex1 = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
+        val typeCleanRegex2 = Regex("( data-type=\"[a-zA-Z.]+)&lt;[^\"]+")
         val typeRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\"></api-link>")
         val typeTextRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-text=\"([^\"]+)\"></api-link>")
         val memberRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z_]+)\"></api-link>")
         val memberTextRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z_]+)\" data-text=\"([^\"]+)\"></api-link>")
         return this
-            .replace("&lt;T&gt;\"", "\"")
-            .replace(typeCleanRegex, "$1")
+            .replace(typeCleanRegex1, "$1")
+            .replace(typeCleanRegex2, "$1")
             .replace(typeRegex, "[$1]")
             .replace(typeTextRegex, "[$2][$1]")
             .replace(memberRegex, "[$1.$2]")
