@@ -22,9 +22,9 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
     val name: String by StringDelegate()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
-    val summary: String? by SummaryDelegate()
-    val remarks: String by StringDelegate()
-    val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
+    protected val summary: String? by SummaryDelegate()
+    protected val remarks: String by StringDelegate()
+    protected val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
 
     override fun compareTo(other: Declaration): Int =
         name.compareTo(other.name)
@@ -64,7 +64,9 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
     override val classId = fixPackage(fqn)
 
-    val summary: String? by SummaryDelegate()
+    private val summary: String? by SummaryDelegate()
+    private val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
+
     private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     private val returns: SignatureReturns? by SignatureReturnsDelegate()
@@ -74,7 +76,8 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
             summary = summary,
             parameters = parameters,
             typeparameters = typeparameters,
-            returns = returns
+            returns = returns,
+            seeAlso = seeAlso
         )
 
     override fun toCode(): String {
