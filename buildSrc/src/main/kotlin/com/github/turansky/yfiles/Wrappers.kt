@@ -156,7 +156,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val documentation: String
         get() = getDocumentation(
             summary = summary,
-            typeparameters = typeparameters
+            typeparameters = typeparameters,
+            seeAlso = seeAlso
         )
 
     fun genericParameters(): String {
@@ -637,7 +638,8 @@ private fun getDocumentation(
     summary: String?,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
-    returns: IReturns? = null
+    returns: IReturns? = null,
+    seeAlso: List<SeeAlso>? = null
 ): String {
     val lines = mutableListOf<String>()
     if (summary != null) {
@@ -658,6 +660,10 @@ private fun getDocumentation(
 
     returns?.doc?.let {
         lines.addAll("@return $it".split("\n"))
+    }
+
+    seeAlso?.mapTo(lines) {
+        "@see ${it.toDoc()}"
     }
 
     if (lines.isEmpty()) {
