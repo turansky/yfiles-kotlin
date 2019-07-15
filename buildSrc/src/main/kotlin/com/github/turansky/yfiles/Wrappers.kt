@@ -561,6 +561,9 @@ private class SummaryDelegate {
             .replace(typeTextRegex, "[$2][$1]")
             .replace(memberRegex, "[$1.$2]")
             .replace(memberTextRegex, "[$3][$1.$2]")
+            .replace("[string]", "[String]")
+            .replace("[number]", "[Number]")
+            .replace("[boolean]", "[Boolean]")
             .also { check(!it.contains("<api-link")) }
     }
 
