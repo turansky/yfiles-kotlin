@@ -568,7 +568,8 @@ private class SummaryDelegate {
     }
 
     private fun String.fixMarkdown(): String =
-        replace("<code>", "`")
+        replace(Regex("(<code>[^<]*)&lt;"), "$1<")
+            .replace("<code>", "`")
             .replace("</code>", "`")
             .replace("<b>", "**")
             .replace("</b>", "**")
