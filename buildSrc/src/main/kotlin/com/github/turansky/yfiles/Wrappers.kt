@@ -387,10 +387,12 @@ internal class Method(
         val returnSignature = getReturnSignature()
 
         val generics = getGenericString(parent.typeparameters + typeparameters)
+        val returnOperator = exp(returns != null, "return ")
 
         return documentation +
-                "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature =\n" +
-                "$AS_DYNAMIC.$name($callParameters)"
+                "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature {\n" +
+                "    $returnOperator $AS_DYNAMIC.$name($callParameters)\n" +
+                "}"
     }
 }
 
