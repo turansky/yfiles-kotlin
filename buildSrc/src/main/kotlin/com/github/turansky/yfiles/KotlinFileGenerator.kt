@@ -261,7 +261,7 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
-        override val useJsName = isObject()
+        override val useJsName = data.primitive
 
         private fun type(): String {
             val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
@@ -301,11 +301,14 @@ internal class KotlinFileGenerator(
         private fun isObject(): Boolean {
             return declaration.constructors.isEmpty() &&
                     memberDeclarations.isEmpty() &&
-                    !data.marker ||
-                    data.primitive
+                    !data.marker
         }
 
         override fun content(): String {
+            if (data.primitive) {
+                return primitiveContent()
+            }
+
             if (isObject()) {
                 return objectContent()
             }
@@ -329,25 +332,30 @@ internal class KotlinFileGenerator(
                     "}"
         }
 
-        private fun objectContent(): String {
-            val code = if (data.primitive) {
-                yclass()
-            } else {
-                staticDeclarations.map {
-                    it.toCode()
-                }.lines()
-            }
-
+        private fun primitiveContent(): String {
             return documentation +
                     """
                         |external object ${data.jsName} {
+                        |${yclass()}
+                        |}
+                    """.trimMargin()
+        }
+
+        private fun objectContent(): String {
+            val code = staticDeclarations
+                .lines { it.toCode() }
+
+            return documentation +
+                    externalAnnotation +
+                    """
+                        |external object $classDeclaration {
                         |$code
                         |}
                     """.trimMargin()
         }
 
         override fun companionContent(): String? {
-            if (isObject() || data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
+            if (isObject() || data.primitive || data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
                 return null
             }
 
