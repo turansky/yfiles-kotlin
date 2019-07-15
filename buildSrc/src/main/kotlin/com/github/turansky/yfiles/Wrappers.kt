@@ -207,10 +207,11 @@ internal class SeeAlsoType(source: JSONObject) : SeeAlso(source) {
     private val member: String? by NullableStringDelegate()
 
     private val doc: String by lazy {
+        val cleanType = type.substringBefore("<")
         val cleanMember = member?.substringBefore("(")
-            ?: return@lazy "[$type]"
+            ?: return@lazy "[$cleanType]"
 
-        "[$type.$cleanMember]"
+        "[$cleanType.$cleanMember]"
     }
 
     override fun toDoc(): String = doc
