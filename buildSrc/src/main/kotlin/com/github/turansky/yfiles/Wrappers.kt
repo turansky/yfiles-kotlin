@@ -206,12 +206,12 @@ internal class SeeAlsoType(source: JSONObject) : SeeAlso(source) {
     private val type: String by StringDelegate()
     private val member: String? by NullableStringDelegate()
 
-    override fun toDoc(): String =
-        if (member != null) {
-            "[$type.$member]"
-        } else {
-            "[$type]"
-        }
+    override fun toDoc(): String {
+        val cleanMember = member?.substringBefore("(")
+            ?: return "[$type]"
+
+        return "[$type.$cleanMember]"
+    }
 }
 
 internal class SeeAlsoGuide(source: JSONObject) : SeeAlso(source) {
