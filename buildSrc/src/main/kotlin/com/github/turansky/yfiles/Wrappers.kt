@@ -516,7 +516,8 @@ internal class Event(
     private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
     val name: String by StringDelegate()
-    val summary: String? by SummaryDelegate()
+    private val summary: String? by SummaryDelegate()
+    private val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
     private val add: EventListener by EventListenerDelegate(parent)
     private val remove: EventListener by EventListenerDelegate(parent)
     private val listeners = listOf(add, remove)
@@ -530,7 +531,8 @@ internal class Event(
 
     private val documentation: String
         get() = getDocumentation(
-            summary = summary
+            summary = summary,
+            seeAlso = seeAlso
         )
 
     override fun toCode(): String {
