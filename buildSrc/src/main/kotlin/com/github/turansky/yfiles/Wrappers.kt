@@ -206,11 +206,26 @@ internal class SeeAlsoType(source: JSONObject) : SeeAlso(source) {
     private val type: String by StringDelegate()
     private val member: String? by NullableStringDelegate()
 
-    override fun toDoc(): String {
+    private val doc: String by lazy {
         val cleanMember = member?.substringBefore("(")
-            ?: return "[$type]"
+            ?: return@lazy "[$type]"
 
-        return "[$type.$cleanMember]"
+        "[$type.$cleanMember]"
+    }
+
+    override fun toDoc(): String = doc
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SeeAlsoType
+
+        return doc == other.doc
+    }
+
+    override fun hashCode(): Int {
+        return doc.hashCode()
     }
 }
 
@@ -667,8 +682,12 @@ private fun getDocumentation(
         lines.addAll("@return $it".split("\n"))
     }
 
-    seeAlso?.mapTo(lines) {
-        "@see ${it.toDoc()}"
+    seeAlso?.apply {
+        asSequence()
+            .distinct()
+            .mapTo(lines) {
+                "@see ${it.toDoc()}"
+            }
     }
 
     if (lines.isEmpty()) {
