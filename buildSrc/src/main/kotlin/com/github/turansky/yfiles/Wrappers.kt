@@ -273,7 +273,8 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
-            parameters = parameters
+            parameters = parameters,
+            seeAlso = seeAlso
         )
 
     override fun toCode(): String {
