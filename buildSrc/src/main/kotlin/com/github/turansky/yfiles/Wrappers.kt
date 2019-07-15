@@ -644,7 +644,7 @@ private fun getDocumentation(
     typeparameters?.apply {
         asSequence()
             .filter { it.summary != null }
-            .mapTo(lines) { "@param ${it.name} ${it.summary}" }
+            .mapTo(lines) { "@param [${it.name}] ${it.summary}" }
     }
 
     parameters?.apply {
