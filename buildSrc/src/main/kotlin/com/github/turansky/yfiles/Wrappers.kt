@@ -190,6 +190,9 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     val constructors: List<Constructor> by ArrayDelegate { Constructor(it) }
 }
 
+internal class Interface(source: JSONObject) : ExtendedType(source)
+internal class Enum(source: JSONObject) : Type(source)
+
 internal class Modifiers(flags: List<String>) {
     val static = flags.contains(STATIC)
     val final = flags.contains(FINAL)
@@ -200,9 +203,6 @@ internal class Modifiers(flags: List<String>) {
     private val canbenull = flags.contains(CANBENULL)
     val nullability = if (canbenull) "?" else ""
 }
-
-internal class Interface(source: JSONObject) : ExtendedType(source)
-internal class Enum(source: JSONObject) : Type(source)
 
 internal abstract class TypedDeclaration(source: JSONObject) : Declaration(source) {
     private val signature: String? by NullableStringDelegate()
