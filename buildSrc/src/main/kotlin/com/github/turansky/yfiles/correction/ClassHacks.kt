@@ -2,74 +2,13 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.CANBENULL
 import com.github.turansky.yfiles.YCLASS
-import org.json.JSONObject
 
 internal fun applyClassHacks(source: Source) {
-    addDpKeyGeneric(source)
-
     addClassGeneric(source)
     addConstructorClassGeneric(source)
     addMethodClassGeneric(source)
 
     removeUnusedTypeParameters(source)
-}
-
-private val DP_KEY_BASE = "DpKeyBase"
-private val DP_KEY_BASE_KEY = "TKey"
-
-private val DP_KEY_BASE_DECLARATION = "yfiles.algorithms.DpKeyBase<"
-
-private val DP_KEY_GENERIC_MAP = mapOf(
-    DP_KEY_BASE to "TKey",
-    "EdgeDpKey" to "yfiles.graph.IEdge",
-    "GraphDpKey" to "yfiles.graph.IGraph",
-    "GraphObjectDpKey" to "yfiles.algorithms.GraphObject", // TODO: check generic
-    "IEdgeLabelLayoutDpKey" to "yfiles.layout.IEdgeLabelLayout",
-    "ILabelLayoutDpKey" to "yfiles.layout.ILabelLayout",
-    "INodeLabelLayoutDpKey" to "yfiles.layout.INodeLabelLayout",
-    "NodeDpKey" to "yfiles.graph.INode"
-)
-
-private fun addDpKeyGeneric(source: Source) {
-    source.type(DP_KEY_BASE).apply {
-        addFirstTypeParameter(DP_KEY_BASE_KEY)
-        methodParameters(
-            "equalsCore",
-            "other",
-            { true }
-        ).single()
-            .updateDpKeyGeneric(J_TYPE, DP_KEY_BASE_KEY)
-
-        property("declaringType")
-            .addGeneric(DP_KEY_BASE_KEY)
-    }
-
-    for ((className, generic) in DP_KEY_GENERIC_MAP) {
-        val type = source.type(className)
-
-        type.jsequence(J_CONSTRUCTORS)
-            .map { it.parameter("declaringType") }
-            .forEach { it.addGeneric(generic) }
-
-        if (className == DP_KEY_BASE) {
-            continue
-        }
-
-        type.updateDpKeyGeneric(J_EXTENDS, generic)
-    }
-
-    source.type("DpKeyItemCollection")
-        .property("dpKey")
-        .updateDpKeyGeneric(J_TYPE, "T")
-}
-
-private fun JSONObject.updateDpKeyGeneric(
-    field: String,
-    generic: String
-) {
-    val value = getString(field)
-    require(value.startsWith(DP_KEY_BASE_DECLARATION))
-    put(field, value.replace(DP_KEY_BASE_DECLARATION, "$DP_KEY_BASE_DECLARATION$generic,"))
 }
 
 private fun addClassGeneric(source: Source) {
