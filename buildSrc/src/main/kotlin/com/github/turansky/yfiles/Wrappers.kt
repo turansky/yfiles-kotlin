@@ -24,6 +24,7 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
 
     val summary: String? by SummaryDelegate()
     val remarks: String by StringDelegate()
+    val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
 
     override fun compareTo(other: Declaration): Int =
         name.compareTo(other.name)
@@ -192,6 +193,42 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
+
+internal sealed class SeeAlso(override val source: JSONObject) : HasSource {
+    abstract fun toDoc(): String
+}
+
+internal class SeeAlsoType(source: JSONObject) : SeeAlso(source) {
+    private val type: String by StringDelegate()
+    private val member: String? by NullableStringDelegate()
+
+    override fun toDoc(): String =
+        if (member != null) {
+            "[$type.$member]"
+        } else {
+            "[$type]"
+        }
+}
+
+internal class SeeAlsoGuide(source: JSONObject) : SeeAlso(source) {
+    private val section: String by StringDelegate()
+    private val name: String by StringDelegate()
+
+    private val href: String
+        get() = "http://docs.yworks.com/yfileshtml/#/dguide/$section"
+
+    // TODO: use Markdown after fix
+    //  https://youtrack.jetbrains.com/issue/KT-32640
+    override fun toDoc(): String =
+        """<a href="$href">$name</a>"""
+}
+
+private fun parseSeeAlso(source: JSONObject): SeeAlso =
+    when {
+        source.has("type") -> SeeAlsoType(source)
+        source.has("section") -> SeeAlsoGuide(source)
+        else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
+    }
 
 internal class Modifiers(flags: List<String>) {
     val static = flags.contains(STATIC)
