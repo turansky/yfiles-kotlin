@@ -274,7 +274,8 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
 internal class Constant(source: JSONObject) : TypedDeclaration(source) {
     private val documentation: String
         get() = getDocumentation(
-            summary = summary
+            summary = summary,
+            seeAlso = seeAlso
         )
 
     override fun toCode(): String {
