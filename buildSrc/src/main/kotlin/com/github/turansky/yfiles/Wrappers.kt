@@ -396,7 +396,8 @@ internal class Method(
             summary = summary,
             parameters = parameters,
             typeparameters = typeparameters,
-            returns = returns
+            returns = returns,
+            seeAlso = seeAlso
         )
 
     private fun kotlinModificator(): String {
