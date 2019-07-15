@@ -304,7 +304,8 @@ internal class Property(
 
     private val documentation: String
         get() = getDocumentation(
-            summary = summary
+            summary = summary,
+            seeAlso = seeAlso
         )
 
     override fun toCode(): String {
