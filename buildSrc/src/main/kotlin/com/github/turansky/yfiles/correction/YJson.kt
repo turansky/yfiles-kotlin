@@ -73,18 +73,6 @@ internal fun JSONObject.setSingleTypeParameter(name: String = "T") {
     )
 }
 
-internal fun JSONObject.addFirstTypeParameter(name: String) {
-    val parameters = getJSONArray(J_TYPE_PARAMETERS)
-        .toMutableList()
-
-    parameters.add(
-        0,
-        jObject(J_NAME to name)
-    )
-
-    put(J_TYPE_PARAMETERS, parameters.toList())
-}
-
 internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
     getJSONArray(name)
         .asSequence()
