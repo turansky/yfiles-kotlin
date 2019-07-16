@@ -124,7 +124,11 @@ internal val BROKEN_NULLABILITY_METHODS = setOf(
 internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
-    MethodDeclaration(className = "IEnumerable", methodName = "first") to false
+    MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
+
+    MethodDeclaration(className = "IDataProvider", methodName = "get") to true,
+    MethodDeclaration(className = "DataProviderBase", methodName = "get") to true,
+    MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true
 )
 
 internal val MISSED_PROPERTIES = listOf(
