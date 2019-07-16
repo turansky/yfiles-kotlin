@@ -51,16 +51,11 @@ internal fun JSONObject.addProperty(
         )
 }
 
-internal fun JSONObject.changeNullability(
-    nullable: Boolean,
-    strictMode: Boolean = true
-) {
+internal fun JSONObject.changeNullability(nullable: Boolean) {
     val modifiers = getJSONArray(J_MODIFIERS)
     val index = modifiers.indexOf(CANBENULL)
 
-    if (strictMode) {
-        require((index == -1) == nullable)
-    }
+    require((index == -1) == nullable)
 
     if (nullable) {
         modifiers.put(CANBENULL)

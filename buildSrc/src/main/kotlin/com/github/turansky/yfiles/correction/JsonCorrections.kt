@@ -14,20 +14,6 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.input.KeyEventHandler"
 )
 
-internal val STRICT_CONSTRUCTOR_CLASSES = setOf(
-    "DpKeyBase",
-    "EdgeDpKey",
-    "GraphDpKey",
-    "GraphObjectDpKey",
-    "IEdgeLabelLayoutDpKey",
-    "IEdgeLabelLayoutDpKey",
-    "ILabelLayoutDpKey",
-    "INodeLabelLayoutDpKey",
-    "NodeDpKey",
-
-    "DataMapAdapter"
-)
-
 internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("DefaultGraph", "tag") to true,
     PropertyDeclaration("GraphWrapperBase", "tag") to true,

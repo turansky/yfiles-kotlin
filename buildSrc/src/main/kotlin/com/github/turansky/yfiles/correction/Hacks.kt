@@ -72,8 +72,6 @@ internal fun applyHacks(api: JSONObject) {
     fixReturnType(source)
     fixImplementedTypes(source)
 
-    fixConstructorParameterNullability(source)
-
     fixPropertyType(source)
     fixPropertyNullability(source)
 
@@ -166,17 +164,6 @@ private fun fixImplementedTypes(source: Source) {
     sequenceOf("EdgeList", "YNodeList")
         .map { source.type(it) }
         .forEach { it.strictRemove("implements") }
-}
-
-private fun fixConstructorParameterNullability(source: Source) {
-    STRICT_CONSTRUCTOR_CLASSES
-        .asSequence()
-        .map { source.type(it) }
-        .forEach {
-            it.jsequence(J_CONSTRUCTORS)
-                .jsequence(J_PARAMETERS)
-                .forEach { it.changeNullability(false, false) }
-        }
 }
 
 private fun fixPropertyType(source: Source) {
