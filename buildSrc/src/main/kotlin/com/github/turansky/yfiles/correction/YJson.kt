@@ -15,7 +15,7 @@ internal fun JSONObject.staticMethod(name: String): JSONObject =
         .firstWithName(name)
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
-    (jsequence(J_METHODS) + jsequence(J_STATIC_METHODS))
+    (optionalArray(J_METHODS) + optionalArray(J_STATIC_METHODS))
         .optionalArray(J_PARAMETERS)
 
 internal fun JSONObject.methodParameters(

@@ -109,7 +109,6 @@ private fun addClassGeneric(source: Source) {
             }
         }
 
-
     source.allMethods(
         "addMapper",
         "addConstantMapper",

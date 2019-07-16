@@ -170,6 +170,11 @@ private fun fixMethodParameterNullability(source: Source) {
         .map { it as JSONObject }
         .onEach { require(it.getString(J_TYPE) == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
+
+    source.types()
+        .flatMap { it.allMethodParameters() }
+        .filter { it.get(J_NAME) == "dataHolder" }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixMethodParameterType(source: Source) {
