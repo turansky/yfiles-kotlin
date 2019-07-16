@@ -156,11 +156,13 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     override val classDeclaration = name + genericParameters()
 
+    private val seeAlsoDoc: SeeAlso = SeeAlsoDoc(es6name ?: name)
+
     val documentation: String
         get() = getDocumentation(
             summary = summary,
             typeparameters = typeparameters,
-            seeAlso = seeAlso
+            seeAlso = seeAlso + seeAlsoDoc
         )
 
     fun genericParameters(): String {
