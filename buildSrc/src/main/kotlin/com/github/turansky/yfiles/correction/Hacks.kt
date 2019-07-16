@@ -9,52 +9,6 @@ import com.github.turansky.yfiles.json.removeItem
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
 
-private fun JSONObject.addMethod(
-    methodData: MethodData
-) {
-    if (!has(J_METHODS)) {
-        put(J_METHODS, emptyList<Any>())
-    }
-
-    val result = methodData.result
-    var modifiers = listOf(PUBLIC)
-    if (result != null) {
-        modifiers += result.modifiers
-    }
-
-    getJSONArray(J_METHODS)
-        .put(
-            mutableMapOf(
-                J_NAME to methodData.methodName,
-                J_MODIFIERS to modifiers
-            )
-                .also {
-                    val parameters = methodData.parameters
-                    if (parameters.isNotEmpty()) {
-                        it.put(
-                            J_PARAMETERS,
-                            parameters.map {
-                                mapOf(
-                                    J_NAME to it.name,
-                                    J_TYPE to it.type,
-                                    J_MODIFIERS to it.modifiers
-                                )
-                            }
-                        )
-                    }
-                }
-                .also {
-                    if (result != null) {
-                        it.put(
-                            J_RETURNS, mapOf(
-                                J_TYPE to result.type
-                            )
-                        )
-                    }
-                }
-        )
-}
-
 internal fun applyHacks(api: JSONObject) {
     val source = Source(api)
 
@@ -371,4 +325,50 @@ private fun fieldToProperties(source: Source) {
             }
             type.strictRemove(J_FIELDS)
         }
+}
+
+private fun JSONObject.addMethod(
+    methodData: MethodData
+) {
+    if (!has(J_METHODS)) {
+        put(J_METHODS, emptyList<Any>())
+    }
+
+    val result = methodData.result
+    var modifiers = listOf(PUBLIC)
+    if (result != null) {
+        modifiers += result.modifiers
+    }
+
+    getJSONArray(J_METHODS)
+        .put(
+            mutableMapOf(
+                J_NAME to methodData.methodName,
+                J_MODIFIERS to modifiers
+            )
+                .also {
+                    val parameters = methodData.parameters
+                    if (parameters.isNotEmpty()) {
+                        it.put(
+                            J_PARAMETERS,
+                            parameters.map {
+                                mapOf(
+                                    J_NAME to it.name,
+                                    J_TYPE to it.type,
+                                    J_MODIFIERS to it.modifiers
+                                )
+                            }
+                        )
+                    }
+                }
+                .also {
+                    if (result != null) {
+                        it.put(
+                            J_RETURNS, mapOf(
+                                J_TYPE to result.type
+                            )
+                        )
+                    }
+                }
+        )
 }
