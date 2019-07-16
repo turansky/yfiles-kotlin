@@ -99,17 +99,14 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.type("GraphMLIOHandler")
-        .apply {
-            (jsequence(J_METHODS) + jsequence(J_STATIC_METHODS))
-                .optionalArray(J_PARAMETERS)
-                .filter { it.getString(J_TYPE) == YCLASS }
-                .forEach {
-                    when (it.getString(J_NAME)) {
-                        "keyType" -> it.addGeneric("TKey")
-                        "modelItemType" -> it.addGeneric("TKey")
-                        "dataType" -> it.addGeneric("TData")
-                    }
-                }
+        .allMethodParameters()
+        .filter { it.getString(J_TYPE) == YCLASS }
+        .forEach {
+            when (it.getString(J_NAME)) {
+                "keyType" -> it.addGeneric("TKey")
+                "modelItemType" -> it.addGeneric("TKey")
+                "dataType" -> it.addGeneric("TData")
+            }
         }
 
 

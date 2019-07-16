@@ -14,6 +14,10 @@ internal fun JSONObject.staticMethod(name: String): JSONObject =
     getJSONArray(J_STATIC_METHODS)
         .firstWithName(name)
 
+internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
+    (jsequence(J_METHODS) + jsequence(J_STATIC_METHODS))
+        .optionalArray(J_PARAMETERS)
+
 internal fun JSONObject.methodParameters(
     methodName: String,
     parameterName: String,
