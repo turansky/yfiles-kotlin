@@ -198,11 +198,11 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
 
-internal sealed class SeeAlso(override val source: JSONObject) : HasSource {
+internal sealed class SeeAlso {
     abstract fun toDoc(): String
 }
 
-internal class SeeAlsoType(source: JSONObject) : SeeAlso(source) {
+internal class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSource {
     private val type: String by StringDelegate()
     private val member: String? by NullableStringDelegate()
 
@@ -230,17 +230,27 @@ internal class SeeAlsoType(source: JSONObject) : SeeAlso(source) {
     }
 }
 
-internal class SeeAlsoGuide(source: JSONObject) : SeeAlso(source) {
+internal class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSource {
     private val section: String by StringDelegate()
     private val name: String by StringDelegate()
 
     private val href: String
-        get() = "http://docs.yworks.com/yfileshtml/#/dguide/$section"
+        get() = "https://docs.yworks.com/yfileshtml/#/dguide/$section"
 
     // TODO: use Markdown after fix
     //  https://youtrack.jetbrains.com/issue/KT-32640
     override fun toDoc(): String =
         """<a href="$href">$name</a>"""
+}
+
+internal class SeeAlsoDoc(private val id: String) : SeeAlso() {
+    private val href: String
+        get() = "https://docs.yworks.com/yfileshtml/#/api/$id"
+
+    // TODO: use Markdown after fix
+    //  https://youtrack.jetbrains.com/issue/KT-32640
+    override fun toDoc(): String =
+        """<a href="$href">Online Documentation</a>"""
 }
 
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
