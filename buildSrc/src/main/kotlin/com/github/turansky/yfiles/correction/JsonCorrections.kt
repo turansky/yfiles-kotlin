@@ -21,10 +21,7 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleEdge", "tag") to true,
     PropertyDeclaration("SimpleLabel", "tag") to true,
     PropertyDeclaration("SimpleNode", "tag") to true,
-    PropertyDeclaration("SimplePort", "tag") to true,
-
-    PropertyDeclaration("IEdge", "sourcePort") to false,
-    PropertyDeclaration("IEdge", "targetPort") to false
+    PropertyDeclaration("SimplePort", "tag") to true
 )
 
 internal val PARAMETERS_CORRECTION = mapOf(
