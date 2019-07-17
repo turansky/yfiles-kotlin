@@ -236,23 +236,19 @@ internal class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSou
     private val section: String by StringDelegate()
     private val name: String by StringDelegate()
 
-    private val href: String
-        get() = "https://docs.yworks.com/yfileshtml/#/dguide/$section"
-
-    // TODO: use Markdown after fix
-    //  https://youtrack.jetbrains.com/issue/KT-32640
     override fun toDoc(): String =
-        """<a href="$href">$name</a>"""
+        link(
+            text = name,
+            href = "https://docs.yworks.com/yfileshtml/#/dguide/$section"
+        )
 }
 
 internal class SeeAlsoDoc(private val id: String) : SeeAlso() {
-    private val href: String
-        get() = "https://docs.yworks.com/yfileshtml/#/api/$id"
-
-    // TODO: use Markdown after fix
-    //  https://youtrack.jetbrains.com/issue/KT-32640
     override fun toDoc(): String =
-        """<a href="$href">Online Documentation</a>"""
+        link(
+            text = "Online Documentation",
+            href = "https://docs.yworks.com/yfileshtml/#/api/$id"
+        )
 }
 
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
