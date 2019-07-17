@@ -682,24 +682,24 @@ private fun getDocumentation(
     typeparameters?.apply {
         asSequence()
             .filter { it.summary != null }
-            .mapTo(lines) { "@param [${it.name}] ${it.summary}" }
+            .mapTo(lines) { param(it.name, it.summary!!) }
     }
 
     parameters?.apply {
         asSequence()
             .filter { it.summary != null }
-            .mapTo(lines) { "@param ${it.name} ${it.summary}" }
+            .mapTo(lines) { param(it.name, it.summary!!) }
     }
 
     returns?.doc?.let {
-        lines.addAll("@return $it".split("\n"))
+        lines.addAll(ret(it).split("\n"))
     }
 
     seeAlso?.apply {
         asSequence()
             .distinct()
             .mapTo(lines) {
-                "@see ${it.toDoc()}"
+                see(it.toDoc())
             }
     }
 
