@@ -266,7 +266,7 @@ internal class Modifiers(flags: List<String>) {
     val protected = flags.contains(PROTECTED)
 
     private val canbenull = flags.contains(CANBENULL)
-    val nullability = if (canbenull) "?" else ""
+    val nullability = exp(canbenull, "?")
 }
 
 internal abstract class TypedDeclaration(source: JSONObject) : Declaration(source) {
@@ -497,7 +497,7 @@ internal class ParameterModifiers(flags: List<String>) {
     val conversion = flags.contains(CONVERSION)
 
     private val canbenull = flags.contains(CANBENULL)
-    val nullability = if (canbenull) "?" else ""
+    val nullability = exp(canbenull, "?")
 }
 
 internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
