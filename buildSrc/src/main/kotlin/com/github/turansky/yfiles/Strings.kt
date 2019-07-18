@@ -3,7 +3,7 @@ package com.github.turansky.yfiles
 fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
     val startIndex = str.indexOf(start)
     require(startIndex != -1)
-    { "String '$str' doesn't contains '$start'" }
+    { "String '$str' doesn't contain '$start'" }
 
     val endIndex = if (firstEnd) {
         str.indexOf(end)
@@ -11,7 +11,7 @@ fun between(str: String, start: String, end: String, firstEnd: Boolean = false):
         str.lastIndexOf(end)
     }
     require(endIndex != -1)
-    { "String '$str' doesn't contains '$end'" }
+    { "String '$str' doesn't contain '$end'" }
 
     return str.substring(startIndex + start.length, endIndex)
 }
@@ -19,15 +19,9 @@ fun between(str: String, start: String, end: String, firstEnd: Boolean = false):
 fun till(str: String, end: String): String {
     val endIndex = str.indexOf(end)
     require(endIndex != -1)
-    { "String '$str' doesn't contains '$end'" }
+    { "String '$str' doesn't contain '$end'" }
 
     return str.substring(0, endIndex)
-}
-
-fun constName(str: String): String {
-    return str
-        .replace(Regex("([a-z])([A-Z])"), "\$1_\$2")
-        .toUpperCase()
 }
 
 @Suppress("NOTHING_TO_INLINE")
