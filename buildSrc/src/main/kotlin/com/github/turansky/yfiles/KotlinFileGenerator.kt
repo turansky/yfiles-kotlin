@@ -84,7 +84,7 @@ internal class KotlinFileGenerator(
         file.writeText("$header\n\n$content")
     }
 
-    private fun String.clear(data: AbstractGeneratorData): String {
+    private fun String.clear(data: GeneratorData): String {
         var content = replace(data.packageName + ".", "")
             .replace(Regex("(\\n\\s?){3,}"), "\n\n")
             .replace(Regex("(\\n\\s?){2,}}"), "\n}")
