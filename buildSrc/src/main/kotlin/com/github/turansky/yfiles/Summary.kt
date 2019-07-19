@@ -6,31 +6,33 @@ internal fun summary(source: String): String {
         .fixMarkdown()
 }
 
+private val TYPE_CLEAN_REGEX_1 = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
+private val TYPE_CLEAN_REGEX_2 = Regex("( data-type=\"[a-zA-Z.]+)&lt;[^\"]+")
+private val TYPE_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\"></api-link>")
+private val TYPE_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-text=\"([^\"]+)\"></api-link>")
+private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
+private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
 
 private fun String.fixApiLinks(): String {
-    val typeCleanRegex1 = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
-    val typeCleanRegex2 = Regex("( data-type=\"[a-zA-Z.]+)&lt;[^\"]+")
-    val typeRegex = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\"></api-link>")
-    val typeTextRegex = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-text=\"([^\"]+)\"></api-link>")
-    val memberRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
-    val memberTextRegex = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
     return this
         .replace(" data-text=\"\"", "")
         .replace(" infinite\"\"=\"\"", "")
-        .replace(typeCleanRegex1, "$1")
-        .replace(typeCleanRegex2, "$1")
-        .replace(typeRegex, "[$1]")
-        .replace(typeTextRegex, "[$2][$1]")
-        .replace(memberRegex, "[$1.$2]")
-        .replace(memberTextRegex, "[$3][$1.$2]")
+        .replace(TYPE_CLEAN_REGEX_1, "$1")
+        .replace(TYPE_CLEAN_REGEX_2, "$1")
+        .replace(TYPE_REGEX, "[$1]")
+        .replace(TYPE_TEXT_REGEX, "[$2][$1]")
+        .replace(MEMBER_REGEX, "[$1.$2]")
+        .replace(MEMBER_TEXT_REGEX, "[$3][$1.$2]")
         .replace("[string]", "[String]")
         .replace("[number]", "[Number]")
         .replace("[boolean]", "[Boolean]")
         .also { check(!it.contains("<api-link")) }
 }
 
-private fun String.fixMarkdown(): String =
-    replace(Regex("(<code>[^<]*)&lt;"), "$1<")
+private val ENCODED_GENERIC_START = Regex("(<code>[^<]*)&lt;")
+
+private fun String.fixMarkdown(): String {
+    return replace(ENCODED_GENERIC_START, "$1<")
         .replace("<code>", "`")
         .replace("</code>", "`")
         .replace("<b>", "**")
@@ -40,3 +42,4 @@ private fun String.fixMarkdown(): String =
         .replace("<ul><li>", "\n+ ")
         .replace("</li><li>", "\n+ ")
         .replace("</li></ul>", "")
+}
