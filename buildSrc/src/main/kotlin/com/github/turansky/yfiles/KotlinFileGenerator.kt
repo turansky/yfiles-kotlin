@@ -375,7 +375,7 @@ internal class KotlinFileGenerator(
                 content = it + "\n\n" + content
             }
 
-            return content
+            return content.takeIf { it.isNotEmpty() }
         }
     }
 
