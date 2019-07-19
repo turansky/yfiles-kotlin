@@ -359,10 +359,7 @@ internal class KotlinFileGenerator(
                 return null
             }
 
-            var content = classCastExtensions(
-                className = data.name,
-                generics = genericParameters()
-            )
+            var content = ""
 
             val events = memberEvents
                 .filter { !it.overriden }
