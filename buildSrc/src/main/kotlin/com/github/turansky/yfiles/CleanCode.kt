@@ -5,6 +5,7 @@ private val LINE_BREAK_2 = Regex("(\\n\\s?){2,}}")
 
 private val YFILES_CLASS_DECLARATION = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)")
 private val DUPLICATED_LINK = Regex("(\\[[a-zA-Z0-9.]+])\\1")
+private val LONG_LINK = Regex("([^]])\\[(yfiles\\.[a-z]+)\\.([^]]+)]")
 
 internal fun String.clear(data: GeneratorData): String {
     var content = replace("[${data.fqn}.", "[")
@@ -33,6 +34,7 @@ internal fun String.clear(data: GeneratorData): String {
 
 private fun String.cleanDoc(): String {
     return replace(DUPLICATED_LINK, "$1")
+        .replace(LONG_LINK, "$1[$3][$2.$3]")
 }
 
 private fun String.getImportedClasses(className: String): List<String> {
