@@ -1,11 +1,14 @@
 package com.github.turansky.yfiles
 
+private val LINE_BREAK_3 = Regex("(\\n\\s?){3,}")
+private val LINE_BREAK_2 = Regex("(\\n\\s?){2,}}")
+
+private val YFILES_CLASS_DECLARATION = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)")
+
 internal fun String.clear(data: GeneratorData): String {
     var content = replace(data.packageName + ".", "")
-        .replace(Regex("(\\n\\s?){3,}"), "\n\n")
-        .replace(Regex("(\\n\\s?){2,}}"), "\n}")
-
-    val regex = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)")
+        .replace(LINE_BREAK_3, "\n\n")
+        .replace(LINE_BREAK_2, "\n}")
 
     val code = content
         .split("\n")
@@ -13,7 +16,7 @@ internal fun String.clear(data: GeneratorData): String {
         .filterNot { it.startsWith(" *") }
         .joinToString("\n")
 
-    val importedClasses = regex
+    val importedClasses = YFILES_CLASS_DECLARATION
         .findAll(code)
         .map { it.value }
         .distinct()
