@@ -4,6 +4,7 @@ private val LINE_BREAK_3 = Regex("(\\n\\s?){3,}")
 private val LINE_BREAK_2 = Regex("(\\n\\s?){2,}}")
 
 private val YFILES_CLASS_DECLARATION = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)")
+private val DUPLICATED_LINK = Regex("(\\[[a-zA-Z0-9.]+])\\1")
 
 internal fun String.clear(data: GeneratorData): String {
     var content = replace(data.packageName + ".", "")
@@ -42,6 +43,8 @@ internal fun String.clear(data: GeneratorData): String {
         val name = className.substringAfterLast(".")
         content = content.replace(className, name)
     }
+
+    content = content.replace(DUPLICATED_LINK, "$1")
 
     return "$imports\n$content"
 }
