@@ -11,26 +11,7 @@ internal fun String.clear(data: GeneratorData): String {
         .replace(LINE_BREAK_3, "\n\n")
         .replace(LINE_BREAK_2, "\n}")
 
-    val code = content
-        .split("\n")
-        .asSequence()
-        .filterNot { it.startsWith(" *") }
-        .joinToString("\n")
-
-    val importedClasses = YFILES_CLASS_DECLARATION
-        .findAll(code)
-        .map { it.value }
-        .distinct()
-        // TODO: remove after es6name use
-        // WA for duplicated class names (Insets for example)
-        .filterNot { it.endsWith("." + data.name) }
-        .plus(
-            STANDARD_IMPORTED_TYPES
-                .asSequence()
-                .filter { code.contains(it) }
-        )
-        .sorted()
-        .toList()
+    val importedClasses = content.getImportedClasses(data.name)
 
     if (importedClasses.isEmpty()) {
         return content
@@ -47,4 +28,26 @@ internal fun String.clear(data: GeneratorData): String {
     content = content.replace(DUPLICATED_LINK, "$1")
 
     return "$imports\n$content"
+}
+
+private fun String.getImportedClasses(className: String): List<String> {
+    val code = split("\n")
+        .asSequence()
+        .filterNot { it.startsWith(" *") }
+        .joinToString("\n")
+
+    return YFILES_CLASS_DECLARATION
+        .findAll(code)
+        .map { it.value }
+        .distinct()
+        // TODO: remove after es6name use
+        // WA for duplicated class names (Insets for example)
+        .filterNot { it.endsWith("." + className) }
+        .plus(
+            STANDARD_IMPORTED_TYPES
+                .asSequence()
+                .filter { code.contains(it) }
+        )
+        .sorted()
+        .toList()
 }
