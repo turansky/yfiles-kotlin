@@ -13,15 +13,16 @@ fun interfaceCastExtensions(
         |}
         |
         |inline fun $generics Any?.opt$className(): $classDeclaration? {
-        |   return if ( is$className() ) {
+        |   return if (is$className()) {
         |       unsafeCast<$classDeclaration>()
         |   } else {
         |       null
         |   }
         |}
         |
-        |inline fun $generics Any?.to$className(): $classDeclaration {
-        |   return opt$className()!!
+        |inline fun $generics Any?.as$className(): $classDeclaration {
+        |   require(is$className())
+        |   return unsafeCast<$classDeclaration>()
         |}
     """.trimMargin()
 }
