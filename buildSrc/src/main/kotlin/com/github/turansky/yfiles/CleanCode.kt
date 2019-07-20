@@ -25,9 +25,13 @@ internal fun String.clear(data: GeneratorData): String {
         content = content.replace(className, name)
     }
 
-    content = content.replace(DUPLICATED_LINK, "$1")
+    content = content.cleanDoc()
 
     return "$imports\n$content"
+}
+
+private fun String.cleanDoc(): String {
+    return replace(DUPLICATED_LINK, "$1")
 }
 
 private fun String.getImportedClasses(className: String): List<String> {
