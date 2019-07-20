@@ -12,7 +12,7 @@ fun interfaceCastExtensions(
         |   return ${yclass}.isInstance(this)
         |}
         |
-        |inline fun $generics Any?.as$className(): $classDeclaration? {
+        |inline fun $generics Any?.opt$className(): $classDeclaration? {
         |   return if ( is$className() ) {
         |       unsafeCast<$classDeclaration>()
         |   } else {
