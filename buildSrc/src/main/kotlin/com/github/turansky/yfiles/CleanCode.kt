@@ -7,7 +7,8 @@ private val YFILES_CLASS_DECLARATION = Regex("yfiles\\.([a-z]+)\\.([A-Za-z0-9]+)
 private val DUPLICATED_LINK = Regex("(\\[[a-zA-Z0-9.]+])\\1")
 
 internal fun String.clear(data: GeneratorData): String {
-    var content = replace(data.packageName + ".", "")
+    var content = replace("[${data.fqn}.", "[")
+        .replace(data.packageName + ".", "")
         .replace(LINE_BREAK_3, "\n\n")
         .replace(LINE_BREAK_2, "\n}")
 

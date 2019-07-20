@@ -7,7 +7,7 @@ internal interface FileGenerator {
 }
 
 internal open class GeneratorData(
-    fqn: String
+    val fqn: String
 ) {
     private val names = fqn.split(".")
     private val packageNames = names.subList(0, names.size - 1)
@@ -17,9 +17,9 @@ internal open class GeneratorData(
     val path = packageNames.joinToString(separator = "/")
 }
 
-internal data class TypeGeneratorData(
-    private val fqn: String,
-    private val alias: String?
+internal class TypeGeneratorData(
+    fqn: String,
+    alias: String?
 ) : GeneratorData(fqn) {
     val jsName = alias ?: name
 
