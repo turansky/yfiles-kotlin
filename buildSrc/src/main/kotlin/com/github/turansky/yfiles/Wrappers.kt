@@ -284,6 +284,15 @@ internal abstract class TypedDeclaration(
     private val signature: String? by NullableStringDelegate()
     protected val type: String by TypeDelegate { parse(it, signature) }
 
+    private val seeAlsoDocs: List<SeeAlso>
+        get() {
+            val docId = id ?: return emptyList()
+
+            return listOf(
+                SeeAlsoDoc(parent.docId, docId)
+            )
+        }
+
     protected val documentation: String
         get() = getDocumentation(
             summary = summary,
