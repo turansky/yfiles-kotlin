@@ -131,6 +131,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IRetu
 }
 
 internal interface TypeDeclaration : HasClassId {
+    val docId: String
     val classDeclaration: String
     val typeparameters: List<TypeParameter>
 }
@@ -154,9 +155,10 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val extends: String? by NullableStringDelegate()
     private val implements: List<String> by StringArrayDelegate()
 
+    final override val docId: String = es6name ?: name
     override val classDeclaration = name + genericParameters()
 
-    private val seeAlsoDoc: SeeAlso = SeeAlsoDoc(es6name ?: name)
+    private val seeAlsoDoc: SeeAlso = SeeAlsoDoc(docId)
 
     val documentation: String
         get() = getDocumentation(
