@@ -142,10 +142,10 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     val es6name: String? by NullableStringDelegate()
 
-    val constants: List<Constant> by ArrayDelegate { Constant(it) }
+    val constants: List<Constant> by ArrayDelegate { Constant(it, this) }
 
     val properties: List<Property> by ArrayDelegate { Property(it, this) }
-    val staticProperties: List<Property> by ArrayDelegate { Property(it) }
+    val staticProperties: List<Property> by ArrayDelegate { Property(it, this) }
 
     val methods: List<Method> by ArrayDelegate { Method(it, this) }
     val staticMethods: List<Method> by ArrayDelegate { Method(it) }
@@ -249,6 +249,8 @@ internal class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSou
 }
 
 internal class SeeAlsoDoc(private val id: String) : SeeAlso() {
+    constructor(typeId: String, memberId: String) : this("$typeId#$memberId")
+
     override fun toDoc(): String =
         link(
             text = "Online Documentation",
@@ -274,9 +276,19 @@ internal class Modifiers(flags: List<String>) {
     val nullability = exp(canbenull, "?")
 }
 
-internal abstract class TypedDeclaration(source: JSONObject) : Declaration(source) {
+internal abstract class TypedDeclaration(
+    source: JSONObject,
+    protected val parent: TypeDeclaration
+) : Declaration(source) {
+    private val id: String? by NullableStringDelegate()
     private val signature: String? by NullableStringDelegate()
     protected val type: String by TypeDelegate { parse(it, signature) }
+
+    protected val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            seeAlso = seeAlso
+        )
 }
 
 internal class Constructor(source: JSONObject) : MethodBase(source) {
@@ -301,13 +313,10 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
     }
 }
 
-internal class Constant(source: JSONObject) : TypedDeclaration(source) {
-    private val documentation: String
-        get() = getDocumentation(
-            summary = summary,
-            seeAlso = seeAlso
-        )
-
+internal class Constant(
+    source: JSONObject,
+    parent: TypeDeclaration
+) : TypedDeclaration(source, parent) {
     override fun toCode(): String {
         return documentation +
                 "val $name: $type"
@@ -319,8 +328,8 @@ internal class Constant(source: JSONObject) : TypedDeclaration(source) {
 
 internal class Property(
     source: JSONObject,
-    private val parent: TypeDeclaration? = null
-) : TypedDeclaration(source) {
+    parent: TypeDeclaration
+) : TypedDeclaration(source, parent) {
     val static = modifiers.static
     val protected = modifiers.protected
     val getterSetter = !modifiers.readOnly
@@ -330,13 +339,7 @@ internal class Property(
     val open = !static && !final
 
     private val overridden: Boolean
-        get() = !static && ClassRegistry.instance.propertyOverriden(parent!!.classId, name)
-
-    private val documentation: String
-        get() = getDocumentation(
-            summary = summary,
-            seeAlso = seeAlso
-        )
+        get() = !static && ClassRegistry.instance.propertyOverriden(parent.classId, name)
 
     override fun toCode(): String {
         var str = ""
