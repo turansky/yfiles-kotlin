@@ -22,13 +22,12 @@ class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
         println("Hallo from yFiles subplugin!")
+
         return emptyList()
     }
 
-    /**
-     * Just needs to be consistent with the key for DebugLogCommandLineProcessor#pluginId
-     */
-    override fun getCompilerPluginId(): String = "yfiles-kotlin"
+    override fun getCompilerPluginId(): String =
+        "com.github.turansky.yfiles"
 
     override fun getPluginArtifact(): SubpluginArtifact =
         SubpluginArtifact(
