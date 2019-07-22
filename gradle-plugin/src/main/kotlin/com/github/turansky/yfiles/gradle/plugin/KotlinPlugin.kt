@@ -33,7 +33,7 @@ class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
     override fun getPluginArtifact(): SubpluginArtifact =
         SubpluginArtifact(
             groupId = "com.github.turansky.yfiles",
-            artifactId = "kotlin-plugin",
-            version = "0.0.1"
+            artifactId = "kotlin-gradle-plugin",
+            version = "0.0.1-SNAPSHOT"
         )
 }

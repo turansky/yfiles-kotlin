@@ -1,3 +1,5 @@
+rootProject.name = "kotlin-gradle-plugin"
+
 pluginManagement {
     repositories {
         jcenter()
