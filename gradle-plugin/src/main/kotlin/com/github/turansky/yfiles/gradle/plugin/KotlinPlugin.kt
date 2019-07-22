@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-class YGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
+class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
 
     override fun isApplicable(project: Project, task: AbstractCompile) =
         project.plugins.hasPlugin(GradlePlugin::class.java)
