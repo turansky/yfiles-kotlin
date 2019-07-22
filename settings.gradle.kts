@@ -15,4 +15,4 @@ pluginManagement {
 include("yfiles-kotlin")
 include("test-app")
 
-includeBuild("plugin")
+includeBuild("gradle-plugin")
