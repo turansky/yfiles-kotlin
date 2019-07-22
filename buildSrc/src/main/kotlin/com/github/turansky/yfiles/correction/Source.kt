@@ -6,15 +6,23 @@ internal class Source(private val api: JSONObject) {
     val functionSignatures: JSONObject
         get() = api.getJSONObject(J_FUNCTION_SIGNATURES)
 
-    private val types = api
+    private val types: List<JSONObject> = api
         .jsequence(J_NAMESPACES)
         .optionalArray(J_NAMESPACES)
         .jsequence(J_TYPES)
+        .toList()
 
     private val typeMap = types.associateBy { it.uid }
 
-    fun types() = types.asSequence()
-    fun type(className: String) = typeMap.getValue(className)
+    fun types(): Sequence<JSONObject> =
+        types.asSequence()
+
+    fun type(className: String): JSONObject =
+        typeMap.getValue(className)
+
+    fun types(vararg classNames: String): Sequence<JSONObject> =
+        classNames.asSequence()
+            .map { type(it) }
 
     fun allMethods(vararg methodNames: String): Sequence<JSONObject> =
         types.asSequence()

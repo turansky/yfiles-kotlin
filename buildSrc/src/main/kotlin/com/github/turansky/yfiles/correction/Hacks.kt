@@ -104,8 +104,7 @@ private fun fixFunctionGenerics(source: Source) {
 }
 
 private fun fixReturnType(source: Source) {
-    sequenceOf("EdgeList", "YNodeList")
-        .map { source.type(it) }
+    source.types("EdgeList", "YNodeList")
         .forEach {
             it.getJSONArray(J_METHODS)
                 .firstWithName("getEnumerator")
@@ -115,14 +114,12 @@ private fun fixReturnType(source: Source) {
 }
 
 private fun fixImplementedTypes(source: Source) {
-    sequenceOf("EdgeList", "YNodeList")
-        .map { source.type(it) }
+    source.types("EdgeList", "YNodeList")
         .forEach { it.strictRemove("implements") }
 }
 
 private fun fixPropertyType(source: Source) {
-    sequenceOf("SeriesParallelLayoutData", "TreeLayoutData")
-        .map { source.type(it) }
+    source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")
                 .put(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
