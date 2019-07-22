@@ -113,6 +113,14 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("FocusIndicatorManager", "getInstaller", "item") to true
 )
 
+internal val MODEL_MANAGER_ITEM_METHODS = setOf(
+    "add",
+    "getCanvasObjectGroup",
+    "getInstaller",
+    "install",
+    "remove"
+)
+
 internal val BROKEN_NULLABILITY_METHODS = setOf(
     "applyLayout",
     "applyLayoutCore"

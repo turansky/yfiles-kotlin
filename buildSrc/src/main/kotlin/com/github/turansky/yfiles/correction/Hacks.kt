@@ -172,6 +172,16 @@ private fun fixMethodParameterNullability(source: Source) {
         .flatMap { it.allMethodParameters() }
         .filter { it.get(J_NAME) == "dataHolder" }
         .forEach { it.changeNullability(false) }
+
+    source.types(
+        "ModelManager",
+        "FocusIndicatorManager",
+        "HighlightIndicatorManager",
+        "SelectionIndicatorManager"
+    ).flatMap { it.jsequence(J_METHODS) }
+        .filter { it.getString(J_NAME) in MODEL_MANAGER_ITEM_METHODS }
+        .map { it.firstParameter }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixMethodParameterType(source: Source) {
