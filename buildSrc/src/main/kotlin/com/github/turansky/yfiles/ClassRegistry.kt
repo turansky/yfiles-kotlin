@@ -37,7 +37,11 @@ internal class ClassRegistry(
             .toList()
     }
 
-    private fun functionOverriden(className: String, functionName: String, checkCurrentClass: Boolean): Boolean {
+    private fun functionOverriden(
+        className: String,
+        functionName: String,
+        checkCurrentClass: Boolean
+    ): Boolean {
         if (checkCurrentClass) {
             val funs = functionsMap.getValue(className)
             if (funs.contains(functionName)) {
@@ -49,7 +53,11 @@ internal class ClassRegistry(
         }
     }
 
-    private fun propertyOverriden(className: String, propertyName: String, checkCurrentClass: Boolean): Boolean {
+    private fun propertyOverriden(
+        className: String,
+        propertyName: String,
+        checkCurrentClass: Boolean
+    ): Boolean {
         if (checkCurrentClass) {
             val props = propertiesMap.getValue(className)
             if (props.contains(propertyName)) {
@@ -61,7 +69,11 @@ internal class ClassRegistry(
         }
     }
 
-    private fun listenerOverriden(className: String, listenerName: String, checkCurrentClass: Boolean): Boolean {
+    private fun listenerOverriden(
+        className: String,
+        listenerName: String,
+        checkCurrentClass: Boolean
+    ): Boolean {
         if (checkCurrentClass) {
             val listeners = listenerMap.getValue(className)
             if (listeners.contains(listenerName)) {
