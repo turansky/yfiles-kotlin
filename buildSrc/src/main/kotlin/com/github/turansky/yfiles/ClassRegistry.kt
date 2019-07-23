@@ -33,7 +33,7 @@ internal class ClassRegistry(
         return sequenceOf(instance.extendedType())
             .filterNotNull()
             .plus(instance.implementedTypes())
-            .map { if (it.contains("<")) till(it, "<") else it }
+            .map { it.substringBefore("<") }
             .toList()
     }
 
