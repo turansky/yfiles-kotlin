@@ -222,7 +222,31 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "getOutline") to true,
     MethodDeclaration(className = "VoidShapeGeometry", methodName = "getIntersection") to true,
-    MethodDeclaration(className = "VoidShapeGeometry", methodName = "getOutline") to true
+    MethodDeclaration(className = "VoidShapeGeometry", methodName = "getOutline") to true,
+
+    MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getTargetArrow") to true,
+    MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getSourceArrow") to true,
+    MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getTargetArrow") to true,
+    MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getSourceArrow") to true,
+
+    MethodDeclaration(className = "EdgeDecorationInstaller", methodName = "addCanvasObject") to true,
+
+    MethodDeclaration(className = "EdgeFocusIndicatorInstaller", methodName = "getStroke") to true,
+    MethodDeclaration(className = "EdgeFocusIndicatorInstaller", methodName = "getBendDrawing") to true,
+    MethodDeclaration(className = "EdgeHighlightIndicatorInstaller", methodName = "getStroke") to true,
+    MethodDeclaration(className = "EdgeHighlightIndicatorInstaller", methodName = "getBendDrawing") to true,
+    MethodDeclaration(className = "EdgeSelectionIndicatorInstaller", methodName = "getStroke") to true,
+    MethodDeclaration(className = "EdgeSelectionIndicatorInstaller", methodName = "getBendDrawing") to true,
+
+    MethodDeclaration(className = "EdgeStyleDecorationInstaller", methodName = "addCanvasObject") to true,
+    MethodDeclaration(className = "FocusIndicatorManager", methodName = "add") to true,
+    MethodDeclaration(className = "HighlightIndicatorManager", methodName = "getInstaller") to true,
+    MethodDeclaration(className = "LabelStyleDecorationInstaller", methodName = "addCanvasObject") to true,
+    MethodDeclaration(className = "NodeStyleDecorationInstaller", methodName = "addCanvasObject") to true,
+    MethodDeclaration(className = "OrientedRectangleIndicatorInstaller", methodName = "addCanvasObject") to true,
+    MethodDeclaration(className = "PointSelectionIndicatorInstaller", methodName = "addCanvasObject") to true,
+    MethodDeclaration(className = "PortStyleDecorationInstaller", methodName = "addCanvasObject") to true,
+    MethodDeclaration(className = "RectangleIndicatorInstaller", methodName = "addCanvasObject") to true
 )
 
 internal val MISSED_PROPERTIES = listOf(
