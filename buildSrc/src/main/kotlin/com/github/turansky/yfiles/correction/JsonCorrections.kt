@@ -166,7 +166,42 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
 
     MethodDeclaration(className = "IDataProvider", methodName = "get") to true,
     MethodDeclaration(className = "DataProviderBase", methodName = "get") to true,
-    MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true
+    MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true,
+
+    MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "DefaultLabelStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "DefaultLabelStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "GeneralPathNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "GeneralPathNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "IconLabelStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "IconLabelStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "ImageNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "ImageNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "PanelNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "PanelNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "ShapeNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "ShapeNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "ShinyPlateNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "ShinyPlateNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "TableNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "TableNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "TemplateLabelStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "TemplateLabelStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "TemplatePortStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "TemplatePortStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "TemplateStripeStyleRenderer", methodName = "createVisual") to true,
+    MethodDeclaration(className = "TemplateStripeStyleRenderer", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "GridVisualCreator", methodName = "createVisual") to true,
+    MethodDeclaration(className = "GridVisualCreator", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "VoidVisualCreator", methodName = "createVisual") to true,
+    MethodDeclaration(className = "VoidVisualCreator", methodName = "updateVisual") to true
 )
 
 internal val MISSED_PROPERTIES = listOf(
