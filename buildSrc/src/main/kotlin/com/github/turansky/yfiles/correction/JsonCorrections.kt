@@ -168,6 +168,18 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "DataProviderBase", methodName = "get") to true,
     MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true,
 
+    MethodDeclaration(className = "ConstantLabelCandidateDescriptorProvider", methodName = "getDescriptor") to true,
+    MethodDeclaration(className = "DefaultFoldingEdgeConverter", methodName = "addFoldingEdge") to true,
+    MethodDeclaration(className = "DefaultGraph", methodName = "getParent") to true,
+    MethodDeclaration(className = "DescriptorWrapperLabelModel", methodName = "getDescriptor") to true,
+    MethodDeclaration(className = "ExcludingFoldingEdgeConverter", methodName = "addFoldingEdge") to true,
+    MethodDeclaration(className = "FilteredGraphWrapper", methodName = "getParent") to true,
+    MethodDeclaration(className = "FoldingEdgeConverterBase", methodName = "addFoldingEdge") to true,
+    MethodDeclaration(className = "GraphWrapperBase", methodName = "getParent") to true,
+    MethodDeclaration(className = "MapperRegistry", methodName = "getMapper") to true,
+    MethodDeclaration(className = "MapperRegistry", methodName = "getMapperMetadata") to true,
+    MethodDeclaration(className = "MergingFoldingEdgeConverter", methodName = "addFoldingEdge") to true,
+
     MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveNode") to true,
     MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveGraph") to true,
     MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolvePort") to true,
