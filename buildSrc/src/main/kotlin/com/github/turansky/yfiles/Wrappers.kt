@@ -274,7 +274,6 @@ internal class Modifiers(flags: List<String>) {
 
     private val canbenull = flags.contains(CANBENULL)
     val nullability = exp(canbenull, "?")
-    val nullable = nullability(canbenull)
 }
 
 internal abstract class TypedDeclaration(
@@ -347,7 +346,6 @@ internal class Property(
     val abstract = modifiers.abstract
     val final = modifiers.final
     val open = !static && !final
-    val nullable = modifiers.nullable
 
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverriden(parent.classId, name)
@@ -408,7 +406,6 @@ internal class Method(
 
     val final = modifiers.final
     val open = !static && !final
-    val nullable = modifiers.nullable
 
     val isExtension by BooleanDelegate()
 
