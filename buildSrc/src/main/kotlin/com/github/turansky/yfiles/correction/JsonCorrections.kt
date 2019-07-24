@@ -265,6 +265,7 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getStroke") to true,
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getTangent") to true,
 
+    MethodDeclaration(className = "ColorExtension", methodName = "provideValue") to true,
     MethodDeclaration(className = "EdgeDecorationInstaller", methodName = "addCanvasObject") to true,
 
     MethodDeclaration(className = "EdgeFocusIndicatorInstaller", methodName = "getStroke") to true,
