@@ -201,7 +201,28 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "GridVisualCreator", methodName = "createVisual") to true,
     MethodDeclaration(className = "GridVisualCreator", methodName = "updateVisual") to true,
     MethodDeclaration(className = "VoidVisualCreator", methodName = "createVisual") to true,
-    MethodDeclaration(className = "VoidVisualCreator", methodName = "updateVisual") to true
+    MethodDeclaration(className = "VoidVisualCreator", methodName = "updateVisual") to true,
+
+    MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "GeneralPathNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "GeneralPathNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "ImageNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "ImageNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "PanelNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "PanelNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "ShapeNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "ShapeNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "ShinyPlateNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "ShinyPlateNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "TableNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "TableNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "getOutline") to true,
+    MethodDeclaration(className = "VoidShapeGeometry", methodName = "getIntersection") to true,
+    MethodDeclaration(className = "VoidShapeGeometry", methodName = "getOutline") to true
 )
 
 internal val MISSED_PROPERTIES = listOf(
