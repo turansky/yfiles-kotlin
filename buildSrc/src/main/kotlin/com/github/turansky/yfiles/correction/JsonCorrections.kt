@@ -21,7 +21,40 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleEdge", "tag") to true,
     PropertyDeclaration("SimpleLabel", "tag") to true,
     PropertyDeclaration("SimpleNode", "tag") to true,
-    PropertyDeclaration("SimplePort", "tag") to true
+    PropertyDeclaration("SimplePort", "tag") to true,
+
+    PropertyDeclaration("SimpleBend", "owner") to true,
+    PropertyDeclaration("SimpleEdge", "sourcePort") to true,
+    PropertyDeclaration("SimpleEdge", "targetPort") to true,
+    PropertyDeclaration("SimpleLabel", "owner") to true,
+    PropertyDeclaration("SimplePort", "owner") to true,
+
+    PropertyDeclaration("ClickInputMode", "inputModeContext") to true,
+    PropertyDeclaration("ContextMenuInputMode", "inputModeContext") to true,
+    PropertyDeclaration("CreateBendInputMode", "inputModeContext") to true,
+    PropertyDeclaration("CreateEdgeInputMode", "inputModeContext") to true,
+    PropertyDeclaration("DefaultPortCandidate", "candidateTag") to true,
+    PropertyDeclaration("DefaultPortCandidate", "port") to true,
+    PropertyDeclaration("DropInputMode", "inputModeContext") to true,
+    PropertyDeclaration("FocusGuardInputMode", "inputModeContext") to true,
+    PropertyDeclaration("HandleInputMode", "inputModeContext") to true,
+    PropertyDeclaration("ItemHoverInputMode", "inputModeContext") to true,
+    PropertyDeclaration("KeyboardInputMode", "inputModeContext") to true,
+    PropertyDeclaration("LabelDropInputMode", "draggedItem") to true,
+    PropertyDeclaration("LassoSelectionInputMode", "inputModeContext") to true,
+    PropertyDeclaration("MarqueeSelectionInputMode", "inputModeContext") to true,
+    PropertyDeclaration("MouseHoverInputMode", "inputModeContext") to true,
+    PropertyDeclaration("MoveInputMode", "inputModeContext") to true,
+    PropertyDeclaration("MoveViewportInputMode", "inputModeContext") to true,
+    PropertyDeclaration("MultiplexingInputMode", "inputModeContext") to true,
+    PropertyDeclaration("NavigationInputMode", "inputModeContext") to true,
+    PropertyDeclaration("NodeDropInputMode", "draggedItem") to true,
+    PropertyDeclaration("PortDropInputMode", "draggedItem") to true,
+    PropertyDeclaration("ResizeStripeInputMode", "inputModeContext") to true,
+    PropertyDeclaration("StripeDropInputMode", "draggedItem") to true,
+    PropertyDeclaration("TapInputMode", "inputModeContext") to true,
+    PropertyDeclaration("TextEditorInputMode", "inputModeContext") to true,
+    PropertyDeclaration("WaitInputMode", "inputModeContext") to true
 )
 
 internal val PARAMETERS_CORRECTION = mapOf(
