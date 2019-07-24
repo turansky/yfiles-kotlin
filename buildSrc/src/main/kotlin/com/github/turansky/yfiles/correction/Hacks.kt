@@ -195,9 +195,9 @@ private fun fixMethodNullability(source: Source) {
     METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .getJSONArray(J_METHODS)
-                .firstWithName(methodName)
-                .changeNullability(nullable)
+                .jsequence(J_METHODS)
+                .filter { it.getString(J_NAME) == methodName }
+                .forEach { it.changeNullability(nullable) }
         }
 }
 
