@@ -168,6 +168,13 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "DataProviderBase", methodName = "get") to true,
     MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true,
 
+    MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveNode") to true,
+    MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveGraph") to true,
+    MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolvePort") to true,
+    MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveEdge") to true,
+    MethodDeclaration(className = "GraphMLParseValueSerializerContext", methodName = "getValueSerializerFor") to true,
+    MethodDeclaration(className = "GraphMLWriteValueSerializerContext", methodName = "getValueSerializerFor") to true,
+
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "createVisual") to true,
