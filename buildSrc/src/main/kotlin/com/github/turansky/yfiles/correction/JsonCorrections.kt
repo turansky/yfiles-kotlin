@@ -193,6 +193,9 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "GraphMLParseValueSerializerContext", methodName = "getValueSerializerFor") to true,
     MethodDeclaration(className = "GraphMLWriteValueSerializerContext", methodName = "getValueSerializerFor") to true,
 
+    MethodDeclaration(className = "IncrementalHintItemMapping", methodName = "provideMapperForContext") to true,
+    MethodDeclaration(className = "NodeDropInputMode", methodName = "getDropTarget") to true,
+
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "createVisual") to true,
@@ -253,6 +256,14 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getSourceArrow") to true,
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getTargetArrow") to true,
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getSourceArrow") to true,
+
+    MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getStroke") to true,
+    MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getTangent") to true,
+    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getTangent") to true,
+    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getObstacles") to true,
+    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getPath") to true,
+    MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getStroke") to true,
+    MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getTangent") to true,
 
     MethodDeclaration(className = "EdgeDecorationInstaller", methodName = "addCanvasObject") to true,
 
