@@ -348,7 +348,7 @@ internal class Property(
     val open = !static && !final
 
     private val overridden: Boolean
-        get() = !static && ClassRegistry.instance.propertyOverriden(parent.classId, name)
+        get() = !static && ClassRegistry.instance.propertyOverridden(parent.classId, name)
 
     override fun toCode(): String {
         var str = ""
@@ -416,7 +416,7 @@ internal class Method(
         get() = getGenericString(typeparameters)
 
     override val overridden: Boolean
-        get() = !static && ClassRegistry.instance.functionOverriden(parent!!.classId, name)
+        get() = !static && ClassRegistry.instance.functionOverridden(parent!!.classId, name)
 
     private val documentation: String
         get() = getDocumentation(
@@ -596,7 +596,7 @@ private class EventListener(
 
     val overriden: Boolean
         get() = ClassRegistry.instance
-            .listenerOverriden(parent.classId, name)
+            .listenerOverridden(parent.classId, name)
 
     private fun kotlinModificator(): String {
         return when {

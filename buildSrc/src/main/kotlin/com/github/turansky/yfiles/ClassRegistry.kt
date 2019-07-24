@@ -37,7 +37,7 @@ internal class ClassRegistry(
             .toList()
     }
 
-    private fun functionOverriden(
+    private fun functionOverridden(
         className: String,
         functionName: String,
         checkCurrentClass: Boolean
@@ -49,11 +49,11 @@ internal class ClassRegistry(
             }
         }
         return getParents(className).any {
-            functionOverriden(it, functionName, true)
+            functionOverridden(it, functionName, true)
         }
     }
 
-    private fun propertyOverriden(
+    private fun propertyOverridden(
         className: String,
         propertyName: String,
         checkCurrentClass: Boolean
@@ -65,11 +65,11 @@ internal class ClassRegistry(
             }
         }
         return getParents(className).any {
-            propertyOverriden(it, propertyName, true)
+            propertyOverridden(it, propertyName, true)
         }
     }
 
-    private fun listenerOverriden(
+    private fun listenerOverridden(
         className: String,
         listenerName: String,
         checkCurrentClass: Boolean
@@ -81,19 +81,19 @@ internal class ClassRegistry(
             }
         }
         return getParents(className).any {
-            listenerOverriden(it, listenerName, true)
+            listenerOverridden(it, listenerName, true)
         }
     }
 
-    fun functionOverriden(className: String, functionName: String): Boolean {
-        return functionOverriden(className, functionName, false)
+    fun functionOverridden(className: String, functionName: String): Boolean {
+        return functionOverridden(className, functionName, false)
     }
 
-    fun propertyOverriden(className: String, propertyName: String): Boolean {
-        return propertyOverriden(className, propertyName, false)
+    fun propertyOverridden(className: String, propertyName: String): Boolean {
+        return propertyOverridden(className, propertyName, false)
     }
 
-    fun listenerOverriden(className: String, listenerName: String): Boolean {
-        return listenerOverriden(className, listenerName, false)
+    fun listenerOverridden(className: String, listenerName: String): Boolean {
+        return listenerOverridden(className, listenerName, false)
     }
 }
