@@ -180,6 +180,12 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "MapperRegistry", methodName = "getMapperMetadata") to true,
     MethodDeclaration(className = "MergingFoldingEdgeConverter", methodName = "addFoldingEdge") to true,
 
+    MethodDeclaration(className = "ChildParseContext", methodName = "getCurrent") to true,
+    MethodDeclaration(className = "ChildWriteContext", methodName = "getCurrent") to true,
+    MethodDeclaration(className = "ChildWriteContext", methodName = "getSerializationProperty") to true,
+    MethodDeclaration(className = "MapperInputHandler", methodName = "parseDataCore") to true,
+    MethodDeclaration(className = "MapperOutputHandler", methodName = "getValue") to true,
+
     MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveNode") to true,
     MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolveGraph") to true,
     MethodDeclaration(className = "GraphElementIdAcceptor", methodName = "resolvePort") to true,
