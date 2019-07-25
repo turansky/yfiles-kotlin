@@ -33,6 +33,7 @@ internal fun applyHacks(api: JSONObject) {
     fixMethodParameterType(source)
     fixMethodParameterNullability(source)
     fixMethodNullability(source)
+    fixAlgorithmsNullability(source)
 
     addMissedProperties(source)
     addMissedMethods(source)
@@ -199,6 +200,33 @@ private fun fixMethodNullability(source: Source) {
                 .filter { it.getString(J_NAME) == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
+}
+
+private fun fixAlgorithmsNullability(source: Source) {
+    val EXCLUDED_PARAMETERS = setOf(
+        "edgeCosts",
+        "edgeWeights"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    source.types(
+        "AbortHandler",
+        "AffineLine",
+        "BipartitionAlgorithm",
+        "CentralityAlgorithm",
+        "Comparers",
+        "Cursors",
+        "CycleAlgorithm"
+    ).jsequence(J_STATIC_METHODS)
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun addMissedProperties(source: Source) {
