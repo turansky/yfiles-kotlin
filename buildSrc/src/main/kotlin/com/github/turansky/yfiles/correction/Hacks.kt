@@ -205,12 +205,16 @@ private fun fixMethodNullability(source: Source) {
 private fun fixAlgorithmsNullability(source: Source) {
     val EXCLUDED_PARAMETERS = setOf(
         "edgeCosts",
-        "edgeWeights"
+        "edgeWeights",
+        "defaultValue"
     )
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
-        "number"
+        "number",
+
+        "yfiles.algorithms.Linkage",
+        "yfiles.algorithms.DistanceMetric"
     )
 
     source.types(
@@ -220,7 +224,14 @@ private fun fixAlgorithmsNullability(source: Source) {
         "CentralityAlgorithm",
         "Comparers",
         "Cursors",
-        "CycleAlgorithm"
+        "CycleAlgorithm",
+        "DataProviders",
+        "GraphChecker",
+        "GraphConnectivity",
+        "GroupAlgorithm",
+        "IndependentSetAlgorithm",
+        "IntersectionAlgorithm",
+        "Maps"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
