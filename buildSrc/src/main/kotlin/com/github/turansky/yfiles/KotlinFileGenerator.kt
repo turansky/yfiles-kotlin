@@ -54,7 +54,7 @@ internal class KotlinFileGenerator(
         companionContent = "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
-        if (generatedFile !is EnumFile) {
+        if (generatedFile is InterfaceFile) {
             companionContent = "@file:Suppress(\"NOTHING_TO_INLINE\")\n\n" +
                     companionContent
         }
