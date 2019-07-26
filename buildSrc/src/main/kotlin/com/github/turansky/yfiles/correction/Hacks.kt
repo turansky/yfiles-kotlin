@@ -206,7 +206,12 @@ private fun fixAlgorithmsNullability(source: Source) {
     val EXCLUDED_PARAMETERS = setOf(
         "edgeCosts",
         "edgeWeights",
-        "defaultValue"
+
+        "defaultValue",
+        "dualsNM",
+
+        "revMap",
+        "reverseEdgeMap"
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -231,7 +236,14 @@ private fun fixAlgorithmsNullability(source: Source) {
         "GroupAlgorithm",
         "IndependentSetAlgorithm",
         "IntersectionAlgorithm",
-        "Maps"
+        "Maps",
+        "NodeOrderAlgorithm",
+        "PathAlgorithm",
+        "SortingAlgorithm",
+        "SpanningTreeAlgorithm",
+        "TransitivityAlgorithm",
+        "TreeAlgorithm",
+        "TriangulationAlgorithm"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
