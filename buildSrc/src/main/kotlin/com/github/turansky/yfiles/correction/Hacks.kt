@@ -203,6 +203,10 @@ private fun fixMethodNullability(source: Source) {
 }
 
 private fun fixAlgorithmsNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "simple"
+    )
+
     val EXCLUDED_PARAMETERS = setOf(
         "edgeCosts",
         "edgeWeights",
@@ -239,6 +243,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         "Maps",
         "NodeOrderAlgorithm",
         "PathAlgorithm",
+        "PlanarEmbedding",
+        "RankAssignmentAlgorithm",
         "SortingAlgorithm",
         "SpanningTreeAlgorithm",
         "TransitivityAlgorithm",
@@ -246,8 +252,17 @@ private fun fixAlgorithmsNullability(source: Source) {
         "TriangulationAlgorithm"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
+        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+
+    source.types(
+        "DfsAlgorithm"
+    ).jsequence(J_METHODS)
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
 }
