@@ -203,18 +203,21 @@ private fun fixMethodNullability(source: Source) {
 }
 
 private fun fixAlgorithmsNullability(source: Source) {
+    val EXCLUDED_METHOD_IDS = setOf(
+        "ShortestPaths-method-bellmanFord(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,yfiles.algorithms.IDataProvider,yfiles.algorithms.INodeMap,yfiles.algorithms.INodeMap)",
+        "ShortestPaths-method-uniform(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,Array<number>,Array<yfiles.algorithms.Edge>)"
+    )
+
     val EXCLUDED_METHODS = setOf(
         "simple",
 
         "aStar",
         "acyclic",
-        "bellmanFord", // check
         "constructEdgePath",
         "constructNodePath",
         "dijkstra",
         "singleSource",
-        "singleSourceSingleSink",
-        "uniform" // check
+        "singleSourceSingleSink"
     )
 
     val EXCLUDED_PARAMETERS = setOf(
@@ -263,6 +266,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "TriangulationAlgorithm"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
+        .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
         .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
