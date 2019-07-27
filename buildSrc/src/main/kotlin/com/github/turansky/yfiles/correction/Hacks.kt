@@ -204,7 +204,17 @@ private fun fixMethodNullability(source: Source) {
 
 private fun fixAlgorithmsNullability(source: Source) {
     val EXCLUDED_METHODS = setOf(
-        "simple"
+        "simple",
+
+        "aStar",
+        "acyclic",
+        "bellmanFord", // check
+        "constructEdgePath",
+        "constructNodePath",
+        "dijkstra",
+        "singleSource",
+        "singleSourceSingleSink",
+        "uniform" // check
     )
 
     val EXCLUDED_PARAMETERS = setOf(
@@ -246,6 +256,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "PlanarEmbedding",
         "RankAssignmentAlgorithm",
         "SortingAlgorithm",
+        "ShortestPathAlgorithm",
         "SpanningTreeAlgorithm",
         "TransitivityAlgorithm",
         "TreeAlgorithm",
