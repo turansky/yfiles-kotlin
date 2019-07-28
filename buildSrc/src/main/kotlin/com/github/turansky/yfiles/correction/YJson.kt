@@ -82,6 +82,13 @@ internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
         .asSequence()
         .map { it as JSONObject }
 
+internal fun JSONObject.optJsequence(name: String): Sequence<JSONObject> =
+    if (has(name)) {
+        jsequence(name)
+    } else {
+        emptySequence()
+    }
+
 internal fun Sequence<JSONObject>.jsequence(name: String): Sequence<JSONObject> =
     flatMap { it.jsequence(name) }
 

@@ -217,7 +217,10 @@ private fun fixAlgorithmsNullability(source: Source) {
         "constructNodePath",
         "dijkstra",
         "singleSource",
-        "singleSourceSingleSink"
+        "singleSourceSingleSink",
+
+        "hide",
+        "unhide"
     )
 
     val EXCLUDED_PARAMETERS = setOf(
@@ -256,7 +259,6 @@ private fun fixAlgorithmsNullability(source: Source) {
         "Maps",
         "NodeOrderAlgorithm",
         "PathAlgorithm",
-        "PlanarEmbedding",
         "RankAssignmentAlgorithm",
         "SortingAlgorithm",
         "ShortestPathAlgorithm",
@@ -273,9 +275,17 @@ private fun fixAlgorithmsNullability(source: Source) {
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
 
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .plus(type.optJsequence(J_CONSTRUCTORS))
+
     source.types(
-        "DfsAlgorithm"
-    ).jsequence(J_METHODS)
+        "DfsAlgorithm",
+        "INodeSequencer",
+        "LayoutGraphHider",
+        "PlanarEmbedding"
+    ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
