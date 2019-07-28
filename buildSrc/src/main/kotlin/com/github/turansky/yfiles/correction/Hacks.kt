@@ -317,6 +317,8 @@ private fun fixLayoutNullability(source: Source) {
         "boolean",
         "number",
 
+        "yfiles.layout.LayoutOrientation",
+        "yfiles.layout.MirrorModes",
         "yfiles.layout.SwimlanesMode"
     )
 
@@ -339,6 +341,7 @@ private fun fixLayoutNullability(source: Source) {
         "DefaultLayoutGraph",
         "CopiedLayoutGraph",
 
+        "EdgeLabelOrientationSupport",
         "LayoutGroupingSupport",
         "PartitionGrid"
     ).flatMap { getAffectedMethods(it) }
