@@ -307,6 +307,11 @@ private fun fixAlgorithmsNullability(source: Source) {
 }
 
 private fun fixLayoutNullability(source: Source) {
+    val EXCLUDED_METHOD_IDS = setOf(
+        "LayoutGraphUtilities-method-getBoundingBox(yfiles.layout.LayoutGraph,yfiles.algorithms.Node)",
+        "LayoutGraphUtilities-method-getBoundingBox(yfiles.layout.LayoutGraph,yfiles.algorithms.Edge)"
+    )
+
     val EXCLUDED_METHODS = setOf(
         "getLabelLayout",
         "getLayout",
@@ -314,7 +319,9 @@ private fun fixLayoutNullability(source: Source) {
         "setLabelLayout",
         "setLayout",
         "setPath",
-        "setPoints"
+        "setPoints",
+
+        "routeEdgesParallel"
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -324,7 +331,11 @@ private fun fixLayoutNullability(source: Source) {
         "yfiles.layout.LayoutOrientation",
         "yfiles.layout.MirrorModes",
         "yfiles.layout.SwimlanesMode",
-        "yfiles.layout.PortSide"
+        "yfiles.layout.PortSide",
+
+        "yfiles.layout.NodeAlignment",
+        "yfiles.layout.MultiRowConstraint",
+        "yfiles.layout.RowAlignment"
     )
 
     source.types(
@@ -335,6 +346,8 @@ private fun fixLayoutNullability(source: Source) {
         "Swimlanes"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
+        .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
+        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
