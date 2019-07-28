@@ -221,7 +221,11 @@ private fun fixAlgorithmsNullability(source: Source) {
         "singleSourceSingleSink",
 
         "hide",
-        "unhide"
+        "unhide",
+
+        "contains",
+        "moveToFirst",
+        "moveToLast"
     )
 
     val EXCLUDED_PARAMETERS = setOf(
@@ -240,7 +244,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         "number",
 
         "yfiles.algorithms.Linkage",
-        "yfiles.algorithms.DistanceMetric"
+        "yfiles.algorithms.DistanceMetric",
+        "yfiles.algorithms.GraphElementInsertion"
     )
 
     source.types(
@@ -283,9 +288,12 @@ private fun fixAlgorithmsNullability(source: Source) {
 
     source.types(
         "DfsAlgorithm",
+        "Edge",
+        "Graph",
         "INodeSequencer",
         "LayoutGraphHider",
-        "PlanarEmbedding"
+        "PlanarEmbedding",
+        "YNode"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
