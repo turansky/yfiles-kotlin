@@ -315,8 +315,19 @@ private fun fixLayoutNullability(source: Source) {
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
-        "number"
+        "number",
+
+        "yfiles.layout.SwimlanesMode"
     )
+
+    source.types(
+        "NormalizeGraphElementOrderStage",
+        "Swimlanes"
+    ).jsequence(J_STATIC_METHODS)
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
@@ -326,7 +337,10 @@ private fun fixLayoutNullability(source: Source) {
     source.types(
         "LayoutGraph",
         "DefaultLayoutGraph",
-        "CopiedLayoutGraph"
+        "CopiedLayoutGraph",
+
+        "LayoutGroupingSupport",
+        "PartitionGrid"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
