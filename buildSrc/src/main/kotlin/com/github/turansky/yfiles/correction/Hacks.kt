@@ -205,6 +205,8 @@ private fun fixMethodNullability(source: Source) {
 private fun fixAlgorithmsNullability(source: Source) {
     val EXCLUDED_METHOD_IDS = setOf(
         "ShortestPaths-method-bellmanFord(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,yfiles.algorithms.IDataProvider,yfiles.algorithms.INodeMap,yfiles.algorithms.INodeMap)",
+        "ShortestPaths-method-constructNodePath(yfiles.algorithms.Node,yfiles.algorithms.Node,Array<yfiles.algorithms.Edge>)",
+        "ShortestPaths-method-constructNodePath(yfiles.algorithms.Node,yfiles.algorithms.Node,yfiles.algorithms.IDataProvider)",
         "ShortestPaths-method-uniform(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,Array<number>,Array<yfiles.algorithms.Edge>)"
     )
 
@@ -214,7 +216,6 @@ private fun fixAlgorithmsNullability(source: Source) {
         "aStar",
         "acyclic",
         "constructEdgePath",
-        "constructNodePath",
         "dijkstra",
         "singleSource",
         "singleSourceSingleSink",
