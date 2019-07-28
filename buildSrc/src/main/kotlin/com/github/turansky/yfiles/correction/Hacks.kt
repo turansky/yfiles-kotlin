@@ -323,12 +323,15 @@ private fun fixLayoutNullability(source: Source) {
 
         "yfiles.layout.LayoutOrientation",
         "yfiles.layout.MirrorModes",
-        "yfiles.layout.SwimlanesMode"
+        "yfiles.layout.SwimlanesMode",
+        "yfiles.layout.PortSide"
     )
 
     source.types(
         "GraphTransformer",
+        "NodeHalo",
         "NormalizeGraphElementOrderStage",
+        "PortConstraint",
         "Swimlanes"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
