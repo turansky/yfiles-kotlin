@@ -34,6 +34,7 @@ internal fun applyHacks(api: JSONObject) {
     fixMethodParameterNullability(source)
     fixMethodNullability(source)
     fixAlgorithmsNullability(source)
+    fixLayoutNullability(source)
 
     addMissedProperties(source)
     addMissedMethods(source)
@@ -294,6 +295,38 @@ private fun fixAlgorithmsNullability(source: Source) {
         "LayoutGraphHider",
         "PlanarEmbedding",
         "YNode"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixLayoutNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "getLabelLayout",
+        "getLayout",
+
+        "setLabelLayout",
+        "setLayout",
+        "setPath",
+        "setPoints"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .plus(type.optJsequence(J_CONSTRUCTORS))
+
+    source.types(
+        "LayoutGraph",
+        "DefaultLayoutGraph",
+        "CopiedLayoutGraph"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
