@@ -321,6 +321,8 @@ private fun fixLayoutNullability(source: Source) {
         "setPath",
         "setPoints",
 
+        "getBoundingBoxOfEdges",
+        "getBoundingBoxOfNodes",
         "routeEdgesParallel"
     )
 
@@ -340,6 +342,7 @@ private fun fixLayoutNullability(source: Source) {
 
     source.types(
         "GraphTransformer",
+        "LayoutGraphUtilities",
         "NodeHalo",
         "NormalizeGraphElementOrderStage",
         "PortConstraint",
