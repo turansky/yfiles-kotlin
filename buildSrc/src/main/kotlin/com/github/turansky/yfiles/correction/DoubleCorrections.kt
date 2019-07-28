@@ -170,6 +170,7 @@ internal val DOUBLE_PROPERTIES = setOf(
     "computedLanePosition",
     "computedLaneWidth",
     "spacing",
+    "gridSpacing",
     "sourcePortCandidateHitRadius",
     "snapLineExtension",
     "horizontalGridWidth",

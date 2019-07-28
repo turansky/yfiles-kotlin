@@ -88,7 +88,6 @@ internal val INT_PROPERTIES = setOf(
     "repulsion",
     "attraction",
     "lastWakeupTime",
-    "gridSpacing",
     "treeSize",
     "chainSize",
     "cycleSize",
