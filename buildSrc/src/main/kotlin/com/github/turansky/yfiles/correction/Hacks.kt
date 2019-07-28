@@ -205,6 +205,8 @@ private fun fixMethodNullability(source: Source) {
 
 private fun fixAlgorithmsNullability(source: Source) {
     val EXCLUDED_METHOD_IDS = setOf(
+        "NetworkFlows-method-minCostFlow(yfiles.algorithms.Graph,yfiles.algorithms.Node,yfiles.algorithms.Node,yfiles.algorithms.IDataProvider,yfiles.algorithms.IDataProvider,yfiles.algorithms.IEdgeMap,yfiles.algorithms.INodeMap)",
+
         "ShortestPaths-method-bellmanFord(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,yfiles.algorithms.IDataProvider,yfiles.algorithms.INodeMap,yfiles.algorithms.INodeMap)",
         "ShortestPaths-method-constructNodePath(yfiles.algorithms.Node,yfiles.algorithms.Node,Array<yfiles.algorithms.Edge>)",
         "ShortestPaths-method-constructNodePath(yfiles.algorithms.Node,yfiles.algorithms.Node,yfiles.algorithms.IDataProvider)",
@@ -264,6 +266,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "IndependentSetAlgorithm",
         "IntersectionAlgorithm",
         "Maps",
+        "NetworkFlowAlgorithm",
         "NodeOrderAlgorithm",
         "PathAlgorithm",
         "RankAssignmentAlgorithm",
@@ -291,6 +294,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "DfsAlgorithm",
         "Edge",
         "Graph",
+        "GraphPartitionManager",
         "INodeSequencer",
         "LayoutGraphHider",
         "PlanarEmbedding",
