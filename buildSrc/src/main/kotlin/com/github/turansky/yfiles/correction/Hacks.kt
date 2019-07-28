@@ -327,6 +327,7 @@ private fun fixLayoutNullability(source: Source) {
     )
 
     source.types(
+        "GraphTransformer",
         "NormalizeGraphElementOrderStage",
         "Swimlanes"
     ).jsequence(J_STATIC_METHODS)
@@ -345,9 +346,14 @@ private fun fixLayoutNullability(source: Source) {
         "DefaultLayoutGraph",
         "CopiedLayoutGraph",
 
+        "ILayoutGroupBoundsCalculator",
+        "InsetsGroupBoundsCalculator",
+        "MinimumSizeGroupBoundsCalculator",
+
         "EdgeLabelOrientationSupport",
         "LayoutGroupingSupport",
-        "PartitionGrid"
+        "PartitionGrid",
+        "PortConstraintConfigurator"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
