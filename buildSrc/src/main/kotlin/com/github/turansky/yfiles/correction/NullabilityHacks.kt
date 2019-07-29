@@ -233,10 +233,14 @@ private fun fixHierarchicNullability(source: Source) {
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
-        "number"
+        "number",
+
+        "yfiles.hierarchic.NodeDataType"
     )
 
     val EXCLUDED_PARAMETERS = setOf(
+        "laneDescriptor",
+
         "left",
         "right"
     )
