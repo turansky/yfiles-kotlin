@@ -236,6 +236,11 @@ private fun fixHierarchicNullability(source: Source) {
         "number"
     )
 
+    val EXCLUDED_PARAMETERS = setOf(
+        "left",
+        "right"
+    )
+
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
@@ -254,10 +259,15 @@ private fun fixHierarchicNullability(source: Source) {
         "ISequencer",
         "AsIsSequencer",
         "DefaultLayerSequencer",
-        "GivenSequenceSequencer"
+        "GivenSequenceSequencer",
+
+        "IDrawingDistanceCalculator",
+        "DefaultDrawingDistanceCalculator",
+        "TypeBasedDrawingDistanceCalculator"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
 }
