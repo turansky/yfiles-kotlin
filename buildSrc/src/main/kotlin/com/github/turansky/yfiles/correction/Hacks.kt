@@ -35,6 +35,7 @@ internal fun applyHacks(api: JSONObject) {
     fixMethodNullability(source)
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
+    fixStageNullability(source)
 
     addMissedProperties(source)
     addMissedMethods(source)
@@ -373,6 +374,40 @@ private fun fixLayoutNullability(source: Source) {
         "LayoutGroupingSupport",
         "PartitionGrid",
         "PortConstraintConfigurator"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixStageNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "applyLayout",
+        "applyLayoutCore"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number",
+
+        "yfiles.layout.LayoutOrientation"
+    )
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .plus(type.optJsequence(J_CONSTRUCTORS))
+
+    source.types(
+        "BendConverter",
+        "ComponentLayout",
+        "CompositeLayoutStage",
+        "IPartitionInterEdgeRouter",
+        "IsolatedGroupComponentLayout",
+        "MultiStageLayout",
+        "OrientationLayout",
+        "ReverseEdgesStage"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
