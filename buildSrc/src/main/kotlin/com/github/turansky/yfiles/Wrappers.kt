@@ -2,7 +2,6 @@ package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
-import kotlin.reflect.KProperty
 
 internal abstract class JsonWrapper(override val source: JSONObject) : HasSource {
     open fun toCode(): String {
@@ -619,38 +618,50 @@ internal class EventListenerModifiers(flags: List<String>) {
     val abstract = flags.contains(ABSTRACT)
 }
 
-private class TypeDelegate(private val parse: (String) -> String) {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String {
-        return parse(StringDelegate.value(thisRef, property))
+private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate<String> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): String {
+        return parse(StringDelegate.value(source, key))
     }
 }
 
-private class SummaryDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): String? {
-        val value = NullableStringDelegate.value(thisRef, property)
+private class SummaryDelegate : JsonDelegate<String?> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): String? {
+        val value = NullableStringDelegate.value(source, key)
             ?: return null
 
         return summary(value)
     }
 }
 
-private class ModifiersDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): Modifiers {
-        return Modifiers(StringArrayDelegate.value(thisRef, property))
+private class ModifiersDelegate : JsonDelegate<Modifiers> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): Modifiers {
+        return Modifiers(StringArrayDelegate.value(source, key))
     }
 }
 
-private class ParameterModifiersDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): ParameterModifiers {
-        return ParameterModifiers(StringArrayDelegate.value(thisRef, property))
+private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): ParameterModifiers {
+        return ParameterModifiers(StringArrayDelegate.value(source, key))
     }
 }
 
-private class SignatureReturnsDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): SignatureReturns? {
-        val source = thisRef.source
-        val key = property.name
-
+private class SignatureReturnsDelegate : JsonDelegate<SignatureReturns?> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): SignatureReturns? {
         return if (source.has(key)) {
             SignatureReturns(source.getJSONObject(key))
         } else {
@@ -659,11 +670,11 @@ private class SignatureReturnsDelegate {
     }
 }
 
-private class ReturnsDelegate {
-    operator fun getValue(thisRef: Method, property: KProperty<*>): Returns? {
-        val source = thisRef.source
-        val key = property.name
-
+private class ReturnsDelegate : JsonDelegate<Returns?> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): Returns? {
         return if (source.has(key)) {
             Returns(source.getJSONObject(key))
         } else {
@@ -672,15 +683,21 @@ private class ReturnsDelegate {
     }
 }
 
-private class EventListenerDelegate(private val parent: HasClassId) {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListener {
-        return EventListener(thisRef.source.getJSONObject(property.name), parent)
+private class EventListenerDelegate(private val parent: HasClassId) : JsonDelegate<EventListener> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): EventListener {
+        return EventListener(source.getJSONObject(key), parent)
     }
 }
 
-private class EventListenerModifiersDelegate {
-    operator fun getValue(thisRef: JsonWrapper, property: KProperty<*>): EventListenerModifiers {
-        return EventListenerModifiers(StringArrayDelegate.value(thisRef, property))
+private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifiers> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): EventListenerModifiers {
+        return EventListenerModifiers(StringArrayDelegate.value(source, key))
     }
 }
 

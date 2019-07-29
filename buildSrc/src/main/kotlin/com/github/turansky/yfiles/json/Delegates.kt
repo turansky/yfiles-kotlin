@@ -7,11 +7,24 @@ interface HasSource {
     val source: JSONObject
 }
 
-internal class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): List<T> {
-        val source = thisRef.source
-        val key = property.name
+interface JsonDelegate<T> {
+    fun read(
+        source: JSONObject,
+        key: String
+    ): T
 
+    operator fun getValue(thisRef: HasSource, property: KProperty<*>): T =
+        read(thisRef.source, property.name)
+}
+
+internal class ArrayDelegate<T>(
+    private val transform: (JSONObject) -> T
+) : JsonDelegate<List<T>> {
+
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): List<T> {
         if (!source.has(key)) {
             return emptyList()
         }
@@ -30,12 +43,12 @@ internal class ArrayDelegate<T>(private val transform: (JSONObject) -> T) {
     }
 }
 
-internal class StringArrayDelegate {
+internal class StringArrayDelegate : JsonDelegate<List<String>> {
     companion object {
-        fun value(thisRef: HasSource, property: KProperty<*>): List<String> {
-            val source = thisRef.source
-            val key = property.name
-
+        fun value(
+            source: JSONObject,
+            key: String
+        ): List<String> {
             if (!source.has(key)) {
                 return emptyList()
             }
@@ -54,23 +67,27 @@ internal class StringArrayDelegate {
         }
     }
 
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): List<String> {
-        return value(thisRef, property)
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): List<String> {
+        return value(source, key)
     }
 }
 
-internal class MapDelegate<T>(private val transform: (name: String, source: JSONObject) -> T) {
-
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): Map<String, T> {
-        val source = thisRef.source
-        val key = property.name
-
+internal class MapDelegate<T>(
+    private val transform: (name: String, source: JSONObject) -> T
+) : JsonDelegate<Map<String, T>> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): Map<String, T> {
         if (!source.has(key)) {
             return emptyMap()
         }
 
         val data = source.getJSONObject(key)
-        val keys: List<String> = data.keySet()?.toList() ?: emptyList<String>()
+        val keys: List<String> = data.keySet()?.toList() ?: emptyList()
         if (keys.isEmpty()) {
             return emptyMap()
         }
@@ -79,38 +96,43 @@ internal class MapDelegate<T>(private val transform: (name: String, source: JSON
     }
 }
 
-internal class NullableStringDelegate {
+internal class NullableStringDelegate : JsonDelegate<String?> {
     companion object {
-        fun value(thisRef: HasSource, property: KProperty<*>): String? {
-            val source = thisRef.source
-            val key = property.name
-
-            return if (source.has(key)) source.getString(key) else null
-        }
+        fun value(
+            source: JSONObject,
+            key: String
+        ): String? =
+            if (source.has(key)) source.getString(key) else null
     }
 
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): String? {
-        return value(thisRef, property)
-    }
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): String? =
+        value(source, key)
 }
 
-internal class StringDelegate {
+internal class StringDelegate : JsonDelegate<String> {
     companion object {
-        fun value(thisRef: HasSource, property: KProperty<*>): String {
-            return thisRef.source.getString(property.name)
-        }
+        fun value(
+            source: JSONObject,
+            key: String
+        ): String =
+            source.getString(key)
     }
 
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): String {
-        return value(thisRef, property)
-    }
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): String =
+        value(source, key)
 }
 
-internal class BooleanDelegate {
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): Boolean {
-        val source = thisRef.source
-        val key = property.name
-
+internal class BooleanDelegate : JsonDelegate<Boolean> {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): Boolean {
         if (!source.has(key)) {
             return false
         }
