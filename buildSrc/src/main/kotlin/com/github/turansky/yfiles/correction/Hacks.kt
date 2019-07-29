@@ -415,7 +415,22 @@ private fun fixStageNullability(source: Source) {
 
         "IPartitionFinder",
         "IPartitionInterEdgeRouter",
-        "IPartitionPlacer"
+        "IPartitionPlacer",
+
+        "ILayerer",
+        "AsIsLayerer",
+        "AspectRatioComponentLayerer",
+        "BFSLayerer",
+        "ConstraintIncrementalLayerer",
+        "GivenLayersLayerer",
+        "MultiComponentLayerer",
+        "TopologicalLayerer",
+        "WeightedLayerer",
+
+        "ISequencer",
+        "AsIsSequencer",
+        "DefaultLayerSequencer",
+        "GivenSequenceSequencer"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
