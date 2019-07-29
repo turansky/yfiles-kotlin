@@ -283,7 +283,12 @@ private fun fixHierarchicNullability(source: Source) {
         "PortConstraintOptimizerBase",
 
         "HierarchicLayout",
-        "HierarchicLayoutCore"
+        "HierarchicLayoutCore",
+
+        "ILayeredComponentsMerger",
+        "DefaultLayeredComponentsMerger",
+
+        "SelfLoopCalculator"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
