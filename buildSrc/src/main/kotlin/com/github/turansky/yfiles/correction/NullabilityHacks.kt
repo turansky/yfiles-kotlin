@@ -229,16 +229,11 @@ private fun fixStageNullability(source: Source) {
 }
 
 private fun fixHierarchicNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf(
-        "applyLayout",
-        "applyLayoutCore"
-    )
+    val EXCLUDED_METHODS = setOf<String>()
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
-        "number",
-
-        "yfiles.layout.LayoutOrientation"
+        "number"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
