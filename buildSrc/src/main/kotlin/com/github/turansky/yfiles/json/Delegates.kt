@@ -8,13 +8,23 @@ interface HasSource {
 }
 
 abstract class JsonDelegate<T> {
+    private var initialized = false
+    private var value: T? = null
+
     abstract fun read(
         source: JSONObject,
         key: String
     ): T
 
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): T =
-        read(thisRef.source, property.name)
+    operator fun getValue(thisRef: HasSource, property: KProperty<*>): T {
+        if (!initialized) {
+            initialized = true
+            value = read(thisRef.source, property.name)
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return value as T
+    }
 }
 
 internal class ArrayDelegate<T>(
