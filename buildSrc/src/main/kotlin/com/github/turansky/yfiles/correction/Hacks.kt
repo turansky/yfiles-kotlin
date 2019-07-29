@@ -403,11 +403,20 @@ private fun fixStageNullability(source: Source) {
         "BendConverter",
         "ComponentLayout",
         "CompositeLayoutStage",
-        "IPartitionInterEdgeRouter",
+        "FixNodeLayoutStage",
+        "HideGroupsStage",
         "IsolatedGroupComponentLayout",
+        "LayoutMultiplexer",
         "MultiStageLayout",
         "OrientationLayout",
-        "ReverseEdgesStage"
+        "PortCalculator",
+        "RecursiveGroupLayout",
+        "ReverseEdgesStage",
+        "SelfLoopRouter",
+
+        "IPartitionFinder",
+        "IPartitionInterEdgeRouter",
+        "IPartitionPlacer"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
