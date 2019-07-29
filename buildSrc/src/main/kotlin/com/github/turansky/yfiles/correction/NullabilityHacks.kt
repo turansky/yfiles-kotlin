@@ -259,6 +259,9 @@ private fun fixHierarchicNullability(source: Source) {
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
 
     source.types(
+        "IItemFactory",
+        "IEdgeReverser",
+
         "ILayerer",
         "AsIsLayerer",
         "AspectRatioComponentLayerer",
@@ -287,6 +290,9 @@ private fun fixHierarchicNullability(source: Source) {
 
         "ILayeredComponentsMerger",
         "DefaultLayeredComponentsMerger",
+
+        "IPortAllocator",
+        "DefaultPortAllocator",
 
         "SelfLoopCalculator"
     ).flatMap { getAffectedMethods(it) }
