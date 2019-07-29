@@ -267,7 +267,11 @@ private fun fixHierarchicNullability(source: Source) {
 
         "IDrawingDistanceCalculator",
         "DefaultDrawingDistanceCalculator",
-        "TypeBasedDrawingDistanceCalculator"
+        "TypeBasedDrawingDistanceCalculator",
+
+        "IPortConstraintOptimizer",
+        "PortCandidateOptimizer",
+        "PortConstraintOptimizerBase"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
