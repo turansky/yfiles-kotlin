@@ -6,6 +6,7 @@ internal fun fixNullability(source: Source) {
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
     fixStageNullability(source)
+    fixHierarchicNullability(source)
 }
 
 private fun fixAlgorithmsNullability(source: Source) {
@@ -219,8 +220,32 @@ private fun fixStageNullability(source: Source) {
 
         "IPartitionFinder",
         "IPartitionInterEdgeRouter",
-        "IPartitionPlacer",
+        "IPartitionPlacer"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+}
 
+private fun fixHierarchicNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "applyLayout",
+        "applyLayoutCore"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number",
+
+        "yfiles.layout.LayoutOrientation"
+    )
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+
+    source.types(
         "ILayerer",
         "AsIsLayerer",
         "AspectRatioComponentLayerer",
