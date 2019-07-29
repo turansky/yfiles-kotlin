@@ -361,7 +361,11 @@ internal class KotlinFileGenerator(
                 memberEvents.filter { !it.overriden }
 
         override fun companionContent(): String? {
-            val content = interfaceCastExtensions(
+            var content = typealiasDeclaration()?.let {
+                it + "\n\n"
+            } ?: ""
+
+            content += interfaceCastExtensions(
                 className = data.name,
                 generics = genericParameters()
             )
