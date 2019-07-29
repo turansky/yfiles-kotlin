@@ -618,7 +618,7 @@ internal class EventListenerModifiers(flags: List<String>) {
     val abstract = flags.contains(ABSTRACT)
 }
 
-private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate<String> {
+private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate<String>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -627,7 +627,7 @@ private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate
     }
 }
 
-private class SummaryDelegate : JsonDelegate<String?> {
+private class SummaryDelegate : JsonDelegate<String?>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -639,7 +639,7 @@ private class SummaryDelegate : JsonDelegate<String?> {
     }
 }
 
-private class ModifiersDelegate : JsonDelegate<Modifiers> {
+private class ModifiersDelegate : JsonDelegate<Modifiers>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -648,7 +648,7 @@ private class ModifiersDelegate : JsonDelegate<Modifiers> {
     }
 }
 
-private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers> {
+private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -657,7 +657,7 @@ private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers> {
     }
 }
 
-private class SignatureReturnsDelegate : JsonDelegate<SignatureReturns?> {
+private class SignatureReturnsDelegate : JsonDelegate<SignatureReturns?>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -670,7 +670,7 @@ private class SignatureReturnsDelegate : JsonDelegate<SignatureReturns?> {
     }
 }
 
-private class ReturnsDelegate : JsonDelegate<Returns?> {
+private class ReturnsDelegate : JsonDelegate<Returns?>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -683,7 +683,7 @@ private class ReturnsDelegate : JsonDelegate<Returns?> {
     }
 }
 
-private class EventListenerDelegate(private val parent: HasClassId) : JsonDelegate<EventListener> {
+private class EventListenerDelegate(private val parent: HasClassId) : JsonDelegate<EventListener>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -692,7 +692,7 @@ private class EventListenerDelegate(private val parent: HasClassId) : JsonDelega
     }
 }
 
-private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifiers> {
+private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifiers>() {
     override fun read(
         source: JSONObject,
         key: String

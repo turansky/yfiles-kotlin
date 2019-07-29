@@ -7,8 +7,8 @@ interface HasSource {
     val source: JSONObject
 }
 
-interface JsonDelegate<T> {
-    fun read(
+abstract class JsonDelegate<T> {
+    abstract fun read(
         source: JSONObject,
         key: String
     ): T
@@ -19,7 +19,7 @@ interface JsonDelegate<T> {
 
 internal class ArrayDelegate<T>(
     private val transform: (JSONObject) -> T
-) : JsonDelegate<List<T>> {
+) : JsonDelegate<List<T>>() {
 
     override fun read(
         source: JSONObject,
@@ -43,7 +43,7 @@ internal class ArrayDelegate<T>(
     }
 }
 
-internal class StringArrayDelegate : JsonDelegate<List<String>> {
+internal class StringArrayDelegate : JsonDelegate<List<String>>() {
     companion object {
         fun value(
             source: JSONObject,
@@ -77,7 +77,7 @@ internal class StringArrayDelegate : JsonDelegate<List<String>> {
 
 internal class MapDelegate<T>(
     private val transform: (name: String, source: JSONObject) -> T
-) : JsonDelegate<Map<String, T>> {
+) : JsonDelegate<Map<String, T>>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -96,7 +96,7 @@ internal class MapDelegate<T>(
     }
 }
 
-internal class NullableStringDelegate : JsonDelegate<String?> {
+internal class NullableStringDelegate : JsonDelegate<String?>() {
     companion object {
         fun value(
             source: JSONObject,
@@ -112,7 +112,7 @@ internal class NullableStringDelegate : JsonDelegate<String?> {
         value(source, key)
 }
 
-internal class StringDelegate : JsonDelegate<String> {
+internal class StringDelegate : JsonDelegate<String>() {
     companion object {
         fun value(
             source: JSONObject,
@@ -128,7 +128,7 @@ internal class StringDelegate : JsonDelegate<String> {
         value(source, key)
 }
 
-internal class BooleanDelegate : JsonDelegate<Boolean> {
+internal class BooleanDelegate : JsonDelegate<Boolean>() {
     override fun read(
         source: JSONObject,
         key: String
