@@ -397,7 +397,6 @@ private fun fixStageNullability(source: Source) {
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
-            .plus(type.optJsequence(J_CONSTRUCTORS))
 
     source.types(
         "BendConverter",
