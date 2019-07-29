@@ -229,7 +229,15 @@ private fun fixStageNullability(source: Source) {
 }
 
 private fun fixHierarchicNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf<String>()
+    val EXCLUDED_METHOD_IDS = setOf(
+        "HierarchicLayout-defaultmethod-createLayerConstraintFactory(yfiles.graph.IGraph)",
+        "HierarchicLayout-defaultmethod-createSequenceConstraintFactory(yfiles.graph.IGraph)"
+    )
+
+    val EXCLUDED_METHODS = setOf(
+        "applyLayout",
+        "applyLayoutCore"
+    )
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
@@ -247,6 +255,7 @@ private fun fixHierarchicNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
 
     source.types(
@@ -271,7 +280,10 @@ private fun fixHierarchicNullability(source: Source) {
 
         "IPortConstraintOptimizer",
         "PortCandidateOptimizer",
-        "PortConstraintOptimizerBase"
+        "PortConstraintOptimizerBase",
+
+        "HierarchicLayout",
+        "HierarchicLayoutCore"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
