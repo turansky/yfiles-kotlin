@@ -250,7 +250,10 @@ private fun fixHierarchicNullability(source: Source) {
         "laneDescriptor",
 
         "left",
-        "right"
+        "right",
+
+        "predNode",
+        "succ"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
@@ -293,6 +296,9 @@ private fun fixHierarchicNullability(source: Source) {
 
         "IPortAllocator",
         "DefaultPortAllocator",
+
+        "IHierarchicLayoutNodePlacer",
+        "SimplexNodePlacer",
 
         "SelfLoopCalculator"
     ).flatMap { getAffectedMethods(it) }
