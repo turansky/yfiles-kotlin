@@ -23,11 +23,20 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleNode", "tag") to true,
     PropertyDeclaration("SimplePort", "tag") to true,
 
+    PropertyDeclaration("YNode", "firstInEdge") to true,
+    PropertyDeclaration("YNode", "firstOutEdge") to true,
+    PropertyDeclaration("YNode", "lastInEdge") to true,
+    PropertyDeclaration("YNode", "lastOutEdge") to true,
+
     PropertyDeclaration("SimpleBend", "owner") to true,
     PropertyDeclaration("SimpleEdge", "sourcePort") to true,
     PropertyDeclaration("SimpleEdge", "targetPort") to true,
     PropertyDeclaration("SimpleLabel", "owner") to true,
     PropertyDeclaration("SimplePort", "owner") to true,
+
+    PropertyDeclaration("INodeData", "firstSameLayerEdgeCell") to true,
+    PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
+    PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
 
     PropertyDeclaration("ClickInputMode", "inputModeContext") to true,
     PropertyDeclaration("ContextMenuInputMode", "inputModeContext") to true,
