@@ -348,7 +348,15 @@ private fun fixTreeNullability(source: Source) {
         "LeftRightNodePlacer",
         "NodePlacerBase",
         "RotatableNodePlacerBase",
-        "SimpleNodePlacer"
+        "SimpleNodePlacer",
+
+        "ITreeLayoutPortAssignment",
+        "DefaultTreeLayoutPortAssignment",
+
+        "SubtreeShape",
+
+        "TreeComponentLayout",
+        "TreeReductionStage"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
