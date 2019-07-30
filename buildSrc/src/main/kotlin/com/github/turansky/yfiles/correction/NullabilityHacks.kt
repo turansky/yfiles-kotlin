@@ -7,6 +7,7 @@ internal fun fixNullability(source: Source) {
     fixLayoutNullability(source)
     fixStageNullability(source)
     fixHierarchicNullability(source)
+    fixTreeNullability(source)
 }
 
 private fun fixAlgorithmsNullability(source: Source) {
@@ -301,6 +302,53 @@ private fun fixHierarchicNullability(source: Source) {
         "SimplexNodePlacer",
 
         "SelfLoopCalculator"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixTreeNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "applyLayout",
+        "applyLayoutCore"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number",
+
+        "yfiles.tree.ParentConnectorDirection"
+    )
+
+    val EXCLUDED_PARAMETERS = setOf<String>()
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+
+    source.types(
+        "ITreeLayoutNodePlacer",
+        "IFromSketchNodePlacer",
+        "AspectRatioNodePlacer",
+        "AssistantNodePlacer",
+        "BusNodePlacer",
+        "CompactNodePlacer",
+        "DefaultNodePlacer",
+        "DelegatingNodePlacer",
+        "DendrogramNodePlacer",
+        "DoubleLineNodePlacer",
+        "FreeNodePlacer",
+        "GridNodePlacer",
+        "GroupedNodePlacer",
+        "LayeredNodePlacer",
+        "LeafNodePlacer",
+        "LeftRightNodePlacer",
+        "NodePlacerBase",
+        "RotatableNodePlacerBase",
+        "SimpleNodePlacer"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
