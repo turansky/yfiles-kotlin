@@ -194,6 +194,14 @@ private fun fixMethodParameterType(source: Source) {
 }
 
 private fun fixMethodNullability(source: Source) {
+    STATIC_METHOD_NULLABILITY_MAP
+        .forEach { (className, methodName), nullable ->
+            source.type(className)
+                .jsequence(J_STATIC_METHODS)
+                .filter { it.getString(J_NAME) == methodName }
+                .forEach { it.changeNullability(nullable) }
+        }
+
     METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)

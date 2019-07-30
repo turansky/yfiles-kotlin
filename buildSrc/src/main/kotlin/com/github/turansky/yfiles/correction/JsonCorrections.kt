@@ -159,14 +159,29 @@ internal val BROKEN_NULLABILITY_METHODS = setOf(
     "applyLayoutCore"
 )
 
+internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
+    MethodDeclaration(className = "Geom", methodName = "calcIntersection") to true,
+    MethodDeclaration(className = "ShortestPathAlgorithm", methodName = "shortestPair") to true,
+    MethodDeclaration(className = "YOrientedRectangle", methodName = "intersectionPoint") to true,
+
+    MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true
+)
+
 internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
 
+    MethodDeclaration(className = "Dendrogram", methodName = "getNodeAtLevel") to true,
+    MethodDeclaration(className = "Dendrogram", methodName = "getOriginalNode") to true,
+
     MethodDeclaration(className = "IDataProvider", methodName = "get") to true,
     MethodDeclaration(className = "DataProviderBase", methodName = "get") to true,
     MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true,
+    MethodDeclaration(className = "YList", methodName = "findCell") to true,
+
+    MethodDeclaration(className = "GeneralPath", methodName = "getTangent") to true,
+    MethodDeclaration(className = "Rect", methodName = "findLineIntersection") to true,
 
     MethodDeclaration(className = "ConstantLabelCandidateDescriptorProvider", methodName = "getDescriptor") to true,
     MethodDeclaration(className = "DefaultFoldingEdgeConverter", methodName = "addFoldingEdge") to true,
@@ -283,7 +298,20 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "OrientedRectangleIndicatorInstaller", methodName = "addCanvasObject") to true,
     MethodDeclaration(className = "PointSelectionIndicatorInstaller", methodName = "addCanvasObject") to true,
     MethodDeclaration(className = "PortStyleDecorationInstaller", methodName = "addCanvasObject") to true,
-    MethodDeclaration(className = "RectangleIndicatorInstaller", methodName = "addCanvasObject") to true
+    MethodDeclaration(className = "RectangleIndicatorInstaller", methodName = "addCanvasObject") to true,
+
+    MethodDeclaration(className = "ITreeLayoutNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "AssistantNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "CompactNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "DelegatingNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "DendrogramNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "FreeNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "GroupedNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "LayeredNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "LeafNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "LeftRightNodePlacer", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "NodePlacerBase", methodName = "createProcessor") to true,
+    MethodDeclaration(className = "RotatableNodePlacerBase", methodName = "createProcessor") to true
 )
 
 internal val MISSED_PROPERTIES = listOf(
