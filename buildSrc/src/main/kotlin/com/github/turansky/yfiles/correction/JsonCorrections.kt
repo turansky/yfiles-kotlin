@@ -211,6 +211,15 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "IncrementalHintItemMapping", methodName = "provideMapperForContext") to true,
     MethodDeclaration(className = "NodeDropInputMode", methodName = "getDropTarget") to true,
 
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "createGrouping") to true,
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "createPortConstraintOptimizer") to true,
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getAlgorithmProperty") to true,
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getEdgeLayoutDescriptors") to true,
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getIncrementalHints") to true,
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getNodeLayoutDescriptors") to true,
+    MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getSwimLaneDescriptors") to true,
+    MethodDeclaration(className = "INodeData", methodName = "getNormalizedBorderLine") to true,
+
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "createVisual") to true,
