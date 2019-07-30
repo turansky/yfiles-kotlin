@@ -220,6 +220,9 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getSwimLaneDescriptors") to true,
     MethodDeclaration(className = "INodeData", methodName = "getNormalizedBorderLine") to true,
 
+    MethodDeclaration(className = "CreateEdgeInputMode", methodName = "doStartEdgeCreation") to true,
+    MethodDeclaration(className = "EditLabelHelper", methodName = "getPreferredSize") to true,
+
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "createVisual") to true,
