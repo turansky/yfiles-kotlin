@@ -164,7 +164,11 @@ internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "ShortestPathAlgorithm", methodName = "shortestPair") to true,
     MethodDeclaration(className = "YOrientedRectangle", methodName = "intersectionPoint") to true,
 
-    MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true
+    MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true,
+
+    MethodDeclaration(className = "PartitionGrid", methodName = "getPartitionGrid") to true,
+    MethodDeclaration(className = "PortConstraint", methodName = "getSPC") to true,
+    MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true
 )
 
 internal val METHOD_NULLABILITY_MAP = mapOf(
@@ -222,6 +226,18 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
 
     MethodDeclaration(className = "CreateEdgeInputMode", methodName = "doStartEdgeCreation") to true,
     MethodDeclaration(className = "EditLabelHelper", methodName = "getPreferredSize") to true,
+
+    MethodDeclaration(className = "FixNodeLayoutStage", methodName = "calculateFixPoint") to true,
+    MethodDeclaration(className = "LayoutGroupingSupport", methodName = "getParent") to true,
+    MethodDeclaration(className = "LayoutGroupingSupport", methodName = "getRepresentative") to true,
+    MethodDeclaration(className = "IIntersectionCalculator", methodName = "calculateIntersectionPoint") to true,
+    MethodDeclaration(className = "PartitionGrid", methodName = "getColumn") to true,
+    MethodDeclaration(className = "PartitionGrid", methodName = "getRow") to true,
+
+    MethodDeclaration(className = "LayoutContext", methodName = "getOriginalEdge") to true,
+    MethodDeclaration(className = "LayoutContext", methodName = "getOriginalNode") to true,
+    MethodDeclaration(className = "LayoutContext", methodName = "getPageEdge") to true,
+    MethodDeclaration(className = "LayoutContext", methodName = "getPageNode") to true,
 
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
