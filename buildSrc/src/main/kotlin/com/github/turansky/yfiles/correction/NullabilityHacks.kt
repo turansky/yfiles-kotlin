@@ -88,7 +88,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         "SpanningTreeAlgorithm",
         "TransitivityAlgorithm",
         "TreeAlgorithm",
-        "TriangulationAlgorithm"
+        "TriangulationAlgorithm",
+        "YPoint"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
         .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
