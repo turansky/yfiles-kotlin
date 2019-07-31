@@ -7,6 +7,7 @@ internal fun fixNullability(source: Source) {
     fixLayoutNullability(source)
     fixStageNullability(source)
     fixHierarchicNullability(source)
+    fixRouterNullability(source)
     fixTreeNullability(source)
 }
 
@@ -313,6 +314,45 @@ private fun fixHierarchicNullability(source: Source) {
         "SimplexNodePlacer",
 
         "SelfLoopCalculator"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixRouterNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "applyLayout",
+        "applyLayoutCore"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    val EXCLUDED_PARAMETERS = setOf<String>()
+
+    source.types(
+        "BusRepresentations"
+    ).jsequence(J_STATIC_METHODS)
+        .filter { it.has(J_PARAMETERS) }
+        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+
+    source.types(
+        "ChannelEdgeRouter",
+        "EdgeRouter",
+        "OrthogonalPatternEdgeRouter",
+        "ParallelEdgeRouter"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
