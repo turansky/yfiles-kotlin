@@ -353,7 +353,7 @@ internal class Property(
         var str = ""
 
         if (overridden) {
-            str += "override " + exp(final, "final ")
+            str += exp(final, "final ") + "override "
         } else {
             if (protected) {
                 str += "protected "
@@ -434,7 +434,7 @@ internal class Method(
         }
 
         if (overridden) {
-            return "override " + exp(final, "final ")
+            return exp(final, "final ") + "override "
         }
 
         return when {
