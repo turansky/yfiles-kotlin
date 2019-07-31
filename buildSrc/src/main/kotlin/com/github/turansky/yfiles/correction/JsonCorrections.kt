@@ -233,7 +233,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getSwimLaneDescriptors") to true,
     MethodDeclaration(className = "INodeData", methodName = "getNormalizedBorderLine") to true,
 
-    MethodDeclaration(className = "CreateEdgeInputMode", methodName = "doStartEdgeCreation") to true,
     MethodDeclaration(className = "EditLabelHelper", methodName = "getPreferredSize") to true,
 
     MethodDeclaration(className = "FixNodeLayoutStage", methodName = "calculateFixPoint") to true,
