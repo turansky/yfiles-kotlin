@@ -12,6 +12,9 @@ internal fun fixNullability(source: Source) {
 
 private fun fixAlgorithmsNullability(source: Source) {
     val EXCLUDED_METHOD_IDS = setOf(
+        "Geom-method-calcIntersection(yfiles.algorithms.YPoint,yfiles.algorithms.YVector,yfiles.algorithms.YPoint,yfiles.algorithms.YVector)",
+        "Geom-method-calcIntersection(yfiles.algorithms.YPoint,yfiles.algorithms.YPoint,yfiles.algorithms.YPoint,yfiles.algorithms.YPoint)",
+
         "NetworkFlows-method-minCostFlow(yfiles.algorithms.Graph,yfiles.algorithms.Node,yfiles.algorithms.Node,yfiles.algorithms.IDataProvider,yfiles.algorithms.IDataProvider,yfiles.algorithms.IEdgeMap,yfiles.algorithms.INodeMap)",
 
         "ShortestPaths-method-bellmanFord(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,yfiles.algorithms.IDataProvider,yfiles.algorithms.INodeMap,yfiles.algorithms.INodeMap)",
@@ -69,6 +72,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "Cursors",
         "CycleAlgorithm",
         "DataProviders",
+        "Geom",
         "GraphChecker",
         "GraphConnectivity",
         "GroupAlgorithm",
