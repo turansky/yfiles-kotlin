@@ -35,7 +35,9 @@ private fun fixAlgorithmsNullability(source: Source) {
 
         "contains",
         "moveToFirst",
-        "moveToLast"
+        "moveToLast",
+
+        "getValueAt"
     )
 
     val EXCLUDED_PARAMETERS = setOf(
@@ -98,6 +100,8 @@ private fun fixAlgorithmsNullability(source: Source) {
             .plus(type.optJsequence(J_CONSTRUCTORS))
 
     source.types(
+        "BorderLine",
+        "Dendrogram",
         "DfsAlgorithm",
         "Edge",
         "Graph",
@@ -105,6 +109,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         "INodeSequencer",
         "LayoutGraphHider",
         "PlanarEmbedding",
+        "Point2D",
+        "Rectangle2D",
         "YNode"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
