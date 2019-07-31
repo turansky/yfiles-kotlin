@@ -3,6 +3,7 @@ rootProject.name = "kotlin-gradle-plugin"
 pluginManagement {
     repositories {
         jcenter()
+        maven(url = "https://kotlin.bintray.com/kotlin-eap")
     }
 
     resolutionStrategy {

@@ -3,11 +3,12 @@ version = "0.0.1-SNAPSHOT"
 
 plugins {
     id("java-gradle-plugin")
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm") version "1.3.50-eap-54"
 }
 
 repositories {
     jcenter()
+    maven(url = "https://kotlin.bintray.com/kotlin-eap")
 }
 
 tasks {

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm") version "1.3.50-eap-54"
 }
 
 tasks {
@@ -13,6 +13,7 @@ tasks {
 
 repositories {
     jcenter()
+    maven(url = "https://kotlin.bintray.com/kotlin-eap")
 }
 
 dependencies {
