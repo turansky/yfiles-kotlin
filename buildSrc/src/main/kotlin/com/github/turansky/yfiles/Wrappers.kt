@@ -445,11 +445,32 @@ internal class Method(
         } + exp(protected, "protected ")
     }
 
+    private fun nullablePromiseResult(generic: String): Boolean =
+        when (generic) {
+            "String" -> name == "editLabelCore" || name == "edit"
+            "yfiles.graph.IEdge",
+            "yfiles.graph.ILabel",
+            "yfiles.collections.IEnumerable<yfiles.graph.IModelItem>" -> true
+            else -> false
+        }
+
     // https://youtrack.jetbrains.com/issue/KT-31249
-    private fun getReturnSignature(): String =
-        returns?.let {
-            ":" + it.type + modifiers.nullability
-        } ?: ""
+    private fun getReturnSignature(): String {
+        var type = returns?.type
+            ?: return ""
+
+        if (type.startsWith("kotlin.js.Promise<")) {
+            val generic = between(type, "<", ">")
+            val newGeneric = if (generic == ANY) {
+                "Nothing?"
+            } else {
+                generic + exp(nullablePromiseResult(generic), "?")
+            }
+            type = "kotlin.js.Promise<$newGeneric>"
+        }
+
+        return ":" + type + modifiers.nullability
+    }
 
     override fun toCode(): String {
         val operator = exp(
