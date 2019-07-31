@@ -5,6 +5,7 @@ import org.json.JSONObject
 internal fun fixNullability(source: Source) {
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
+    fixCommonLayoutNullability(source)
     fixStageNullability(source)
     fixHierarchicNullability(source)
     fixRouterNullability(source)
@@ -192,6 +193,36 @@ private fun fixLayoutNullability(source: Source) {
         "LayoutGroupingSupport",
         "PartitionGrid",
         "PortConstraintConfigurator"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixCommonLayoutNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "applyLayout",
+        "applyLayoutCore"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+
+    source.types(
+        "LabelingBase",
+        "MultiPageLayout",
+        "InteractiveOrganicLayout",
+        "OrganicLayout",
+        "PartialLayout",
+        "ISeriesParallelLayoutPortAssignment",
+        "DefaultSeriesParallelLayoutPortAssignment"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
