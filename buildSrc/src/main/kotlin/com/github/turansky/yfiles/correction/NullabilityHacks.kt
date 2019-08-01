@@ -29,6 +29,8 @@ private fun fixAlgorithmsNullability(source: Source) {
     )
 
     val EXCLUDED_METHODS = setOf(
+        "AffineLine",
+
         "simple",
 
         "aStar",
@@ -72,7 +74,6 @@ private fun fixAlgorithmsNullability(source: Source) {
 
     source.types(
         "AbortHandler",
-        "AffineLine",
         "BipartitionAlgorithm",
         "CentralityAlgorithm",
         "Comparers",
@@ -107,11 +108,12 @@ private fun fixAlgorithmsNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .plus(type.optJsequence(J_CONSTRUCTORS))
             .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
-            .plus(type.optJsequence(J_CONSTRUCTORS))
 
     source.types(
+        "AffineLine",
         "BorderLine",
         "Dendrogram",
         "DfsAlgorithm",
@@ -125,7 +127,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         "Point2D",
         "Rectangle2D",
         "YNode",
-        "YPoint"
+        "YPoint",
+        "YRectangle"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
