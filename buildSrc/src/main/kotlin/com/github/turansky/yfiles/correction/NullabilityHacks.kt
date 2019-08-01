@@ -17,6 +17,9 @@ private fun fixAlgorithmsNullability(source: Source) {
         "Geom-method-calcIntersection(yfiles.algorithms.YPoint,yfiles.algorithms.YVector,yfiles.algorithms.YPoint,yfiles.algorithms.YVector)",
         "Geom-method-calcIntersection(yfiles.algorithms.YPoint,yfiles.algorithms.YPoint,yfiles.algorithms.YPoint,yfiles.algorithms.YPoint)",
 
+        "LineSegment-method-intersects(yfiles.algorithms.YRectangle)",
+        "LineSegment-method-intersects(yfiles.algorithms.YPoint)",
+
         "NetworkFlows-method-minCostFlow(yfiles.algorithms.Graph,yfiles.algorithms.Node,yfiles.algorithms.Node,yfiles.algorithms.IDataProvider,yfiles.algorithms.IDataProvider,yfiles.algorithms.IEdgeMap,yfiles.algorithms.INodeMap)",
 
         "ShortestPaths-method-bellmanFord(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,yfiles.algorithms.IDataProvider,yfiles.algorithms.INodeMap,yfiles.algorithms.INodeMap)",
@@ -42,7 +45,9 @@ private fun fixAlgorithmsNullability(source: Source) {
         "moveToFirst",
         "moveToLast",
 
-        "getValueAt"
+        "getValueAt",
+
+        "compareTo"
     )
 
     val EXCLUDED_PARAMETERS = setOf(
@@ -90,8 +95,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "SpanningTreeAlgorithm",
         "TransitivityAlgorithm",
         "TreeAlgorithm",
-        "TriangulationAlgorithm",
-        "YPoint"
+        "TriangulationAlgorithm"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
         .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
@@ -103,6 +107,7 @@ private fun fixAlgorithmsNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
             .plus(type.optJsequence(J_CONSTRUCTORS))
 
@@ -115,10 +120,12 @@ private fun fixAlgorithmsNullability(source: Source) {
         "GraphPartitionManager",
         "INodeSequencer",
         "LayoutGraphHider",
+        "LineSegment",
         "PlanarEmbedding",
         "Point2D",
         "Rectangle2D",
-        "YNode"
+        "YNode",
+        "YPoint"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
