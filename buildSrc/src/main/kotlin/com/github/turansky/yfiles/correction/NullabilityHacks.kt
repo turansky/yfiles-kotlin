@@ -120,6 +120,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         "Edge",
         "Graph",
         "GraphPartitionManager",
+        "IIntersectionHandler",
+        "INodeDistanceProvider",
         "INodeSequencer",
         "LayoutGraphHider",
         "LineSegment",
