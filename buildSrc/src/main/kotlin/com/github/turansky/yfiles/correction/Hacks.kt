@@ -117,7 +117,7 @@ private fun fixReturnType(source: Source) {
 
 private fun fixImplementedTypes(source: Source) {
     source.types("EdgeList", "YNodeList")
-        .forEach { it.strictRemove("implements") }
+        .forEach { it.strictRemove(J_IMPLEMENTS) }
 }
 
 private fun fixPropertyType(source: Source) {
