@@ -137,6 +137,9 @@ internal val PARAMETERS_CORRECTION = mapOf(
 )
 
 internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
+    ParameterData("LineSegment", "contains", "point") to false,
+    ParameterData("Rectangle2D", "contains", "rect") to false,
+
     ParameterData("YList", "copyTo", "array") to false,
     ParameterData("ObservableCollection", "copyTo", "array") to false,
 
