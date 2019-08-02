@@ -31,6 +31,16 @@ internal fun applyComparableHacks(source: Source) {
 
             it.configureCompareTo(id)
         }
+
+    source.types(
+        "IComparer",
+        "DefaultOutEdgeComparer",
+        "NodeOrderComparer",
+        "NodeWeightComparer"
+    ).jsequence(J_METHODS)
+        .filter { it.getString(J_NAME) == "compare" }
+        .jsequence(J_PARAMETERS)
+        .forEach { it.changeNullability(false) }
 }
 
 private fun JSONObject.configureCompareTo(type: String) {
