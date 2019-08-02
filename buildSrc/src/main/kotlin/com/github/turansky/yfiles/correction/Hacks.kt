@@ -41,6 +41,7 @@ internal fun applyHacks(api: JSONObject) {
     fieldToProperties(source)
 
     applyClassHacks(source)
+    applyComparableHacks(source)
 }
 
 private fun removeUnusedFunctionSignatures(source: Source) {

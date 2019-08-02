@@ -17,6 +17,14 @@ internal fun parseType(type: String): String {
         return "$YCLASS<*>"
     }
 
+    if (type.startsWith("$ICOMPARABLE<")) {
+        return type
+    }
+
+    if (type == ICOMPARABLE) {
+        return "$ICOMPARABLE<*>"
+    }
+
     getKotlinType(type)?.let {
         return it
     }

@@ -744,7 +744,9 @@ internal val DUPLICATED_METHODS = listOf(
     MethodDeclaration(className = "List", methodName = "includes"),
     MethodDeclaration(className = "List", methodName = "toArray"),
     MethodDeclaration(className = "HashMap", methodName = "includes"),
-    MethodDeclaration(className = "ObservableCollection", methodName = "includes")
+    MethodDeclaration(className = "ObservableCollection", methodName = "includes"),
+
+    MethodDeclaration(className = "YRectangle", methodName = "compareTo")
 )
 
 internal val SYSTEM_FUNCTIONS = listOf(
