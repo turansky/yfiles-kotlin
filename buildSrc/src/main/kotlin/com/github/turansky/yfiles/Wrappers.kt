@@ -392,7 +392,8 @@ internal class Property(
 
 private val OPERATOR_NAMES = setOf(
     "get",
-    "contains"
+    "contains",
+    "compareTo"
 )
 
 internal class Method(
