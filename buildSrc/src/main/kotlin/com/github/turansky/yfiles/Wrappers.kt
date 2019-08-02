@@ -328,7 +328,7 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
             else -> ""
         }
 
-        return "$modificator constructor(${kotlinParametersString()})"
+        return "$documentation$modificator constructor(${kotlinParametersString()})"
     }
 }
 
