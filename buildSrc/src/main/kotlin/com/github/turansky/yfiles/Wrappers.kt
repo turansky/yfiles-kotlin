@@ -195,7 +195,9 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         else -> ""
     }
 
-    val constructors: List<Constructor> by ArrayDelegate { Constructor(it) }
+    private val constructors: List<Constructor> by ArrayDelegate { Constructor(it) }
+    val primaryConstructor: Constructor? = constructors.firstOrNull()
+    val secondaryConstructors: List<Constructor> = constructors.drop(1)
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)

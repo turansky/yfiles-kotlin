@@ -233,14 +233,13 @@ internal class KotlinFileGenerator(
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
-            val constructors = declaration.constructors
+            val constructors = declaration.secondaryConstructors
 
-            if (constructors.size <= 1) {
+            if (constructors.isEmpty()) {
                 return ""
             }
 
             return constructors
-                .dropLast(1)
                 .asSequence()
                 .distinct()
                 .lines { it.toCode() }
@@ -256,7 +255,7 @@ internal class KotlinFileGenerator(
         }
 
         private fun isObject(): Boolean {
-            return declaration.constructors.isEmpty() &&
+            return declaration.primaryConstructor == null &&
                     memberDeclarations.isEmpty() &&
                     !data.marker
         }
@@ -270,19 +269,14 @@ internal class KotlinFileGenerator(
                 return objectContent()
             }
 
-            val lastConstructor = declaration.constructors
-                .lastOrNull()
-
-            val constructor = if (lastConstructor != null) {
-                lastConstructor.toCode()
-                    .removePrefix(" constructor")
-            } else {
-                ""
-            }
+            val primaryConstructor = declaration
+                .primaryConstructor
+                ?.run { toCode().removePrefix(" constructor") }
+                ?: ""
 
             return documentation +
                     externalAnnotation +
-                    "external ${type()} $classDeclaration $constructor ${parentString()} {\n" +
+                    "external ${type()} $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
