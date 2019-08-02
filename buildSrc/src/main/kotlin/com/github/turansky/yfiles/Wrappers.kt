@@ -313,13 +313,22 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
             seeAlso = seeAlso
         )
 
+    fun toPrimaryCode(): String {
+        val declaration: String = when {
+            protected -> "protected constructor"
+            else -> ""
+        }
+
+        return "$declaration (${kotlinParametersString()})"
+    }
+
     override fun toCode(): String {
         val modificator: String = when {
             protected -> "protected"
             else -> ""
         }
 
-        return "${modificator} constructor(${kotlinParametersString()})"
+        return "$modificator constructor(${kotlinParametersString()})"
     }
 }
 

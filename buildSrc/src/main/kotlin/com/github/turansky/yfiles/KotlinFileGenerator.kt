@@ -264,7 +264,7 @@ internal class KotlinFileGenerator(
 
             val primaryConstructor = declaration
                 .primaryConstructor
-                ?.run { toCode().removePrefix(" constructor") }
+                ?.run { toPrimaryCode() }
                 ?: ""
 
             return documentation +
