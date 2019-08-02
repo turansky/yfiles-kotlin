@@ -390,8 +390,24 @@ private fun fixRouterNullability(source: Source) {
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .let {
+                if (type.getString(J_NAME).endsWith("Router")) {
+                    it
+                } else {
+                    it + type.optJsequence(J_CONSTRUCTORS)
+                }
+            }
 
     source.types(
+        "IDynamicDecomposition",
+        "IDecompositionListener",
+        "IGraphPartitionExtension",
+        "IPartition",
+        "IObstaclePartition",
+        "GraphPartition",
+        "GraphPartitionExtensionAdapter",
+        "DynamicObstacleDecomposition",
+
         "ChannelEdgeRouter",
         "EdgeRouter",
         "OrthogonalPatternEdgeRouter",
