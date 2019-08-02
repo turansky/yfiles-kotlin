@@ -150,7 +150,7 @@ private fun fixMethodParameterNullability(source: Source) {
     PARAMETERS_NULLABILITY_CORRECTION
         .forEach { data, nullable ->
             val parameters = source.type(data.className)
-                .methodParameters(data.methodName, data.parameterName, { true })
+                .methodParameters(data.methodName, data.parameterName)
 
             val parameter = if (data.last) {
                 parameters.last()

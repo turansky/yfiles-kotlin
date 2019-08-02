@@ -20,6 +20,16 @@ internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
 
 internal fun JSONObject.methodParameters(
     methodName: String,
+    parameterName: String
+): Iterable<JSONObject> =
+    methodParameters(
+        methodName,
+        parameterName,
+        { true }
+    )
+
+internal fun JSONObject.methodParameters(
+    methodName: String,
     parameterName: String,
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
