@@ -368,7 +368,9 @@ private fun fixHierarchicNullability(source: Source) {
 private fun fixRouterNullability(source: Source) {
     val EXCLUDED_METHODS = setOf(
         "applyLayout",
-        "applyLayoutCore"
+        "applyLayoutCore",
+
+        "getEdgeInfo"
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -417,7 +419,16 @@ private fun fixRouterNullability(source: Source) {
         "OrthogonalInterval",
         "PartitionCell",
         "PartitionCellBorder",
+
+        "EdgeRouterPath",
+        "PathSearch",
         "PathSearchConfiguration",
+        "PathSearchContext",
+        "PathSearchExtension",
+        "PathSearchResult",
+        "SegmentGroup",
+        "SegmentInfo",
+        "SegmentInfoBase",
 
         "ChannelEdgeRouter",
         "EdgeRouter",
