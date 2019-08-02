@@ -233,15 +233,8 @@ internal class KotlinFileGenerator(
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
-            val constructors = declaration.secondaryConstructors
-
-            if (constructors.isEmpty()) {
-                return ""
-            }
-
-            return constructors
-                .asSequence()
-                .distinct()
+            return declaration
+                .secondaryConstructors
                 .lines { it.toCode() }
         }
 
