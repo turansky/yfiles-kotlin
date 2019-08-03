@@ -93,19 +93,15 @@ internal class KotlinFileGenerator(
 
         protected val properties: List<Property>
             get() = declaration.properties
-                .sorted()
 
         protected val staticConstants: List<Constant>
             get() = declaration.constants
-                .sorted()
 
         protected val staticProperties: List<Property>
             get() = declaration.staticProperties
-                .sorted()
 
         protected val staticFunctions: List<Method>
             get() = declaration.staticMethods
-                .sorted()
 
         protected val staticDeclarations: List<Declaration>
             get() {
@@ -121,7 +117,6 @@ internal class KotlinFileGenerator(
 
         protected val memberFunctions: List<Method>
             get() = declaration.methods
-                .sorted()
 
         protected val memberEvents: List<Event>
             get() = if (declaration is ExtendedType) {
