@@ -21,7 +21,7 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
     val name: String by StringDelegate()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
-    protected val summary: String? by SummaryDelegate()
+    val summary: String? by SummaryDelegate()
     protected val remarks: String by StringDelegate()
     protected val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
 
@@ -159,11 +159,14 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     private val seeAlsoDoc: SeeAlso = SeeAlsoDoc(docId)
 
+    protected open val additionalDocumentation: String? = null
+
     val documentation: String
         get() = getDocumentation(
             summary = summary,
             typeparameters = typeparameters,
-            seeAlso = seeAlso + seeAlsoDoc
+            seeAlso = seeAlso + seeAlsoDoc,
+            additionalDocumentation = additionalDocumentation
         )
 
     fun genericParameters(): String {
@@ -198,6 +201,9 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     private val constructors: List<Constructor> by ArrayDelegate { Constructor(it) }
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
+
+    override val additionalDocumentation: String?
+        get() = primaryConstructor?.getPrimaryDocumentation()
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
@@ -312,6 +318,21 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
             parameters = parameters,
             seeAlso = seeAlso
         )
+
+    fun getPrimaryDocumentation(): String? {
+        val lines = getDocumentationLines(
+            summary = summary,
+            parameters = parameters,
+            seeAlso = seeAlso,
+            primaryConstructor = true
+        )
+
+        return if (lines.isNotEmpty()) {
+            lines.joinToString("\n")
+        } else {
+            null
+        }
+    }
 
     fun toPrimaryCode(): String {
         val declaration: String = when {
@@ -739,11 +760,47 @@ private fun getDocumentation(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
-    seeAlso: List<SeeAlso>? = null
+    seeAlso: List<SeeAlso>? = null,
+    additionalDocumentation: String? = null
 ): String {
+    var lines = getDocumentationLines(
+        summary = summary,
+        parameters = parameters,
+        typeparameters = typeparameters,
+        returns = returns,
+        seeAlso = seeAlso
+    )
+
+    additionalDocumentation?.apply {
+        lines = lines + split("\n")
+    }
+
+    if (lines.isEmpty()) {
+        return ""
+    }
+
+    return "/**\n" +
+            lines.lines { " * $it" } +
+            " */\n"
+}
+
+private fun getDocumentationLines(
+    summary: String?,
+    parameters: List<IParameter>? = null,
+    typeparameters: List<TypeParameter>? = null,
+    returns: IReturns? = null,
+    seeAlso: List<SeeAlso>? = null,
+    primaryConstructor: Boolean = false
+): List<String> {
     val lines = mutableListOf<String>()
     if (summary != null) {
-        lines.add(summary)
+        lines.add(
+            if (primaryConstructor) {
+                constructor(summary)
+            } else {
+                summary
+            }
+        )
     }
 
     typeparameters?.apply {
@@ -770,12 +827,10 @@ private fun getDocumentation(
             }
     }
 
-    if (lines.isEmpty()) {
-        return ""
+    if (primaryConstructor && summary == null && lines.isNotEmpty()) {
+        lines.add(0, constructor())
     }
 
-    return "/**\n" +
-            lines.lines { " * $it" } +
-            " */\n"
+    return lines.toList()
 }
 

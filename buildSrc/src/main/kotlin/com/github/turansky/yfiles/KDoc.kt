@@ -5,6 +5,12 @@ package com.github.turansky.yfiles
 fun link(text: String, href: String): String =
     """<a href="$href">$text</a>"""
 
+fun constructor(): String =
+    "@constructor"
+
+fun constructor(summary: String): String =
+    "@constructor $summary"
+
 fun param(name: String, summary: String): String =
     "@param [$name] $summary"
 
