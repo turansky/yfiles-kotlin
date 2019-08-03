@@ -558,6 +558,21 @@ internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
                 "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
             }
     }
+
+    override fun compareTo(other: Declaration): Int {
+        val result = super.compareTo(other)
+        if (result != 0) {
+            return result
+        }
+
+        if (other !is MethodBase) {
+            return result
+        }
+
+        return compareValuesBy(this, other) {
+            it.parameters.size
+        }
+    }
 }
 
 internal class ParameterModifiers(flags: List<String>) {
