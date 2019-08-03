@@ -772,6 +772,10 @@ private fun getDocumentation(
     )
 
     additionalDocumentation?.apply {
+        if (lines.isNotEmpty()) {
+            lines = lines + ""
+        }
+
         lines = lines + split("\n")
     }
 
