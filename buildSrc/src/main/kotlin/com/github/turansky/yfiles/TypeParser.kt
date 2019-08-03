@@ -42,7 +42,7 @@ internal fun parseType(type: String): String {
 
 internal fun getGenericString(parameters: List<TypeParameter>): String {
     return if (parameters.isNotEmpty()) {
-        "<${parameters.byComma { it.name }}> "
+        "<${parameters.byComma { it.toCode() }}> "
     } else {
         ""
     }

@@ -582,6 +582,18 @@ internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by StringDelegate()
     val summary: String? by SummaryDelegate()
+    private val bounds: List<String> by StringArrayDelegate()
+
+    init {
+        require(bounds.size <= 1)
+    }
+
+    override fun toCode(): String =
+        if (bounds.isNotEmpty()) {
+            "$name : ${bounds.first()}"
+        } else {
+            name
+        }
 }
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
