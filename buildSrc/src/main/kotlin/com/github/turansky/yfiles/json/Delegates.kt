@@ -27,7 +27,7 @@ abstract class JsonDelegate<T> {
     }
 }
 
-internal class ArrayDelegate<T>(
+internal open class ArrayDelegate<T>(
     private val transform: (JSONObject) -> T
 ) : JsonDelegate<List<T>>() {
 
