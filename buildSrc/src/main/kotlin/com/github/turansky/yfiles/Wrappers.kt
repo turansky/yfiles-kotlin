@@ -154,6 +154,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val extends: String? by NullableStringDelegate()
     private val implements: List<String> by StringArrayDelegate()
 
+    private val relatedDemos: List<Demo> by ArrayDelegate(::Demo)
+
     final override val docId: String = es6name ?: name
     override val classDeclaration = name + genericParameters()
 
@@ -165,6 +167,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
         get() = getDocumentation(
             summary = summary,
             typeparameters = typeparameters,
+            relatedDemos = relatedDemos,
             seeAlso = seeAlso + seeAlsoDoc,
             additionalDocumentation = additionalDocumentation
         )
@@ -208,6 +211,16 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
+
+internal class Demo(override val source: JSONObject) : HasSource {
+    private val path: String by StringDelegate()
+    private val text: String by StringDelegate()
+    private val summary: String by StringDelegate()
+
+    fun toDoc(): String {
+        return link("$text \uD83D\uDE80", path)
+    }
+}
 
 internal sealed class SeeAlso {
     abstract fun toDoc(): String
@@ -800,6 +813,7 @@ private fun getDocumentation(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     additionalDocumentation: String? = null
 ): String {
@@ -808,6 +822,7 @@ private fun getDocumentation(
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
+        relatedDemos = relatedDemos,
         seeAlso = seeAlso
     )
 
@@ -833,6 +848,7 @@ private fun getDocumentationLines(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     primaryConstructor: Boolean = false
 ): List<String> {
@@ -861,6 +877,12 @@ private fun getDocumentationLines(
 
     returns?.doc?.let {
         lines.addAll(ret(it).split("\n"))
+    }
+
+    relatedDemos?.apply {
+        mapTo(lines) {
+            see(it.toDoc())
+        }
     }
 
     seeAlso?.apply {
