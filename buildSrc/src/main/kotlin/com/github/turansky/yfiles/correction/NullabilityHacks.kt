@@ -174,7 +174,8 @@ private fun fixLayoutNullability(source: Source) {
         "yfiles.layout.RowAlignment",
 
         "yfiles.layout.DiscreteNodeLabelPositions",
-        "yfiles.layout.DiscreteEdgeLabelPositions"
+        "yfiles.layout.DiscreteEdgeLabelPositions",
+        "yfiles.layout.PortDirections"
     )
 
     source.types(
@@ -222,7 +223,14 @@ private fun fixLayoutNullability(source: Source) {
 
         "LabelCandidate",
         "EdgeLabelCandidate",
-        "NodeLabelCandidate"
+        "NodeLabelCandidate",
+
+        "IIntersectionCalculator",
+        "IPortCandidateMatcher",
+
+        "IProfitModel",
+        "SimpleProfitModel",
+        "ExtendedLabelCandidateProfitModel"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
