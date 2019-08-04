@@ -173,6 +173,7 @@ private fun fixLayoutNullability(source: Source) {
         "yfiles.layout.MultiRowConstraint",
         "yfiles.layout.RowAlignment",
 
+        "yfiles.layout.DiscreteNodeLabelPositions",
         "yfiles.layout.DiscreteEdgeLabelPositions"
     )
 
@@ -209,6 +210,10 @@ private fun fixLayoutNullability(source: Source) {
         "LayoutGroupingSupport",
         "PartitionGrid",
         "PortConstraintConfigurator",
+
+        "INodeLabelLayoutModel",
+        "DiscreteNodeLabelLayoutModel",
+        "FreeNodeLabelLayoutModel",
 
         "IEdgeLabelLayoutModel",
         "DiscreteEdgeLabelLayoutModel",
