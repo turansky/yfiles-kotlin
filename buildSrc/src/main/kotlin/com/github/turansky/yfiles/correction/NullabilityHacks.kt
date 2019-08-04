@@ -321,6 +321,7 @@ private fun fixHierarchicNullability(source: Source) {
         "IItemFactory",
         "IEdgeReverser",
 
+        "ILayer",
         "ILayerer",
         "AsIsLayerer",
         "AspectRatioComponentLayerer",
@@ -357,6 +358,7 @@ private fun fixHierarchicNullability(source: Source) {
         "IHierarchicLayoutNodePlacer",
         "SimplexNodePlacer",
 
+        "IIncrementalHintsFactory",
         "ILayerConstraintFactory",
         "ISequenceConstraintFactory",
         "ILayoutDataProvider",
