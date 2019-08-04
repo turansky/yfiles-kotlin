@@ -343,6 +343,7 @@ private fun fixHierarchicNullability(source: Source) {
         "IPortConstraintOptimizer",
         "PortCandidateOptimizer",
         "PortConstraintOptimizerBase",
+        "PortConstraintOptimizerSameLayerData",
 
         "HierarchicLayout",
         "HierarchicLayoutCore",
@@ -355,6 +356,11 @@ private fun fixHierarchicNullability(source: Source) {
 
         "IHierarchicLayoutNodePlacer",
         "SimplexNodePlacer",
+
+        "ILayerConstraintFactory",
+        "ISequenceConstraintFactory",
+        "ILayoutDataProvider",
+        "INodeData",
 
         "SelfLoopCalculator"
     ).flatMap { getAffectedMethods(it) }
