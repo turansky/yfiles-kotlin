@@ -212,6 +212,7 @@ private fun fixLayoutNullability(source: Source) {
         "LayoutGroupingSupport",
         "PartitionGrid",
         "PortConstraintConfigurator",
+        "PortCandidateSet",
 
         "INodeLabelLayoutModel",
         "DiscreteNodeLabelLayoutModel",
