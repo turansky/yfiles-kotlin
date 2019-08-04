@@ -218,7 +218,7 @@ internal class Demo(override val source: JSONObject) : HasSource {
     private val summary: String by StringDelegate()
 
     fun toDoc(): String {
-        return link("$text \uD83D\uDE80", path)
+        return link("$text 🚀", path)
     }
 }
 
