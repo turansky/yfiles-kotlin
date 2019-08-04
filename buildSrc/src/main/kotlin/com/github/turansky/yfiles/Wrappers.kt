@@ -290,7 +290,9 @@ private class ExceptionDescription(override val source: JSONObject) : HasSource 
     private val summary: String? by SummaryDelegate()
 
     fun toDoc(): String =
-        "$name ${summary!!}"
+        summary?.let {
+            "$name $it"
+        } ?: name
 }
 
 internal class Modifiers(flags: List<String>) {
@@ -468,6 +470,8 @@ internal class Method(
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val returns: Returns? by ReturnsDelegate()
 
+    private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
+
     val generics: String
         get() = getGenericString(typeparameters)
 
@@ -480,6 +484,7 @@ internal class Method(
             parameters = parameters,
             typeparameters = typeparameters,
             returns = returns,
+            exceptions = throws,
             seeAlso = seeAlso
         )
 
