@@ -212,6 +212,13 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
 
+private class DefaultValue(override val source: JSONObject) : HasSource {
+    private val value: String? by NullableStringDelegate()
+
+    fun toDoc(): String? =
+        value
+}
+
 private class ExceptionDescription(override val source: JSONObject) : HasSource {
     private val name: String by StringDelegate()
     private val summary: String? by SummaryDelegate()
@@ -314,8 +321,6 @@ internal abstract class TypedDeclaration(
     private val signature: String? by NullableStringDelegate()
     protected val type: String by TypeDelegate { parse(it, signature) }
 
-    private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
-
     private val seeAlsoDocs: List<SeeAlso>
         get() {
             val docId = id ?: return emptyList()
@@ -324,13 +329,6 @@ internal abstract class TypedDeclaration(
                 SeeAlsoDoc(parent.docId, docId)
             )
         }
-
-    protected val documentation: String
-        get() = getDocumentation(
-            summary = summary,
-            exceptions = throws,
-            seeAlso = seeAlso
-        )
 }
 
 internal class Constructor(source: JSONObject) : MethodBase(source) {
@@ -383,6 +381,12 @@ internal class Constant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            seeAlso = seeAlso
+        )
+
     override fun toCode(): String {
         return documentation +
                 "val $name: $type"
@@ -404,8 +408,19 @@ internal class Property(
     val final = modifiers.final
     val open = !static && !final
 
+    private val defaultValue: DefaultValue? by DefaultValueDelegate()
+
+    private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
+
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverridden(parent.classId, name)
+
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            exceptions = throws,
+            seeAlso = seeAlso
+        )
 
     override fun toCode(): String {
         var str = ""
@@ -787,6 +802,21 @@ private class ReturnsDelegate : JsonDelegate<Returns?>() {
     ): Returns? {
         return if (source.has(key)) {
             Returns(source.getJSONObject(key))
+        } else {
+            null
+        }
+    }
+}
+
+private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
+    private val KEY = "y.default"
+
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): DefaultValue? {
+        return if (source.has(KEY)) {
+            DefaultValue(source.getJSONObject(KEY))
         } else {
             null
         }
