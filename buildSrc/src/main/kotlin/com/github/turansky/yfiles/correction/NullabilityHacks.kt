@@ -193,7 +193,7 @@ private fun fixLayoutNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+        (type.optJsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .plus(type.optJsequence(J_CONSTRUCTORS))
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
 
@@ -218,7 +218,11 @@ private fun fixLayoutNullability(source: Source) {
         "IEdgeLabelLayoutModel",
         "DiscreteEdgeLabelLayoutModel",
         "FreeEdgeLabelLayoutModel",
-        "SliderEdgeLabelLayoutModel"
+        "SliderEdgeLabelLayoutModel",
+
+        "LabelCandidate",
+        "EdgeLabelCandidate",
+        "NodeLabelCandidate"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
