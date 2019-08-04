@@ -17,5 +17,8 @@ fun param(name: String, summary: String): String =
 fun ret(summary: String): String =
     "@return $summary"
 
+fun throws(summary: String): String =
+    "@throws $summary"
+
 fun see(link: String): String =
     "@see $link"

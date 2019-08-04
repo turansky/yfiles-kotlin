@@ -285,6 +285,14 @@ private fun parseSeeAlso(source: JSONObject): SeeAlso =
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
     }
 
+private class ExceptionDescription(override val source: JSONObject) : HasSource {
+    private val name: String by StringDelegate()
+    private val summary: String? by SummaryDelegate()
+
+    fun toDoc(): String =
+        "$name ${summary!!}"
+}
+
 internal class Modifiers(flags: List<String>) {
     val static = flags.contains(STATIC)
     val final = flags.contains(FINAL)
@@ -304,6 +312,8 @@ internal abstract class TypedDeclaration(
     private val signature: String? by NullableStringDelegate()
     protected val type: String by TypeDelegate { parse(it, signature) }
 
+    private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
+
     private val seeAlsoDocs: List<SeeAlso>
         get() {
             val docId = id ?: return emptyList()
@@ -316,6 +326,7 @@ internal abstract class TypedDeclaration(
     protected val documentation: String
         get() = getDocumentation(
             summary = summary,
+            exceptions = throws,
             seeAlso = seeAlso
         )
 }
@@ -813,6 +824,7 @@ private fun getDocumentation(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    exceptions: List<ExceptionDescription>? = null,
     relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     additionalDocumentation: String? = null
@@ -822,6 +834,7 @@ private fun getDocumentation(
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
+        exceptions = exceptions,
         relatedDemos = relatedDemos,
         seeAlso = seeAlso
     )
@@ -848,6 +861,7 @@ private fun getDocumentationLines(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    exceptions: List<ExceptionDescription>? = null,
     relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     primaryConstructor: Boolean = false
@@ -879,10 +893,12 @@ private fun getDocumentationLines(
         lines.addAll(ret(it).split("\n"))
     }
 
-    relatedDemos?.apply {
-        mapTo(lines) {
-            see(it.toDoc())
-        }
+    exceptions?.mapTo(lines) {
+        throws(it.toDoc())
+    }
+
+    relatedDemos?.mapTo(lines) {
+        see(it.toDoc())
     }
 
     seeAlso?.apply {
