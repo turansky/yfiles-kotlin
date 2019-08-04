@@ -212,6 +212,16 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
 
+private class ExceptionDescription(override val source: JSONObject) : HasSource {
+    private val name: String by StringDelegate()
+    private val summary: String? by SummaryDelegate()
+
+    fun toDoc(): String =
+        summary?.let {
+            "$name $it"
+        } ?: name
+}
+
 internal class Demo(override val source: JSONObject) : HasSource {
     private val path: String by StringDelegate()
     private val text: String by StringDelegate()
@@ -284,16 +294,6 @@ private fun parseSeeAlso(source: JSONObject): SeeAlso =
         source.has("section") -> SeeAlsoGuide(source)
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
     }
-
-private class ExceptionDescription(override val source: JSONObject) : HasSource {
-    private val name: String by StringDelegate()
-    private val summary: String? by SummaryDelegate()
-
-    fun toDoc(): String =
-        summary?.let {
-            "$name $it"
-        } ?: name
-}
 
 internal class Modifiers(flags: List<String>) {
     val static = flags.contains(STATIC)
