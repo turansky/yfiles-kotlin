@@ -260,6 +260,7 @@ private fun fixCommonLayoutNullability(source: Source) {
         "InteractiveOrganicLayout",
         "OrganicLayout",
         "PartialLayout",
+
         "ISeriesParallelLayoutPortAssignment",
         "DefaultSeriesParallelLayoutPortAssignment"
     ).flatMap { getAffectedMethods(it) }
@@ -524,7 +525,9 @@ private fun fixTreeNullability(source: Source) {
         "boolean",
         "number",
 
-        "yfiles.tree.ParentConnectorDirection"
+        "yfiles.tree.ParentConnectorDirection",
+        "yfiles.tree.RootPlacement",
+        "yfiles.tree.SubtreeArrangement"
     )
 
     val EXCLUDED_PARAMETERS = setOf<String>()
@@ -534,6 +537,8 @@ private fun fixTreeNullability(source: Source) {
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
 
     source.types(
+        "IProcessor",
+
         "ITreeLayoutNodePlacer",
         "IFromSketchNodePlacer",
         "AspectRatioNodePlacer",
@@ -558,7 +563,13 @@ private fun fixTreeNullability(source: Source) {
         "DefaultTreeLayoutPortAssignment",
 
         "SubtreeShape",
+        "RootNodeAlignment",
+        "RotatableNodePlacerMatrix",
 
+        "AspectRatioTreeLayout",
+        "BalloonLayout",
+
+        "TreeLayout",
         "TreeComponentLayout",
         "TreeReductionStage"
     ).flatMap { getAffectedMethods(it) }
