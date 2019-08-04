@@ -226,7 +226,7 @@ internal sealed class SeeAlso {
     abstract fun toDoc(): String
 }
 
-internal class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSource {
+private class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSource {
     private val type: String by StringDelegate()
     private val member: String? by NullableStringDelegate()
 
@@ -257,7 +257,7 @@ internal class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSour
     }
 }
 
-internal class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSource {
+private class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSource {
     private val section: String by StringDelegate()
     private val name: String by StringDelegate()
 
@@ -268,7 +268,7 @@ internal class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSou
         )
 }
 
-internal class SeeAlsoDoc(private val id: String) : SeeAlso() {
+private class SeeAlsoDoc(private val id: String) : SeeAlso() {
     constructor(typeId: String, memberId: String) : this("$typeId#$memberId")
 
     override fun toDoc(): String =
