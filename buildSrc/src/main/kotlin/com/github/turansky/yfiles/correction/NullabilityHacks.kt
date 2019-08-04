@@ -155,7 +155,9 @@ private fun fixLayoutNullability(source: Source) {
 
         "getBoundingBoxOfEdges",
         "getBoundingBoxOfNodes",
-        "routeEdgesParallel"
+        "routeEdgesParallel",
+
+        "SliderEdgeLabelLayoutModel"
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -169,7 +171,9 @@ private fun fixLayoutNullability(source: Source) {
 
         "yfiles.layout.NodeAlignment",
         "yfiles.layout.MultiRowConstraint",
-        "yfiles.layout.RowAlignment"
+        "yfiles.layout.RowAlignment",
+
+        "yfiles.layout.DiscreteEdgeLabelPositions"
     )
 
     source.types(
@@ -189,8 +193,8 @@ private fun fixLayoutNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
             .plus(type.optJsequence(J_CONSTRUCTORS))
+            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
 
     source.types(
         "LayoutGraph",
@@ -204,7 +208,12 @@ private fun fixLayoutNullability(source: Source) {
         "EdgeLabelOrientationSupport",
         "LayoutGroupingSupport",
         "PartitionGrid",
-        "PortConstraintConfigurator"
+        "PortConstraintConfigurator",
+
+        "IEdgeLabelLayoutModel",
+        "DiscreteEdgeLabelLayoutModel",
+        "FreeEdgeLabelLayoutModel",
+        "SliderEdgeLabelLayoutModel"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
