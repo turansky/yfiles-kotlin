@@ -441,7 +441,9 @@ private fun fixRouterNullability(source: Source) {
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
-        "number"
+        "number",
+
+        "yfiles.router.ChannelOrientation"
     )
 
     val EXCLUDED_PARAMETERS = setOf<String>()
@@ -495,6 +497,10 @@ private fun fixRouterNullability(source: Source) {
         "SegmentGroup",
         "SegmentInfo",
         "SegmentInfoBase",
+
+        "ChannelRoutingTool",
+        "ChannelBasedPathRouting",
+        "IEnterIntervalCalculator",
 
         "ChannelEdgeRouter",
         "EdgeRouter",
