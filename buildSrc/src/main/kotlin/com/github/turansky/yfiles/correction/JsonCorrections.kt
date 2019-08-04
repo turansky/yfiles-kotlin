@@ -168,7 +168,17 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
 
     ParameterData("IAnimation", "createEasedAnimation", "easeIn") to true,
     ParameterData("IAnimation", "createEasedAnimation", "easeOut") to true,
-    ParameterData("FocusIndicatorManager", "getInstaller", "item") to true
+    ParameterData("FocusIndicatorManager", "getInstaller", "item") to true,
+
+    ParameterData("ICanvasObjectDescriptor", "getBoundsProvider", "forUserObject") to false,
+    ParameterData("ICanvasObjectDescriptor", "getHitTestable", "forUserObject") to false,
+    ParameterData("ICanvasObjectDescriptor", "getVisibilityTestable", "forUserObject") to false,
+    ParameterData("ICanvasObjectDescriptor", "getVisualCreator", "forUserObject") to false,
+
+    ParameterData("DefaultPortCandidateDescriptor", "getBoundsProvider", "forUserObject") to false,
+    ParameterData("DefaultPortCandidateDescriptor", "getHitTestable", "forUserObject") to false,
+    ParameterData("DefaultPortCandidateDescriptor", "getVisibilityTestable", "forUserObject") to false,
+    ParameterData("DefaultPortCandidateDescriptor", "getVisualCreator", "forUserObject") to false
 )
 
 internal val MODEL_MANAGER_ITEM_METHODS = setOf(
