@@ -216,10 +216,12 @@ private class TypeReference(override val source: JSONObject) : HasSource {
     private val type: String by TypeDelegate { parseType(it) }
     private val member: String? by NullableStringDelegate()
 
-    fun toDoc(): String =
-        member?.let {
-            "[$type.$it]"
-        } ?: "[$type]"
+    fun toDoc(): String {
+        val t = type.substringBefore("<")
+        return member?.let {
+            "[$t.$it]"
+        } ?: "[$t]"
+    }
 }
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
@@ -232,7 +234,7 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
             ?: ref!!.toDoc()
 
     fun toDoc(): String {
-        var v = getDefault().apply { println(this) }
+        var v = getDefault()
 
         v = "Default value - `$v`"
         summary?.let {
