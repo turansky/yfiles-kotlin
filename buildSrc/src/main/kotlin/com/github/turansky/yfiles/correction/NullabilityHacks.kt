@@ -6,6 +6,7 @@ internal fun fixNullability(source: Source) {
     fixConstructorNullability(source)
 
     fixCollectionsNullability(source)
+    fixGraphNullability(source)
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
     fixCommonLayoutNullability(source)
@@ -134,6 +135,29 @@ private fun fixCollectionsNullability(source: Source) {
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixGraphNullability(source: Source) {
+    val INCLUDED_METHODS = setOf(
+        "getDescendants",
+        "getDescendantsBottomUp",
+        "getPathToRoot",
+        "isDescendant"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    source.types(
+        "GroupingSupport"
+    ).flatMap { it.jsequence(J_METHODS) }
+        .filter { it.getString(J_NAME) in INCLUDED_METHODS }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
 }
 
