@@ -3,6 +3,8 @@ package com.github.turansky.yfiles.correction
 import org.json.JSONObject
 
 internal fun fixNullability(source: Source) {
+    fixConstructorNullability(source)
+
     fixCollectionsNullability(source)
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
@@ -12,6 +14,28 @@ internal fun fixNullability(source: Source) {
     fixHierarchicNullability(source)
     fixRouterNullability(source)
     fixTreeNullability(source)
+}
+
+private fun fixConstructorNullability(source: Source) {
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    source.types(
+        "DpKeyBase",
+        "EdgeDpKey",
+        "GraphDpKey",
+        "GraphObjectDpKey",
+        "IEdgeLabelLayoutDpKey",
+        "ILabelLayoutDpKey",
+        "INodeLabelLayoutDpKey",
+        "NodeDpKey"
+    ).flatMap { it.jsequence(J_CONSTRUCTORS) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixCollectionsNullability(source: Source) {
