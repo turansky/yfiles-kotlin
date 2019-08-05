@@ -214,9 +214,25 @@ internal class Enum(source: JSONObject) : Type(source)
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by NullableStringDelegate()
+    private val summary: String? by SummaryDelegate()
 
-    fun toDoc(): String? =
-        value
+    private fun getDefault(): String? {
+        val v = value
+            ?: return null
+
+        return v.removeSuffix("d")
+    }
+
+    fun toDoc(): String? {
+        var v = getDefault()
+            ?: return null
+
+        v = "Default value - `$v`"
+        summary?.let {
+            v = "$v. $it"
+        }
+        return v
+    }
 }
 
 private class ExceptionDescription(override val source: JSONObject) : HasSource {
@@ -418,6 +434,7 @@ internal class Property(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            defaultValue = defaultValue,
             exceptions = throws,
             seeAlso = seeAlso
         )
@@ -859,6 +876,7 @@ private fun getDocumentation(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
@@ -869,6 +887,7 @@ private fun getDocumentation(
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
+        defaultValue = defaultValue,
         exceptions = exceptions,
         relatedDemos = relatedDemos,
         seeAlso = seeAlso
@@ -896,6 +915,7 @@ private fun getDocumentationLines(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
@@ -926,6 +946,14 @@ private fun getDocumentationLines(
 
     returns?.doc?.let {
         lines.addAll(ret(it).split("\n"))
+    }
+
+    defaultValue?.toDoc()?.let {
+        if (lines.isNotEmpty()) {
+            lines.add("")
+        }
+
+        lines.add(it)
     }
 
     exceptions?.mapTo(lines) {
