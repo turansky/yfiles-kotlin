@@ -62,6 +62,7 @@ private fun fixConstructorNullability(source: Source) {
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .jsequence(J_PARAMETERS)
         .filter { it.getString(J_TYPE).startsWith(YCLASS) }
+        .filter { it.getString(J_NAME) != "deserializerTargetType" }
         .forEach { it.changeNullability(false) }
 }
 
@@ -461,6 +462,8 @@ private fun fixCommonLayoutNullability(source: Source) {
             .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
 
     source.types(
+        "SequentialLayout",
+
         "LabelingBase",
         "MISLabelingBase",
 
