@@ -212,6 +212,16 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 internal class Enum(source: JSONObject) : Type(source)
 
+private class TypeReference(override val source: JSONObject) : HasSource {
+    private val type: String by TypeDelegate { parseType(it) }
+    private val member: String? by NullableStringDelegate()
+
+    fun toDoc(): String =
+        member?.let {
+            "[$type.$it]"
+        } ?: "[$type]"
+}
+
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by NullableStringDelegate()
     private val summary: String? by SummaryDelegate()
