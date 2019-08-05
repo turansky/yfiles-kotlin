@@ -245,8 +245,13 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
 }
 
 private class ExceptionDescription(override val source: JSONObject) : HasSource {
+    private val REDUNDANT_NULL_WARNING = Regex("if the specified .+ is `null`\\.?")
+
     private val name: String by StringDelegate()
     private val summary: String? by SummaryDelegate()
+
+    fun isEmpty(): Boolean =
+        summary?.matches(REDUNDANT_NULL_WARNING) == true
 
     fun toDoc(): String =
         summary?.let {
@@ -444,7 +449,7 @@ internal class Property(
         get() = getDocumentation(
             summary = summary,
             defaultValue = defaultValue,
-            exceptions = throws,
+            exceptions = throws.filterNot { it.isEmpty() },
             seeAlso = seeAlso
         )
 
