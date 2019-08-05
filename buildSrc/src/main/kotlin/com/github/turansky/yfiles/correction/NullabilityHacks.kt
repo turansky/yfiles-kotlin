@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.correction
 import org.json.JSONObject
 
 internal fun fixNullability(source: Source) {
+    fixCollectionsNullability(source)
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
     fixCommonLayoutNullability(source)
@@ -11,6 +12,38 @@ internal fun fixNullability(source: Source) {
     fixHierarchicNullability(source)
     fixRouterNullability(source)
     fixTreeNullability(source)
+}
+
+private fun fixCollectionsNullability(source: Source) {
+    val INCLUDED_METHODS = setOf(
+        "get",
+        "set"
+    )
+
+    val EXCLUDED_TYPES = setOf(
+        "boolean",
+        "number"
+    )
+
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
+        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
+            .filter { it.getString(J_NAME) in INCLUDED_METHODS }
+
+    source.types(
+        "IEnumerable",
+        "ICollection",
+
+        "IList",
+        "List",
+        "YList",
+
+        "IMap",
+        "HashMap"
+    ).flatMap { getAffectedMethods(it) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixAlgorithmsNullability(source: Source) {
