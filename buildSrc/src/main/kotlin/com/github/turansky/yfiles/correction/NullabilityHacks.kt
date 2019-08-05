@@ -16,10 +16,13 @@ internal fun fixNullability(source: Source) {
 
 private fun fixCollectionsNullability(source: Source) {
     val INCLUDED_METHODS = setOf(
+        "has",
         "get",
+
+        "add",
         "set",
 
-        "has",
+        "remove",
         "delete"
     )
 
@@ -40,7 +43,9 @@ private fun fixCollectionsNullability(source: Source) {
 
     source.types(
         "IEnumerable",
+
         "ICollection",
+        "ObservableCollection",
 
         "IList",
         "List",

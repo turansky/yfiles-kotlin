@@ -400,7 +400,7 @@ internal val MISSED_METHODS = listOf(
         className = "YList",
         methodName = "add",
         parameters = listOf(
-            MethodParameterData("item", JS_OBJECT, true)
+            MethodParameterData("item", JS_OBJECT, false)
         )
     ),
 
