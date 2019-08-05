@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.YCLASS
 import org.json.JSONObject
 
 internal fun fixNullability(source: Source) {
@@ -31,11 +32,27 @@ private fun fixConstructorNullability(source: Source) {
         "IEdgeLabelLayoutDpKey",
         "ILabelLayoutDpKey",
         "INodeLabelLayoutDpKey",
-        "NodeDpKey"
+        "NodeDpKey",
+
+        "MapEntry",
+
+        "CompositeLayoutStage"
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
+
+    source.types(
+        "StripeDecorator",
+
+        "MapperInputHandler",
+        "MapperOutputHandler",
+        "InputHandlerBase",
+        "OutputHandlerBase"
+    ).flatMap { it.jsequence(J_CONSTRUCTORS) }
+        .jsequence(J_PARAMETERS)
+        .filter { it.getString(J_TYPE).startsWith("$YCLASS<") }
         .forEach { it.changeNullability(false) }
 }
 
