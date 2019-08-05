@@ -17,7 +17,10 @@ internal fun fixNullability(source: Source) {
 private fun fixCollectionsNullability(source: Source) {
     val INCLUDED_METHODS = setOf(
         "get",
-        "set"
+        "set",
+
+        "has",
+        "delete"
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -25,9 +28,15 @@ private fun fixCollectionsNullability(source: Source) {
         "number"
     )
 
-    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filter { it.getString(J_NAME) in INCLUDED_METHODS }
+    fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
+        var includedMethods = INCLUDED_METHODS
+        if (type.getString(J_NAME) == "Mapper") {
+            includedMethods = includedMethods - "delete"
+        }
+
+        return type.jsequence(J_METHODS)
+            .filter { it.getString(J_NAME) in includedMethods }
+    }
 
     source.types(
         "IEnumerable",
@@ -38,7 +47,12 @@ private fun fixCollectionsNullability(source: Source) {
         "YList",
 
         "IMap",
-        "HashMap"
+        "HashMap",
+
+        "IMapper",
+        "Mapper",
+        "CreationProperties",
+        "ResultItemMapping"
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
