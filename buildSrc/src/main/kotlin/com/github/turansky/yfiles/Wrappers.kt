@@ -229,14 +229,21 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
     private val ref: TypeReference? by TypeReferenceDelegate()
     private val summary: String? by SummaryDelegate()
 
-    private fun getDefault(): String =
-        value?.removeSuffix("d")
-            ?: ref!!.toDoc()
+    private fun getDefault(): String {
+        ref?.let {
+            return it.toDoc()
+        }
+
+        val v = value!!
+            .removeSuffix("d")
+
+        return "`$v`"
+    }
 
     fun toDoc(): String {
         var v = getDefault()
 
-        v = "Default value - `$v`"
+        v = "Default value - $v"
         summary?.let {
             v = "$v. $it"
         }
