@@ -136,6 +136,14 @@ private fun fixPropertyNullability(source: Source) {
             .property(propertyName)
             .changeNullability(nullable)
     }
+
+    source.type("SvgVisualGroup")
+        .getJSONArray(J_PROPERTIES)
+        .firstWithName("children")
+        .apply {
+            require(getString(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
+            put(J_TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
+        }
 }
 
 private fun fixMethodParameterName(source: Source) {
