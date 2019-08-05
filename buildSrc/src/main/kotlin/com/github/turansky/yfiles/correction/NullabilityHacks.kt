@@ -39,12 +39,44 @@ private fun fixCollectionsNullability(source: Source) {
         "publishItemChanged",
         "onItemAdded",
         "onItemChanged",
-        "onItemRemoved"
+        "onItemRemoved",
+
+        "addFirst",
+        "addFirstCell",
+        "addLast",
+        "addLastCell",
+        "containsAll",
+        "cyclicPred",
+        "cyclicSucc",
+        "findCell",
+        "getInfo",
+        "insertAfter",
+        "insertBefore",
+        "insertCellAfter",
+        "insertCellBefore"
+        /*
+        "lastIndexOf",
+        "predCell",
+        "push",
+        "removeAll",
+        "removeAtCursor",
+        "removeCell",
+        "retainAll",
+        "setInfo",
+        "sort",
+        "splice",
+        "succCell"
+         */
     )
 
     val EXCLUDED_TYPES = setOf(
         "boolean",
         "number"
+    )
+
+    val EXCLUDED_PARAMETERS = setOf(
+        "comparer",
+        "match"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
@@ -78,7 +110,7 @@ private fun fixCollectionsNullability(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
-        .filterNot { it.getString(J_NAME) == "comparer" }
+        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
         .forEach { it.changeNullability(false) }
 }
 
