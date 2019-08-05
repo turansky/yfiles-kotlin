@@ -19,6 +19,7 @@ private fun fixCollectionsNullability(source: Source) {
         "get",
 
         "has",
+        "includes",
         "indexOf",
         "containsValue",
 
@@ -32,6 +33,7 @@ private fun fixCollectionsNullability(source: Source) {
         "fromConstant",
         "ofRepeat",
 
+        "publishItemChanged",
         "onItemAdded",
         "onItemChanged",
         "onItemRemoved"
