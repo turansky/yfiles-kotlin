@@ -44,6 +44,7 @@ private fun fixConstructorNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     source.types(
+        "LookupDecorator",
         "StripeDecorator",
 
         "MapperInputHandler",
@@ -52,7 +53,12 @@ private fun fixConstructorNullability(source: Source) {
         "OutputHandlerBase",
 
         "DataMapAdapter",
-        "MapperDataProviderAdapter"
+        "MapperDataProviderAdapter",
+
+        "PathBasedEdgeStyleRenderer",
+
+        "ItemModelManager",
+        "CollectionModelManager"
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .jsequence(J_PARAMETERS)
         .filter { it.getString(J_TYPE).startsWith(YCLASS) }
