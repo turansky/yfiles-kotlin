@@ -157,6 +157,9 @@ private fun fixCollectionsNullability(source: Source) {
 
 private fun fixGraphNullability(source: Source) {
     val INCLUDED_METHODS = setOf(
+        "isSelected",
+        "setSelected",
+
         "getDescendants",
         "getDescendantsBottomUp",
         "getPathToRoot",
@@ -169,6 +172,11 @@ private fun fixGraphNullability(source: Source) {
     )
 
     source.types(
+        "ISelectionModel",
+        "DefaultSelectionModel",
+        "GraphSelection",
+        "StripeSelection",
+
         "GroupingSupport"
     ).flatMap { it.jsequence(J_METHODS) }
         .filter { it.getString(J_NAME) in INCLUDED_METHODS }

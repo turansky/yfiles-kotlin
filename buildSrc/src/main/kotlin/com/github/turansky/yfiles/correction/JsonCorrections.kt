@@ -160,6 +160,9 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("ILookupDecorator", "add", "nullIsFallback") to true,
     ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
 
+    ParameterData("GraphClipboard", "isDummy", "item") to false,
+    ParameterData("GraphModelManager", "update", "item") to false,
+
     ParameterData("CreationProperties", "get", "key") to true,
     ParameterData("CreationProperties", "set", "key") to true,
 
