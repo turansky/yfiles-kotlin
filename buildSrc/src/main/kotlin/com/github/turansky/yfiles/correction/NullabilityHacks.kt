@@ -237,6 +237,28 @@ private fun fixAlgorithmsNullability(source: Source) {
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
+
+    val Y_METHODS = setOf(
+        "adoptValues",
+        "calcPoints",
+        "calcPointsInDouble",
+        "intersectionPoint",
+
+        "angle",
+        "getNormal",
+        "orthoNormal",
+        "rightOf",
+        "scalarProduct"
+    )
+
+    source.types(
+        "YOrientedRectangle",
+        "YVector"
+    ).flatMap { it.jsequence(J_METHODS) + it.jsequence(J_STATIC_METHODS) }
+        .filter { it.getString(J_NAME) in Y_METHODS }
+        .jsequence(J_PARAMETERS)
+        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixLayoutNullability(source: Source) {
