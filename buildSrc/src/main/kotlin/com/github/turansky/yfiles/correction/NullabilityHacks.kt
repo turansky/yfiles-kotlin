@@ -16,14 +16,20 @@ internal fun fixNullability(source: Source) {
 
 private fun fixCollectionsNullability(source: Source) {
     val INCLUDED_METHODS = setOf(
-        "has",
         "get",
+
+        "has",
+        "indexOf",
 
         "add",
         "set",
+        "insert",
 
         "remove",
-        "delete"
+        "delete",
+
+        "fromConstant",
+        "ofRepeat"
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -37,7 +43,7 @@ private fun fixCollectionsNullability(source: Source) {
             includedMethods = includedMethods - "delete"
         }
 
-        return type.jsequence(J_METHODS)
+        return (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .filter { it.getString(J_NAME) in includedMethods }
     }
 
