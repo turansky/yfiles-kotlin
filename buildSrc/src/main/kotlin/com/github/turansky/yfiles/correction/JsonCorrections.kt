@@ -163,6 +163,9 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("GraphClipboard", "isDummy", "item") to false,
     ParameterData("GraphModelManager", "update", "item") to false,
 
+    ParameterData("NavigationInputMode", "enterGroup", "node") to false,
+    ParameterData("NavigationInputMode", "shouldEnterGroup", "node") to false,
+
     ParameterData("CreationProperties", "get", "key") to true,
     ParameterData("CreationProperties", "set", "key") to true,
 
