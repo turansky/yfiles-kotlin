@@ -49,10 +49,13 @@ private fun fixConstructorNullability(source: Source) {
         "MapperInputHandler",
         "MapperOutputHandler",
         "InputHandlerBase",
-        "OutputHandlerBase"
+        "OutputHandlerBase",
+
+        "DataMapAdapter",
+        "MapperDataProviderAdapter"
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .jsequence(J_PARAMETERS)
-        .filter { it.getString(J_TYPE).startsWith("$YCLASS<") }
+        .filter { it.getString(J_TYPE).startsWith(YCLASS) }
         .forEach { it.changeNullability(false) }
 }
 
