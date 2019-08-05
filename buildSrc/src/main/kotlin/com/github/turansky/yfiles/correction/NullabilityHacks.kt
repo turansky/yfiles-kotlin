@@ -32,6 +32,9 @@ private fun fixCollectionsNullability(source: Source) {
 
         "fromConstant",
         "ofRepeat",
+        "fill",
+
+        "binarySearch",
 
         "publishItemChanged",
         "onItemAdded",
@@ -75,6 +78,7 @@ private fun fixCollectionsNullability(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_NAME) == "comparer" }
         .forEach { it.changeNullability(false) }
 }
 
