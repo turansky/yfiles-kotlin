@@ -251,7 +251,7 @@ private class ExceptionDescription(override val source: JSONObject) : HasSource 
     private val summary: String? by SummaryDelegate()
 
     fun isEmpty(): Boolean =
-        summary?.matches(REDUNDANT_NULL_WARNING) == true
+        name == "NullReferenceError" || summary?.matches(REDUNDANT_NULL_WARNING) == true
 
     fun toDoc(): String =
         summary?.let {
@@ -530,7 +530,7 @@ internal class Method(
             parameters = parameters,
             typeparameters = typeparameters,
             returns = returns,
-            exceptions = throws,
+            exceptions = throws.filterNot { it.isEmpty() },
             seeAlso = seeAlso
         )
 
