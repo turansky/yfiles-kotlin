@@ -20,6 +20,7 @@ private fun fixCollectionsNullability(source: Source) {
 
         "has",
         "indexOf",
+        "containsValue",
 
         "add",
         "set",
@@ -29,7 +30,11 @@ private fun fixCollectionsNullability(source: Source) {
         "delete",
 
         "fromConstant",
-        "ofRepeat"
+        "ofRepeat",
+
+        "onItemAdded",
+        "onItemChanged",
+        "onItemRemoved"
     )
 
     val EXCLUDED_TYPES = setOf(
