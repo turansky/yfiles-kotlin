@@ -224,18 +224,15 @@ private class TypeReference(override val source: JSONObject) : HasSource {
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by NullableStringDelegate()
+    private val ref: TypeReference? by TypeReferenceDelegate()
     private val summary: String? by SummaryDelegate()
 
-    private fun getDefault(): String? {
-        val v = value
-            ?: return null
+    private fun getDefault(): String =
+        value?.removeSuffix("d")
+            ?: ref!!.toDoc()
 
-        return v.removeSuffix("d")
-    }
-
-    fun toDoc(): String? {
-        var v = getDefault()
-            ?: return null
+    fun toDoc(): String {
+        var v = getDefault().apply { println(this) }
 
         v = "Default value - `$v`"
         summary?.let {
@@ -835,6 +832,19 @@ private class ReturnsDelegate : JsonDelegate<Returns?>() {
     }
 }
 
+private class TypeReferenceDelegate : JsonDelegate<TypeReference?>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): TypeReference? {
+        return if (source.has(key)) {
+            TypeReference(source.getJSONObject(key))
+        } else {
+            null
+        }
+    }
+}
+
 private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
     private val KEY = "y.default"
 
@@ -842,8 +852,13 @@ private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
         source: JSONObject,
         key: String
     ): DefaultValue? {
-        return if (source.has(KEY)) {
-            DefaultValue(source.getJSONObject(KEY))
+        if (!source.has(KEY)) {
+            return null
+        }
+
+        val s = source.getJSONObject(KEY)
+        return if (s.has("value") || s.has("ref")) {
+            DefaultValue(s)
         } else {
             null
         }
@@ -958,12 +973,12 @@ private fun getDocumentationLines(
         lines.addAll(ret(it).split("\n"))
     }
 
-    defaultValue?.toDoc()?.let {
+    defaultValue?.let {
         if (lines.isNotEmpty()) {
             lines.add("")
         }
 
-        lines.add(it)
+        lines.add(it.toDoc())
     }
 
     exceptions?.mapTo(lines) {
