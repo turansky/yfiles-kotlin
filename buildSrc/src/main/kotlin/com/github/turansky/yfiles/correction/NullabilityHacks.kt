@@ -383,6 +383,7 @@ private fun fixLayoutNullability(source: Source) {
         "PartitionGrid",
         "PortConstraintConfigurator",
         "PortCandidateSet",
+        "ItemCollectionMapping",
 
         "INodeLabelLayoutModel",
         "DiscreteNodeLabelLayoutModel",
@@ -427,6 +428,8 @@ private fun fixCommonLayoutNullability(source: Source) {
 
     source.types(
         "LabelingBase",
+        "MISLabelingBase",
+
         "MultiPageLayout",
         "InteractiveOrganicLayout",
         "OrganicLayout",
