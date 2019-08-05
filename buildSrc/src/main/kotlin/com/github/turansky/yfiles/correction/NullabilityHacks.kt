@@ -53,8 +53,7 @@ private fun fixCollectionsNullability(source: Source) {
         "insertAfter",
         "insertBefore",
         "insertCellAfter",
-        "insertCellBefore"
-        /*
+        "insertCellBefore",
         "lastIndexOf",
         "predCell",
         "push",
@@ -66,7 +65,6 @@ private fun fixCollectionsNullability(source: Source) {
         "sort",
         "splice",
         "succCell"
-         */
     )
 
     val EXCLUDED_TYPES = setOf(
@@ -81,8 +79,9 @@ private fun fixCollectionsNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
         var includedMethods = INCLUDED_METHODS
-        if (type.getString(J_NAME) == "Mapper") {
-            includedMethods = includedMethods - "delete"
+        when (type.getString(J_NAME)) {
+            "List" -> includedMethods = includedMethods - listOf("push", "sort", "splice")
+            "Mapper" -> includedMethods = includedMethods - "delete"
         }
 
         return (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
