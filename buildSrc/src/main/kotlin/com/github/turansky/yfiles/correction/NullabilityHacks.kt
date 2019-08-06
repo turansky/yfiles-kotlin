@@ -77,6 +77,10 @@ private fun fixConstructorNullability(source: Source) {
 }
 
 private fun fixCollectionsNullability(source: Source) {
+    val INCLUDED_METHOD_IDS = setOf(
+        "YList-method-addAll(number,yfiles.collections.ICollection)"
+    )
+
     val INCLUDED_METHODS = setOf(
         "get",
 
@@ -147,7 +151,7 @@ private fun fixCollectionsNullability(source: Source) {
         }
 
         return (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filter { it.getString(J_NAME) in includedMethods }
+            .filter { it.getString(J_ID) in INCLUDED_METHOD_IDS || it.getString(J_NAME) in includedMethods }
     }
 
     source.types(
@@ -332,6 +336,14 @@ private fun fixAlgorithmsNullability(source: Source) {
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
 
+    val Y_METHOD_IDS = setOf(
+        "YOrientedRectangle-method-contains(yfiles.algorithms.YOrientedRectangle,number,number,number)",
+        "YOrientedRectangle-constructor-YOrientedRectangle(yfiles.algorithms.YPoint,yfiles.algorithms.YDimension)",
+        "YOrientedRectangle-constructor-YOrientedRectangle(yfiles.algorithms.YPoint,yfiles.algorithms.YDimension,yfiles.algorithms.YVector)",
+
+        "YVector-method-add"
+    )
+
     val Y_METHODS = setOf(
         "adoptValues",
         "calcPoints",
@@ -348,8 +360,8 @@ private fun fixAlgorithmsNullability(source: Source) {
     source.types(
         "YOrientedRectangle",
         "YVector"
-    ).flatMap { it.jsequence(J_METHODS) + it.jsequence(J_STATIC_METHODS) }
-        .filter { it.getString(J_NAME) in Y_METHODS }
+    ).flatMap { it.jsequence(J_METHODS) + it.jsequence(J_STATIC_METHODS) + it.jsequence(J_CONSTRUCTORS) }
+        .filter { it.getString(J_ID) in Y_METHOD_IDS || it.getString(J_NAME) in Y_METHODS }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
         .forEach { it.changeNullability(false) }
