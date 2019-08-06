@@ -64,6 +64,16 @@ private fun fixConstructorNullability(source: Source) {
         .filter { it.getString(J_TYPE).startsWith(YCLASS) }
         .filter { it.getString(J_NAME) != "deserializerTargetType" }
         .forEach { it.changeNullability(false) }
+
+    source.types(
+        "ItemClickedEventArgs",
+        "ItemTappedEventArgs",
+        "TableItemClickedEventArgs",
+        "TableItemTappedEventArgs",
+        "ItemSelectionChangedEventArgs"
+    ).flatMap { it.jsequence(J_CONSTRUCTORS) }
+        .map { it.firstParameter }
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixCollectionsNullability(source: Source) {
