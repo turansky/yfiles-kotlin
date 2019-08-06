@@ -184,7 +184,12 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("DefaultPortCandidateDescriptor", "getBoundsProvider", "forUserObject") to false,
     ParameterData("DefaultPortCandidateDescriptor", "getHitTestable", "forUserObject") to false,
     ParameterData("DefaultPortCandidateDescriptor", "getVisibilityTestable", "forUserObject") to false,
-    ParameterData("DefaultPortCandidateDescriptor", "getVisualCreator", "forUserObject") to false
+    ParameterData("DefaultPortCandidateDescriptor", "getVisualCreator", "forUserObject") to false,
+
+    ParameterData("HighlightIndicatorManager", "addHighlight", "item") to false,
+    ParameterData("HighlightIndicatorManager", "removeHighlight", "item") to false,
+    ParameterData("SelectionIndicatorManager", "addSelection", "item") to false,
+    ParameterData("SelectionIndicatorManager", "removeSelection", "item") to false
 )
 
 internal val MODEL_MANAGER_ITEM_METHODS = setOf(

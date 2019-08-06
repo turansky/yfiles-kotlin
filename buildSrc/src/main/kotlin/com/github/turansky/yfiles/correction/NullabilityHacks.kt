@@ -179,6 +179,7 @@ private fun fixGraphNullability(source: Source) {
     val INCLUDED_METHODS = setOf(
         "isSelected",
         "setSelected",
+        "removeDomainItem",
 
         "getDescendants",
         "getDescendantsBottomUp",
