@@ -141,6 +141,7 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("Rectangle2D", "contains", "rect") to false,
 
     ParameterData("YList", "copyTo", "array") to false,
+    ParameterData("List", "binarySearch", "item") to false,
     ParameterData("ObservableCollection", "copyTo", "array") to false,
 
     ParameterData("IGraph", "contains", "item") to false,

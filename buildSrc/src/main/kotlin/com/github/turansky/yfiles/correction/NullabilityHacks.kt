@@ -100,8 +100,6 @@ private fun fixCollectionsNullability(source: Source) {
         "ofRepeat",
         "fill",
 
-        "binarySearch",
-
         "publishItemChanged",
         "onItemAdded",
         "onItemChanged",
@@ -139,7 +137,6 @@ private fun fixCollectionsNullability(source: Source) {
     )
 
     val EXCLUDED_PARAMETERS = setOf(
-        "comparer",
         "match"
     )
 
