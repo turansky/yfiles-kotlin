@@ -19,13 +19,19 @@ private fun mergeConstructors(type: JSONObject) {
         return
     }
 
-    val pair = getConstructorPair(
+    val (firstConstructor, secondConstructor) = getConstructorPair(
         constructors.getJSONObject(0),
         constructors.getJSONObject(1)
     ) ?: return
 
-    constructors.removeItem(pair.first)
-    pair.second.firstParameter
+    if (!mergeRequired(firstConstructor, secondConstructor)) {
+        return
+    }
+
+    constructors.removeItem(firstConstructor)
+    secondConstructor
+        .getJSONArray(J_PARAMETERS)
+        .let { it.getJSONObject(it.length() - 1) }
         .getJSONArray(J_MODIFIERS)
         .put(OPTIONAL)
 }
@@ -34,14 +40,39 @@ private fun getConstructorPair(
     first: JSONObject,
     second: JSONObject
 ): Pair<JSONObject, JSONObject>? =
-    when {
-        first.parametersCount == 0 && second.parametersCount == 1 -> first to second
-        second.parametersCount == 0 && first.parametersCount == 1 -> second to first
+    when (first.parametersCount - second.parametersCount) {
+        -1 -> first to second
+        1 -> second to first
         else -> null
     }
+
+private fun mergeRequired(
+    first: JSONObject,
+    second: JSONObject
+): Boolean {
+    if (first.parametersCount == 0) {
+        return true
+    }
+
+    val firstNames = first.parametersNames
+    val secondNames = second.parametersNames
+    return firstNames
+        .asSequence()
+        .mapIndexed { index, item -> item == secondNames[index] }
+        .all { it }
+}
 
 private val JSONObject.parametersCount: Int
     get() = when {
         has(J_PARAMETERS) -> getJSONArray(J_PARAMETERS).length()
         else -> 0
+    }
+
+private val JSONObject.parametersNames: List<String>
+    get() = if (has(J_PARAMETERS)) {
+        jsequence(J_PARAMETERS)
+            .map { it.getString(J_NAME) }
+            .toList()
+    } else {
+        emptyList()
     }
