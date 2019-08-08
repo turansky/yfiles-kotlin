@@ -43,23 +43,14 @@ tasks {
     }
 }
 
-val mainJar by tasks.registering(Jar::class) {
-    from("$projectDir/out")
-}
-
-val sourceJar by tasks.registering(Jar::class) {
-    from(kotlinSourceDir)
-    classifier = "sources"
-}
-
 publishing {
     publications {
         register("mavenKotlin", MavenPublication::class) {
-            artifact(mainJar.get())
+            artifact(tasks.JsJar.get())
         }
 
         register("mavenKotlinSources", MavenPublication::class) {
-            artifact(sourceJar.get())
+            artifact(tasks.JsSourcesJar.get())
         }
     }
 }
