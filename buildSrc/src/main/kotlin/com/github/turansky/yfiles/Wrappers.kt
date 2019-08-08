@@ -525,6 +525,8 @@ internal class Method(
 
     val isExtension by BooleanDelegate()
 
+    private val postconditions: List<String> by StringArrayDelegate(::summary)
+
     val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val returns: Returns? by ReturnsDelegate()
 
@@ -540,6 +542,7 @@ internal class Method(
         get() = getDocumentation(
             summary = summary,
             preconditions = preconditions,
+            postconditions = postconditions,
             parameters = parameters,
             typeparameters = typeparameters,
             returns = returns,
@@ -921,6 +924,7 @@ private class DeclarationArrayDelegate<T : Declaration>(
 private fun getDocumentation(
     summary: String?,
     preconditions: List<String>? = null,
+    postconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -933,6 +937,7 @@ private fun getDocumentation(
     var lines = getDocumentationLines(
         summary = summary,
         preconditions = preconditions,
+        postconditions = postconditions,
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
@@ -962,6 +967,7 @@ private fun getDocumentation(
 private fun getDocumentationLines(
     summary: String?,
     preconditions: List<String>? = null,
+    postconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -986,6 +992,15 @@ private fun getDocumentationLines(
         ?.takeIf { it.isNotEmpty() }
         ?.let {
             lines.add("### Preconditions")
+            it.mapTo(lines) {
+                "- $it"
+            }
+        }
+
+    postconditions
+        ?.takeIf { it.isNotEmpty() }
+        ?.let {
+            lines.add("### Postconditions")
             it.mapTo(lines) {
                 "- $it"
             }
