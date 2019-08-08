@@ -447,6 +447,8 @@ internal class Property(
     val final = modifiers.final
     val open = !static && !final
 
+    private val preconditions: List<String> by StringArrayDelegate(::summary)
+
     private val defaultValue: DefaultValue? by DefaultValueDelegate()
 
     private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
@@ -457,6 +459,7 @@ internal class Property(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            preconditions = preconditions,
             defaultValue = defaultValue,
             exceptions = throws.filterNot { it.isEmpty() },
             seeAlso = seeAlso
