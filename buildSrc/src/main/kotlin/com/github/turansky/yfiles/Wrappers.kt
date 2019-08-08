@@ -376,6 +376,7 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            preconditions = preconditions,
             parameters = parameters,
             seeAlso = seeAlso
         )
@@ -383,6 +384,7 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
     fun getPrimaryDocumentation(): String? {
         val lines = getDocumentationLines(
             summary = summary,
+            preconditions = preconditions,
             parameters = parameters,
             seeAlso = seeAlso,
             primaryConstructor = true
@@ -620,6 +622,8 @@ internal class Method(
 internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
     val parameters: List<Parameter> by ArrayDelegate(::Parameter)
     val options: Boolean by BooleanDelegate()
+
+    protected val preconditions: List<String> by StringArrayDelegate(::summary)
 
     protected abstract val overridden: Boolean
 
@@ -912,6 +916,7 @@ private class DeclarationArrayDelegate<T : Declaration>(
 
 private fun getDocumentation(
     summary: String?,
+    preconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -923,6 +928,7 @@ private fun getDocumentation(
 ): String {
     var lines = getDocumentationLines(
         summary = summary,
+        preconditions = preconditions,
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
@@ -951,6 +957,7 @@ private fun getDocumentation(
 
 private fun getDocumentationLines(
     summary: String?,
+    preconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -970,6 +977,15 @@ private fun getDocumentationLines(
             }
         )
     }
+
+    preconditions
+        ?.takeIf { it.isNotEmpty() }
+        ?.let {
+            lines.add("### Preconditions")
+            it.mapTo(lines) {
+                "- $it"
+            }
+        }
 
     typeparameters?.apply {
         asSequence()
