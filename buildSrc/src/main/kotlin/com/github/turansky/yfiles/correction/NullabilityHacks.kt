@@ -678,8 +678,6 @@ private fun fixRouterNullability(source: Source) {
         "yfiles.router.ChannelOrientation"
     )
 
-    val excludedParameters = setOf<String>()
-
     source.types(
         "BusRepresentations"
     ).jsequence(J_STATIC_METHODS)
@@ -741,7 +739,6 @@ private fun fixRouterNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in excludedParameters }
         .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -760,8 +757,6 @@ private fun fixTreeNullability(source: Source) {
         "yfiles.tree.RootPlacement",
         "yfiles.tree.SubtreeArrangement"
     )
-
-    val excludedParameters = setOf<String>()
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
@@ -806,7 +801,6 @@ private fun fixTreeNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in excludedParameters }
         .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
