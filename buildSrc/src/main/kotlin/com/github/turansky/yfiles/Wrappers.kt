@@ -536,6 +536,7 @@ internal class Method(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            preconditions = preconditions,
             parameters = parameters,
             typeparameters = typeparameters,
             returns = returns,
