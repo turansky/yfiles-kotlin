@@ -19,7 +19,7 @@ internal fun fixNullability(source: Source) {
 }
 
 private fun fixConstructorNullability(source: Source) {
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number"
     )
@@ -40,7 +40,7 @@ private fun fixConstructorNullability(source: Source) {
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     source.types(
@@ -77,7 +77,7 @@ private fun fixConstructorNullability(source: Source) {
 }
 
 private fun fixCollectionsNullability(source: Source) {
-    val INCLUDED_METHOD_IDS = setOf(
+    val includedMethodIds = setOf(
         "YList-method-addAll(number,yfiles.collections.ICollection)"
     )
 
@@ -131,12 +131,12 @@ private fun fixCollectionsNullability(source: Source) {
         "succCell"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number"
     )
 
-    val EXCLUDED_PARAMETERS = setOf(
+    val excludedParameters = setOf(
         "match"
     )
 
@@ -148,7 +148,7 @@ private fun fixCollectionsNullability(source: Source) {
         }
 
         return (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filter { it.getString(J_ID) in INCLUDED_METHOD_IDS || it.getString(J_NAME) in includedMethods }
+            .filter { it.getString(J_ID) in includedMethodIds || it.getString(J_NAME) in includedMethods }
     }
 
     source.types(
@@ -171,8 +171,8 @@ private fun fixCollectionsNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
-        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it.getString(J_NAME) in excludedParameters }
         .forEach { it.changeNullability(false) }
 }
 
@@ -188,7 +188,7 @@ private fun fixGraphNullability(source: Source) {
         "isDescendant"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number"
     )
@@ -204,7 +204,7 @@ private fun fixGraphNullability(source: Source) {
         .filter { it.getString(J_NAME) in INCLUDED_METHODS }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -224,7 +224,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "ShortestPaths-method-uniform(yfiles.algorithms.Graph,yfiles.algorithms.Node,boolean,Array<number>,Array<yfiles.algorithms.Edge>)"
     )
 
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "AffineLine",
 
         "simple",
@@ -248,7 +248,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "compareTo"
     )
 
-    val EXCLUDED_PARAMETERS = setOf(
+    val excludedParameters = setOf(
         "edgeCosts",
         "edgeWeights",
 
@@ -259,7 +259,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "reverseEdgeMap"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number",
 
@@ -296,17 +296,17 @@ private fun fixAlgorithmsNullability(source: Source) {
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
         .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+        .filterNot { it.getString(J_NAME) in excludedMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_NAME) in excludedParameters }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .plus(type.optJsequence(J_CONSTRUCTORS))
             .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "AffineLine",
@@ -330,10 +330,10 @@ private fun fixAlgorithmsNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 
-    val Y_METHOD_IDS = setOf(
+    val yMethodIds = setOf(
         "YOrientedRectangle-method-contains(yfiles.algorithms.YOrientedRectangle,number,number,number)",
         "YOrientedRectangle-constructor-YOrientedRectangle(yfiles.algorithms.YPoint,yfiles.algorithms.YDimension)",
         "YOrientedRectangle-constructor-YOrientedRectangle(yfiles.algorithms.YPoint,yfiles.algorithms.YDimension,yfiles.algorithms.YVector)",
@@ -341,7 +341,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "YVector-method-add"
     )
 
-    val Y_METHODS = setOf(
+    val yMethods = setOf(
         "adoptValues",
         "calcPoints",
         "calcPointsInDouble",
@@ -358,9 +358,9 @@ private fun fixAlgorithmsNullability(source: Source) {
         "YOrientedRectangle",
         "YVector"
     ).flatMap { it.jsequence(J_METHODS) + it.jsequence(J_STATIC_METHODS) + it.jsequence(J_CONSTRUCTORS) }
-        .filter { it.getString(J_ID) in Y_METHOD_IDS || it.getString(J_NAME) in Y_METHODS }
+        .filter { it.getString(J_ID) in yMethodIds || it.getString(J_NAME) in yMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -370,7 +370,7 @@ private fun fixLayoutNullability(source: Source) {
         "LayoutGraphUtilities-method-getBoundingBox(yfiles.layout.LayoutGraph,yfiles.algorithms.Edge)"
     )
 
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "getLabelLayout",
         "getLayout",
 
@@ -386,7 +386,7 @@ private fun fixLayoutNullability(source: Source) {
         "SliderEdgeLabelLayoutModel"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number",
 
@@ -414,15 +414,15 @@ private fun fixLayoutNullability(source: Source) {
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
         .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+        .filterNot { it.getString(J_NAME) in excludedMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.optJsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .plus(type.optJsequence(J_CONSTRUCTORS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "LayoutGraph",
@@ -462,24 +462,24 @@ private fun fixLayoutNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
 private fun fixCommonLayoutNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "applyLayout",
         "applyLayoutCore"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "SequentialLayout",
@@ -497,17 +497,17 @@ private fun fixCommonLayoutNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
 private fun fixStageNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "applyLayout",
         "applyLayoutCore"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number",
 
@@ -516,7 +516,7 @@ private fun fixStageNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "BendConverter",
@@ -539,24 +539,24 @@ private fun fixStageNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
 private fun fixMultipageNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "applyLayout",
         "applyLayoutCore"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "IElementFactory",
@@ -570,7 +570,7 @@ private fun fixMultipageNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -580,19 +580,19 @@ private fun fixHierarchicNullability(source: Source) {
         "HierarchicLayout-defaultmethod-createSequenceConstraintFactory(yfiles.graph.IGraph)"
     )
 
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "applyLayout",
         "applyLayoutCore"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number",
 
         "yfiles.hierarchic.NodeDataType"
     )
 
-    val EXCLUDED_PARAMETERS = setOf(
+    val excludedParameters = setOf(
         "laneDescriptor",
 
         "left",
@@ -605,7 +605,7 @@ private fun fixHierarchicNullability(source: Source) {
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "IItemFactory",
@@ -658,40 +658,40 @@ private fun fixHierarchicNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_NAME) in excludedParameters }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
 private fun fixRouterNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "applyLayout",
         "applyLayoutCore",
 
         "getEdgeInfo"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number",
 
         "yfiles.router.ChannelOrientation"
     )
 
-    val EXCLUDED_PARAMETERS = setOf<String>()
+    val excludedParameters = setOf<String>()
 
     source.types(
         "BusRepresentations"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
-        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+        .filterNot { it.getString(J_NAME) in excludedMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.optJsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
             .let {
                 if (type.getString(J_NAME).endsWith("Router")) {
                     it
@@ -741,18 +741,18 @@ private fun fixRouterNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_NAME) in excludedParameters }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
 private fun fixTreeNullability(source: Source) {
-    val EXCLUDED_METHODS = setOf(
+    val excludedMethods = setOf(
         "applyLayout",
         "applyLayoutCore"
     )
 
-    val EXCLUDED_TYPES = setOf(
+    val excludedTypes = setOf(
         "boolean",
         "number",
 
@@ -761,11 +761,11 @@ private fun fixTreeNullability(source: Source) {
         "yfiles.tree.SubtreeArrangement"
     )
 
-    val EXCLUDED_PARAMETERS = setOf<String>()
+    val excludedParameters = setOf<String>()
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+            .filterNot { it.getString(J_NAME) in excludedMethods }
 
     source.types(
         "IProcessor",
@@ -806,7 +806,7 @@ private fun fixTreeNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in EXCLUDED_PARAMETERS }
-        .filterNot { it.getString(J_TYPE) in EXCLUDED_TYPES }
+        .filterNot { it.getString(J_NAME) in excludedParameters }
+        .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
