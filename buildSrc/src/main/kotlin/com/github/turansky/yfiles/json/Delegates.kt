@@ -53,11 +53,14 @@ internal open class ArrayDelegate<T>(
     }
 }
 
-internal class StringArrayDelegate : JsonDelegate<List<String>>() {
+internal class StringArrayDelegate(
+    private val transform: ((String) -> String)? = null
+) : JsonDelegate<List<String>>() {
     companion object {
         fun value(
             source: JSONObject,
-            key: String
+            key: String,
+            transform: ((String) -> String)? = null
         ): List<String> {
             if (!source.has(key)) {
                 return emptyList()
@@ -73,7 +76,12 @@ internal class StringArrayDelegate : JsonDelegate<List<String>>() {
             for (i in 0..length - 1) {
                 list.add(array.getString(i))
             }
-            return list.toList()
+
+            return if (transform != null) {
+                list.map(transform)
+            } else {
+                list.toList()
+            }
         }
     }
 
@@ -81,7 +89,7 @@ internal class StringArrayDelegate : JsonDelegate<List<String>>() {
         source: JSONObject,
         key: String
     ): List<String> {
-        return value(source, key)
+        return value(source, key, transform)
     }
 }
 
