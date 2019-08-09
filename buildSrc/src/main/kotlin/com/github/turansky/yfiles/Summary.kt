@@ -41,7 +41,7 @@ private fun String.fixMarkdown(): String {
         .replace("</b>", "**")
         .replace("<i>", "*")
         .replace("</i>", "*")
-        .replace("<ul><li>", "\n- ")
-        .replace("</li><li>", "\n- ")
+        .replace("<ul><li>", "\n$LIST_MARKER ")
+        .replace("</li><li>", "\n$LIST_MARKER ")
         .replace("</li></ul>", "")
 }

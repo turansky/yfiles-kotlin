@@ -1,12 +1,14 @@
 package com.github.turansky.yfiles
 
+const val LIST_MARKER = "-"
+
 // TODO: use Markdown after fix
 //  https://youtrack.jetbrains.com/issue/KT-32640
 fun link(text: String, href: String): String =
     """<a href="$href">$text</a>"""
 
 fun listItem(text: String): String =
-    "- $text"
+    "$LIST_MARKER $text"
 
 fun constructor(): String =
     "@constructor"
