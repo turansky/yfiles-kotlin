@@ -5,6 +5,9 @@ package com.github.turansky.yfiles
 fun link(text: String, href: String): String =
     """<a href="$href">$text</a>"""
 
+fun listItem(text: String): String =
+    "- $text"
+
 fun constructor(): String =
     "@constructor"
 

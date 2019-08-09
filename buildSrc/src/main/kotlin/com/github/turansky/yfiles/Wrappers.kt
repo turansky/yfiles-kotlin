@@ -992,18 +992,14 @@ private fun getDocumentationLines(
         ?.takeIf { it.isNotEmpty() }
         ?.let {
             lines.add("### Preconditions")
-            it.mapTo(lines) {
-                "- $it"
-            }
+            it.mapTo(lines, ::listItem)
         }
 
     postconditions
         ?.takeIf { it.isNotEmpty() }
         ?.let {
             lines.add("### Postconditions")
-            it.mapTo(lines) {
-                "- $it"
-            }
+            it.mapTo(lines, ::listItem)
         }
 
     typeparameters?.apply {
