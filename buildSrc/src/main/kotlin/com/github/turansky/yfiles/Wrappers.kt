@@ -340,13 +340,13 @@ private fun parseSeeAlso(source: JSONObject): SeeAlso =
     }
 
 internal class Modifiers(flags: List<String>) {
-    val static = flags.contains(STATIC)
-    val final = flags.contains(FINAL)
-    val readOnly = flags.contains(RO)
-    val abstract = flags.contains(ABSTRACT)
-    val protected = flags.contains(PROTECTED)
+    val static = STATIC in flags
+    val final = FINAL in flags
+    val readOnly = RO in flags
+    val abstract = ABSTRACT in flags
+    val protected = PROTECTED in flags
 
-    private val canbenull = flags.contains(CANBENULL)
+    private val canbenull = CANBENULL in flags
     val nullability = exp(canbenull, "?")
 }
 
@@ -669,12 +669,12 @@ internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
 }
 
 internal class ParameterModifiers(flags: List<String>) {
-    val artificial = flags.contains(ARTIFICIAL)
-    val vararg = flags.contains(VARARGS)
-    val optional = flags.contains(OPTIONAL)
-    val conversion = flags.contains(CONVERSION)
+    val artificial = ARTIFICIAL in flags
+    val vararg = VARARGS in flags
+    val optional = OPTIONAL in flags
+    val conversion = CONVERSION in flags
 
-    private val canbenull = flags.contains(CANBENULL)
+    private val canbenull = CANBENULL in flags
     val nullability = exp(canbenull, "?")
 }
 
@@ -788,8 +788,8 @@ private class EventListener(
 }
 
 internal class EventListenerModifiers(flags: List<String>) {
-    val public = flags.contains(PUBLIC)
-    val abstract = flags.contains(ABSTRACT)
+    val public = PUBLIC in flags
+    val abstract = ABSTRACT in flags
 }
 
 private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate<String>() {
