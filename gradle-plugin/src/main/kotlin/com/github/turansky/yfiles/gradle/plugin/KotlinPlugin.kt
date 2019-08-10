@@ -20,11 +20,8 @@ class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
         variantData: Any?,
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
-    ): List<SubpluginOption> {
-        println("Hallo from yFiles subplugin!")
-
-        return emptyList()
-    }
+    ): List<SubpluginOption> =
+        emptyList()
 
     override fun getCompilerPluginId(): String =
         "com.github.turansky.yfiles"
