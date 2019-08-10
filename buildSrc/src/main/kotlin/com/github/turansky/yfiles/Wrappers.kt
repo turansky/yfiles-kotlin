@@ -86,7 +86,7 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
             ""
         }
         val parameters = parameters
-            .byComma { it.toCode() }
+            .byCommaLine { it.toCode() }
         val returns = returns?.toCode() ?: UNIT
 
         val data = GeneratorData(classId)
