@@ -24,6 +24,7 @@ dependencies {
     implementation(kotlin("gradle-plugin-api"))
 
     implementation(kotlin("stdlib"))
+    compileOnly(kotlin("compiler-embeddable"))
 }
 
 gradlePlugin {
