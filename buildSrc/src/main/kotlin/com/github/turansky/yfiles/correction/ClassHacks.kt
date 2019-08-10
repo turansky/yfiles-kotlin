@@ -2,11 +2,13 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.CANBENULL
 import com.github.turansky.yfiles.YCLASS
+import com.github.turansky.yfiles.json.firstWithName
 
 internal fun applyClassHacks(source: Source) {
     addClassGeneric(source)
     addConstructorClassGeneric(source)
     addMethodClassGeneric(source)
+    addMapperMetadataGeneric(source)
 
     removeUnusedTypeParameters(source)
 }
@@ -134,10 +136,6 @@ private fun addConstructorClassGeneric(source: Source) {
     source.types()
         .forEach { type ->
             val typeName = type.getString(J_NAME)
-            if (typeName == "MapperMetadata") {
-                return@forEach
-            }
-
             type.optionalArray(J_CONSTRUCTORS)
                 .optionalArray(J_PARAMETERS)
                 .filter { it.getString(J_TYPE) == YCLASS }
@@ -178,13 +176,59 @@ private fun addMethodClassGeneric(source: Source) {
             firstParameter.put(J_TYPE, "T")
             secondParameter.addGeneric("T")
         }
+}
 
-    source.type("MapperMetadata")
-        .staticMethod("create")
+private fun addMapperMetadataGeneric(source: Source) {
+    val type = source.type("MapperMetadata")
+
+    type.setTypeParameters("TKey", "TValue")
+
+    type.jsequence(J_CONSTRUCTORS)
+        .jsequence(J_PARAMETERS)
+        .filter { it.getString(J_NAME) == "metadata" }
+        .forEach { it.addGeneric("TKey,TValue") }
+
+    type.jsequence(J_PROPERTIES)
+        .forEach {
+            when (it.getString(J_NAME)) {
+                "keyType" -> it.addGeneric("TKey")
+                "valueType" -> it.addGeneric("TValue")
+            }
+        }
+
+    type.staticMethod("create")
         .apply {
             parameter("keyType").addGeneric("TKey")
             parameter("valueType").addGeneric("TValue")
+
+            getJSONObject(J_RETURNS)
+                .addGeneric("TKey,TValue")
         }
+
+    source.type("MapperOutputHandler")
+        .getJSONArray(J_PROPERTIES)
+        .firstWithName("mapperMetadata")
+        .addGeneric("TKey,TData")
+
+    source.types(
+        "IMapperRegistry",
+        "MapperRegistry"
+    ).forEach {
+        val methods = it.getJSONArray(J_METHODS)
+        methods.firstWithName("getMapperMetadata")
+            .apply {
+                setTypeParameters("K", "V")
+                getJSONObject(J_RETURNS)
+                    .addGeneric("K,V")
+            }
+
+        methods.firstWithName("setMapperMetadata")
+            .apply {
+                setTypeParameters("K", "V")
+                parameter("metadata")
+                    .addGeneric("K,V")
+            }
+    }
 }
 
 private fun removeUnusedTypeParameters(source: Source) {

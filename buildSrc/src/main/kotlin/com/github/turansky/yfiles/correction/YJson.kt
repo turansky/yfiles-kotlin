@@ -87,6 +87,19 @@ internal fun JSONObject.setSingleTypeParameter(name: String = "T") {
     )
 }
 
+internal fun JSONObject.setTypeParameters(
+    name1: String,
+    name2: String
+) {
+    put(
+        J_TYPE_PARAMETERS,
+        jArray(
+            jObject(J_NAME to name1),
+            jObject(J_NAME to name2)
+        )
+    )
+}
+
 internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
     getJSONArray(name)
         .asSequence()
