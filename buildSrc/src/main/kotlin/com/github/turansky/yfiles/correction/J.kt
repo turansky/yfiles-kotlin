@@ -24,3 +24,6 @@ val J_NAME = "name"
 val J_TYPE = "type"
 val J_SIGNATURE = "signature"
 val J_MODIFIERS = "modifiers"
+
+val J_DEFAULT = "y.default"
+val J_VALUE = "value"

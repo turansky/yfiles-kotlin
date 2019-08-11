@@ -5,6 +5,7 @@ import org.json.JSONObject
 
 internal fun fixNullability(source: Source) {
     fixConstructorNullability(source)
+    fixPropertyNullability(source)
 
     fixCollectionsNullability(source)
     fixGraphNullability(source)
@@ -74,6 +75,22 @@ private fun fixConstructorNullability(source: Source) {
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
+}
+
+private fun fixPropertyNullability(source: Source) {
+    fun JSONObject.hasNullDefaultValue(): Boolean {
+        if (!has(J_DEFAULT)) {
+            return false
+        }
+
+        val default = getJSONObject(J_DEFAULT)
+        return default.has(J_VALUE) && default.getString(J_VALUE) == "null"
+    }
+
+    source.types()
+        .flatMap { it.optJsequence(J_PROPERTIES) }
+        .filter { it.getString(J_NAME) == "coreLayout" || it.hasNullDefaultValue() }
+        .forEach { it.changeNullability(true) }
 }
 
 private fun fixCollectionsNullability(source: Source) {
