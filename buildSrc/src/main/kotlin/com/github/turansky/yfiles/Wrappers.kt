@@ -107,7 +107,11 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IPa
 
     // TODO: remove temp nullability fix
     override fun toCode(): String {
-        return "$name: $type" + exp(type == ANY, "?")
+        val nullable = type == ANY
+                && name != "source"
+                && name != "sender"
+
+        return "$name: $type" + exp(nullable, "?")
     }
 }
 
