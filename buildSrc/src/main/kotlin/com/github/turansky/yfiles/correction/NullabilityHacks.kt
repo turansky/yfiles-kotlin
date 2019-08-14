@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.YCLASS
 import org.json.JSONObject
 
@@ -9,6 +10,7 @@ internal fun fixNullability(source: Source) {
 
     fixCollectionsNullability(source)
     fixGraphNullability(source)
+    fixGraphmlNullability(source)
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
     fixCommonLayoutNullability(source)
@@ -222,6 +224,29 @@ private fun fixGraphNullability(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .forEach { it.changeNullability(false) }
+}
+
+private fun fixGraphmlNullability(source: Source) {
+    val EXCLUDED_METHODS = setOf(
+        "onGraphMLParserHandleDeserialization",
+        "onGraphMLParserQueryInputHandlers",
+        "registerNodeStyleOutputHandler"
+    )
+
+    val INCLUDED_PARAMETERS = setOf(
+        "sender",
+        "source"
+    )
+
+    source.types(
+        "GraphMLIOHandler"
+    ).flatMap { it.jsequence(J_METHODS) }
+        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filter { it.getString(J_NAME) in INCLUDED_PARAMETERS }
+        .filter { it.getString(J_TYPE) == JS_OBJECT }
         .forEach { it.changeNullability(false) }
 }
 
