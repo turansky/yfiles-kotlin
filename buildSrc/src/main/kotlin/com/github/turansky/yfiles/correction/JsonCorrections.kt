@@ -190,7 +190,9 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("HighlightIndicatorManager", "addHighlight", "item") to false,
     ParameterData("HighlightIndicatorManager", "removeHighlight", "item") to false,
     ParameterData("SelectionIndicatorManager", "addSelection", "item") to false,
-    ParameterData("SelectionIndicatorManager", "removeSelection", "item") to false
+    ParameterData("SelectionIndicatorManager", "removeSelection", "item") to false,
+
+    ParameterData("ItemModelManager", "itemAddedHandler", "source") to false
 )
 
 internal val MODEL_MANAGER_ITEM_METHODS = setOf(
