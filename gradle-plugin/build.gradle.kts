@@ -3,7 +3,7 @@ version = "0.0.1-SNAPSHOT"
 
 plugins {
     id("java-gradle-plugin")
-    kotlin("jvm") version "1.3.50-eap-54"
+    kotlin("jvm") version "1.3.50-eap-86"
 }
 
 repositories {
