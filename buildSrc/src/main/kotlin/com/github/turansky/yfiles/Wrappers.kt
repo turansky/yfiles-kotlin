@@ -373,7 +373,7 @@ internal abstract class TypedDeclaration(
 }
 
 internal class Constructor(source: JSONObject) : MethodBase(source) {
-    val protected = modifiers.protected
+    private val protected = modifiers.protected
 
     override val overridden: Boolean = false
 
@@ -444,12 +444,12 @@ internal class Property(
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
     val static = modifiers.static
-    val protected = modifiers.protected
-    val getterSetter = !modifiers.readOnly
+    private val protected = modifiers.protected
+    private val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
-    val final = modifiers.final
-    val open = !static && !final
+    private val final = modifiers.final
+    private val open = !static && !final
 
     private val preconditions: List<String> by StringArrayDelegate(::summary)
 
@@ -521,13 +521,13 @@ internal class Method(
     private val parent: TypeDeclaration? = null
 ) : MethodBase(source) {
     val abstract = modifiers.abstract
-    val static = modifiers.static
-    val protected = modifiers.protected
+    private val static = modifiers.static
+    private val protected = modifiers.protected
 
-    val final = modifiers.final
-    val open = !static && !final
+    private val final = modifiers.final
+    private val open = !static && !final
 
-    val isExtension by BooleanDelegate()
+    private val isExtension by BooleanDelegate()
 
     private val postconditions: List<String> by StringArrayDelegate(::summary)
 
