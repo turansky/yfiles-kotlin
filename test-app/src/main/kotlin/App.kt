@@ -15,7 +15,7 @@ fun create(): HTMLDivElement =
             backgroundColor = "#CCCCCC"
         }
 
-        graph = DefaultGraph().apply {
+        graph = DefaultGraph {
             val node1 = createNode()
             val node2 = createNode()
             createEdge(node1, node2)
