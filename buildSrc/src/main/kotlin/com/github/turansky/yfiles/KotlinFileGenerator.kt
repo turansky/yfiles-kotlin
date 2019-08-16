@@ -215,16 +215,6 @@ internal class KotlinFileGenerator(
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
         override val useJsName = data.primitive
 
-        private fun type(): String {
-            val modificator = if (memberFunctions.any { it.abstract } || memberProperties.any { it.abstract }) {
-                "abstract"
-            } else {
-                declaration.kotlinModificator
-            }
-
-            return modificator + " class"
-        }
-
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
@@ -264,7 +254,7 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
-                    "external ${type()} $classDeclaration $primaryConstructor ${parentString()} {\n" +
+                    "external ${declaration.kotlinModificator} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
