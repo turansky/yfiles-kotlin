@@ -294,7 +294,7 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
-            if (isObject() || data.primitive || data.packageName == "yfiles.lang" || data.name.endsWith("Args")) {
+            if (isObject() || data.primitive) {
                 return null
             }
 
