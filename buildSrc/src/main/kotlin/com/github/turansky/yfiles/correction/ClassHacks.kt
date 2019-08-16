@@ -14,8 +14,14 @@ internal fun applyClassHacks(source: Source) {
 }
 
 private fun addClassGeneric(source: Source) {
-    source.type("Class")
-        .setSingleTypeParameter()
+    source.type("Class").apply {
+        setSingleTypeParameter()
+
+        getJSONArray(J_METHODS)
+            .firstWithName("newInstance")
+            .getJSONObject(J_RETURNS)
+            .put(J_TYPE, "T")
+    }
 
     source.allMethods(
         "lookup",
