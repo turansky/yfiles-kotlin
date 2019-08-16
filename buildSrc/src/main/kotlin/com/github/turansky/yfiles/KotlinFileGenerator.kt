@@ -288,20 +288,22 @@ internal class KotlinFileGenerator(
                 return null
             }
 
-            val content = typealiasDeclaration()
+            var content = listOfNotNull(
+                typealiasDeclaration(),
+                declaration.toConstructorMethodCode()
+            )
 
             val events = memberEvents
                 .filter { !it.overriden }
 
-            if (events.isEmpty()) {
-                return content
+            if (events.isNotEmpty()) {
+                content = content + events.lines { it.toExtensionCode() }
             }
 
-            val eventContent = events.lines { it.toExtensionCode() }
-            return if (content != null) {
-                "$content\n\n$eventContent"
+            return if (content.isNotEmpty()) {
+                content.joinToString("\n\n")
             } else {
-                eventContent
+                null
             }
         }
     }

@@ -211,6 +211,33 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 
     override val additionalDocumentation: String?
         get() = primaryConstructor?.getPrimaryDocumentation()
+
+    fun toConstructorMethodCode(): String? {
+        if (abstract || typeparameters.isNotEmpty()) {
+            return null
+        }
+
+        if (primaryConstructor == null || secondaryConstructors.isNotEmpty()) {
+            return null
+        }
+
+        if (!primaryConstructor.options || !primaryConstructor.parameters.all { it.modifiers.optional }) {
+            return null
+        }
+
+        if (extendedType() == null && properties.none { it.getterSetter }) {
+            return null
+        }
+
+        return """
+            |inline fun $name(
+            |    block: $name.() -> Unit
+            |): $name {
+            |    return $name()
+            |        .apply(block)
+            |}
+        """.trimMargin()
+    }
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
@@ -445,7 +472,7 @@ internal class Property(
 ) : TypedDeclaration(source, parent) {
     val static = modifiers.static
     private val protected = modifiers.protected
-    private val getterSetter = !modifiers.readOnly
+    val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract
     private val final = modifiers.final
