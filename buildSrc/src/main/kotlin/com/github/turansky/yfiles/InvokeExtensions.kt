@@ -21,7 +21,9 @@ fun invokeExtension(
     }
 
     return """
-        |inline operator fun $className.invoke(block: $className.() -> Unit) {
+        |inline operator fun $className.invoke(
+        |    block: $className.() -> Unit
+        |) {
         |   block(this)
         |}
     """.trimMargin()
