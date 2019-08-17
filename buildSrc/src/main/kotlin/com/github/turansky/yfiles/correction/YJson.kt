@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.CANBENULL
-import com.github.turansky.yfiles.FINAL
-import com.github.turansky.yfiles.PUBLIC
-import com.github.turansky.yfiles.RO
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jArray
 import com.github.turansky.yfiles.json.jObject
@@ -65,14 +62,20 @@ internal fun JSONObject.addProperty(
         )
 }
 
-internal fun JSONObject.changeNullability(nullable: Boolean) {
+internal fun JSONObject.changeNullability(nullable: Boolean) =
+    changeModifier(CANBENULL, nullable)
+
+internal fun JSONObject.changeOptionality(optional: Boolean) =
+    changeModifier(OPTIONAL, optional)
+
+private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
     val modifiers = getJSONArray(J_MODIFIERS)
-    val index = modifiers.indexOf(CANBENULL)
+    val index = modifiers.indexOf(modifier)
 
-    require((index == -1) == nullable)
+    require((index == -1) == value)
 
-    if (nullable) {
-        modifiers.put(CANBENULL)
+    if (value) {
+        modifiers.put(modifier)
     } else {
         modifiers.remove(index)
     }
