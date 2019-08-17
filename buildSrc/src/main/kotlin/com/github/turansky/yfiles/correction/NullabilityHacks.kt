@@ -761,6 +761,7 @@ private fun fixRouterNullability(source: Source) {
         "DynamicObstacleDecomposition",
 
         "BusRouterBusDescriptor",
+        "Channel",
         "CellSegmentInfo",
         "EdgeCellInfo",
         "EdgeInfo",
