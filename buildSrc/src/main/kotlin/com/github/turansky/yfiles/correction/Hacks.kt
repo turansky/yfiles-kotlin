@@ -43,7 +43,7 @@ internal fun applyHacks(api: JSONObject) {
     applyClassHacks(source)
     applyComparableHacks(source)
 
-    mergeConstructors(source)
+    fixConstructors(source)
 }
 
 private fun removeUnusedFunctionSignatures(source: Source) {

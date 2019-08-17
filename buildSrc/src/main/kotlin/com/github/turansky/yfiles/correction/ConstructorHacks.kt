@@ -4,9 +4,27 @@ import com.github.turansky.yfiles.OPTIONAL
 import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
-internal fun mergeConstructors(source: Source) {
+internal fun fixConstructors(source: Source) {
     source.types()
         .forEach(::mergeConstructors)
+
+    fixOptionality(source)
+}
+
+private fun fixOptionality(source: Source) {
+    source.types(
+        "BendDecorator",
+        "EdgeDecorator",
+        "LabelDecorator",
+        "NodeDecorator",
+        "PortDecorator",
+        "StripeLabelDecorator"
+    ).forEach {
+        it.jsequence(J_CONSTRUCTORS)
+            .single()
+            .firstParameter
+            .changeOptionality(true)
+    }
 }
 
 private fun mergeConstructors(type: JSONObject) {
