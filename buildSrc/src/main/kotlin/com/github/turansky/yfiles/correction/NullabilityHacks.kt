@@ -39,12 +39,22 @@ private fun fixConstructorNullability(source: Source) {
 
         "MapEntry",
 
-        "CompositeLayoutStage"
+        "GraphWrapperBase",
+        "CompositeLayoutStage",
+
+        "AspectRatioComponentLayerer",
+        "ConstraintIncrementalLayerer"
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
         .filterNot { it.getString(J_TYPE) in excludedTypes }
         .forEach { it.changeNullability(false) }
+
+    source.type("MultiComponentLayerer")
+        .jsequence(J_CONSTRUCTORS)
+        .single()
+        .firstParameter
+        .changeNullability(false)
 
     source.types(
         "LookupDecorator",
