@@ -25,6 +25,19 @@ private fun fixOptionality(source: Source) {
             .firstParameter
             .changeOptionality(true)
     }
+
+    source.types(
+        "BendConverter",
+        "MinimumNodeSizeStage",
+        "MultiPageLayout",
+        "OrganicPartitionGridLayoutStage",
+        "TreeComponentLayout"
+    ).jsequence(J_CONSTRUCTORS)
+        .filter { it.has(J_PARAMETERS) }
+        .filter { it.getJSONArray(J_PARAMETERS).length() == 1 }
+        .map { it.firstParameter }
+        .filter { it.getString(J_NAME).contains("core") }
+        .forEach { it.changeOptionality(true) }
 }
 
 private fun mergeConstructors(type: JSONObject) {
