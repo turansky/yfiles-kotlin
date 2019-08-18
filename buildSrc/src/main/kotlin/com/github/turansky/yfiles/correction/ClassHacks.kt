@@ -270,7 +270,16 @@ private fun addClassBounds(source: Source) {
         "TableItemTappedEventArgs",
 
         "IGridConstraintProvider",
-        "GridConstraintProvider"
+        "GridConstraintProvider",
+
+        "IHitTester"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
         .forEach { it.put(J_BOUNDS, arrayOf(IMODEL_ITEM)) }
+
+    source.type("GraphModelManager")
+        .jsequence(J_METHODS)
+        .first { it.getString(J_NAME) == "createHitTester" }
+        .jsequence(J_TYPE_PARAMETERS)
+        .single()
+        .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
 }
