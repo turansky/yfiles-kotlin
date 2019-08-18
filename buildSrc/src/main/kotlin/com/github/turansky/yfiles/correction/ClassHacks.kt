@@ -272,7 +272,9 @@ private fun addClassBounds(source: Source) {
         "IGridConstraintProvider",
         "GridConstraintProvider",
 
-        "IHitTester"
+        "IHitTester",
+
+        "ItemDropInputMode"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
         .forEach { it.put(J_BOUNDS, arrayOf(IMODEL_ITEM)) }
 
