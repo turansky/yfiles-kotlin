@@ -88,9 +88,6 @@ internal class KotlinFileGenerator(
         val data = es6GeneratorData(declaration)
         open val useJsName = false
 
-        private val typeparameters: List<TypeParameter>
-            get() = declaration.typeparameters
-
         protected val properties: List<Property>
             get() = declaration.properties
 
@@ -166,7 +163,7 @@ internal class KotlinFileGenerator(
         }
 
         fun genericParameters(): String {
-            return declaration.genericParameters()
+            return declaration.generics.declaration
         }
 
         protected fun getGeneric(): String {
@@ -175,10 +172,7 @@ internal class KotlinFileGenerator(
                 generic = ANY
             }
 
-            if (typeparameters.isNotEmpty()) {
-                generic += "<" + (1..typeparameters.size).map { "*" }.joinToString(",") + ">"
-            }
-            return generic
+            return generic + declaration.generics.placeholder
         }
 
         protected fun yclass() =

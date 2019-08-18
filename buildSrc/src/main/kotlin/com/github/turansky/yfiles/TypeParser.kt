@@ -40,14 +40,6 @@ internal fun parseType(type: String): String {
     return "$mainType<$generics>"
 }
 
-internal fun getGenericString(parameters: List<TypeParameter>): String {
-    return if (parameters.isNotEmpty()) {
-        "<${parameters.byComma { it.toCode() }}> "
-    } else {
-        ""
-    }
-}
-
 // TODO: optimize calculation
 private fun parseGenericParameters(parameters: String): List<String> {
     if (!parameters.contains(GENERIC_START)) {

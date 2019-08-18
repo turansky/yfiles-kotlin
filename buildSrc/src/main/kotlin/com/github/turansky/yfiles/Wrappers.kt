@@ -136,7 +136,7 @@ internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IRetu
 internal interface TypeDeclaration : HasClassId {
     val docId: String
     val classDeclaration: String
-    val typeparameters: List<TypeParameter>
+    val generics: Generics
 }
 
 internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclaration {
@@ -153,7 +153,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val methods: List<Method> by DeclarationArrayDelegate { Method(it, this) }
     val staticMethods: List<Method> by DeclarationArrayDelegate { Method(it) }
 
-    override val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    override val generics: Generics = Generics(typeparameters)
 
     private val extends: String? by NullableStringDelegate()
     private val implements: List<String> by StringArrayDelegate()
@@ -161,7 +162,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val relatedDemos: List<Demo> by ArrayDelegate(::Demo)
 
     final override val docId: String = es6name ?: name
-    override val classDeclaration = name + genericParameters()
+    override val classDeclaration = name + generics.declaration
 
     private val seeAlsoDoc: SeeAlso = SeeAlsoDoc(docId)
 
@@ -175,10 +176,6 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
             seeAlso = seeAlso + seeAlsoDoc,
             additionalDocumentation = additionalDocumentation
         )
-
-    fun genericParameters(): String {
-        return getGenericString(typeparameters)
-    }
 
     fun extendedType(): String? {
         val type = extends ?: return null
@@ -213,7 +210,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         get() = primaryConstructor?.getPrimaryDocumentation()
 
     fun toConstructorMethodCode(): String? {
-        if (abstract || typeparameters.isNotEmpty()) {
+        if (abstract || generics.isNotEmpty()) {
             return null
         }
 
@@ -524,7 +521,7 @@ internal class Property(
         require(!protected)
         requireNotNull(parent)
 
-        val generics = getGenericString(parent.typeparameters)
+        val generics = parent.generics.declaration
 
         var str = "inline " + if (getterSetter) "var " else "val "
         str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
@@ -558,13 +555,12 @@ internal class Method(
 
     private val postconditions: List<String> by StringArrayDelegate(::summary)
 
-    val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    val generics: Generics = Generics(typeparameters)
+
     val returns: Returns? by ReturnsDelegate()
 
     private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
-
-    val generics: String
-        get() = getGenericString(typeparameters)
 
     override val overridden: Boolean
         get() = !static && ClassRegistry.instance.functionOverridden(parent!!.classId, name)
@@ -634,7 +630,7 @@ internal class Method(
         )
 
         return documentation +
-                "${kotlinModificator()} $operator fun $generics$name(${kotlinParametersString()})${getReturnSignature()}"
+                "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
     }
 
     override fun toExtensionCode(): String {
@@ -647,11 +643,11 @@ internal class Method(
 
         val returnSignature = getReturnSignature()
 
-        val generics = getGenericString(parent.typeparameters + typeparameters)
+        val genericDeclaration = (parent.generics + generics).declaration
         val returnOperator = exp(returns != null, "return ")
 
         return documentation +
-                "inline fun $generics ${parent.classDeclaration}.$name($extParameters)$returnSignature {\n" +
+                "inline fun $genericDeclaration ${parent.classDeclaration}.$name($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$name($callParameters)\n" +
                 "}"
     }
@@ -735,6 +731,28 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
         }
 }
 
+internal class Generics(private val parameters: List<TypeParameter>) {
+    val declaration: String
+        get() = if (parameters.isNotEmpty()) {
+            "<${parameters.byComma { it.toCode() }}> "
+        } else {
+            ""
+        }
+
+    val placeholder: String
+        get() = if (parameters.isNotEmpty()) {
+            "<" + (1..parameters.size).map { "*" }.joinToString(",") + ">"
+        } else {
+            ""
+        }
+
+    fun isNotEmpty(): Boolean =
+        parameters.isNotEmpty()
+
+    operator fun plus(other: Generics): Generics =
+        Generics(parameters + other.parameters)
+}
+
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by NullableStringDelegate()
     val type: String by TypeDelegate { parse(it, signature) }
@@ -771,7 +789,7 @@ internal class Event(
     }
 
     override fun toExtensionCode(): String {
-        val generics = getGenericString(parent.typeparameters)
+        val generics = parent.generics.declaration
         val extensionName = "add${name}Handler"
 
         val listenerType = add.parameters.single().type
