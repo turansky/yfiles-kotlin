@@ -295,8 +295,7 @@ private fun addClassBounds(source: Source) {
 
 private fun addTypeParameterBounds(source: Source) {
     source.types()
-        .filter { it.has(J_METHODS) }
-        .jsequence(J_METHODS)
+        .flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .filter { it.has(J_TYPE_PARAMETERS) }
         .forEach {
             val classParameters = it.jsequence(J_PARAMETERS)
