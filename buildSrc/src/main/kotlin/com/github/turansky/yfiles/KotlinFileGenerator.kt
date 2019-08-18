@@ -162,11 +162,10 @@ internal class KotlinFileGenerator(
             return ": " + parentTypes.byComma()
         }
 
-        fun genericParameters(): String {
-            return declaration.generics.declaration
-        }
+        protected val generics: Generics
+            get() = declaration.generics
 
-        protected fun getGeneric(): String {
+        private fun getGeneric(): String {
             var generic = data.name
             if (generic == JS_OBJECT) {
                 generic = ANY
@@ -183,7 +182,7 @@ internal class KotlinFileGenerator(
 
         protected fun typealiasDeclaration(): String? =
             if (data.name != data.jsName) {
-                val generics = genericParameters()
+                val generics = declaration.generics.declaration
                 "typealias ${data.jsName}$generics = ${data.name}$generics"
             } else {
                 null
@@ -336,7 +335,7 @@ internal class KotlinFileGenerator(
 
             content += interfaceCastExtensions(
                 className = data.name,
-                generics = genericParameters()
+                generics = generics
             )
 
             if (defaultDeclarations.isEmpty()) {
