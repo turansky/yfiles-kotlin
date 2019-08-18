@@ -88,16 +88,16 @@ internal class KotlinFileGenerator(
         val data = es6GeneratorData(declaration)
         open val useJsName = false
 
-        protected val properties: List<Property>
+        private val properties: List<Property>
             get() = declaration.properties
 
-        protected val staticConstants: List<Constant>
+        private val staticConstants: List<Constant>
             get() = declaration.constants
 
-        protected val staticProperties: List<Property>
+        private val staticProperties: List<Property>
             get() = declaration.staticProperties
 
-        protected val staticFunctions: List<Method>
+        private val staticFunctions: List<Method>
             get() = declaration.staticMethods
 
         protected val staticDeclarations: List<Declaration>
