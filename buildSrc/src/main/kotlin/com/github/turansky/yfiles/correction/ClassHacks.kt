@@ -296,8 +296,6 @@ private fun addClassBounds(source: Source) {
 
 private fun addTypeParameterBounds(source: Source) {
     source.types()
-        // TODO: support MapperMetadata
-        .filter { it.getString(J_NAME) != "MapperMetadata" }
         .filter { it.has(J_TYPE_PARAMETERS) }
         .filter { it.has(J_CONSTRUCTORS) }
         .forEach {
@@ -314,7 +312,6 @@ private fun addTypeParameterBounds(source: Source) {
                         val name = it.getString(J_NAME)
                         val bound = boundMap.get(name)
                         if (bound != null) {
-                            println("$name : $bound")
                             it.put(J_BOUNDS, arrayOf(bound))
                         }
                     }
@@ -340,6 +337,16 @@ private fun addTypeParameterBounds(source: Source) {
                         }
                     }
             }
+        }
+
+    source.types(
+        "IMapperRegistry",
+        "MapperRegistry"
+    ).jsequence(J_METHODS)
+        .filter { it.getString(J_NAME).contains("Metadata") }
+        .jsequence(J_TYPE_PARAMETERS)
+        .forEach {
+            it.put(J_BOUNDS, arrayOf(ANY))
         }
 }
 
