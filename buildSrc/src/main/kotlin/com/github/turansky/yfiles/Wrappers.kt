@@ -739,6 +739,13 @@ internal class Generics(private val parameters: List<TypeParameter>) {
             ""
         }
 
+    fun asParameters(): String =
+        if (parameters.isNotEmpty()) {
+            "<${parameters.byComma { it.name }}> "
+        } else {
+            ""
+        }
+
     val placeholder: String
         get() = if (parameters.isNotEmpty()) {
             "<" + (1..parameters.size).map { "*" }.joinToString(",") + ">"

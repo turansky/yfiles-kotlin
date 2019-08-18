@@ -285,7 +285,7 @@ internal class KotlinFileGenerator(
             var content = listOfNotNull(
                 typealiasDeclaration(),
                 declaration.toConstructorMethodCode(),
-                invokeExtension(declaration.name)
+                invokeExtension(declaration.name, declaration.generics)
             )
 
             val events = memberEvents

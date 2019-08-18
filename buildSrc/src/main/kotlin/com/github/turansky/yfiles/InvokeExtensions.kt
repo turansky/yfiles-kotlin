@@ -7,22 +7,23 @@ private val INVOKE_TARGETS = setOf(
     "LabelDecorator",
     "NodeDecorator",
     "PortDecorator",
-    // TODO: support
-    //  "StripeDecorator",
+    "StripeDecorator",
     "StripeLabelDecorator",
     "TableDecorator"
 )
 
-fun invokeExtension(
-    className: String
+internal fun invokeExtension(
+    className: String,
+    generics: Generics
 ): String? {
     if (className !in INVOKE_TARGETS) {
         return null
     }
 
+    val type = className + generics.asParameters()
     return """
-        |inline operator fun $className.invoke(
-        |    block: $className.() -> Unit
+        |inline operator fun ${generics.declaration} $type.invoke(
+        |    block: $type.() -> Unit
         |) {
         |   block(this)
         |}
