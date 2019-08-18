@@ -274,7 +274,14 @@ private fun addClassBounds(source: Source) {
 
         "IHitTester",
 
-        "ItemDropInputMode"
+        "ItemDropInputMode",
+
+        "ISelectionModel",
+        "DefaultSelectionModel",
+
+        // replace mode
+        "HighlightIndicatorManager",
+        "SelectionIndicatorManager"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
         .forEach { it.put(J_BOUNDS, arrayOf(IMODEL_ITEM)) }
 
