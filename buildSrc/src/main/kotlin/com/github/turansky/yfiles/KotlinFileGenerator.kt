@@ -145,7 +145,7 @@ internal class KotlinFileGenerator(
             }
 
         protected val classDeclaration
-            get() = declaration.classDeclaration
+            get() = declaration.name + declaration.generics.declaration
 
         protected val documentation
             get() = declaration.documentation
