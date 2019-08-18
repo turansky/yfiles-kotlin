@@ -1,8 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.CANBENULL
-import com.github.turansky.yfiles.IMODEL_ITEM
-import com.github.turansky.yfiles.YCLASS
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 
 internal fun applyClassHacks(source: Source) {
@@ -13,6 +11,8 @@ internal fun applyClassHacks(source: Source) {
 
     removeUnusedTypeParameters(source)
     addClassBounds(source)
+
+    addTypeParameterBounds(source)
 }
 
 private fun addClassGeneric(source: Source) {
@@ -291,4 +291,25 @@ private fun addClassBounds(source: Source) {
         .jsequence(J_TYPE_PARAMETERS)
         .single()
         .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
+}
+
+private fun addTypeParameterBounds(source: Source) {
+    source.types()
+        .filter { it.has(J_METHODS) }
+        .jsequence(J_METHODS)
+        .filter { it.has(J_TYPE_PARAMETERS) }
+        .forEach {
+            val classParameters = it.jsequence(J_PARAMETERS)
+                .map { it.getString(J_TYPE) }
+                .filter { it.startsWith("$YCLASS<") }
+                .map { between(it, "$YCLASS<", ">") }
+                .toSet()
+
+            if (classParameters.isNotEmpty()) {
+                it.jsequence(J_TYPE_PARAMETERS)
+                    .filter { it.getString(J_NAME) in classParameters }
+                    .filter { !it.has(J_BOUNDS) }
+                    .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+            }
+        }
 }
