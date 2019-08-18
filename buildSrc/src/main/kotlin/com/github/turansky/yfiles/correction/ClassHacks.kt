@@ -296,6 +296,32 @@ private fun addClassBounds(source: Source) {
 
 private fun addTypeParameterBounds(source: Source) {
     source.types()
+        // TODO: support MapperMetadata
+        .filter { it.getString(J_NAME) != "MapperMetadata" }
+        .filter { it.has(J_TYPE_PARAMETERS) }
+        .filter { it.has(J_CONSTRUCTORS) }
+        .forEach {
+            val boundMap = it.jsequence(J_CONSTRUCTORS)
+                .filter { it.has(J_PARAMETERS) }
+                .jsequence(J_PARAMETERS)
+                .mapNotNull { it.classBoundPair }
+                .toMap()
+
+            if (boundMap.isNotEmpty()) {
+                it.jsequence(J_TYPE_PARAMETERS)
+                    .filter { !it.has(J_BOUNDS) }
+                    .forEach {
+                        val name = it.getString(J_NAME)
+                        val bound = boundMap.get(name)
+                        if (bound != null) {
+                            println("$name : $bound")
+                            it.put(J_BOUNDS, arrayOf(bound))
+                        }
+                    }
+            }
+        }
+
+    source.types()
         .flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .filter { it.has(J_TYPE_PARAMETERS) }
         .forEach {
@@ -307,7 +333,8 @@ private fun addTypeParameterBounds(source: Source) {
                 it.jsequence(J_TYPE_PARAMETERS)
                     .filter { !it.has(J_BOUNDS) }
                     .forEach {
-                        val bound = boundMap.get(it.getString(J_NAME))
+                        val name = it.getString(J_NAME)
+                        val bound = boundMap.get(name)
                         if (bound != null) {
                             it.put(J_BOUNDS, arrayOf(bound))
                         }
@@ -319,20 +346,29 @@ private fun addTypeParameterBounds(source: Source) {
 private val JSONObject.classBoundPair: Pair<String, String>?
     get() {
         val type = getString(J_TYPE)
-        if (!type.startsWith("$YCLASS<")) {
-            return null
+        if (type.startsWith("$YCLASS<")) {
+            val generic = between(type, "$YCLASS<", ">")
+            if (generic.contains(".")) {
+                return null
+            }
+
+            val bound = when {
+                generic == "TModelItem" -> IMODEL_ITEM
+                getString(J_NAME) == "modelItemType" -> IMODEL_ITEM
+                else -> ANY
+            }
+
+            return generic to bound
         }
 
-        val generic = between(type, "$YCLASS<", ">")
-        if (generic.contains(".")) {
-            return null
+        if (type.contains("DpKey<")) {
+            val generic = between(type, "DpKey<", ">")
+            if (generic.contains(".")) {
+                return null
+            }
+
+            return generic to ANY
         }
 
-        val bound = when {
-            generic == "TModelItem" -> IMODEL_ITEM
-            getString(J_NAME) == "modelItemType" -> IMODEL_ITEM
-            else -> ANY
-        }
-
-        return generic to bound
+        return null
     }
