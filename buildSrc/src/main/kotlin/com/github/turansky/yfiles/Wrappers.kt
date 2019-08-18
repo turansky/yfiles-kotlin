@@ -141,7 +141,7 @@ internal interface TypeDeclaration : HasClassId {
 
 internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclaration {
     private val id: String by StringDelegate()
-    override val classId: ClassId = fixPackage(id)
+    final override val classId: ClassId = fixPackage(id)
 
     val es6name: String? by NullableStringDelegate()
 
@@ -154,7 +154,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val staticMethods: List<Method> by DeclarationArrayDelegate { Method(it) }
 
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
-    override val generics: Generics = Generics(typeparameters)
+    final override val generics: Generics = Generics(typeparameters)
 
     private val extends: String? by NullableStringDelegate()
     private val implements: List<String> by StringArrayDelegate()
@@ -162,7 +162,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val relatedDemos: List<Demo> by ArrayDelegate(::Demo)
 
     final override val docId: String = es6name ?: name
-    override val classDeclaration = name + generics.declaration
+    final override val classDeclaration = name + generics.asParameters()
 
     private val seeAlsoDoc: SeeAlso = SeeAlsoDoc(docId)
 
