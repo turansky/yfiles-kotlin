@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
+import org.json.JSONObject
 
 internal fun applyClassHacks(source: Source) {
     addClassGeneric(source)
@@ -298,17 +299,40 @@ private fun addTypeParameterBounds(source: Source) {
         .flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .filter { it.has(J_TYPE_PARAMETERS) }
         .forEach {
-            val classParameters = it.jsequence(J_PARAMETERS)
-                .map { it.getString(J_TYPE) }
-                .filter { it.startsWith("$YCLASS<") }
-                .map { between(it, "$YCLASS<", ">") }
-                .toSet()
+            val boundMap = it.jsequence(J_PARAMETERS)
+                .mapNotNull { it.classBoundPair }
+                .toMap()
 
-            if (classParameters.isNotEmpty()) {
+            if (boundMap.isNotEmpty()) {
                 it.jsequence(J_TYPE_PARAMETERS)
-                    .filter { it.getString(J_NAME) in classParameters }
                     .filter { !it.has(J_BOUNDS) }
-                    .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+                    .forEach {
+                        val bound = boundMap.get(it.getString(J_NAME))
+                        if (bound != null) {
+                            it.put(J_BOUNDS, arrayOf(bound))
+                        }
+                    }
             }
         }
 }
+
+private val JSONObject.classBoundPair: Pair<String, String>?
+    get() {
+        val type = getString(J_TYPE)
+        if (!type.startsWith("$YCLASS<")) {
+            return null
+        }
+
+        val generic = between(type, "$YCLASS<", ">")
+        if (generic.contains(".")) {
+            return null
+        }
+
+        val bound = when {
+            generic == "TModelItem" -> IMODEL_ITEM
+            getString(J_NAME) == "modelItemType" -> IMODEL_ITEM
+            else -> ANY
+        }
+
+        return generic to bound
+    }
