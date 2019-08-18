@@ -263,8 +263,14 @@ private fun addClassBounds(source: Source) {
                 }
         }
 
-    source.type("DpKeyItemCollection")
-        .jsequence(J_TYPE_PARAMETERS)
-        .single()
-        .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
+    source.types(
+        "DpKeyItemCollection",
+
+        "ItemTappedEventArgs",
+        "TableItemTappedEventArgs",
+
+        "IGridConstraintProvider",
+        "GridConstraintProvider"
+    ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
+        .forEach { it.put(J_BOUNDS, arrayOf(IMODEL_ITEM)) }
 }
