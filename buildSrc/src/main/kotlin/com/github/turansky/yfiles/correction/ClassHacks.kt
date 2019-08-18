@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.CANBENULL
+import com.github.turansky.yfiles.IMODEL_ITEM
 import com.github.turansky.yfiles.YCLASS
 import com.github.turansky.yfiles.json.firstWithName
 
@@ -256,7 +257,7 @@ private fun addClassBounds(source: Source) {
                 .forEach {
                     val bound = when (type.getString(J_ID)) {
                         "yfiles.graph.ItemChangedEventArgs" -> "yfiles.graph.ITagOwner"
-                        else -> "yfiles.graph.IModelItem"
+                        else -> IMODEL_ITEM
                     }
                     it.put(J_BOUNDS, arrayOf(bound))
                 }
@@ -265,5 +266,5 @@ private fun addClassBounds(source: Source) {
     source.type("DpKeyItemCollection")
         .jsequence(J_TYPE_PARAMETERS)
         .single()
-        .put(J_BOUNDS, arrayOf("yfiles.graph.IModelItem"))
+        .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
 }

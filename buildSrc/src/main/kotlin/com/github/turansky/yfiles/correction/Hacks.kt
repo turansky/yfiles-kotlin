@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.ARTIFICIAL
+import com.github.turansky.yfiles.IMODEL_ITEM
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.PUBLIC
 import com.github.turansky.yfiles.json.firstWithName
@@ -73,7 +74,7 @@ private fun fixUnionMethods(source: Source) {
         .firstParameter
         .apply {
             put(J_NAME, "item")
-            put(J_TYPE, "yfiles.graph.IModelItem")
+            put(J_TYPE, IMODEL_ITEM)
         }
 
     // TODO: remove documentation
