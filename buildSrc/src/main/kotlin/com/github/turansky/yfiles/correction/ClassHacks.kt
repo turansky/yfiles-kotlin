@@ -11,6 +11,7 @@ internal fun applyClassHacks(source: Source) {
     addMapperMetadataGeneric(source)
 
     removeUnusedTypeParameters(source)
+    addClassBounds(source)
 }
 
 private fun addClassGeneric(source: Source) {
@@ -240,4 +241,29 @@ private fun addMapperMetadataGeneric(source: Source) {
 private fun removeUnusedTypeParameters(source: Source) {
     source.allMethods("removeLookup")
         .forEach { it.remove(J_TYPE_PARAMETERS) }
+}
+
+private fun addClassBounds(source: Source) {
+    val typeNames = setOf(
+        "TModelItem",
+        "TItem"
+    )
+
+    source.types()
+        .forEach { type ->
+            type.optJsequence(J_TYPE_PARAMETERS)
+                .filter { it.getString(J_NAME) in typeNames }
+                .forEach {
+                    val bound = when (type.getString(J_ID)) {
+                        "yfiles.graph.ItemChangedEventArgs" -> "yfiles.graph.ITagOwner"
+                        else -> "yfiles.graph.IModelItem"
+                    }
+                    it.put(J_BOUNDS, arrayOf(bound))
+                }
+        }
+
+    source.type("DpKeyItemCollection")
+        .jsequence(J_TYPE_PARAMETERS)
+        .single()
+        .put(J_BOUNDS, arrayOf("yfiles.graph.IModelItem"))
 }

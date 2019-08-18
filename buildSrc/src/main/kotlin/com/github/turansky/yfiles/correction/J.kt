@@ -7,6 +7,7 @@ val J_FUNCTION_SIGNATURES = "functionSignatures"
 
 val J_ID = "id"
 val J_TYPE_PARAMETERS = "typeparameters"
+val J_BOUNDS = "bounds"
 val J_IMPLEMENTS = "implements"
 
 val J_CONSTRUCTORS = "constructors"
