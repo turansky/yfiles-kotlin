@@ -626,7 +626,8 @@ internal class Method(
 
     override fun toCode(): String {
         val operator = exp(
-            OPERATOR_MAP[name] == parameters.size,
+            OPERATOR_MAP[name] == parameters.size
+                    && parameters.first().name != "x", // to exclude RectangleHandle.set
             " operator "
         )
 
