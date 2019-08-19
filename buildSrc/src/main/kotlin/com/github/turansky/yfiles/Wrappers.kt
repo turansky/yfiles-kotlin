@@ -534,10 +534,11 @@ internal class Property(
     }
 }
 
-private val OPERATOR_NAMES = setOf(
-    "get",
-    "contains",
-    "compareTo"
+private val OPERATOR_MAP = mapOf(
+    "get" to 1,
+    "set" to 2,
+    "contains" to 1,
+    "compareTo" to 1
 )
 
 internal class Method(
@@ -625,7 +626,7 @@ internal class Method(
 
     override fun toCode(): String {
         val operator = exp(
-            name in OPERATOR_NAMES && parameters.size == 1,
+            OPERATOR_MAP[name] == parameters.size,
             " operator "
         )
 
