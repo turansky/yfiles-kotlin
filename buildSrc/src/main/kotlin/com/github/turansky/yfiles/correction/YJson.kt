@@ -81,11 +81,18 @@ private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
     }
 }
 
-internal fun JSONObject.setSingleTypeParameter(name: String = "T") {
+internal fun JSONObject.setSingleTypeParameter(
+    name: String = "T",
+    bound: String? = null
+) {
     put(
         J_TYPE_PARAMETERS,
         jArray(
-            jObject(J_NAME to name)
+            jObject(J_NAME to name).apply {
+                if (bound != null) {
+                    put(J_BOUNDS, arrayOf(bound))
+                }
+            }
         )
     )
 }

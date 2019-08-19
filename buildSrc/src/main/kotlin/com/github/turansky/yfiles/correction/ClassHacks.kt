@@ -18,7 +18,7 @@ internal fun applyClassHacks(source: Source) {
 
 private fun addClassGeneric(source: Source) {
     source.type("Class").apply {
-        setSingleTypeParameter()
+        setSingleTypeParameter(bound = ANY)
 
         getJSONArray(J_METHODS)
             .firstWithName("newInstance")
