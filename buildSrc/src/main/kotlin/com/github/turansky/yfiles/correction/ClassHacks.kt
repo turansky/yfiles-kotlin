@@ -309,6 +309,9 @@ private fun addClassBounds(source: Source) {
     source.types(
         "ResultItemCollection",
 
+        "IObservableCollection",
+        "ObservableCollection",
+
         "DelegateUndoUnit",
         "ItemCopiedEventArgs",
 
