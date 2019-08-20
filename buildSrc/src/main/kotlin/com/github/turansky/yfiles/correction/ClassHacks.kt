@@ -267,6 +267,9 @@ private fun addClassBounds(source: Source) {
     source.types(
         "DpKeyItemCollection",
 
+        "ItemClickedEventArgs",
+        "TableItemClickedEventArgs",
+
         "ItemTappedEventArgs",
         "TableItemTappedEventArgs",
 
@@ -280,11 +283,21 @@ private fun addClassBounds(source: Source) {
         "ISelectionModel",
         "DefaultSelectionModel",
 
+        "ModelManager",
+
         // replace mode
+        "SelectionIndicatorManager",
+        "FocusIndicatorManager",
         "HighlightIndicatorManager",
-        "SelectionIndicatorManager"
+
+        "ItemSelectionChangedEventArgs"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
         .forEach { it.put(J_BOUNDS, arrayOf(IMODEL_ITEM)) }
+
+    source.type("ResultItemMapping")
+        .jsequence(J_TYPE_PARAMETERS)
+        .first()
+        .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
 
     source.type("GraphModelManager")
         .jsequence(J_METHODS)
