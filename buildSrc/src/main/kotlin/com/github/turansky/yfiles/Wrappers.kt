@@ -624,15 +624,34 @@ internal class Method(
         return ":" + type + modifiers.nullability
     }
 
+    private fun toCode(
+        methodName: String,
+        operatorMode: Boolean
+    ): String {
+        val operator = exp(operatorMode, " operator ")
+
+        return "${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
+    }
+
     override fun toCode(): String {
-        val operator = exp(
-            OPERATOR_MAP[name] == parameters.size
-                    && parameters.first().name != "x", // to exclude RectangleHandle.set
-            " operator "
-        )
+        val operatorMode = OPERATOR_MAP[name] == parameters.size
+                && parameters.first().name != "x" // to exclude RectangleHandle.set
 
         return documentation +
-                "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
+                toCode(name, operatorMode) +
+                toOperatorCode()
+    }
+
+    private fun toOperatorCode(): String {
+        return if (name == "multiply" && parameters.size == 1 && returns != null) {
+            """
+                |
+                |@JsName("$name")
+                |${toCode("times", true)}
+            """.trimMargin()
+        } else {
+            ""
+        }
     }
 
     override fun toExtensionCode(): String {
