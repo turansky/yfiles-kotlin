@@ -14,6 +14,7 @@ internal fun applyClassHacks(source: Source) {
     addClassBounds(source)
 
     addTypeParameterBounds(source)
+    addMapClassBounds(source)
 }
 
 private fun addClassGeneric(source: Source) {
@@ -413,3 +414,24 @@ private val JSONObject.classBoundPair: Pair<String, String>?
 
         return null
     }
+
+private fun addMapClassBounds(source: Source) {
+    source.types(
+        "MapEntry",
+
+        "IMap",
+        "HashMap",
+
+        "IMapper",
+        "Mapper"
+    ).map { it.jsequence(J_TYPE_PARAMETERS).first() }
+        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+
+    source.types()
+        .flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
+        .filter { it.has(J_TYPE_PARAMETERS) }
+        .map { it.jsequence(J_TYPE_PARAMETERS).first() }
+        .filterNot { it.has(J_BOUNDS) }
+        .filter { it.getString(J_NAME) == "K" }
+        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+}
