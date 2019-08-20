@@ -305,6 +305,23 @@ private fun addClassBounds(source: Source) {
         .jsequence(J_TYPE_PARAMETERS)
         .single()
         .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
+
+    source.types(
+        "ResultItemCollection",
+
+        "DelegateUndoUnit",
+        "ItemCopiedEventArgs",
+
+        "Future"
+    ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
+        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+
+    source.types(
+        "ResultItemMapping",
+        "GraphBuilderItemEventArgs",
+        "ItemChangedEventArgs"
+    ).map { it.getJSONArray(J_TYPE_PARAMETERS).get(1) as JSONObject }
+        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
 }
 
 private fun addTypeParameterBounds(source: Source) {
