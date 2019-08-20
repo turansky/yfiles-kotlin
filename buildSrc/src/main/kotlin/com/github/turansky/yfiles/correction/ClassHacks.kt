@@ -14,6 +14,7 @@ internal fun applyClassHacks(source: Source) {
     addClassBounds(source)
 
     addTypeParameterBounds(source)
+    addTypeParameterBounds2(source)
 }
 
 private fun addClassGeneric(source: Source) {
@@ -309,6 +310,9 @@ private fun addClassBounds(source: Source) {
     source.types(
         "ResultItemCollection",
 
+        "IObservableCollection",
+        "ObservableCollection",
+
         "DelegateUndoUnit",
         "ItemCopiedEventArgs",
 
@@ -410,3 +414,16 @@ private val JSONObject.classBoundPair: Pair<String, String>?
 
         return null
     }
+
+private fun addTypeParameterBounds2(source: Source) {
+    source.types()
+        .filter { it.has(J_TYPE_PARAMETERS) }
+        .forEach {
+            val show = it.jsequence(J_TYPE_PARAMETERS)
+                .any { !it.has(J_BOUNDS) }
+
+            if (show) {
+                println(it.getString(J_ID))
+            }
+        }
+}
