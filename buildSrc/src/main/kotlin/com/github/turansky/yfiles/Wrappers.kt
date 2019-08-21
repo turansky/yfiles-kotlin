@@ -645,6 +645,7 @@ internal class Method(
     private fun toOperatorCode(): String {
         val operatorName = when {
             name == "add" && parameters.size == 1 && returns != null -> "plus"
+            name == "subtrack" && parameters.size == 1 && returns != null -> "minus"
             name == "multiply" && parameters.size == 1 && returns != null -> "times"
             else -> return ""
         }
