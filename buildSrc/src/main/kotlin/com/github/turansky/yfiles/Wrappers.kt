@@ -643,15 +643,16 @@ internal class Method(
     }
 
     private fun toOperatorCode(): String {
-        return if (name == "multiply" && parameters.size == 1 && returns != null) {
-            """
+        val operatorName = when {
+            name == "multiply" && parameters.size == 1 && returns != null -> "times"
+            else -> return ""
+        }
+
+        return """
                 |
                 |@JsName("$name")
-                |${toCode("times", true)}
-            """.trimMargin()
-        } else {
-            ""
-        }
+                |${toCode(operatorName, true)}
+               """.trimMargin()
     }
 
     override fun toExtensionCode(): String {
