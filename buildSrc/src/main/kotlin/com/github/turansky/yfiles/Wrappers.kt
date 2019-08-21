@@ -644,13 +644,19 @@ internal class Method(
 
     private fun toOperatorCode(): String {
         val operatorName = when {
+            name == "add" && parameters.size == 1 && returns != null -> "plus"
             name == "multiply" && parameters.size == 1 && returns != null -> "times"
             else -> return ""
         }
 
+        val jsName = exp(
+            !overridden,
+            """@JsName("$name")"""
+        )
+
         return """
                 |
-                |@JsName("$name")
+                |$jsName
                 |${toCode(operatorName, true)}
                """.trimMargin()
     }
