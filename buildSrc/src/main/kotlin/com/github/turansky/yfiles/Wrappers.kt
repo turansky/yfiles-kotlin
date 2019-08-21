@@ -647,6 +647,8 @@ internal class Method(
             name == "add" && parameters.size == 1 && returns != null -> "plus"
             name == "subtrack" && parameters.size == 1 && returns != null -> "minus"
             name == "multiply" && parameters.size == 1 && returns != null -> "times"
+
+            name == "add" && parameters.size == 1 && returns == null -> "plusAssign"
             else -> return ""
         }
 
