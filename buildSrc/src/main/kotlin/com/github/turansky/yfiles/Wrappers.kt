@@ -649,6 +649,7 @@ internal class Method(
             name == "multiply" && parameters.size == 1 && returns != null -> "times"
 
             name == "add" && parameters.size == 1 && returns == null -> "plusAssign"
+            name == "remove" && parameters.size == 1 && returns == null -> "minusAssign"
             else -> return ""
         }
 
