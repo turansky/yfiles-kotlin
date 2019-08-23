@@ -218,7 +218,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
             return null
         }
 
-        if (!primaryConstructor.options || !primaryConstructor.parameters.all { it.modifiers.optional }) {
+        if (!primaryConstructor.options || !primaryConstructor.isDefault()) {
             return null
         }
 
@@ -400,6 +400,10 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
     private val protected = modifiers.protected
 
     override val overridden: Boolean = false
+
+    fun isDefault(): Boolean {
+        return parameters.all { it.modifiers.optional }
+    }
 
     private val documentation: String
         get() = getDocumentation(
@@ -686,7 +690,7 @@ internal class Method(
 }
 
 internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
-    val parameters: List<Parameter> by ArrayDelegate(::Parameter)
+    protected val parameters: List<Parameter> by ArrayDelegate(::Parameter)
     val options: Boolean by BooleanDelegate()
 
     protected val preconditions: List<String> by StringArrayDelegate(::summary)
