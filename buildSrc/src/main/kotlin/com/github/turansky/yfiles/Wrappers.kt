@@ -615,14 +615,14 @@ internal class Method(
         var type = returns?.type
             ?: return ""
 
-        if (type.startsWith("kotlin.js.Promise<")) {
+        if (type.startsWith("$PROMISE<")) {
             val generic = between(type, "<", ">")
             val newGeneric = if (generic == ANY) {
                 "Nothing?"
             } else {
                 generic + exp(nullablePromiseResult(generic), "?")
             }
-            type = "kotlin.js.Promise<$newGeneric>"
+            type = "$PROMISE<$newGeneric>"
         }
 
         return ":" + type + modifiers.nullability

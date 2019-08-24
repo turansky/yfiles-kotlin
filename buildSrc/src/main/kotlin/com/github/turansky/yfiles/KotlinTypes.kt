@@ -2,6 +2,7 @@ package com.github.turansky.yfiles
 
 internal val UNIT = "Unit"
 internal val ANY = "Any"
+internal val PROMISE = "kotlin.js.Promise"
 
 internal fun getKotlinType(type: String): String? =
     STANDARD_TYPE_MAP[type]
@@ -36,7 +37,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
     "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
 
-    "Promise" to "kotlin.js.Promise"
+    "Promise" to PROMISE
 )
 
 val STANDARD_IMPORTED_TYPES = STANDARD_TYPE_MAP
