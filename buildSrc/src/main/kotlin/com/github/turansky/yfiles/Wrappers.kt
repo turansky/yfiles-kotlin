@@ -619,6 +619,8 @@ internal class Method(
             val generic = between(type, "<", ">")
             val newGeneric = if (generic == ANY) {
                 "Nothing?"
+            } else if (generic == ELEMENT) {
+                SVG_SVG_ELEMENT
             } else {
                 generic + exp(nullablePromiseResult(generic), "?")
             }

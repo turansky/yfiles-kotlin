@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ARTIFICIAL
-import com.github.turansky.yfiles.IMODEL_ITEM
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.PUBLIC
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeItem
@@ -117,6 +114,13 @@ private fun fixReturnType(source: Source) {
                 .getJSONObject(J_RETURNS)
                 .put(J_TYPE, "yfiles.collections.IEnumerator<$JS_OBJECT>")
         }
+
+    source.type("SvgExport").apply {
+        getJSONArray(J_METHODS)
+            .firstWithName("exportSvg")
+            .getJSONObject(J_RETURNS)
+            .put(J_TYPE, JS_SVG_SVG_ELEMENT)
+    }
 }
 
 private fun fixImplementedTypes(source: Source) {
