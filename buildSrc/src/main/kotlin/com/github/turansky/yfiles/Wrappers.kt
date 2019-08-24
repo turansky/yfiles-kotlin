@@ -761,7 +761,8 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
 
     override fun toCode(): String =
         if (bounds.isNotEmpty()) {
-            "$name : ${bounds.first()}"
+            val bound = parseType(bounds.first())
+            "$name : $bound"
         } else {
             name
         }

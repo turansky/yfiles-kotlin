@@ -19,7 +19,7 @@ internal fun applyClassHacks(source: Source) {
 
 private fun addClassGeneric(source: Source) {
     source.type("Class").apply {
-        setSingleTypeParameter(bound = ANY)
+        setSingleTypeParameter(bound = JS_OBJECT)
 
         getJSONArray(J_METHODS)
             .firstWithName("newInstance")
@@ -318,14 +318,14 @@ private fun addClassBounds(source: Source) {
 
         "Future"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
-        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
 
     source.types(
         "ResultItemMapping",
         "GraphBuilderItemEventArgs",
         "ItemChangedEventArgs"
     ).map { it.getJSONArray(J_TYPE_PARAMETERS).get(1) as JSONObject }
-        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
 }
 
 private fun addTypeParameterBounds(source: Source) {
@@ -380,7 +380,7 @@ private fun addTypeParameterBounds(source: Source) {
         .filter { it.getString(J_NAME).contains("Metadata") }
         .jsequence(J_TYPE_PARAMETERS)
         .forEach {
-            it.put(J_BOUNDS, arrayOf(ANY))
+            it.put(J_BOUNDS, arrayOf(JS_OBJECT))
         }
 }
 
@@ -397,7 +397,7 @@ private val JSONObject.classBoundPair: Pair<String, String>?
                 generic == "TModelItem" -> IMODEL_ITEM
                 generic == "TDecoratedType" -> IMODEL_ITEM
                 getString(J_NAME) == "modelItemType" -> IMODEL_ITEM
-                else -> ANY
+                else -> JS_OBJECT
             }
 
             return generic to bound
@@ -409,7 +409,7 @@ private val JSONObject.classBoundPair: Pair<String, String>?
                 return null
             }
 
-            return generic to ANY
+            return generic to JS_OBJECT
         }
 
         return null
@@ -425,7 +425,7 @@ private fun addMapClassBounds(source: Source) {
         "IMapper",
         "Mapper"
     ).map { it.jsequence(J_TYPE_PARAMETERS).first() }
-        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
 
     source.types()
         .flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
@@ -433,5 +433,5 @@ private fun addMapClassBounds(source: Source) {
         .map { it.jsequence(J_TYPE_PARAMETERS).first() }
         .filterNot { it.has(J_BOUNDS) }
         .filter { it.getString(J_NAME) == "K" }
-        .forEach { it.put(J_BOUNDS, arrayOf(ANY)) }
+        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
 }
