@@ -27,12 +27,13 @@ private val STANDARD_TYPE_MAP = mapOf(
     "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
     "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
 
-    "SVGElement" to "org.w3c.dom.svg.SVGElement",
+    JS_SVG_ELEMENT to "org.w3c.dom.svg.SVGElement",
     "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
     "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
     "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
     "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
     "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
+    JS_SVG_SVG_ELEMENT to "org.w3c.dom.svg.SVGSVGElement",
 
     "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
     "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
