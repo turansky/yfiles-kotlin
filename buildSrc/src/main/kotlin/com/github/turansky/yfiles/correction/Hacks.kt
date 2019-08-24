@@ -207,6 +207,11 @@ private fun fixMethodParameterType(source: Source) {
         .staticMethod("addingLookupChainLink")
         .parameter("instance")
         .put(J_TYPE, "TResult")
+
+    source.type("SvgExport")
+        .staticMethod("exportSvgString")
+        .parameter("svg")
+        .put(J_TYPE, JS_SVG_ELEMENT)
 }
 
 private fun fixMethodNullability(source: Source) {
