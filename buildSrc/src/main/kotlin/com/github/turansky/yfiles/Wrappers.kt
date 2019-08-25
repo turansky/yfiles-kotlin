@@ -208,33 +208,6 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 
     override val additionalDocumentation: String?
         get() = primaryConstructor?.getPrimaryDocumentation()
-
-    fun toConstructorMethodCode(): String? {
-        if (abstract || generics.isNotEmpty()) {
-            return null
-        }
-
-        if (primaryConstructor == null || secondaryConstructors.isNotEmpty()) {
-            return null
-        }
-
-        if (!primaryConstructor.options || !primaryConstructor.isDefault()) {
-            return null
-        }
-
-        if (extendedType() == null && properties.none { it.getterSetter }) {
-            return null
-        }
-
-        return """
-            |inline fun $name(
-            |    block: $name.() -> Unit
-            |): $name {
-            |    return $name()
-            |        .apply(block)
-            |}
-        """.trimMargin()
-    }
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
