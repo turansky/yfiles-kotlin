@@ -371,6 +371,7 @@ internal abstract class TypedDeclaration(
 
 internal class Constructor(source: JSONObject) : MethodBase(source) {
     private val protected = modifiers.protected
+    val public = !protected
 
     override val overridden: Boolean = false
 

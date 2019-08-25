@@ -5,11 +5,15 @@ internal fun Class.toConstructorMethodCode(): String? {
         return null
     }
 
-    if (primaryConstructor == null || secondaryConstructors.isNotEmpty()) {
+    if (primaryConstructor == null) {
         return null
     }
 
-    if (!primaryConstructor.options || !primaryConstructor.isDefault()) {
+    if (secondaryConstructors.any { it.public }) {
+        return null
+    }
+
+    if (!primaryConstructor.isConstructorMethodSource()) {
         return null
     }
 
@@ -30,3 +34,6 @@ private fun Class.canHaveConstructorMethod(): Boolean =
         extendedType() == null && properties.none { it.getterSetter } -> false
         else -> true
     }
+
+private fun Constructor.isConstructorMethodSource(): Boolean =
+    public && options && isDefault()
