@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
 internal fun Class.toConstructorMethodCode(): String? {
-    if (abstract || generics.isNotEmpty()) {
+    if (!canHaveConstructorMethod()) {
         return null
     }
 
@@ -10,10 +10,6 @@ internal fun Class.toConstructorMethodCode(): String? {
     }
 
     if (!primaryConstructor.options || !primaryConstructor.isDefault()) {
-        return null
-    }
-
-    if (extendedType() == null && properties.none { it.getterSetter }) {
         return null
     }
 
@@ -26,3 +22,11 @@ internal fun Class.toConstructorMethodCode(): String? {
             |}
         """.trimMargin()
 }
+
+private fun Class.canHaveConstructorMethod(): Boolean =
+    when {
+        abstract -> false
+        generics.isNotEmpty() -> false
+        extendedType() == null && properties.none { it.getterSetter } -> false
+        else -> true
+    }
