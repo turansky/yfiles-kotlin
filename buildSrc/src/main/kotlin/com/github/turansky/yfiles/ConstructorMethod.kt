@@ -1,19 +1,7 @@
 package com.github.turansky.yfiles
 
 internal fun Class.toConstructorMethodCode(): String? {
-    if (!canHaveConstructorMethod()) {
-        return null
-    }
-
-    if (primaryConstructor == null) {
-        return null
-    }
-
-    if (secondaryConstructors.any { it.public }) {
-        return null
-    }
-
-    if (!primaryConstructor.isConstructorMethodSource()) {
+    if (!hasConstructorMethod()) {
         return null
     }
 
@@ -25,6 +13,15 @@ internal fun Class.toConstructorMethodCode(): String? {
             |        .apply(block)
             |}
         """.trimMargin()
+}
+
+private fun Class.hasConstructorMethod(): Boolean {
+    return when {
+        !canHaveConstructorMethod() -> false
+        primaryConstructor == null -> false
+        secondaryConstructors.any { it.public } -> false
+        else -> primaryConstructor.isConstructorMethodSource()
+    }
 }
 
 private fun Class.canHaveConstructorMethod(): Boolean =
