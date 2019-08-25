@@ -447,6 +447,7 @@ internal class Property(
 ) : TypedDeclaration(source, parent) {
     val static = modifiers.static
     private val protected = modifiers.protected
+    val public = !protected
     val getterSetter = !modifiers.readOnly
 
     val abstract = modifiers.abstract

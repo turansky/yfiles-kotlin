@@ -31,9 +31,9 @@ private fun Class.canHaveConstructorMethod(): Boolean =
     when {
         abstract -> false
         generics.isNotEmpty() -> false
-        extendedType() == null && properties.none { it.getterSetter } -> false
+        extendedType() == null && properties.none { it.public && it.getterSetter } -> false
         else -> true
     }
 
 private fun Constructor.isConstructorMethodSource(): Boolean =
-    public && options && isDefault()
+    public && isDefault()
