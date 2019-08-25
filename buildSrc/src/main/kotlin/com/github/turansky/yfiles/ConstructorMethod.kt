@@ -1,5 +1,11 @@
 package com.github.turansky.yfiles
 
+private val HAS_CONSTRUCTOR_METHOD = setOf(
+    "Matrix",
+    "GeneralPath",
+    "GridNodePlacer"
+)
+
 internal fun Class.toConstructorMethodCode(): String? {
     if (!hasConstructorMethod()) {
         return null
@@ -17,6 +23,7 @@ internal fun Class.toConstructorMethodCode(): String? {
 
 private fun Class.hasConstructorMethod(): Boolean {
     return when {
+        name in HAS_CONSTRUCTOR_METHOD -> true
         !canHaveConstructorMethod() -> false
         primaryConstructor == null -> false
         secondaryConstructors.any { it.public } -> false
