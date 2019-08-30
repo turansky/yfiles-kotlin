@@ -771,8 +771,11 @@ internal class Generics(private val parameters: List<TypeParameter>) {
             ""
         }
 
+    fun isEmpty(): Boolean =
+        parameters.isEmpty()
+
     fun isNotEmpty(): Boolean =
-        parameters.isNotEmpty()
+        !isEmpty()
 
     operator fun plus(other: Generics): Generics =
         Generics(parameters + other.parameters)

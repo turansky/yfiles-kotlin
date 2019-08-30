@@ -226,7 +226,8 @@ internal class KotlinFileGenerator(
         }
 
         private fun isObject(): Boolean {
-            return declaration.primaryConstructor == null &&
+            return declaration.generics.isEmpty() &&
+                    declaration.primaryConstructor == null &&
                     memberDeclarations.isEmpty() &&
                     !data.marker
         }
