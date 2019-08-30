@@ -17,18 +17,16 @@ private fun loadApiJson(path: String): String =
         .apply(::correctNumbers)
         .run { toString() }
 
-fun generateKotlinWrappers(apiPath: String, sourceDir: File) {
+fun generateKotlinDeclarations(apiPath: String, sourceDir: File) {
     generateWrappers(
         apiPath = apiPath,
-        sourceDir = sourceDir,
-        createFileGenerator = ::KotlinFileGenerator
+        sourceDir = sourceDir
     )
 }
 
 private fun generateWrappers(
     apiPath: String,
-    sourceDir: File,
-    createFileGenerator: (types: Iterable<Type>, functionSignatures: Iterable<FunctionSignature>) -> FileGenerator
+    sourceDir: File
 ) {
     val source = JSONObject(loadApiJson(apiPath))
 
@@ -38,6 +36,6 @@ private fun generateWrappers(
 
     ClassRegistry.instance = ClassRegistry(types)
 
-    val fileGenerator = createFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 }

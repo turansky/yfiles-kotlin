@@ -1,4 +1,4 @@
-import com.github.turansky.yfiles.generateKotlinWrappers
+import com.github.turansky.yfiles.generateKotlinDeclarations
 
 group = "com.yworks.yfiles"
 version = "2.2.1-SNAPSHOT"
@@ -33,7 +33,7 @@ tasks {
             delete(sourceDir)
 
             val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
-            generateKotlinWrappers(apiPath, sourceDir)
+            generateKotlinDeclarations(apiPath, sourceDir)
         }
     }
 
