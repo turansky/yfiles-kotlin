@@ -13,7 +13,9 @@ private val TYPE_MAP = mapOf(
     "ILabel" to "yfiles.graph.ILabel",
     "IGraph" to "yfiles.graph.IGraph",
 
-    "GraphComponent" to "yfiles.view.GraphComponent"
+    "GraphComponent" to "yfiles.view.GraphComponent",
+
+    "[CropEdgePathsPredicate,boolean]" to "CropEdgePathsPredicate"
 )
 
 internal fun applyVsdxHacks(api: JSONObject) {
@@ -97,6 +99,12 @@ private fun fixOptionTypes(source: VsdxSource) {
             parameter("labelStyleType")
                 .addGeneric("yfiles.styles.ILabelStyle")
         }
+
+    source.type("CustomEdgeProvider")
+        .jsequence(J_CONSTRUCTORS)
+        .single()
+        .parameter("edgeStyleType")
+        .addGeneric("yfiles.styles.IEdgeStyle")
 }
 
 private fun fixGeneric(source: VsdxSource) {
