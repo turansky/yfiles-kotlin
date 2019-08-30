@@ -6,6 +6,7 @@ pluginManagement {
 }
 
 include("yfiles-kotlin")
+include("vsdx-kotlin")
 include("test-app")
 
 includeBuild("gradle-plugin")

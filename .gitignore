@@ -4,6 +4,7 @@ out/
 web/
 
 yfiles-kotlin/src/
+vsdx-kotlin/src/
 
 # IDEA ignore list
 .idea/
