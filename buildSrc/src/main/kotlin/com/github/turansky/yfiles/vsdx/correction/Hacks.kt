@@ -7,7 +7,7 @@ import org.json.JSONObject
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
-    fixTypes(source)
+    fixOptionTypes(source)
 
     source.types()
         .onEach { it.remove(J_STATIC_METHODS) }
@@ -29,7 +29,7 @@ private fun fixPackage(source: VsdxSource) {
     }
 }
 
-private fun fixTypes(source: VsdxSource) {
+private fun fixOptionTypes(source: VsdxSource) {
     source.type("CachingMasterProvider")
         .jsequence(J_CONSTRUCTORS)
         .single()
