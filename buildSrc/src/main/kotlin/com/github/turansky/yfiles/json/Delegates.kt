@@ -119,8 +119,16 @@ internal class NullableStringDelegate : JsonDelegate<String?>() {
         fun value(
             source: JSONObject,
             key: String
-        ): String? =
-            if (source.has(key)) source.getString(key) else null
+        ): String? {
+            if (source.has(key)) {
+                val value = source.getString(key)
+                if (value.isNotEmpty()) {
+                    return value
+                }
+            }
+
+            return null
+        }
     }
 
     override fun read(
