@@ -3,6 +3,7 @@ package com.github.turansky.yfiles
 import com.github.turansky.yfiles.correction.applyHacks
 import com.github.turansky.yfiles.correction.correctNumbers
 import com.github.turansky.yfiles.correction.excludeUnusedTypes
+import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -44,7 +45,7 @@ fun generateVsdxKotlinDeclarations(
     sourceDir: File
 ) {
     val source = loadJson(apiPath) {
-        // do nothing
+        applyVsdxHacks(this)
     }
 
     val apiRoot = ApiRoot(source)
