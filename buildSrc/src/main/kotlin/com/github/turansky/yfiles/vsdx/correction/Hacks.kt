@@ -53,7 +53,10 @@ private fun getFixedType(type: String): String {
         return it
     }
 
-    if (type.startsWith("IEnumerable<") || type.startsWith("IList<")) {
+    if (type.startsWith("IEnumerable<") ||
+        type.startsWith("IListEnumerable<") ||
+        type.startsWith("IList<")
+    ) {
         return "yfiles.collections.$type"
     }
 
