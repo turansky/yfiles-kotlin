@@ -27,8 +27,7 @@ internal fun applyVsdxHacks(api: JSONObject) {
 
     source.types()
         .onEach { it.remove(J_STATIC_METHODS) }
-        .onEach { it.remove(J_METHODS) }
-        .forEach { it.remove(J_IMPLEMENTS) }
+        .forEach { it.remove(J_METHODS) }
 }
 
 private fun fixPackage(source: VsdxSource) {
@@ -62,6 +61,19 @@ private fun getFixedType(type: String): String {
 }
 
 private fun fixTypes(source: VsdxSource) {
+    source.types()
+        .filter { it.has(J_IMPLEMENTS) }
+        .forEach {
+            val implementedTypes = it.getJSONArray(J_IMPLEMENTS)
+                .asSequence()
+                .map { it as String }
+                .map { getFixedType(it) }
+                .toList()
+                .toTypedArray()
+
+            it.put(J_IMPLEMENTS, implementedTypes)
+        }
+
     source.types()
         .flatMap {
             (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS))
