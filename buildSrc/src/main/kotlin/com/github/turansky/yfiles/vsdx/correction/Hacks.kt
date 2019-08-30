@@ -4,9 +4,16 @@ import com.github.turansky.yfiles.YCLASS
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
+private val TYPE_MAP = mapOf(
+    "IModelItem" to "yfiles.graph.IModelItem",
+    "IEdge" to "yfiles.graph.IEdge",
+    "ILabel" to "yfiles.graph.ILabel"
+)
+
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
+    fixTypes(source)
     fixOptionTypes(source)
 
     source.types()
@@ -27,6 +34,30 @@ private fun fixPackage(source: VsdxSource) {
             put("yfiles.$id", get(id))
         }
     }
+}
+
+private fun JSONObject.fixType() {
+    put(J_TYPE, getFixedType(getString(J_TYPE)))
+}
+
+private fun getFixedType(type: String): String {
+    TYPE_MAP.get(type)?.also {
+        return it
+    }
+
+    return type
+}
+
+private fun fixTypes(source: VsdxSource) {
+    source.functionSignatures
+        .run {
+            keySet().asSequence().map {
+                getJSONObject(it)
+            }
+        }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .forEach { it.fixType() }
 }
 
 private fun fixOptionTypes(source: VsdxSource) {
