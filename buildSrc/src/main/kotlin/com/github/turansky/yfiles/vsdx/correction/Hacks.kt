@@ -1,13 +1,13 @@
 package com.github.turansky.yfiles.vsdx.correction
 
-import com.github.turansky.yfiles.correction.J_ID
-import com.github.turansky.yfiles.correction.J_IMPLEMENTS
-import com.github.turansky.yfiles.correction.J_METHODS
-import com.github.turansky.yfiles.correction.J_STATIC_METHODS
+import com.github.turansky.yfiles.YCLASS
+import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
+
+    fixTypes(source)
 
     source.types()
         .onEach { it.remove(J_STATIC_METHODS) }
@@ -27,4 +27,23 @@ private fun fixPackage(source: VsdxSource) {
             put("yfiles.$id", get(id))
         }
     }
+}
+
+private fun fixTypes(source: VsdxSource) {
+    source.type("CachingMasterProvider")
+        .jsequence(J_CONSTRUCTORS)
+        .single()
+        .apply {
+            parameter("optionsOrNodeStyleType").apply {
+                put(J_NAME, "nodeStyleType")
+                put(J_TYPE, "$YCLASS<yfiles.style.INodeStyle>")
+            }
+
+            parameter("edgeStyleType")
+                .addGeneric("yfiles.styles.IEdgeStyle")
+            parameter("portStyleType")
+                .addGeneric("yfiles.styles.IPortStyle")
+            parameter("labelStyleType")
+                .addGeneric("yfiles.styles.ILabelStyle")
+        }
 }
