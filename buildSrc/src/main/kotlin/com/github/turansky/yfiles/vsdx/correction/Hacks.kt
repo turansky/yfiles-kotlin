@@ -45,10 +45,23 @@ private fun getFixedType(type: String): String {
         return it
     }
 
+    if (type.startsWith("IEnumerable<") || type.startsWith("IList<")) {
+        return "yfiles.collections.$type"
+    }
+
     return type
 }
 
 private fun fixTypes(source: VsdxSource) {
+    source.types()
+        .flatMap {
+            (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS))
+                .filter { it.has(J_PARAMETERS) }
+                .jsequence(J_PARAMETERS)
+                .plus(it.optJsequence(J_PROPERTIES))
+        }
+        .forEach { it.fixType() }
+
     source.functionSignatures
         .run {
             keySet().asSequence().map {
