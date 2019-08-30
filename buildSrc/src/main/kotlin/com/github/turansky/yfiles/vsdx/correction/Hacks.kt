@@ -36,7 +36,7 @@ private fun fixTypes(source: VsdxSource) {
         .apply {
             parameter("optionsOrNodeStyleType").apply {
                 put(J_NAME, "nodeStyleType")
-                put(J_TYPE, "$YCLASS<yfiles.style.INodeStyle>")
+                put(J_TYPE, "$YCLASS<yfiles.styles.INodeStyle>")
             }
 
             parameter("edgeStyleType")
