@@ -5,9 +5,15 @@ import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
 private val TYPE_MAP = mapOf(
+    "Insets" to "yfiles.geometry.Insets",
+    "Size" to "yfiles.geometry.Size",
+
     "IModelItem" to "yfiles.graph.IModelItem",
     "IEdge" to "yfiles.graph.IEdge",
-    "ILabel" to "yfiles.graph.ILabel"
+    "ILabel" to "yfiles.graph.ILabel",
+    "IGraph" to "yfiles.graph.IGraph",
+
+    "GraphComponent" to "yfiles.view.GraphComponent"
 )
 
 internal fun applyVsdxHacks(api: JSONObject) {
@@ -15,6 +21,7 @@ internal fun applyVsdxHacks(api: JSONObject) {
 
     fixTypes(source)
     fixOptionTypes(source)
+    fixGeneric(source)
 
     source.types()
         .onEach { it.remove(J_STATIC_METHODS) }
@@ -90,4 +97,10 @@ private fun fixOptionTypes(source: VsdxSource) {
             parameter("labelStyleType")
                 .addGeneric("yfiles.styles.ILabelStyle")
         }
+}
+
+private fun fixGeneric(source: VsdxSource) {
+    source.functionSignatures
+        .getJSONObject("vsdx.ComparisonFunction")
+        .setSingleTypeParameter()
 }
