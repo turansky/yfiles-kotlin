@@ -31,6 +31,10 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
     private val namespaces: List<Namespace> by ArrayDelegate(::Namespace)
+    val rootTypes: List<Type>
+        get() = namespaces
+            .flatMap { it.types }
+
     val types: List<Type>
         get() = namespaces
             .asSequence()

@@ -38,3 +38,21 @@ fun generateKotlinDeclarations(
     val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 }
+
+fun generateVsdxKotlinDeclarations(
+    apiPath: String,
+    sourceDir: File
+) {
+    val source = loadJson(apiPath) {
+        // do nothing
+    }
+
+    val apiRoot = ApiRoot(source)
+    val types = apiRoot.rootTypes
+    val functionSignatures = apiRoot.functionSignatures
+
+    ClassRegistry.instance = ClassRegistry(types)
+
+    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    fileGenerator.generate(sourceDir)
+}
