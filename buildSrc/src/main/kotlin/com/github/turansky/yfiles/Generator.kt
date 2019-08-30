@@ -7,28 +7,27 @@ import org.json.JSONObject
 import java.io.File
 import java.net.URL
 
-private fun loadApiJson(path: String): String =
+private fun loadJson(
+    path: String,
+    action: JSONObject.() -> Unit
+): JSONObject =
     URL(path)
         .readText(DEFAULT_CHARSET)
         .run { substring(indexOf("{")) }
         .run { JSONObject(this) }
-        .apply(::applyHacks)
-        .apply(::excludeUnusedTypes)
-        .apply(::correctNumbers)
+        .apply(action)
         .run { toString() }
+        .run { JSONObject(this) }
 
-fun generateKotlinDeclarations(apiPath: String, sourceDir: File) {
-    generateWrappers(
-        apiPath = apiPath,
-        sourceDir = sourceDir
-    )
-}
-
-private fun generateWrappers(
+fun generateKotlinDeclarations(
     apiPath: String,
     sourceDir: File
 ) {
-    val source = JSONObject(loadApiJson(apiPath))
+    val source = loadJson(apiPath) {
+        applyHacks(this)
+        excludeUnusedTypes(this)
+        correctNumbers(this)
+    }
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.types
