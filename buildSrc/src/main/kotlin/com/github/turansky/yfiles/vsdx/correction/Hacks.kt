@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
-private val TYPE_MAP = mapOf(
+private val YFILES_TYPE_MAP = mapOf(
     "Class" to YCLASS,
 
     "Insets" to "yfiles.geometry.Insets",
@@ -29,8 +29,10 @@ private val TYPE_MAP = mapOf(
 
     "Font" to "yfiles.view.Font",
     "HorizontalTextAlignment" to "yfiles.view.HorizontalTextAlignment",
-    "VerticalTextAlignment" to "yfiles.view.VerticalTextAlignment",
+    "VerticalTextAlignment" to "yfiles.view.VerticalTextAlignment"
+)
 
+private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[LinearGradient,RadialGradient]" to "yfiles.view.LinearGradient",
 
     "[CropEdgePathsPredicate,boolean]" to "CropEdgePathsPredicate",
