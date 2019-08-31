@@ -1056,13 +1056,11 @@ private fun getDocumentationLines(
 ): List<String> {
     val lines = mutableListOf<String>()
     if (summary != null) {
-        lines.add(
-            if (primaryConstructor) {
-                constructor(summary)
-            } else {
-                summary
-            }
-        )
+        if (primaryConstructor) {
+            lines.add(constructor(summary))
+        } else {
+            lines.addAll(summary.split("\n"))
+        }
     }
 
     preconditions
