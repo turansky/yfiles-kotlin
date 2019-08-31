@@ -7,6 +7,25 @@ import org.json.JSONObject
 private val INT = "Int"
 private val DOUBLE = "Double"
 
+private val INT_SUFFIXES = setOf(
+    "Index",
+    "Count",
+    "Type"
+)
+
+private val DOUBLE_SUFFIXES = setOf(
+    "X",
+    "Y",
+    "Width",
+    "Height",
+
+    "Scale",
+    "Angle",
+    "Factor",
+
+    "Margin"
+)
+
 internal fun correctVsdxNumbers(source: JSONObject) {
     val types = VsdxSource(source)
         .types()
@@ -41,15 +60,15 @@ private fun getPropertyType(className: String, propertyName: String): String {
         return INT
     }
 
-    if (propertyName.endsWith("Index")) {
-        return INT
-    }
-
-    if (propertyName.endsWith("Count")) {
+    if (INT_SUFFIXES.any { propertyName.endsWith(it) }) {
         return INT
     }
 
     if (className == "Scratch") {
+        return DOUBLE
+    }
+
+    if (DOUBLE_SUFFIXES.any { propertyName.endsWith(it) }) {
         return DOUBLE
     }
 
@@ -76,9 +95,9 @@ private fun JSONObject.correctMethodParameters(key: String) {
                     val parameterName = it.getString(J_NAME)
                     when (it.getString(J_TYPE)) {
                         JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
-                        "yfiles.vsdx.Value<$JS_NUMBER>" -> {
+                        "Value<$JS_NUMBER>" -> {
                             val generic = getParameterType(className, methodName, parameterName)
-                            it.put(J_TYPE, "yfiles.vsdx.Value<$generic>")
+                            it.put(J_TYPE, "Value<$generic>")
                         }
                     }
                 }
@@ -90,8 +109,12 @@ private fun getParameterType(
     methodName: String,
     parameterName: String
 ): String {
-    if (className.endsWith("Collection") && methodName == "get" && parameterName == "i") {
+    if (methodName == "get" && parameterName == "i") {
         return INT
+    }
+
+    if (className == "VsdxPath") {
+        return DOUBLE
     }
 
     return "Number"
