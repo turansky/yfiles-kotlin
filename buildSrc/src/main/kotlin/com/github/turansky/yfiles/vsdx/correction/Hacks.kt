@@ -238,6 +238,21 @@ private fun fixMethodModifier(source: VsdxSource) {
         .forEach { it.getJSONArray(J_MODIFIERS).put(ABSTRACT) }
 }
 
+private val YFILES_API_REGEX = Regex("<a href=\"https://docs.yworks.com/yfileshtml/#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
+private val VSDX_API_REGEX = Regex("<a href=\"#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
+
+private fun JSONObject.fixSummary() {
+    if (!has(J_SUMMARY)) {
+        return
+    }
+
+    val summary = getString(J_SUMMARY)
+        .replace(YFILES_API_REGEX, "[$1]")
+        .replace(VSDX_API_REGEX, "[$1]")
+
+    put(J_SUMMARY, summary)
+}
+
 private fun fixSummary(source: VsdxSource) {
     source.type("VsdxExport")
         .jsequence(J_METHODS)
@@ -249,4 +264,7 @@ private fun fixSummary(source: VsdxSource) {
 
             it.put(J_SUMMARY, summary)
         }
+
+    source.types()
+        .forEach { it.fixSummary() }
 }
