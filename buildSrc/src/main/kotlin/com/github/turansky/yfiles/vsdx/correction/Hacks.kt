@@ -54,6 +54,8 @@ private val COLLECTION_INRERFACES = setOf(
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
+    fixPackage(source)
+
     fixTypes(source)
     fixOptionTypes(source)
     fixGeneric(source)
@@ -70,6 +72,9 @@ internal fun applyVsdxHacks(api: JSONObject) {
         }
 }
 
+private fun String.fixVsdxPackage(): String =
+    replace("vsdx.", "yfiles.vsdx.")
+
 private fun fixPackage(source: VsdxSource) {
     source.types()
         .forEach {
@@ -77,15 +82,50 @@ private fun fixPackage(source: VsdxSource) {
             it.put(J_ID, "yfiles.$id")
         }
 
+    source.types()
+        .filter { it.has(J_EXTENDS) }
+        .forEach {
+            it.put(J_EXTENDS, it.getString(J_EXTENDS).fixVsdxPackage())
+        }
+
+    source.types()
+        .filter { it.has(J_IMPLEMENTS) }
+        .forEach {
+            val implementedTypes = it.getJSONArray(J_IMPLEMENTS)
+                .asSequence()
+                .map { it as String }
+                .map { it.fixVsdxPackage() }
+                .toList()
+
+            it.put(J_IMPLEMENTS, implementedTypes)
+        }
+
     source.functionSignatures.apply {
         keySet().toSet().forEach { id ->
-            put("yfiles.$id", get(id))
+            val functionSignature = getJSONObject(id)
+            if (functionSignature.has(J_RETURNS)) {
+                functionSignature.getJSONObject(J_RETURNS)
+                    .fixType()
+            }
+
+            put(id.fixVsdxPackage(), functionSignature)
+            remove(id)
         }
     }
 }
 
 private fun JSONObject.fixType() {
-    put(J_TYPE, getFixedType(getString(J_TYPE)))
+    if (has(J_SIGNATURE)) {
+        val signature = getFixedType(getString(J_SIGNATURE))
+            .fixVsdxPackage()
+
+        put(J_SIGNATURE, signature)
+    } else {
+        val type = getFixedType(getString(J_TYPE))
+            .fixVsdxPackage()
+
+        put(J_TYPE, type)
+    }
 }
 
 private fun getFixedType(type: String): String {
@@ -117,7 +157,6 @@ private fun fixTypes(source: VsdxSource) {
                 .map { it as String }
                 .map { getFixedType(it) }
                 .toList()
-                .toTypedArray()
 
             it.put(J_IMPLEMENTS, implementedTypes)
         }
@@ -186,7 +225,7 @@ private fun fixOptionTypes(source: VsdxSource) {
 
 private fun fixGeneric(source: VsdxSource) {
     source.functionSignatures
-        .getJSONObject("vsdx.ComparisonFunction")
+        .getJSONObject("yfiles.vsdx.ComparisonFunction")
         .setSingleTypeParameter()
 
     source.type("Value").apply {
