@@ -32,6 +32,8 @@ fun generateKotlinDeclarations(
         correctNumbers(this)
     }
 
+    docBaseUrl = "https://docs.yworks.com/yfileshtml"
+
     val apiRoot = ApiRoot(source)
     val types = apiRoot.types
     val functionSignatures = apiRoot.functionSignatures
@@ -50,6 +52,8 @@ fun generateVsdxKotlinDeclarations(
         applyVsdxHacks(this)
         correctVsdxNumbers(this)
     }
+
+    docBaseUrl = "https://docs.yworks.com/vsdx-html"
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.rootTypes
