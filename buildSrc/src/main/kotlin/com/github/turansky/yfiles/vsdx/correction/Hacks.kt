@@ -50,9 +50,6 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixMethodModifier(source)
 
     source.types()
-        .forEach { it.remove(J_STATIC_METHODS) }
-
-    source.types()
         .filter { it.has(J_METHODS) }
         .forEach {
             val methods = it.jsequence(J_METHODS)
@@ -185,6 +182,17 @@ private fun fixGeneric(source: VsdxSource) {
     source.functionSignatures
         .getJSONObject("vsdx.ComparisonFunction")
         .setSingleTypeParameter()
+
+    source.type("Value").apply {
+        staticMethod("fetch")
+            .apply {
+                setSingleTypeParameter("TValue")
+                firstParameter.put(J_NAME, "o")
+            }
+
+        staticMethod("formula")
+            .setSingleTypeParameter("TValue")
+    }
 }
 
 private fun fixMethodModifier(source: VsdxSource) {
