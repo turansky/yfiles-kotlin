@@ -277,6 +277,10 @@ private fun JSONObject.fixSummary() {
             "[$type]"
         }
         .replace(VSDX_API_REGEX, "[$1]")
+        .replace("\r\n", " ")
+        .replace("\r", " ")
+        .replace("</p>", "")
+        .replace("<p>", "\n\n")
 
     put(J_SUMMARY, summary)
 }
