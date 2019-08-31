@@ -4,6 +4,7 @@ import com.github.turansky.yfiles.correction.applyHacks
 import com.github.turansky.yfiles.correction.correctNumbers
 import com.github.turansky.yfiles.correction.excludeUnusedTypes
 import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
+import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
@@ -52,7 +53,7 @@ fun generateVsdxKotlinDeclarations(
     val types = apiRoot.rootTypes
     val functionSignatures = apiRoot.functionSignatures
 
-    ClassRegistry.instance = ClassRegistry(types)
+    ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
     val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
