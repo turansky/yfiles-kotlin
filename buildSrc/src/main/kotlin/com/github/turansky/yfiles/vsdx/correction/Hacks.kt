@@ -7,6 +7,9 @@ import org.json.JSONObject
 private val YFILES_TYPE_MAP = mapOf(
     "Class" to YCLASS,
 
+    "IEnumerator" to "yfiles.collections.IEnumerator",
+    "IEnumerable" to "yfiles.collections.IEnumerable",
+
     "Insets" to "yfiles.geometry.Insets",
     "Point" to "yfiles.geometry.Point",
     "Size" to "yfiles.geometry.Size",
@@ -18,7 +21,27 @@ private val YFILES_TYPE_MAP = mapOf(
     "IPort" to "yfiles.graph.IPort",
     "IGraph" to "yfiles.graph.IGraph",
 
+    "ILabelModelParameter" to "yfiles.graph.ILabelModelParameter",
+    "InteriorStretchLabelModel" to "yfiles.graph.InteriorStretchLabelModel",
+
+    "INodeStyle" to "yfiles.styles.INodeStyle",
     "IEdgeStyle" to "yfiles.styles.IEdgeStyle",
+    "ILabelStyle" to "yfiles.styles.ILabelStyle",
+    "IPortStyle" to "yfiles.styles.IPortStyle",
+
+    "ArcEdgeStyle" to "yfiles.styles.ArcEdgeStyle",
+    "PolylineEdgeStyle" to "yfiles.styles.PolylineEdgeStyle",
+    "VoidEdgeStyle" to "yfiles.styles.VoidEdgeStyle",
+    "IEdgePathCropper" to "yfiles.styles.IEdgePathCropper",
+
+    "DefaultLabelStyle" to "yfiles.styles.DefaultLabelStyle",
+
+    "ImageNodeStyle" to "yfiles.styles.ImageNodeStyle",
+    "PanelNodeStyle" to "yfiles.styles.PanelNodeStyle",
+    "ShapeNodeStyle" to "yfiles.styles.ShapeNodeStyle",
+
+    "NodeStylePortStyleAdapter" to "yfiles.styles.NodeStylePortStyleAdapter",
+    "VoidPortStyle" to "yfiles.styles.VoidPortStyle",
 
     "GraphComponent" to "yfiles.view.GraphComponent",
 
@@ -249,7 +272,10 @@ private fun JSONObject.fixSummary() {
     }
 
     val summary = getString(J_SUMMARY)
-        .replace(YFILES_API_REGEX, "[$1]")
+        .replace(YFILES_API_REGEX) {
+            val type = YFILES_TYPE_MAP.getValue(it.groupValues.get(1))
+            "[$type]"
+        }
         .replace(VSDX_API_REGEX, "[$1]")
 
     put(J_SUMMARY, summary)
