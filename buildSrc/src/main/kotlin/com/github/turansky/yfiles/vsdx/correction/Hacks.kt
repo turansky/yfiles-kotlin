@@ -19,12 +19,22 @@ private val TYPE_MAP = mapOf(
     "ILabel" to "yfiles.graph.ILabel",
     "IGraph" to "yfiles.graph.IGraph",
 
+    "IEdgeStyle" to "yfiles.styles.IEdgeStyle",
+
     "GraphComponent" to "yfiles.view.GraphComponent",
+
+    "Color" to "yfiles.view.Color",
+    "Fill" to "yfiles.view.Fill",
+    "Stroke" to "yfiles.view.Stroke",
+    "LinearGradient" to "yfiles.view.LinearGradient",
+
+    "[LinearGradient,RadialGradient]" to "yfiles.view.LinearGradient",
 
     "[CropEdgePathsPredicate,boolean]" to "CropEdgePathsPredicate",
 
     "[number,vsdx.Value<number>]" to "Value<number>",
-    "[vsdx.PageLike,vsdx.Shape]" to "PageLike"
+    "[vsdx.PageLike,vsdx.Shape]" to "PageLike",
+    "[Document,string]" to "Document" // ??? SvgDocument
 )
 
 internal fun applyVsdxHacks(api: JSONObject) {
