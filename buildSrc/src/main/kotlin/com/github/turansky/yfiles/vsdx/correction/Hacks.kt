@@ -307,4 +307,17 @@ private fun fixSummary(source: VsdxSource) {
         .onEach { it.fixSummary() }
         .flatMap { it.optJsequence(J_PARAMETERS) }
         .forEach { it.fixSummary() }
+
+    source.types()
+        .filter { it.has(J_METHODS) }
+        .jsequence(J_METHODS)
+        .filter { it.has(J_RETURNS) }
+        .map { it.getJSONObject(J_RETURNS) }
+        .filter { it.has(J_DOC) }
+        .forEach {
+            val doc = it.getString(J_DOC)
+                .replace("\r", " ")
+
+            it.put(J_DOC, doc)
+        }
 }

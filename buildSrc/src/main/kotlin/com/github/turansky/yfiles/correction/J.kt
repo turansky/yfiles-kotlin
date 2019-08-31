@@ -22,6 +22,7 @@ val J_METHODS = "methods"
 
 val J_PARAMETERS = "parameters"
 val J_RETURNS = "returns"
+val J_DOC = "doc"
 
 val J_NAME = "name"
 val J_TYPE = "type"
