@@ -2,7 +2,13 @@
 
 # Kotlin/JS declarations generator for yFiles
 
-# Links
+## Generation
+* Run `./gradlew build`
+* Check source folders
+  * yFiles - `yfiles-kotlin/src/main/kotlin`
+  * VSDX Export - `vsdx-kotlin/src/main/kotlin`
+
+## Links
 * [yFiles for HTML](https://www.yworks.com/products/yfiles-for-html)
   * [Documentation](http://docs.yworks.com/yfileshtml/)
 * [VSDX Export](https://www.yworks.com/products/yfiles-for-html/vsdx-export)
