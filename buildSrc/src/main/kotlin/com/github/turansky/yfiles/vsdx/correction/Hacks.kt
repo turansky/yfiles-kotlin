@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.vsdx.correction
 
-import com.github.turansky.yfiles.ABSTRACT
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_STRING
-import com.github.turansky.yfiles.YCLASS
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
@@ -43,7 +40,9 @@ private val TYPE_MAP = mapOf(
     "[Document,string]" to "Document", // ??? SvgDocument
 
     // TODO: use data interface instead
-    "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>"
+    "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>",
+    "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$JS_ANY>",
+    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$ANY?>"
 )
 
 private val COLLECTION_INTERFACES = setOf(
@@ -63,28 +62,6 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
     fixSummary(source)
-
-    fun JSONObject.returnsPromise(): Boolean {
-        if (!has(J_RETURNS)) {
-            return false
-        }
-
-        val type = getJSONObject(J_RETURNS)
-            .getString(J_TYPE)
-
-        return type.startsWith("Promise<{")
-                || type.startsWith("Promise<[")
-    }
-
-    source.types()
-        .filter { it.has(J_METHODS) }
-        .forEach {
-            val methods = it.jsequence(J_METHODS)
-                .filterNot { it.returnsPromise() }
-                .toList()
-
-            it.put(J_METHODS, methods)
-        }
 }
 
 private fun String.fixVsdxPackage(): String =
