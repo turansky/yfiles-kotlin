@@ -267,6 +267,7 @@ private fun fixSummary(source: VsdxSource) {
 
     source.types()
         .onEach { it.fixSummary() }
+        .onEach { it.optJsequence(J_PROPERTIES).forEach { it.fixSummary() } }
         .flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS) }
         .onEach { it.fixSummary() }
         .flatMap { it.optJsequence(J_PARAMETERS) }
