@@ -4,6 +4,7 @@ import com.github.turansky.yfiles.correction.applyHacks
 import com.github.turansky.yfiles.correction.correctNumbers
 import com.github.turansky.yfiles.correction.excludeUnusedTypes
 import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
+import com.github.turansky.yfiles.vsdx.correction.correctVsdxNumbers
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import org.json.JSONObject
 import java.io.File
@@ -47,6 +48,7 @@ fun generateVsdxKotlinDeclarations(
 ) {
     val source = loadJson(apiPath) {
         applyVsdxHacks(this)
+        correctVsdxNumbers(this)
     }
 
     val apiRoot = ApiRoot(source)
