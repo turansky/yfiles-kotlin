@@ -38,7 +38,7 @@ fun generateKotlinDeclarations(
 
     ClassRegistry.instance = ClassRegistry(types)
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator("yfiles", types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 }
 
@@ -57,6 +57,6 @@ fun generateVsdxKotlinDeclarations(
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator("yfiles/vsdx", types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 }
