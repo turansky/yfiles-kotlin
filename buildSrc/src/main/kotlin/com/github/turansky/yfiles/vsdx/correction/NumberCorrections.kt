@@ -13,7 +13,47 @@ internal fun correctVsdxNumbers(source: JSONObject) {
         .toList()
 
     types.asSequence()
+        .onEach { it.correctProperties() }
         .forEach { it.correctMethodParameters() }
+}
+
+private fun JSONObject.correctProperties() {
+    if (!has(J_PROPERTIES)) {
+        return
+    }
+
+    val className = getString(J_NAME)
+    jsequence(J_PROPERTIES)
+        .forEach {
+            val propertyName = it.getString(J_NAME)
+            when (it.getString(J_TYPE)) {
+                JS_NUMBER -> it.put(J_TYPE, getPropertyType(className, propertyName))
+                "yfiles.vsdx.Value<$JS_NUMBER>" -> {
+                    val generic = getPropertyType(className, propertyName)
+                    it.put(J_TYPE, "yfiles.vsdx.Value<$generic>")
+                }
+            }
+        }
+}
+
+private fun getPropertyType(className: String, propertyName: String): String {
+    if (propertyName == "index") {
+        return INT
+    }
+
+    if (propertyName.endsWith("Index")) {
+        return INT
+    }
+
+    if (propertyName.endsWith("Count")) {
+        return INT
+    }
+
+    if (className == "Scratch") {
+        return DOUBLE
+    }
+
+    return "Number"
 }
 
 private fun JSONObject.correctMethodParameters() {
@@ -36,6 +76,10 @@ private fun JSONObject.correctMethodParameters(key: String) {
                     val parameterName = it.getString(J_NAME)
                     when (it.getString(J_TYPE)) {
                         JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
+                        "yfiles.vsdx.Value<$JS_NUMBER>" -> {
+                            val generic = getParameterType(className, methodName, parameterName)
+                            it.put(J_TYPE, "yfiles.vsdx.Value<$generic>")
+                        }
                     }
                 }
         }
