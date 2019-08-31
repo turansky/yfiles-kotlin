@@ -46,7 +46,7 @@ private val TYPE_MAP = mapOf(
     "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>"
 )
 
-private val COLLECTION_INRERFACES = setOf(
+private val COLLECTION_INTERFACES = setOf(
     "IEnumerator<",
     "IEnumerable<",
     "IListEnumerable<",
@@ -148,7 +148,7 @@ private fun getFixedType(type: String): String {
         return it
     }
 
-    if (COLLECTION_INRERFACES.any { type.startsWith(it) }) {
+    if (COLLECTION_INTERFACES.any { type.startsWith(it) }) {
         return "yfiles.collections.$type"
     }
 
