@@ -1,11 +1,14 @@
 package com.github.turansky.yfiles.vsdx.correction
 
+import com.github.turansky.yfiles.JS_ANY
+import com.github.turansky.yfiles.JS_STRING
 import com.github.turansky.yfiles.YCLASS
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
 private val TYPE_MAP = mapOf(
     "Insets" to "yfiles.geometry.Insets",
+    "Point" to "yfiles.geometry.Point",
     "Size" to "yfiles.geometry.Size",
 
     "IModelItem" to "yfiles.graph.IModelItem",
@@ -15,7 +18,10 @@ private val TYPE_MAP = mapOf(
 
     "GraphComponent" to "yfiles.view.GraphComponent",
 
-    "[CropEdgePathsPredicate,boolean]" to "CropEdgePathsPredicate"
+    "[CropEdgePathsPredicate,boolean]" to "CropEdgePathsPredicate",
+
+    "[number,vsdx.Value<number>]" to "Value<number>",
+    "[vsdx.PageLike,vsdx.Shape]" to "PageLike"
 )
 
 internal fun applyVsdxHacks(api: JSONObject) {
@@ -28,16 +34,11 @@ internal fun applyVsdxHacks(api: JSONObject) {
     source.types()
         .forEach { it.remove(J_STATIC_METHODS) }
 
-    val enabledMethods = setOf(
-        "getEnumerator",
-        "get"
-    )
-
     source.types()
         .filter { it.has(J_METHODS) }
         .forEach {
             val methods = it.jsequence(J_METHODS)
-                .filter { it.getString(J_NAME) in enabledMethods }
+                .filter { !it.has(J_RETURNS) || !it.getJSONObject(J_RETURNS).getString(J_TYPE).startsWith("Promise<") }
                 .toList()
 
             it.put(J_METHODS, methods)
@@ -73,6 +74,14 @@ private fun getFixedType(type: String): String {
         type.startsWith("IList<")
     ) {
         return "yfiles.collections.$type"
+    }
+
+    if (type.startsWith("[$JS_STRING,")) {
+        return JS_STRING
+    }
+
+    if (type.startsWith("{")) {
+        return JS_ANY
     }
 
     return type
