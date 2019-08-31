@@ -26,8 +26,22 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
 
     source.types()
-        .onEach { it.remove(J_STATIC_METHODS) }
-        .forEach { it.remove(J_METHODS) }
+        .forEach { it.remove(J_STATIC_METHODS) }
+
+    val enabledMethods = setOf(
+        "getEnumerator",
+        "get"
+    )
+
+    source.types()
+        .filter { it.has(J_METHODS) }
+        .forEach {
+            val methods = it.jsequence(J_METHODS)
+                .filter { it.getString(J_NAME) in enabledMethods }
+                .toList()
+
+            it.put(J_METHODS, methods)
+        }
 }
 
 private fun fixPackage(source: VsdxSource) {
