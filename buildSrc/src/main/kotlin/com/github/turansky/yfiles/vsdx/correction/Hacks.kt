@@ -15,8 +15,10 @@ private val TYPE_MAP = mapOf(
     "Size" to "yfiles.geometry.Size",
 
     "IModelItem" to "yfiles.graph.IModelItem",
+    "INode" to "yfiles.graph.INode",
     "IEdge" to "yfiles.graph.IEdge",
     "ILabel" to "yfiles.graph.ILabel",
+    "IPort" to "yfiles.graph.IPort",
     "IGraph" to "yfiles.graph.IGraph",
 
     "IEdgeStyle" to "yfiles.styles.IEdgeStyle",
@@ -66,9 +68,11 @@ internal fun applyVsdxHacks(api: JSONObject) {
             return false
         }
 
-        return getJSONObject(J_RETURNS)
+        val type = getJSONObject(J_RETURNS)
             .getString(J_TYPE)
-            .startsWith("Promise<")
+
+        return type.startsWith("Promise<")
+                && type != "Promise<void>"
     }
 
     source.types()
