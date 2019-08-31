@@ -68,7 +68,7 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[Document,string]" to "Document", // ??? SvgDocument
 
     // TODO: use data interface instead
-    "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>",
+    "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
     "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
     "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>"
 )
