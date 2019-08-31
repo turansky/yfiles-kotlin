@@ -62,6 +62,7 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixOptionTypes(source)
     fixGeneric(source)
     fixMethodModifier(source)
+    fixSummary(source)
 
     fun JSONObject.returnsPromise(): Boolean {
         if (!has(J_RETURNS)) {
@@ -71,8 +72,8 @@ internal fun applyVsdxHacks(api: JSONObject) {
         val type = getJSONObject(J_RETURNS)
             .getString(J_TYPE)
 
-        return type.startsWith("Promise<")
-                && type != "Promise<void>"
+        return type.startsWith("Promise<{")
+                || type.startsWith("Promise<[")
     }
 
     source.types()
@@ -258,4 +259,17 @@ private fun fixMethodModifier(source: VsdxSource) {
     source.types("IMasterProvider", "IShapeProcessingStep")
         .jsequence(J_METHODS)
         .forEach { it.getJSONArray(J_MODIFIERS).put(ABSTRACT) }
+}
+
+private fun fixSummary(source: VsdxSource) {
+    source.type("VsdxExport")
+        .jsequence(J_METHODS)
+        .jsequence(J_PARAMETERS)
+        .filter { it.has(J_SUMMARY) }
+        .forEach {
+            val summary = it.getString(J_SUMMARY)
+                .replace("""data-member="createDefault()"""", """data-member="createDefault"""")
+
+            it.put(J_SUMMARY, summary)
+        }
 }
