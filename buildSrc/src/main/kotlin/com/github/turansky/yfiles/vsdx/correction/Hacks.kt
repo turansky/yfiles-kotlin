@@ -1,6 +1,9 @@
 package com.github.turansky.yfiles.vsdx.correction
 
-import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.ABSTRACT
+import com.github.turansky.yfiles.JS_ANY
+import com.github.turansky.yfiles.JS_STRING
+import com.github.turansky.yfiles.YCLASS
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
@@ -66,8 +69,8 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
 
     // TODO: use data interface instead
     "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>",
-    "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$JS_ANY>",
-    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$ANY?>"
+    "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
+    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>"
 )
 
 private val COLLECTION_INTERFACES = setOf(
