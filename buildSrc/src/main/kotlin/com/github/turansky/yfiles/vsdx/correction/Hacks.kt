@@ -38,7 +38,10 @@ private val TYPE_MAP = mapOf(
 
     "[number,vsdx.Value<number>]" to "Value<number>",
     "[vsdx.PageLike,vsdx.Shape]" to "PageLike",
-    "[Document,string]" to "Document" // ??? SvgDocument
+    "[Document,string]" to "Document", // ??? SvgDocument
+
+    // TODO: use data interface instead
+    "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>"
 )
 
 internal fun applyVsdxHacks(api: JSONObject) {
