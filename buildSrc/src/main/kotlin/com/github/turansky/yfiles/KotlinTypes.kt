@@ -44,6 +44,8 @@ private val STANDARD_TYPE_MAP = mapOf(
     "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
     "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
 
+    "Blob" to "org.w3c.files.Blob",
+
     "Promise" to PROMISE
 )
 
