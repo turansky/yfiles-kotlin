@@ -7,6 +7,8 @@ import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
 private val TYPE_MAP = mapOf(
+    "Class" to YCLASS,
+
     "Insets" to "yfiles.geometry.Insets",
     "Point" to "yfiles.geometry.Point",
     "Size" to "yfiles.geometry.Size",
@@ -149,6 +151,18 @@ private fun fixOptionTypes(source: VsdxSource) {
         .single()
         .parameter("edgeStyleType")
         .addGeneric("yfiles.styles.IEdgeStyle")
+
+    source.type("VssxStencilProviderFactory").apply {
+        sequenceOf(
+            "createMappedEdgeProvider" to "yfiles.styles.IEdgeStyle",
+            "createMappedLabelProvider" to "yfiles.styles.ILabelStyle",
+            "createMappedNodeProvider" to "yfiles.styles.INodeStyle",
+            "createMappedPortProvider" to "yfiles.styles.IPortStyle"
+        ).forEach { (methodName, styleGeneric) ->
+            methodParameters(methodName, "styleType")
+                .forEach { it.addGeneric(styleGeneric) }
+        }
+    }
 }
 
 private fun fixGeneric(source: VsdxSource) {
