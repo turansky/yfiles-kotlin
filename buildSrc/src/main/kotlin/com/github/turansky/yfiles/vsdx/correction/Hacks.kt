@@ -4,56 +4,56 @@ import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
-private val YFILES_TYPE_MAP = mapOf(
-    "Class" to YCLASS,
+private val YFILES_TYPE_MAP = sequenceOf(
+    YCLASS,
 
-    "IEnumerator" to "yfiles.collections.IEnumerator",
-    "IEnumerable" to "yfiles.collections.IEnumerable",
+    "yfiles.collections.IEnumerator",
+    "yfiles.collections.IEnumerable",
 
-    "Insets" to "yfiles.geometry.Insets",
-    "Point" to "yfiles.geometry.Point",
-    "Size" to "yfiles.geometry.Size",
+    "yfiles.geometry.Insets",
+    "yfiles.geometry.Point",
+    "yfiles.geometry.Size",
 
-    "IModelItem" to "yfiles.graph.IModelItem",
-    "INode" to "yfiles.graph.INode",
-    "IEdge" to "yfiles.graph.IEdge",
-    "ILabel" to "yfiles.graph.ILabel",
-    "IPort" to "yfiles.graph.IPort",
-    "IGraph" to "yfiles.graph.IGraph",
+    "yfiles.graph.IModelItem",
+    "yfiles.graph.INode",
+    "yfiles.graph.IEdge",
+    "yfiles.graph.ILabel",
+    "yfiles.graph.IPort",
+    "yfiles.graph.IGraph",
 
-    "ILabelModelParameter" to "yfiles.graph.ILabelModelParameter",
-    "InteriorStretchLabelModel" to "yfiles.graph.InteriorStretchLabelModel",
+    "yfiles.graph.ILabelModelParameter",
+    "yfiles.graph.InteriorStretchLabelModel",
 
-    "INodeStyle" to "yfiles.styles.INodeStyle",
-    "IEdgeStyle" to "yfiles.styles.IEdgeStyle",
-    "ILabelStyle" to "yfiles.styles.ILabelStyle",
-    "IPortStyle" to "yfiles.styles.IPortStyle",
+    "yfiles.styles.INodeStyle",
+    "yfiles.styles.IEdgeStyle",
+    "yfiles.styles.ILabelStyle",
+    "yfiles.styles.IPortStyle",
 
-    "ArcEdgeStyle" to "yfiles.styles.ArcEdgeStyle",
-    "PolylineEdgeStyle" to "yfiles.styles.PolylineEdgeStyle",
-    "VoidEdgeStyle" to "yfiles.styles.VoidEdgeStyle",
-    "IEdgePathCropper" to "yfiles.styles.IEdgePathCropper",
+    "yfiles.styles.ArcEdgeStyle",
+    "yfiles.styles.PolylineEdgeStyle",
+    "yfiles.styles.VoidEdgeStyle",
+    "yfiles.styles.IEdgePathCropper",
 
-    "DefaultLabelStyle" to "yfiles.styles.DefaultLabelStyle",
+    "yfiles.styles.DefaultLabelStyle",
 
-    "ImageNodeStyle" to "yfiles.styles.ImageNodeStyle",
-    "PanelNodeStyle" to "yfiles.styles.PanelNodeStyle",
-    "ShapeNodeStyle" to "yfiles.styles.ShapeNodeStyle",
+    "yfiles.styles.ImageNodeStyle",
+    "yfiles.styles.PanelNodeStyle",
+    "yfiles.styles.ShapeNodeStyle",
 
-    "NodeStylePortStyleAdapter" to "yfiles.styles.NodeStylePortStyleAdapter",
-    "VoidPortStyle" to "yfiles.styles.VoidPortStyle",
+    "yfiles.styles.NodeStylePortStyleAdapter",
+    "yfiles.styles.VoidPortStyle",
 
-    "GraphComponent" to "yfiles.view.GraphComponent",
+    "yfiles.view.GraphComponent",
 
-    "Color" to "yfiles.view.Color",
-    "Fill" to "yfiles.view.Fill",
-    "Stroke" to "yfiles.view.Stroke",
-    "LinearGradient" to "yfiles.view.LinearGradient",
+    "yfiles.view.Color",
+    "yfiles.view.Fill",
+    "yfiles.view.Stroke",
+    "yfiles.view.LinearGradient",
 
-    "Font" to "yfiles.view.Font",
-    "HorizontalTextAlignment" to "yfiles.view.HorizontalTextAlignment",
-    "VerticalTextAlignment" to "yfiles.view.VerticalTextAlignment"
-)
+    "yfiles.view.Font",
+    "yfiles.view.HorizontalTextAlignment",
+    "yfiles.view.VerticalTextAlignment"
+).associate { it.substringAfterLast(".") to it }
 
 private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[LinearGradient,RadialGradient]" to "yfiles.view.LinearGradient",
