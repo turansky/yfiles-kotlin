@@ -61,11 +61,21 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
 
+    fun JSONObject.returnsPromise(): Boolean {
+        if (!has(J_RETURNS)) {
+            return false
+        }
+
+        return getJSONObject(J_RETURNS)
+            .getString(J_TYPE)
+            .startsWith("Promise<")
+    }
+
     source.types()
         .filter { it.has(J_METHODS) }
         .forEach {
             val methods = it.jsequence(J_METHODS)
-                .filter { !it.has(J_RETURNS) || !it.getJSONObject(J_RETURNS).getString(J_TYPE).startsWith("Promise<") }
+                .filterNot { it.returnsPromise() }
                 .toList()
 
             it.put(J_METHODS, methods)
