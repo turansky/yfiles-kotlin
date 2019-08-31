@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.vsdx.correction
 
+import com.github.turansky.yfiles.ABSTRACT
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_STRING
 import com.github.turansky.yfiles.YCLASS
@@ -32,6 +33,7 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixTypes(source)
     fixOptionTypes(source)
     fixGeneric(source)
+    fixMethodModifier(source)
 
     source.types()
         .forEach { it.remove(J_STATIC_METHODS) }
@@ -169,4 +171,10 @@ private fun fixGeneric(source: VsdxSource) {
     source.functionSignatures
         .getJSONObject("vsdx.ComparisonFunction")
         .setSingleTypeParameter()
+}
+
+private fun fixMethodModifier(source: VsdxSource) {
+    source.types("IMasterProvider", "IShapeProcessingStep")
+        .jsequence(J_METHODS)
+        .forEach { it.getJSONArray(J_MODIFIERS).put(ABSTRACT) }
 }
