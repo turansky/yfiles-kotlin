@@ -44,6 +44,13 @@ private val TYPE_MAP = mapOf(
     "Promise<{data:string,format:string}>" to "Promise<$JS_ANY>"
 )
 
+private val COLLECTION_INRERFACES = setOf(
+    "IEnumerator<",
+    "IEnumerable<",
+    "IListEnumerable<",
+    "IList<"
+)
+
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
@@ -86,11 +93,7 @@ private fun getFixedType(type: String): String {
         return it
     }
 
-    if (type.startsWith("IEnumerator<") ||
-        type.startsWith("IEnumerable<") ||
-        type.startsWith("IListEnumerable<") ||
-        type.startsWith("IList<")
-    ) {
+    if (COLLECTION_INRERFACES.any { type.startsWith(it) }) {
         return "yfiles.collections.$type"
     }
 
