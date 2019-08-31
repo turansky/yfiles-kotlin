@@ -67,7 +67,8 @@ private fun getFixedType(type: String): String {
         return it
     }
 
-    if (type.startsWith("IEnumerable<") ||
+    if (type.startsWith("IEnumerator<") ||
+        type.startsWith("IEnumerable<") ||
         type.startsWith("IListEnumerable<") ||
         type.startsWith("IList<")
     ) {
@@ -94,8 +95,13 @@ private fun fixTypes(source: VsdxSource) {
     source.types()
         .flatMap {
             (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS))
-                .filter { it.has(J_PARAMETERS) }
-                .jsequence(J_PARAMETERS)
+                .flatMap {
+                    it.optJsequence(J_PARAMETERS) + if (it.has(J_RETURNS)) {
+                        sequenceOf(it.getJSONObject(J_RETURNS))
+                    } else {
+                        emptySequence()
+                    }
+                }
                 .plus(it.optJsequence(J_PROPERTIES))
         }
         .forEach { it.fixType() }
