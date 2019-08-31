@@ -5,3 +5,5 @@
 # Links
 * [yFiles for HTML](https://www.yworks.com/products/yfiles-for-html)
   * [Documentation](http://docs.yworks.com/yfileshtml/)
+* [VSDX Export](https://www.yworks.com/products/yfiles-for-html/vsdx-export)
+  * [Documentation](https://docs.yworks.com/vsdx-html/)
