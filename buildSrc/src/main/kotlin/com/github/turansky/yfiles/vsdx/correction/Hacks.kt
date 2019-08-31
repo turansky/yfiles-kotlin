@@ -28,6 +28,10 @@ private val TYPE_MAP = mapOf(
     "Stroke" to "yfiles.view.Stroke",
     "LinearGradient" to "yfiles.view.LinearGradient",
 
+    "Font" to "yfiles.view.Font",
+    "HorizontalTextAlignment" to "yfiles.view.HorizontalTextAlignment",
+    "VerticalTextAlignment" to "yfiles.view.VerticalTextAlignment",
+
     "[LinearGradient,RadialGradient]" to "yfiles.view.LinearGradient",
 
     "[CropEdgePathsPredicate,boolean]" to "CropEdgePathsPredicate",
