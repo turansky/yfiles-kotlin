@@ -1,3 +1,5 @@
+import com.github.turansky.yfiles.generateVsdxKotlinDeclarations
+
 group = "com.yworks.yfiles"
 version = "1.0.0-SNAPSHOT"
 
@@ -32,8 +34,7 @@ tasks {
             delete(sourceDir)
 
             val apiPath = "https://docs.yworks.com/vsdx-html/assets/api.56a9cdca.js"
-            // TODO: implement
-            // generateKotlinWrappers(apiPath, sourceDir)
+            generateVsdxKotlinDeclarations(apiPath, sourceDir)
         }
     }
 
