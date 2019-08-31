@@ -64,7 +64,7 @@ private fun getPropertyType(className: String, propertyName: String): String {
         return INT
     }
 
-    if (className == "Scratch") {
+    if (className == "Scratch" || className == "VsdxPathSegment") {
         return DOUBLE
     }
 
