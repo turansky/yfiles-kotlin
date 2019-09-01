@@ -18,7 +18,11 @@ private val INT_NAMES = setOf(
 
     "background",
     "uiVisibility",
-    "flags"
+    "walkPreference",
+    "flags",
+
+    "type",
+    "case"
 )
 
 private val INT_SUFFIXES = setOf(
@@ -36,6 +40,7 @@ private val INT_SUFFIXES = setOf(
     "Extensions",
     "Level",
     "Settings",
+    "Ext",
 
     "Group",
     "State",
