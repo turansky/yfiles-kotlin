@@ -26,6 +26,15 @@
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
 
+## KDoc
+| Type                        |                  |
+| :---                        |      :---:       |
+| Summary                     |        ✔         |
+| Remarks                     |        -         |
+| Developer Guide links       |        ✔         |
+| Demo links                  |        ✔         |
+| Online Documentation links  | only for classes |
+
 [11]: https://www.yworks.com/products/yfiles-for-html
 [12]: http://docs.yworks.com/yfileshtml/
 
