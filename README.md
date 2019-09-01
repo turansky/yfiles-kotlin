@@ -27,13 +27,21 @@
 \** - via extension methods
 
 ## KDoc
-| Type                        |                  |
-| :---                        |      :---:       |
-| Summary                     |        ✔         |
-| Remarks                     |        -         |
-| Developer Guide links       |        ✔         |
-| Demo links                  |        ✔         |
-| Online Documentation links  | only for classes |
+| Type                  |                   |
+| :---                  |      :---:        |
+| Summary               |        ✔          |
+| Remarks               |        -          |
+| **Links**             |                   |
+| Developer Guide       |        ✔          |
+| Demo                  |        ✔          |
+| Online Documentation  | only for classes* |
+\* - see related issues
+
+### Related issues
+* [KT-32815](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor (#)
+* [IDEA-219818](https://youtrack.jetbrains.com/issue/IDEA-219818) - Broken links with double anchor (#)
+* [KT-32640](https://youtrack.jetbrains.com/issue/KT-32640) - Broken markdown links in `@see` block
+* [KT-32720](https://youtrack.jetbrains.com/issue/KT-32720) - `@see` is recommended?
 
 [11]: https://www.yworks.com/products/yfiles-for-html
 [12]: http://docs.yworks.com/yfileshtml/
