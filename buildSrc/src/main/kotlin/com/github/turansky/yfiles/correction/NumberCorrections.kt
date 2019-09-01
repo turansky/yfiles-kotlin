@@ -201,6 +201,10 @@ private fun JSONObject.correctMethods(key: String) {
             when (returns.getString(J_TYPE)) {
                 JS_NUMBER -> returns.put(J_TYPE, getReturnType(className, methodName))
                 "Array<$JS_NUMBER>" -> returns.put(J_TYPE, "Array<$JS_DOUBLE>")
+                "yfiles.collections.IEnumerable<$JS_NUMBER>" -> {
+                    check(methodName == "ofRange")
+                    returns.put(J_TYPE, "yfiles.collections.IEnumerable<$JS_INT>")
+                }
             }
         }
 }
