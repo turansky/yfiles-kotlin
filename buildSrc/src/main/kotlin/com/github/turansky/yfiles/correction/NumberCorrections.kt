@@ -68,6 +68,19 @@ private fun JSONObject.correctConstructors() {
         .optionalArray(J_PARAMETERS)
         .filter { it.getString(J_TYPE) == JS_NUMBER }
         .forEach { it.put(J_TYPE, getConstructorParameterType(className, it.getString(J_NAME))) }
+
+    jsequence(J_CONSTRUCTORS)
+        .optionalArray(J_PARAMETERS)
+        .filter { it.getString(J_TYPE) == "Array<$JS_NUMBER>" }
+        .forEach {
+            val genericType = when (val name = it.getString(J_NAME)) {
+                "dashes" -> JS_DOUBLE
+                "rowLayout", "columnLayout" -> JS_INT
+                else -> throw IllegalStateException("Unexpected constructor parameter $name")
+            }
+
+            it.put(J_TYPE, "Array<$genericType>")
+        }
 }
 
 private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
