@@ -535,7 +535,7 @@ internal class Method(
     private val final = modifiers.final
     private val open = !static && !final
 
-    private val isExtension by BooleanDelegate()
+    private val isExtension by boolean()
 
     private val postconditions: List<String> by StringArrayDelegate(::summary)
 
@@ -672,7 +672,7 @@ internal class Method(
 
 internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
     protected val parameters: List<Parameter> by ArrayDelegate(::Parameter)
-    val options: Boolean by BooleanDelegate()
+    val options: Boolean by boolean()
 
     protected val preconditions: List<String> by StringArrayDelegate(::summary)
 
