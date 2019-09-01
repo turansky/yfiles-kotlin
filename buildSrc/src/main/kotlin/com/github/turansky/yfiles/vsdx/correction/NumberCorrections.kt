@@ -34,6 +34,8 @@ private val DOUBLE_NAMES = setOf(
     "width",
     "height",
 
+    "angle",
+    "alpha",
     "scale",
     "zoom",
 
@@ -49,11 +51,19 @@ private val DOUBLE_SUFFIXES = setOf(
     "Width",
     "Height",
 
+    "Left",
+    "Top",
+
     "Scale",
     "Angle",
     "Factor",
     "Margin",
-    "Transparency"
+    "Transparency",
+
+    "Origin",
+    "Density",
+    "Spacing",
+    "Weight"
 )
 
 private val DOUBLE_CLASSES = setOf(
