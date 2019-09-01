@@ -5,8 +5,23 @@
 ## Generation
 * Run `./gradlew build`
 * Check source folders
-  * yFiles - `yfiles-kotlin/src/main/kotlin`
+  * yFiles for HTML - `yfiles-kotlin/src/main/kotlin`
   * VSDX Export - `vsdx-kotlin/src/main/kotlin`
+  
+## Description
+| Library                  | yFiles for HTML | VSDX Export |
+|--------------------------|-----------------|-------------|
+| JS module                |      yfiles     | yfiles/vsdx |
+| JS module format         |       ES6       |     ES6     |
+| Nullability fixes        |      2500+      |      -      |
+| Numberability*           |        ✔        |      ✔      |
+| Strict `Class` generic   |        ✔        |      ✔      |
+| Trait support**          |        ✔        |      ✔      |
+| Operators                |        ✔        |      ✔      |
+| Operator aliases         |        ✔        |      ✔      |
+
+* \* - `Int`, `Double` instead of `Number`
+* \** - via extension methods
 
 ## Links
 * [yFiles for HTML](https://www.yworks.com/products/yfiles-for-html)
