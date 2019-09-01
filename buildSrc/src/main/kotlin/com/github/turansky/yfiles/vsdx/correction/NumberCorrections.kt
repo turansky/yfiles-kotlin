@@ -255,8 +255,16 @@ private fun getReturnType(
     methodName: String
 ): String =
     when {
-        className == "CoordinateConverter" -> DOUBLE
         methodName == "enum" -> INT
-        else -> "Number"
+
+        className == "CoordinateConverter" -> DOUBLE
+        className == "Value" -> DOUBLE
+
+        methodName == "getGradientAngle" -> DOUBLE
+        methodName == "getGradientDir" -> INT
+
+        methodName == "toVsdxTransparency" -> DOUBLE
+
+        else -> throw IllegalStateException("Unexpected $className.$methodName")
     }
 
