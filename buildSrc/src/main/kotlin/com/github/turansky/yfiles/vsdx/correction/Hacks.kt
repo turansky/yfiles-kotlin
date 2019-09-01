@@ -5,6 +5,7 @@ import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_STRING
 import com.github.turansky.yfiles.YCLASS
 import com.github.turansky.yfiles.correction.*
+import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
 
 private val YFILES_TYPE_MAP = sequenceOf(
@@ -83,6 +84,8 @@ private val COLLECTION_INTERFACES = setOf(
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
+    removeUnusedFunctionSignatures(source)
+
     fixPackage(source)
 
     fixTypes(source)
@@ -90,6 +93,13 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
     fixSummary(source)
+}
+
+private fun removeUnusedFunctionSignatures(source: VsdxSource) {
+    source.functionSignatures.apply {
+        strictRemove("vsdx.ComparisonFunction")
+        strictRemove("vsdx.LabelTextProcessingPredicate")
+    }
 }
 
 private fun String.fixVsdxPackage(): String =
@@ -244,10 +254,6 @@ private fun fixOptionTypes(source: VsdxSource) {
 }
 
 private fun fixGeneric(source: VsdxSource) {
-    source.functionSignatures
-        .getJSONObject("yfiles.vsdx.ComparisonFunction")
-        .setSingleTypeParameter()
-
     source.type("Value").apply {
         staticMethod("fetch")
             .apply {
