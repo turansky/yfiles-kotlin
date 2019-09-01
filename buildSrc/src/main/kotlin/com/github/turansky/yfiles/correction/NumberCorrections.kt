@@ -112,37 +112,23 @@ private fun JSONObject.correctProperties(key: String) {
         .forEach { it.put(J_TYPE, getPropertyType(className, it.getString(J_NAME))) }
 }
 
-private fun getPropertyType(className: String, propertyName: String): String {
-    if (propertyName.endsWith("Count")) {
-        return INT
-    }
+private fun getPropertyType(className: String, propertyName: String): String =
+    when {
+        propertyName.endsWith("Count") -> INT
+        propertyName.endsWith("Cost") -> DOUBLE
+        propertyName.endsWith("Ratio") -> DOUBLE
 
-    if (propertyName.endsWith("Cost")) {
-        return DOUBLE
-    }
+        className == "BalloonLayout" && propertyName == "minimumNodeDistance" -> INT
 
-    if (propertyName.endsWith("Ratio")) {
-        return DOUBLE
-    }
+        propertyName.endsWith("Distance") -> DOUBLE
 
-    if (className == "BalloonLayout" && propertyName == "minimumNodeDistance") {
-        return INT
-    }
+        className == "AffineLine" && (propertyName == "a" || propertyName == "b") -> DOUBLE
 
-    if (propertyName.endsWith("Distance")) {
-        return DOUBLE
-    }
+        propertyName in INT_PROPERTIES -> INT
+        propertyName in DOUBLE_PROPERTIES -> DOUBLE
 
-    if (className == "AffineLine" && (propertyName == "a" || propertyName == "b")) {
-        return DOUBLE
-    }
-
-    return when (propertyName) {
-        in INT_PROPERTIES -> INT
-        in DOUBLE_PROPERTIES -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$propertyName")
     }
-}
 
 private fun JSONObject.correctPropertiesGeneric() {
     if (!has(J_PROPERTIES)) {
@@ -207,37 +193,23 @@ private fun JSONObject.correctMethods(key: String) {
         }
 }
 
-private fun getReturnType(className: String, methodName: String): String {
-    if (methodName.endsWith("Count")) {
-        return INT
-    }
+private fun getReturnType(className: String, methodName: String): String =
+    when {
+        methodName.endsWith("Count") -> INT
+        methodName.endsWith("Components") -> INT
 
-    if (methodName.endsWith("Components")) {
-        return INT
-    }
+        methodName.endsWith("Cost") || methodName.endsWith("Costs") -> DOUBLE
 
-    if (methodName.endsWith("Cost") || methodName.endsWith("Costs")) {
-        return DOUBLE
-    }
+        methodName.endsWith("Ratio") -> DOUBLE
+        methodName.endsWith("Distance") -> DOUBLE
 
-    if (methodName.endsWith("Ratio")) {
-        return DOUBLE
-    }
+        className == "YVector" || className == "LineSegment" && methodName == "length" -> DOUBLE
 
-    if (methodName.endsWith("Distance")) {
-        return DOUBLE
-    }
+        methodName in INT_METHODS -> INT
+        methodName in DOUBLE_METHODS -> DOUBLE
 
-    if (className == "YVector" || className == "LineSegment" && methodName == "length") {
-        return DOUBLE
-    }
-
-    return when (methodName) {
-        in INT_METHODS -> INT
-        in DOUBLE_METHODS -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$methodName")
     }
-}
 
 private fun JSONObject.correctMethodParameters() {
     correctMethodParameters(J_STATIC_METHODS)
