@@ -35,6 +35,7 @@
 | Developer Guide       |        ✔          |
 | Demo                  |        ✔          |
 | Online Documentation  | only for classes* |
+
 \* - see related issues
 
 ### Related issues
