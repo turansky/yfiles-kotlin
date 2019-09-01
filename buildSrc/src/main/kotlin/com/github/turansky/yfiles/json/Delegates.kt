@@ -138,6 +138,8 @@ internal class NullableStringDelegate : JsonDelegate<String?>() {
         value(source, key)
 }
 
+internal fun string(): JsonDelegate<String> = StringDelegate()
+
 internal class StringDelegate : JsonDelegate<String>() {
     companion object {
         fun value(
