@@ -44,6 +44,12 @@ private val DOUBLE_SUFFIXES = setOf(
     "Margin"
 )
 
+private val DOUBLE_CLASSES = setOf(
+    "Control",
+    "Scratch",
+    "VsdxPathSegment"
+)
+
 internal fun correctVsdxNumbers(source: JSONObject) {
     val types = VsdxSource(source)
         .types()
@@ -52,6 +58,26 @@ internal fun correctVsdxNumbers(source: JSONObject) {
     types.asSequence()
         .onEach { it.correctProperties() }
         .forEach { it.correctMethodParameters() }
+}
+
+private fun getType(name: String): String? {
+    if (name in INT_NAMES) {
+        return INT
+    }
+
+    if (name in DOUBLE_NAMES) {
+        return DOUBLE
+    }
+
+    if (INT_SUFFIXES.any { name.endsWith(it) }) {
+        return INT
+    }
+
+    if (DOUBLE_SUFFIXES.any { name.endsWith(it) }) {
+        return DOUBLE
+    }
+
+    return null
 }
 
 private fun JSONObject.correctProperties() {
@@ -74,23 +100,11 @@ private fun JSONObject.correctProperties() {
 }
 
 private fun getPropertyType(className: String, propertyName: String): String {
-    if (propertyName in INT_NAMES) {
-        return INT
+    getType(propertyName)?.also {
+        return it
     }
 
-    if (propertyName in DOUBLE_NAMES) {
-        return DOUBLE
-    }
-
-    if (INT_SUFFIXES.any { propertyName.endsWith(it) }) {
-        return INT
-    }
-
-    if (className == "Scratch" || className == "VsdxPathSegment") {
-        return DOUBLE
-    }
-
-    if (DOUBLE_SUFFIXES.any { propertyName.endsWith(it) }) {
+    if (className in DOUBLE_CLASSES) {
         return DOUBLE
     }
 
@@ -131,12 +145,8 @@ private fun getParameterType(
     methodName: String,
     parameterName: String
 ): String {
-    if (parameterName in INT_NAMES) {
-        return INT
-    }
-
-    if (parameterName in DOUBLE_NAMES) {
-        return DOUBLE
+    getType(parameterName)?.also {
+        return it
     }
 
     if (methodName == "get" && parameterName == "i") {
