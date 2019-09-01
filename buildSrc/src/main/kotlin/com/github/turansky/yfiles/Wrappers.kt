@@ -60,7 +60,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 
     val name: String by string()
 
-    val namespaces: List<Namespace> by ArrayDelegate { Namespace(it) }
+    val namespaces: List<Namespace> by list(::Namespace)
     val types: List<Type> by DeclarationArrayDelegate { parseType(it) }
 }
 
@@ -192,7 +192,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 }
 
 internal sealed class ExtendedType(source: JSONObject) : Type(source) {
-    val events: List<Event> by ArrayDelegate { Event(it, this) }
+    val events: List<Event> by list { Event(it, this) }
 }
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
