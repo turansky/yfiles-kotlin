@@ -41,6 +41,7 @@ private val INT_SUFFIXES = setOf(
     "Level",
     "Settings",
     "Ext",
+    "Pos",
 
     "Group",
     "State",
@@ -71,6 +72,7 @@ private val DOUBLE_NAMES = setOf(
     "position",
     "stopPosition",
 
+    "number",
     "radius",
     "radians",
     "inches",
@@ -101,7 +103,10 @@ private val DOUBLE_SUFFIXES = setOf(
 
 private val DOUBLE_CLASSES = setOf(
     "Control",
+    "CoordinateConverter",
     "Scratch",
+    "Stylable",
+    "VsdxPath",
     "VsdxPathSegment"
 )
 
@@ -220,7 +225,7 @@ private fun getParameterType(
         return INT
     }
 
-    if (className == "VsdxPath") {
+    if (className in DOUBLE_CLASSES) {
         return DOUBLE
     }
 
