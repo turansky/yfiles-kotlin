@@ -8,8 +8,8 @@ val JS_BOOLEAN = "boolean"
 val JS_STRING = "string"
 val JS_NUMBER = "number"
 
-val JS_INT = "Int"
-val JS_DOUBLE = "Double"
+val JS_INT = INT
+val JS_DOUBLE = DOUBLE
 
 val JS_SVG_ELEMENT = "SVGElement"
 val JS_SVG_SVG_ELEMENT = "SVGSVGElement"

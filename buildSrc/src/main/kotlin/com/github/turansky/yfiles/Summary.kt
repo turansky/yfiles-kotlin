@@ -15,10 +15,6 @@ private val TYPE_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" dat
 private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
 private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
 
-private val STRING: String = String::class.simpleName!!
-private val DOUBLE: String = Double::class.simpleName!!
-private val BOOLEAN: String = Boolean::class.simpleName!!
-
 private fun String.fixApiLinks(): String {
     return this
         .replace(" data-text=\"\"", "")

@@ -1,7 +1,13 @@
 package com.github.turansky.yfiles
 
-internal val UNIT = "Unit"
-internal val ANY = "Any"
+internal val UNIT = Unit::class.simpleName!!
+internal val ANY = Any::class.simpleName!!
+
+internal val STRING: String = String::class.simpleName!!
+internal val INT: String = Int::class.simpleName!!
+internal val DOUBLE: String = Double::class.simpleName!!
+internal val BOOLEAN: String = Boolean::class.simpleName!!
+
 internal val PROMISE = "kotlin.js.Promise"
 
 internal val ELEMENT = "org.w3c.dom.Element"
