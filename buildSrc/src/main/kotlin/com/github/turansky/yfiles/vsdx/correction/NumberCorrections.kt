@@ -1,11 +1,10 @@
 package com.github.turansky.yfiles.vsdx.correction
 
+import com.github.turansky.yfiles.JS_DOUBLE
+import com.github.turansky.yfiles.JS_INT
 import com.github.turansky.yfiles.JS_NUMBER
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
-
-private val INT = "Int"
-private val DOUBLE = "Double"
 
 private val INT_NAMES = setOf(
     "id",
@@ -129,13 +128,13 @@ internal fun correctVsdxNumbers(source: JSONObject) {
 
 private fun getType(name: String): String? =
     when {
-        name.startsWith("show") -> INT
+        name.startsWith("show") -> JS_INT
 
-        name in INT_NAMES -> INT
-        name in DOUBLE_NAMES -> DOUBLE
+        name in INT_NAMES -> JS_INT
+        name in DOUBLE_NAMES -> JS_DOUBLE
 
-        INT_SUFFIXES.any { name.endsWith(it) } -> INT
-        DOUBLE_SUFFIXES.any { name.endsWith(it) } -> DOUBLE
+        INT_SUFFIXES.any { name.endsWith(it) } -> JS_INT
+        DOUBLE_SUFFIXES.any { name.endsWith(it) } -> JS_DOUBLE
 
         else -> null
     }
@@ -165,11 +164,11 @@ private fun getPropertyType(className: String, propertyName: String): String {
     }
 
     if (className in INT_CLASSES) {
-        return INT
+        return JS_INT
     }
 
     if (className in DOUBLE_CLASSES) {
-        return DOUBLE
+        return JS_DOUBLE
     }
 
     throw IllegalStateException("Unexpected $className.$propertyName")
@@ -214,10 +213,10 @@ private fun getParameterType(
     }
 
     return when {
-        methodName == "get" && parameterName == "i" -> INT
-        methodName == "enum" || methodName == "rgb" -> INT
+        methodName == "get" && parameterName == "i" -> JS_INT
+        methodName == "enum" || methodName == "rgb" -> JS_INT
 
-        className in DOUBLE_CLASSES -> DOUBLE
+        className in DOUBLE_CLASSES -> JS_DOUBLE
 
         else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
     }
@@ -255,15 +254,15 @@ private fun getReturnType(
     methodName: String
 ): String =
     when {
-        methodName == "enum" -> INT
+        methodName == "enum" -> JS_INT
 
-        className == "CoordinateConverter" -> DOUBLE
-        className == "Value" -> DOUBLE
+        className == "CoordinateConverter" -> JS_DOUBLE
+        className == "Value" -> JS_DOUBLE
 
-        methodName == "getGradientAngle" -> DOUBLE
-        methodName == "getGradientDir" -> INT
+        methodName == "getGradientAngle" -> JS_DOUBLE
+        methodName == "getGradientDir" -> JS_INT
 
-        methodName == "toVsdxTransparency" -> DOUBLE
+        methodName == "toVsdxTransparency" -> JS_DOUBLE
 
         else -> throw IllegalStateException("Unexpected $className.$methodName")
     }

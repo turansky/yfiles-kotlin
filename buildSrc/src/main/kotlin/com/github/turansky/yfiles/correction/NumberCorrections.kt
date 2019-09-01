@@ -1,10 +1,9 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.JS_DOUBLE
+import com.github.turansky.yfiles.JS_INT
 import com.github.turansky.yfiles.JS_NUMBER
 import org.json.JSONObject
-
-private val INT = "Int"
-private val DOUBLE = "Double"
 
 internal fun correctNumbers(source: JSONObject) {
     val types = Source(source)
@@ -26,7 +25,7 @@ internal fun correctNumbers(source: JSONObject) {
         .getJSONObject("yfiles.view.AnimationCallback")
         .getJSONArray(J_PARAMETERS)
         .single() as JSONObject)
-        .put(J_TYPE, DOUBLE)
+        .put(J_TYPE, JS_DOUBLE)
 
 }
 
@@ -42,7 +41,7 @@ private fun JSONObject.correctConstants() {
         .forEach {
             if (it.has(J_SIGNATURE)) {
                 check(className == "HierarchicalClustering")
-                it.put(J_SIGNATURE, it.getString("signature").replace(",$JS_NUMBER>", ",$DOUBLE>"))
+                it.put(J_SIGNATURE, it.getString("signature").replace(",$JS_NUMBER>", ",$JS_DOUBLE>"))
                 return@forEach
             }
 
@@ -51,9 +50,9 @@ private fun JSONObject.correctConstants() {
 
             val name = it.getString(J_NAME)
             val generic = if (name.contains("_ID_") || name.contains("_INDEX_")) {
-                INT
+                JS_INT
             } else {
-                DOUBLE
+                JS_DOUBLE
             }
             it.put(J_TYPE, type.replace("<$JS_NUMBER>", "<$generic>"))
         }
@@ -86,12 +85,12 @@ private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
 
 private fun getConstructorParameterType(className: String, parameterName: String): String {
     if (className in DOUBLE_CONSTRUCTOR_CLASSES) {
-        return DOUBLE
+        return JS_DOUBLE
     }
 
     return when (parameterName) {
-        in INT_CONSTRUCTOR_PARAMETERS -> INT
-        in DOUBLE_CONSTRUCTOR_PARAMETERS -> DOUBLE
+        in INT_CONSTRUCTOR_PARAMETERS -> JS_INT
+        in DOUBLE_CONSTRUCTOR_PARAMETERS -> JS_DOUBLE
         else -> getPropertyType(className, parameterName)
     }
 }
@@ -114,18 +113,18 @@ private fun JSONObject.correctProperties(key: String) {
 
 private fun getPropertyType(className: String, propertyName: String): String =
     when {
-        propertyName.endsWith("Count") -> INT
-        propertyName.endsWith("Cost") -> DOUBLE
-        propertyName.endsWith("Ratio") -> DOUBLE
+        propertyName.endsWith("Count") -> JS_INT
+        propertyName.endsWith("Cost") -> JS_DOUBLE
+        propertyName.endsWith("Ratio") -> JS_DOUBLE
 
-        className == "BalloonLayout" && propertyName == "minimumNodeDistance" -> INT
+        className == "BalloonLayout" && propertyName == "minimumNodeDistance" -> JS_INT
 
-        propertyName.endsWith("Distance") -> DOUBLE
+        propertyName.endsWith("Distance") -> JS_DOUBLE
 
-        className == "AffineLine" && (propertyName == "a" || propertyName == "b") -> DOUBLE
+        className == "AffineLine" && (propertyName == "a" || propertyName == "b") -> JS_DOUBLE
 
-        propertyName in INT_PROPERTIES -> INT
-        propertyName in DOUBLE_PROPERTIES -> DOUBLE
+        propertyName in INT_PROPERTIES -> JS_INT
+        propertyName in DOUBLE_PROPERTIES -> JS_DOUBLE
 
         else -> throw IllegalStateException("Unexpected $className.$propertyName")
     }
@@ -149,7 +148,7 @@ private fun JSONObject.correctPropertiesGeneric() {
 
             val name = it.getString(J_NAME)
             check(name == "metric" || name == "heuristic")
-            it.put("signature", signature.replace("$JS_NUMBER>", "$DOUBLE>"))
+            it.put("signature", signature.replace("$JS_NUMBER>", "$JS_DOUBLE>"))
         }
 }
 
@@ -160,9 +159,9 @@ private fun getPropertyGenericType(propertyName: String, type: String): String {
         || propertyName.endsWith("Capacities", true)
         || propertyName == "busRootOffsets"
     ) {
-        INT
+        JS_INT
     } else {
-        DOUBLE
+        JS_DOUBLE
     }
 
     return type.replace(JS_NUMBER, generic)
@@ -188,25 +187,25 @@ private fun JSONObject.correctMethods(key: String) {
 
             when (returns.getString(J_TYPE)) {
                 JS_NUMBER -> returns.put(J_TYPE, getReturnType(className, methodName))
-                "Array<$JS_NUMBER>" -> returns.put(J_TYPE, "Array<$DOUBLE>")
+                "Array<$JS_NUMBER>" -> returns.put(J_TYPE, "Array<$JS_DOUBLE>")
             }
         }
 }
 
 private fun getReturnType(className: String, methodName: String): String =
     when {
-        methodName.endsWith("Count") -> INT
-        methodName.endsWith("Components") -> INT
+        methodName.endsWith("Count") -> JS_INT
+        methodName.endsWith("Components") -> JS_INT
 
-        methodName.endsWith("Cost") || methodName.endsWith("Costs") -> DOUBLE
+        methodName.endsWith("Cost") || methodName.endsWith("Costs") -> JS_DOUBLE
 
-        methodName.endsWith("Ratio") -> DOUBLE
-        methodName.endsWith("Distance") -> DOUBLE
+        methodName.endsWith("Ratio") -> JS_DOUBLE
+        methodName.endsWith("Distance") -> JS_DOUBLE
 
-        className == "YVector" || className == "LineSegment" && methodName == "length" -> DOUBLE
+        className == "YVector" || className == "LineSegment" && methodName == "length" -> JS_DOUBLE
 
-        methodName in INT_METHODS -> INT
-        methodName in DOUBLE_METHODS -> DOUBLE
+        methodName in INT_METHODS -> JS_INT
+        methodName in DOUBLE_METHODS -> JS_DOUBLE
 
         else -> throw IllegalStateException("Unexpected $className.$methodName")
     }
@@ -241,9 +240,9 @@ private fun JSONObject.correctMethodParameters(key: String) {
 }
 
 private val A_MAP = mapOf(
-    "fromArgb" to INT,
-    "fromHSLA" to DOUBLE,
-    "fromRGBA" to DOUBLE
+    "fromArgb" to JS_INT,
+    "fromHSLA" to JS_DOUBLE,
+    "fromRGBA" to JS_DOUBLE
 )
 
 private val DOUBLE_CLASSES = setOf(
@@ -265,36 +264,36 @@ private val DOUBLE_METHOD_NAMES = setOf(
 
 private fun getParameterType(className: String, methodName: String, parameterName: String): String =
     when {
-        methodName == "setInt" || methodName == "createHighPerformanceIntMap" -> INT
+        methodName == "setInt" || methodName == "createHighPerformanceIntMap" -> JS_INT
 
-        methodName in DOUBLE_METHOD_NAMES -> DOUBLE
-        className in DOUBLE_CLASSES -> DOUBLE
+        methodName in DOUBLE_METHOD_NAMES -> JS_DOUBLE
+        className in DOUBLE_CLASSES -> JS_DOUBLE
 
-        className == "List" || className == "IEnumerable" -> INT
+        className == "List" || className == "IEnumerable" -> JS_INT
 
-        parameterName.endsWith("Ratio") -> DOUBLE
-        parameterName.endsWith("Duration") -> DOUBLE
-        parameterName.endsWith("Distance") -> DOUBLE
+        parameterName.endsWith("Ratio") -> JS_DOUBLE
+        parameterName.endsWith("Duration") -> JS_DOUBLE
+        parameterName.endsWith("Distance") -> JS_DOUBLE
 
-        parameterName.endsWith("Index") -> INT
-        parameterName.endsWith("Count") -> INT
+        parameterName.endsWith("Index") -> JS_INT
+        parameterName.endsWith("Count") -> JS_INT
 
         parameterName == "a" -> A_MAP.getValue(methodName)
 
-        parameterName in INT_METHOD_PARAMETERS -> INT
-        parameterName in INT_PROPERTIES -> INT
+        parameterName in INT_METHOD_PARAMETERS -> JS_INT
+        parameterName in INT_PROPERTIES -> JS_INT
 
-        parameterName in DOUBLE_METHOD_PARAMETERS -> DOUBLE
-        parameterName in DOUBLE_PROPERTIES -> DOUBLE
+        parameterName in DOUBLE_METHOD_PARAMETERS -> JS_DOUBLE
+        parameterName in DOUBLE_PROPERTIES -> JS_DOUBLE
 
         else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
     }
 
 private fun getGenericParameterType(className: String, methodName: String, parameterName: String): String {
     return if (className == "NodeOrders" || methodName.endsWith("ForInt") || parameterName == "intData") {
-        INT
+        JS_INT
     } else {
-        DOUBLE
+        JS_DOUBLE
     }
 }
 
@@ -316,7 +315,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
         .forEach {
             val signature = it.getString("signature")
             if (signature.contains(",$JS_NUMBER")) {
-                it.put("signature", signature.replace(",$JS_NUMBER", ",$INT"))
+                it.put("signature", signature.replace(",$JS_NUMBER", ",$JS_INT"))
             }
         }
 }
