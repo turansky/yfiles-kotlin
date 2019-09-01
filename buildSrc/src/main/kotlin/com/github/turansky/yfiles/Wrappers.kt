@@ -61,7 +61,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val name: String by string()
 
     val namespaces: List<Namespace> by list(::Namespace)
-    val types: List<Type> by DeclarationArrayDelegate { parseType(it) }
+    val types: List<Type> by declarationList { parseType(it) }
 }
 
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
@@ -149,13 +149,13 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     val es6name: String? by optString()
 
-    val constants: List<Constant> by DeclarationArrayDelegate { Constant(it, this) }
+    val constants: List<Constant> by declarationList { Constant(it, this) }
 
-    val properties: List<Property> by DeclarationArrayDelegate { Property(it, this) }
-    val staticProperties: List<Property> by DeclarationArrayDelegate { Property(it, this) }
+    val properties: List<Property> by declarationList { Property(it, this) }
+    val staticProperties: List<Property> by declarationList { Property(it, this) }
 
-    val methods: List<Method> by DeclarationArrayDelegate { Method(it, this) }
-    val staticMethods: List<Method> by DeclarationArrayDelegate { Method(it) }
+    val methods: List<Method> by declarationList { Method(it, this) }
+    val staticMethods: List<Method> by declarationList { Method(it) }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -206,7 +206,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         else -> ""
     }
 
-    private val constructors: List<Constructor> by DeclarationArrayDelegate { Constructor(it) }
+    private val constructors: List<Constructor> by declarationList { Constructor(it) }
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
 
@@ -986,6 +986,10 @@ private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifie
         return EventListenerModifiers(StringArrayDelegate.value(source, key))
     }
 }
+
+private fun <T : Declaration> declarationList(
+    transform: (JSONObject) -> T
+): JsonDelegate<List<T>> = DeclarationArrayDelegate(transform)
 
 private class DeclarationArrayDelegate<T : Declaration>(
     transform: (JSONObject) -> T
