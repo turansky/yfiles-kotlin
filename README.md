@@ -10,7 +10,7 @@
   
 ## Description
 | JS library                  | [yFiles for HTML][11] | [VSDX Export][21] |
-|-----------------------------|-----------------------|-------------------|
+| :---                        |         :---:         |      :---:        |
 | Documentation               |        [API][12]      |     [API][22]     |
 | Module                      |        `yfiles`       |   `yfiles/vsdx`   |
 | Version                     |         `2.2.1`       |      `1.0.0`      |
