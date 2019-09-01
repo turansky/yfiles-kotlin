@@ -147,7 +147,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val id: String by string()
     final override val classId: ClassId = fixPackage(id)
 
-    val es6name: String? by NullableStringDelegate()
+    val es6name: String? by optString()
 
     val constants: List<Constant> by DeclarationArrayDelegate { Constant(it, this) }
 
@@ -160,7 +160,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
 
-    private val extends: String? by NullableStringDelegate()
+    private val extends: String? by optString()
     private val implements: List<String> by StringArrayDelegate()
 
     private val relatedDemos: List<Demo> by ArrayDelegate(::Demo)
@@ -219,7 +219,7 @@ internal class Enum(source: JSONObject) : Type(source)
 
 private class TypeReference(override val source: JSONObject) : HasSource {
     private val type: String by TypeDelegate { parseType(it) }
-    private val member: String? by NullableStringDelegate()
+    private val member: String? by optString()
 
     fun toDoc(): String {
         val t = type.substringBefore("<")
@@ -230,7 +230,7 @@ private class TypeReference(override val source: JSONObject) : HasSource {
 }
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
-    private val value: String? by NullableStringDelegate()
+    private val value: String? by optString()
     private val ref: TypeReference? by TypeReferenceDelegate()
     private val summary: String? by SummaryDelegate()
 
@@ -287,7 +287,7 @@ internal sealed class SeeAlso {
 
 private class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSource {
     private val type: String by string()
-    private val member: String? by NullableStringDelegate()
+    private val member: String? by optString()
 
     private val doc: String by lazy {
         val cleanType = type.substringBefore("<")
@@ -359,8 +359,8 @@ internal abstract class TypedDeclaration(
     source: JSONObject,
     protected val parent: TypeDeclaration
 ) : Declaration(source) {
-    private val id: String? by NullableStringDelegate()
-    private val signature: String? by NullableStringDelegate()
+    private val id: String? by optString()
+    private val signature: String? by optString()
     protected val type: String by TypeDelegate { parse(it, signature) }
 
     private val seeAlsoDocs: List<SeeAlso>
@@ -724,7 +724,7 @@ internal class ParameterModifiers(flags: List<String>) {
 
 internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by string()
-    private val signature: String? by NullableStringDelegate()
+    private val signature: String? by optString()
     val lambda: Boolean = signature != null
     val type: String by TypeDelegate { parse(it, signature) }
     override val summary: String? by SummaryDelegate()
@@ -782,7 +782,7 @@ internal class Generics(private val parameters: List<TypeParameter>) {
 }
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
-    private val signature: String? by NullableStringDelegate()
+    private val signature: String? by optString()
     val type: String by TypeDelegate { parse(it, signature) }
     override val doc: String? by SummaryDelegate()
 }

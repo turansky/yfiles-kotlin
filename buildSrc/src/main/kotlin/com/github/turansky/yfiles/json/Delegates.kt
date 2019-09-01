@@ -114,6 +114,8 @@ internal class MapDelegate<T>(
     }
 }
 
+internal fun optString(): JsonDelegate<String?> = NullableStringDelegate()
+
 internal class NullableStringDelegate : JsonDelegate<String?>() {
     companion object {
         fun value(
