@@ -16,17 +16,24 @@ private val INT_NAMES = setOf(
     "master",
     "sheet",
 
-    "background"
+    "background",
+    "uiVisibility"
 )
 
 private val INT_SUFFIXES = setOf(
     "Index",
     "Count",
     "Type",
+    "Code",
 
+    "Window",
     "Page",
     "Format",
     "Style",
+
+    "Angles",
+    "Extensions",
+    "Level",
     "Settings",
 
     "Group",
@@ -35,7 +42,8 @@ private val INT_SUFFIXES = setOf(
     "Orientation",
     "Pattern",
     "Cap",
-    "Arrow"
+    "Arrow",
+    "Alignment"
 )
 
 private val INT_CLASSES = setOf(
@@ -77,7 +85,8 @@ private val DOUBLE_SUFFIXES = setOf(
     "Origin",
     "Density",
     "Spacing",
-    "Weight"
+    "Weight",
+    "Size"
 )
 
 private val DOUBLE_CLASSES = setOf(
