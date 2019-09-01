@@ -9,13 +9,23 @@ private val DOUBLE = "Double"
 
 private val INT_NAMES = setOf(
     "id",
-    "index"
+    "index",
+
+    "page"
 )
 
 private val INT_SUFFIXES = setOf(
     "Index",
     "Count",
-    "Type"
+    "Type",
+
+    "Page",
+    "Format",
+    "Style"
+)
+
+private val INT_CLASSES = setOf(
+    "Field"
 )
 
 private val DOUBLE_NAMES = setOf(
@@ -27,8 +37,10 @@ private val DOUBLE_NAMES = setOf(
     "scale",
     "zoom",
 
-    "radian",
-    "inches"
+    "radius",
+    "radians",
+    "inches",
+    "transparency"
 )
 
 private val DOUBLE_SUFFIXES = setOf(
@@ -40,8 +52,8 @@ private val DOUBLE_SUFFIXES = setOf(
     "Scale",
     "Angle",
     "Factor",
-
-    "Margin"
+    "Margin",
+    "Transparency"
 )
 
 private val DOUBLE_CLASSES = setOf(
@@ -102,6 +114,10 @@ private fun JSONObject.correctProperties() {
 private fun getPropertyType(className: String, propertyName: String): String {
     getType(propertyName)?.also {
         return it
+    }
+
+    if (className in INT_CLASSES) {
+        return INT
     }
 
     if (className in DOUBLE_CLASSES) {
