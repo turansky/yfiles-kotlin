@@ -27,7 +27,15 @@ private val INT_SUFFIXES = setOf(
     "Page",
     "Format",
     "Style",
-    "Settings"
+    "Settings",
+
+    "Group",
+    "State",
+
+    "Orientation",
+    "Pattern",
+    "Cap",
+    "Arrow"
 )
 
 private val INT_CLASSES = setOf(
@@ -89,6 +97,10 @@ internal fun correctVsdxNumbers(source: JSONObject) {
 }
 
 private fun getType(name: String): String? {
+    if (name.startsWith("show")) {
+        return INT
+    }
+
     if (name in INT_NAMES) {
         return INT
     }
@@ -185,7 +197,7 @@ private fun getParameterType(
         return INT
     }
 
-    if (methodName == "enum" && methodName == "rgb") {
+    if (methodName == "enum" || methodName == "rgb") {
         return INT
     }
 
