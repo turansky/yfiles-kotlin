@@ -247,6 +247,10 @@ private fun JSONObject.correctMethodParameters(key: String) {
                             val generic = getGenericParameterType(className, methodName, parameterName)
                             it.put(J_TYPE, "Array<$generic>")
                         }
+                        "Array<Array<$JS_NUMBER>>" -> {
+                            check(parameterName == "dist")
+                            it.put(J_TYPE, "Array<Array<$JS_INT>>")
+                        }
                     }
                 }
         }
