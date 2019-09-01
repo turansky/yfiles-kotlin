@@ -53,6 +53,10 @@ internal open class ArrayDelegate<T>(
     }
 }
 
+internal fun stringList(
+    transform: ((String) -> String)? = null
+): JsonDelegate<List<String>> = StringArrayDelegate(transform)
+
 internal class StringArrayDelegate(
     private val transform: ((String) -> String)? = null
 ) : JsonDelegate<List<String>>() {
@@ -160,7 +164,7 @@ internal class StringDelegate : JsonDelegate<String>() {
 
 internal fun boolean(): JsonDelegate<Boolean> = BooleanDelegate()
 
-internal class BooleanDelegate : JsonDelegate<Boolean>() {
+private class BooleanDelegate : JsonDelegate<Boolean>() {
     override fun read(
         source: JSONObject,
         key: String

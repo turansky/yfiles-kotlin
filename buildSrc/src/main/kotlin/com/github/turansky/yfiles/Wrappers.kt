@@ -161,7 +161,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     final override val generics: Generics = Generics(typeparameters)
 
     private val extends: String? by optString()
-    private val implements: List<String> by StringArrayDelegate()
+    private val implements: List<String> by stringList()
 
     private val relatedDemos: List<Demo> by ArrayDelegate(::Demo)
 
@@ -458,7 +458,7 @@ internal class Property(
     private val final = modifiers.final
     private val open = !static && !final
 
-    private val preconditions: List<String> by StringArrayDelegate(::summary)
+    private val preconditions: List<String> by stringList(::summary)
 
     private val defaultValue: DefaultValue? by DefaultValueDelegate()
 
@@ -537,7 +537,7 @@ internal class Method(
 
     private val isExtension by boolean()
 
-    private val postconditions: List<String> by StringArrayDelegate(::summary)
+    private val postconditions: List<String> by stringList(::summary)
 
     private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
     val generics: Generics = Generics(typeparameters)
@@ -674,7 +674,7 @@ internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
     protected val parameters: List<Parameter> by ArrayDelegate(::Parameter)
     val options: Boolean by boolean()
 
-    protected val preconditions: List<String> by StringArrayDelegate(::summary)
+    protected val preconditions: List<String> by stringList(::summary)
 
     protected abstract val overridden: Boolean
 
@@ -734,7 +734,7 @@ internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by string()
     val summary: String? by SummaryDelegate()
-    private val bounds: List<String> by StringArrayDelegate()
+    private val bounds: List<String> by stringList()
 
     init {
         require(bounds.size <= 1)
