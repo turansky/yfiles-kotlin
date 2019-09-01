@@ -127,29 +127,18 @@ internal fun correctVsdxNumbers(source: JSONObject) {
         .forEach { it.correctMethodParameters() }
 }
 
-private fun getType(name: String): String? {
-    if (name.startsWith("show")) {
-        return INT
-    }
+private fun getType(name: String): String? =
+    when {
+        name.startsWith("show") -> INT
 
-    if (name in INT_NAMES) {
-        return INT
-    }
+        name in INT_NAMES -> INT
+        name in DOUBLE_NAMES -> DOUBLE
 
-    if (name in DOUBLE_NAMES) {
-        return DOUBLE
-    }
+        INT_SUFFIXES.any { name.endsWith(it) } -> INT
+        DOUBLE_SUFFIXES.any { name.endsWith(it) } -> DOUBLE
 
-    if (INT_SUFFIXES.any { name.endsWith(it) }) {
-        return INT
+        else -> null
     }
-
-    if (DOUBLE_SUFFIXES.any { name.endsWith(it) }) {
-        return DOUBLE
-    }
-
-    return null
-}
 
 private fun JSONObject.correctProperties() {
     if (!has(J_PROPERTIES)) {
@@ -224,19 +213,14 @@ private fun getParameterType(
         return it
     }
 
-    if (methodName == "get" && parameterName == "i") {
-        return INT
-    }
+    return when {
+        methodName == "get" && parameterName == "i" -> INT
+        methodName == "enum" || methodName == "rgb" -> INT
 
-    if (methodName == "enum" || methodName == "rgb") {
-        return INT
-    }
+        className in DOUBLE_CLASSES -> DOUBLE
 
-    if (className in DOUBLE_CLASSES) {
-        return DOUBLE
+        else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
     }
-
-    throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
 }
 
 private fun JSONObject.correctMethods() {
