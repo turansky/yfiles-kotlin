@@ -11,7 +11,12 @@ private val INT_NAMES = setOf(
     "id",
     "index",
 
-    "page"
+    "page",
+    "container",
+    "master",
+    "sheet",
+
+    "background"
 )
 
 private val INT_SUFFIXES = setOf(
@@ -21,7 +26,8 @@ private val INT_SUFFIXES = setOf(
 
     "Page",
     "Format",
-    "Style"
+    "Style",
+    "Settings"
 )
 
 private val INT_CLASSES = setOf(
@@ -176,6 +182,10 @@ private fun getParameterType(
     }
 
     if (methodName == "get" && parameterName == "i") {
+        return INT
+    }
+
+    if (methodName == "enum" && methodName == "rgb") {
         return INT
     }
 
