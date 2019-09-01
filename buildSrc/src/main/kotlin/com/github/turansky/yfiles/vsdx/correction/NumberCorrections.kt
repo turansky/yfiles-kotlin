@@ -25,7 +25,8 @@ private val INT_NAMES = setOf(
     "type",
     "case",
     "style",
-    "langID"
+    "langID",
+    "themeEffects"
 )
 
 private val INT_SUFFIXES = setOf(
@@ -181,7 +182,7 @@ private fun getPropertyType(className: String, propertyName: String): String {
         return DOUBLE
     }
 
-    return "Number"
+    throw IllegalStateException("Unexpected $className.$propertyName")
 }
 
 private fun JSONObject.correctMethodParameters() {
@@ -204,7 +205,7 @@ private fun JSONObject.correctMethodParameters(key: String) {
                     val parameterName = it.getString(J_NAME)
                     when (it.getString(J_TYPE)) {
                         JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
-                        "Value<$JS_NUMBER>" -> {
+                        "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                             val generic = getParameterType(className, methodName, parameterName)
                             it.put(J_TYPE, "Value<$generic>")
                         }
@@ -234,5 +235,5 @@ private fun getParameterType(
         return DOUBLE
     }
 
-    return "Number"
+    throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
 }
