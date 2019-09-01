@@ -122,6 +122,7 @@ internal fun correctVsdxNumbers(source: JSONObject) {
         .toList()
 
     types.asSequence()
+        .onEach { it.correctMethods() }
         .onEach { it.correctProperties() }
         .forEach { it.correctMethodParameters() }
 }
@@ -237,3 +238,41 @@ private fun getParameterType(
 
     throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
 }
+
+private fun JSONObject.correctMethods() {
+    correctMethods(J_STATIC_METHODS)
+    correctMethods(J_METHODS)
+}
+
+private fun JSONObject.correctMethods(key: String) {
+    if (!has(key)) {
+        return
+    }
+
+    val className = getString(J_NAME)
+    jsequence(key)
+        .filter { it.has(J_RETURNS) }
+        .forEach {
+            val methodName = it.getString(J_NAME)
+            it.getJSONObject(J_RETURNS).apply {
+                when (getString(J_TYPE)) {
+                    JS_NUMBER -> put(J_TYPE, getReturnType(className, methodName))
+                    "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
+                        val generic = getReturnType(className, methodName)
+                        put(J_TYPE, "Value<$generic>")
+                    }
+                }
+            }
+        }
+}
+
+private fun getReturnType(
+    className: String,
+    methodName: String
+): String =
+    when {
+        className == "CoordinateConverter" -> DOUBLE
+        methodName == "enum" -> INT
+        else -> "Number"
+    }
+
