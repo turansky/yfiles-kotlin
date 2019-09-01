@@ -263,55 +263,32 @@ private val DOUBLE_METHOD_NAMES = setOf(
     "createStripeAnimation"
 )
 
-private fun getParameterType(className: String, methodName: String, parameterName: String): String {
-    if (methodName == "setInt" || methodName == "createHighPerformanceIntMap") {
-        return INT
-    }
+private fun getParameterType(className: String, methodName: String, parameterName: String): String =
+    when {
+        methodName == "setInt" || methodName == "createHighPerformanceIntMap" -> INT
 
-    if (methodName in DOUBLE_METHOD_NAMES) {
-        return DOUBLE
-    }
+        methodName in DOUBLE_METHOD_NAMES -> DOUBLE
+        className in DOUBLE_CLASSES -> DOUBLE
 
-    if (className in DOUBLE_CLASSES) {
-        return DOUBLE
-    }
+        className == "List" || className == "IEnumerable" -> INT
 
-    if (className == "List" || className == "IEnumerable") {
-        return INT
-    }
+        parameterName.endsWith("Ratio") -> DOUBLE
+        parameterName.endsWith("Duration") -> DOUBLE
+        parameterName.endsWith("Distance") -> DOUBLE
 
-    if (parameterName.endsWith("Ratio")) {
-        return DOUBLE
-    }
+        parameterName.endsWith("Index") -> INT
+        parameterName.endsWith("Count") -> INT
 
-    if (parameterName.endsWith("Duration")) {
-        return DOUBLE
-    }
+        parameterName == "a" -> A_MAP.getValue(methodName)
 
-    if (parameterName.endsWith("Distance")) {
-        return DOUBLE
-    }
+        parameterName in INT_METHOD_PARAMETERS -> INT
+        parameterName in INT_PROPERTIES -> INT
 
-    if (parameterName.endsWith("Index")) {
-        return INT
-    }
+        parameterName in DOUBLE_METHOD_PARAMETERS -> DOUBLE
+        parameterName in DOUBLE_PROPERTIES -> DOUBLE
 
-    if (parameterName.endsWith("Count")) {
-        return INT
-    }
-
-    if (parameterName == "a") {
-        return A_MAP.getValue(methodName)
-    }
-
-    return when (parameterName) {
-        in INT_METHOD_PARAMETERS -> INT
-        in INT_PROPERTIES -> INT
-        in DOUBLE_METHOD_PARAMETERS -> DOUBLE
-        in DOUBLE_PROPERTIES -> DOUBLE
         else -> throw IllegalStateException("Unexpected $className.$methodName.$parameterName")
     }
-}
 
 private fun getGenericParameterType(className: String, methodName: String, parameterName: String): String {
     return if (className == "NodeOrders" || methodName.endsWith("ForInt") || parameterName == "intData") {
