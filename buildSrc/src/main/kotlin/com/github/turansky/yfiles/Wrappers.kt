@@ -21,7 +21,7 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
     val name: String by string()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
-    val summary: String? by SummaryDelegate()
+    val summary: String? by summary()
     protected val remarks: String by string()
     protected val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
 
@@ -67,7 +67,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
     override val classId = fixPackage(fqn)
 
-    private val summary: String? by SummaryDelegate()
+    private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
 
     private val parameters: List<SignatureParameter> by list(::SignatureParameter)
@@ -107,7 +107,7 @@ internal interface IParameter {
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by string()
     val type: String by TypeDelegate { parseType(it) }
-    override val summary: String? by SummaryDelegate()
+    override val summary: String? by summary()
 
     // TODO: remove temp nullability fix
     override fun toCode(): String {
@@ -125,7 +125,7 @@ internal interface IReturns {
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val type: String by TypeDelegate { parseType(it) }
-    override val doc: String? by SummaryDelegate()
+    override val doc: String? by summary()
 
     override fun toCode(): String {
         // TODO: remove specific hack for MapperDelegate
@@ -232,7 +232,7 @@ private class TypeReference(override val source: JSONObject) : HasSource {
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by optString()
     private val ref: TypeReference? by TypeReferenceDelegate()
-    private val summary: String? by SummaryDelegate()
+    private val summary: String? by summary()
 
     private fun getDefault(): String {
         ref?.let {
@@ -260,7 +260,7 @@ private class ExceptionDescription(override val source: JSONObject) : HasSource 
     private val REDUNDANT_NULL_WARNING = Regex("if the specified .+ is `null`\\.?")
 
     private val name: String by string()
-    private val summary: String? by SummaryDelegate()
+    private val summary: String? by summary()
 
     fun isEmpty(): Boolean =
         name == "NullReferenceError" || summary?.matches(REDUNDANT_NULL_WARNING) == true
@@ -727,13 +727,13 @@ internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
     private val signature: String? by optString()
     val lambda: Boolean = signature != null
     val type: String by TypeDelegate { parse(it, signature) }
-    override val summary: String? by SummaryDelegate()
+    override val summary: String? by summary()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
     val name: String by string()
-    val summary: String? by SummaryDelegate()
+    val summary: String? by summary()
     private val bounds: List<String> by stringList()
 
     init {
@@ -784,7 +784,7 @@ internal class Generics(private val parameters: List<TypeParameter>) {
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by optString()
     val type: String by TypeDelegate { parse(it, signature) }
-    override val doc: String? by SummaryDelegate()
+    override val doc: String? by summary()
 }
 
 internal class Event(
@@ -792,7 +792,7 @@ internal class Event(
     private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
     val name: String by string()
-    private val summary: String? by SummaryDelegate()
+    private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
     private val add: EventListener by EventListenerDelegate(parent)
     private val remove: EventListener by EventListenerDelegate(parent)
@@ -877,6 +877,8 @@ private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate
         return parse(StringDelegate.value(source, key))
     }
 }
+
+private fun summary(): JsonDelegate<String?> = SummaryDelegate()
 
 private class SummaryDelegate : JsonDelegate<String?>() {
     override fun read(
