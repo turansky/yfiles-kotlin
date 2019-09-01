@@ -15,6 +15,7 @@ private val INT_NAMES = setOf(
     "container",
     "master",
     "sheet",
+    "bullet",
 
     "background",
     "uiVisibility",
@@ -22,7 +23,9 @@ private val INT_NAMES = setOf(
     "flags",
 
     "type",
-    "case"
+    "case",
+    "style",
+    "langID"
 )
 
 private val INT_SUFFIXES = setOf(
@@ -102,8 +105,10 @@ private val DOUBLE_SUFFIXES = setOf(
 )
 
 private val DOUBLE_CLASSES = setOf(
+    "Character",
     "Control",
     "CoordinateConverter",
+    "Paragraph",
     "Scratch",
     "Stylable",
     "VsdxPath",
