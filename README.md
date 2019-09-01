@@ -9,11 +9,13 @@
   * VSDX Export - `vsdx-kotlin/src/main/kotlin`
   
 ## Description
-| Library                  | [yFiles for HTML][11] | [VSDX Export][21] |
+| JS library               | [yFiles for HTML][11] | [VSDX Export][21] |
 |--------------------------|-----------------------|-------------------|
 | Documentation            |        [API][12]      |     [API][22]     |
-| JS module                |         yfiles        |    yfiles/vsdx    |
-| JS module format         |          ES6          |        ES6        |
+| Module                   |        `yfiles`       |   `yfiles/vsdx`   |
+| Version                  |         `2.2.1`       |      `1.0.0`      |
+| Module format            |         `ES6`         |       `ES6`       |
+| **Declarations**         |    `yfiles-kotlin`    |   `vsdx-kotlin`   |
 | Nullability fixes        |         2500+         |         -         |
 | Numberability*           |           ✔           |         ✔         |
 | Strict `Class` generic   |           ✔           |         ✔         |
@@ -26,5 +28,6 @@
 
 [11]: https://www.yworks.com/products/yfiles-for-html
 [12]: http://docs.yworks.com/yfileshtml/
+
 [21]: https://www.yworks.com/products/yfiles-for-html/vsdx-export
 [22]: https://docs.yworks.com/vsdx-html/
