@@ -17,7 +17,8 @@ private val INT_NAMES = setOf(
     "sheet",
 
     "background",
-    "uiVisibility"
+    "uiVisibility",
+    "flags"
 )
 
 private val INT_SUFFIXES = setOf(
@@ -43,7 +44,9 @@ private val INT_SUFFIXES = setOf(
     "Pattern",
     "Cap",
     "Arrow",
-    "Alignment"
+    "Alignment",
+    "Font",
+    "Dir"
 )
 
 private val INT_CLASSES = setOf(
@@ -60,6 +63,8 @@ private val DOUBLE_NAMES = setOf(
     "alpha",
     "scale",
     "zoom",
+    "position",
+    "stopPosition",
 
     "radius",
     "radians",
