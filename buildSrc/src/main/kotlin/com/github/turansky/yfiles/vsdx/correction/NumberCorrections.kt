@@ -7,10 +7,28 @@ import org.json.JSONObject
 private val INT = "Int"
 private val DOUBLE = "Double"
 
+private val INT_NAMES = setOf(
+    "id",
+    "index"
+)
+
 private val INT_SUFFIXES = setOf(
     "Index",
     "Count",
     "Type"
+)
+
+private val DOUBLE_NAMES = setOf(
+    "x",
+    "y",
+    "width",
+    "height",
+
+    "scale",
+    "zoom",
+
+    "radian",
+    "inches"
 )
 
 private val DOUBLE_SUFFIXES = setOf(
@@ -56,8 +74,12 @@ private fun JSONObject.correctProperties() {
 }
 
 private fun getPropertyType(className: String, propertyName: String): String {
-    if (propertyName == "index") {
+    if (propertyName in INT_NAMES) {
         return INT
+    }
+
+    if (propertyName in DOUBLE_NAMES) {
+        return DOUBLE
     }
 
     if (INT_SUFFIXES.any { propertyName.endsWith(it) }) {
@@ -109,6 +131,14 @@ private fun getParameterType(
     methodName: String,
     parameterName: String
 ): String {
+    if (parameterName in INT_NAMES) {
+        return INT
+    }
+
+    if (parameterName in DOUBLE_NAMES) {
+        return DOUBLE
+    }
+
     if (methodName == "get" && parameterName == "i") {
         return INT
     }
