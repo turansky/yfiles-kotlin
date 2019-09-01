@@ -27,7 +27,11 @@ abstract class JsonDelegate<T> {
     }
 }
 
-internal open class ArrayDelegate<T>(
+internal fun <T : Any> list(
+    transform: (JSONObject) -> T
+): JsonDelegate<List<T>> = ArrayDelegate(transform)
+
+internal open class ArrayDelegate<T : Any>(
     private val transform: (JSONObject) -> T
 ) : JsonDelegate<List<T>>() {
 

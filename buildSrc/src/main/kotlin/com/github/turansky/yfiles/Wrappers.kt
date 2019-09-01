@@ -23,14 +23,14 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
 
     val summary: String? by SummaryDelegate()
     protected val remarks: String by string()
-    protected val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
+    protected val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
 
     override fun compareTo(other: Declaration): Int =
         name.compareTo(other.name)
 }
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
-    private val namespaces: List<Namespace> by ArrayDelegate(::Namespace)
+    private val namespaces: List<Namespace> by list(::Namespace)
     val rootTypes: List<Type>
         get() = namespaces
             .flatMap { it.types }
@@ -68,10 +68,10 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
     override val classId = fixPackage(fqn)
 
     private val summary: String? by SummaryDelegate()
-    private val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
+    private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
 
-    private val parameters: List<SignatureParameter> by ArrayDelegate(::SignatureParameter)
-    private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    private val parameters: List<SignatureParameter> by list(::SignatureParameter)
+    private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     private val returns: SignatureReturns? by SignatureReturnsDelegate()
 
     private val documentation: String
@@ -157,13 +157,13 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val methods: List<Method> by DeclarationArrayDelegate { Method(it, this) }
     val staticMethods: List<Method> by DeclarationArrayDelegate { Method(it) }
 
-    private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
 
     private val extends: String? by optString()
     private val implements: List<String> by stringList()
 
-    private val relatedDemos: List<Demo> by ArrayDelegate(::Demo)
+    private val relatedDemos: List<Demo> by list(::Demo)
 
     final override val docId: String = es6name ?: name
     final override val classDeclaration = name + generics.asParameters()
@@ -462,7 +462,7 @@ internal class Property(
 
     private val defaultValue: DefaultValue? by DefaultValueDelegate()
 
-    private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
+    private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverridden(parent.classId, name)
@@ -539,12 +539,12 @@ internal class Method(
 
     private val postconditions: List<String> by stringList(::summary)
 
-    private val typeparameters: List<TypeParameter> by ArrayDelegate(::TypeParameter)
+    private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     val generics: Generics = Generics(typeparameters)
 
     val returns: Returns? by ReturnsDelegate()
 
-    private val throws: List<ExceptionDescription> by ArrayDelegate(::ExceptionDescription)
+    private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
     override val overridden: Boolean
         get() = !static && ClassRegistry.instance.functionOverridden(parent!!.classId, name)
@@ -671,7 +671,7 @@ internal class Method(
 }
 
 internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
-    protected val parameters: List<Parameter> by ArrayDelegate(::Parameter)
+    protected val parameters: List<Parameter> by list(::Parameter)
     val options: Boolean by boolean()
 
     protected val preconditions: List<String> by stringList(::summary)
@@ -793,7 +793,7 @@ internal class Event(
 ) : JsonWrapper(source) {
     val name: String by string()
     private val summary: String? by SummaryDelegate()
-    private val seeAlso: List<SeeAlso> by ArrayDelegate(::parseSeeAlso)
+    private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
     private val add: EventListener by EventListenerDelegate(parent)
     private val remove: EventListener by EventListenerDelegate(parent)
     private val listeners = listOf(add, remove)
@@ -842,7 +842,7 @@ private class EventListener(
 ) : JsonWrapper(source) {
     val name: String by string()
     val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
-    val parameters: List<Parameter> by ArrayDelegate(::Parameter)
+    val parameters: List<Parameter> by list(::Parameter)
 
     val overriden: Boolean
         get() = ClassRegistry.instance
