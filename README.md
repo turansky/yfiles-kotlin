@@ -27,20 +27,25 @@
 \** - via extension methods
 
 ## KDoc
-| Type                  |                   |
-| :---                  |      :---:        |
-| Summary               |        ✔          |
-| Remarks               |        -          |
-| **Links**             |                   |
-| Developer Guide       |        ✔          |
-| Demo                  |        ✔          |
-| Online Documentation  | only for classes* |
+#### Supported blocks
+* Summary
+* ~~Remarks~~
+* Preconditions
+* Postconditions
+* Parameters
+* Returns
+* Default value
+* Throws
+* Links
+  * Developer Guide
+  * Demo
 
-\* - see related issues
+#### Online Documentation
+Fast navigation to online documentation supported for classes.
 
-### Related issues
-* [KT-32815](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor (#)
-* [IDEA-219818](https://youtrack.jetbrains.com/issue/IDEA-219818) - Broken links with double anchor (#)
+#### Related issues
+* [KT-32815](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
+* [IDEA-219818](https://youtrack.jetbrains.com/issue/IDEA-219818) - Broken links with double anchor `#`
 * [KT-32640](https://youtrack.jetbrains.com/issue/KT-32640) - Broken markdown links in `@see` block
 * [KT-32720](https://youtrack.jetbrains.com/issue/KT-32720) - `@see` is recommended?
 
