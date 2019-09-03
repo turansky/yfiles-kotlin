@@ -37,8 +37,12 @@ private val ENCODED_GENERIC_START = Regex("(<code>[^<]*)&lt;")
 
 private fun String.fixMarkdown(): String {
     return replace(ENCODED_GENERIC_START, "$1<")
+        .replace("<pre><code>", "\n```\n")
+        .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")
         .replace("</code>", "`")
+        .replace("<p>", "")
+        .replace("</p>", "\n")
         .replace("<b>", "**")
         .replace("</b>", "**")
         .replace("<i>", "*")
