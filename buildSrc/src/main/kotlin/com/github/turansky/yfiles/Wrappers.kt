@@ -1092,7 +1092,9 @@ private fun getDocumentationLines(
     parameters?.apply {
         asSequence()
             .filter { it.summary != null }
-            .mapTo(lines) { param(it.name, it.summary!!) }
+            .map { param(it.name, it.summary!!) }
+            .flatMap { it.split("\n").asSequence() }
+            .filterTo(lines) { it.isNotEmpty() }
     }
 
     returns?.doc?.let {
