@@ -47,6 +47,8 @@ private fun String.fixMarkdown(): String {
         .replace("</b>", "**")
         .replace("<i>", "*")
         .replace("</i>", "*")
+        .replace("<em>", "*")
+        .replace("</em>", "*")
         .replace("<ul><li>", "\n$LIST_MARKER ")
         .replace("</li><li>", "\n$LIST_MARKER ")
         .replace("</li></ul>", "")
