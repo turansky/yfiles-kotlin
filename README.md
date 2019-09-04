@@ -29,7 +29,9 @@
 ## KDoc
 #### Supported blocks
 * Summary
-* ~~Remarks~~
+* Remarks
+  * Only for properties/methods
+  * Started with "The default "
 * Preconditions
 * Postconditions
 * Parameters
