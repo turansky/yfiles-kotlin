@@ -901,7 +901,7 @@ private class RemarksDelegate : JsonDelegate<String?>() {
         key: String
     ): String? {
         val value = NullableStringDelegate.value(source, key)
-            ?.takeIf { it.startsWith("The default value ") }
+            ?.takeIf { it.startsWith("The default ") }
             ?: return null
 
         return summary(value)
