@@ -553,6 +553,7 @@ internal class Method(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            remarks = remarks,
             preconditions = preconditions,
             postconditions = postconditions,
             parameters = parameters,
