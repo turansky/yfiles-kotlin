@@ -21,8 +21,8 @@ internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), C
     val name: String by string()
     protected val modifiers: Modifiers by ModifiersDelegate()
 
-    val summary: String? by summary()
-    protected val remarks: String by string()
+    protected val summary: String? by summary()
+    protected val remarks: String? by remarks()
     protected val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
 
     override fun compareTo(other: Declaration): Int =
@@ -470,6 +470,7 @@ internal class Property(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            remarks = remarks,
             preconditions = preconditions,
             defaultValue = defaultValue,
             exceptions = throws.filterNot { it.isEmpty() },
@@ -892,6 +893,21 @@ private class SummaryDelegate : JsonDelegate<String?>() {
     }
 }
 
+private fun remarks(): JsonDelegate<String?> = RemarksDelegate()
+
+private class RemarksDelegate : JsonDelegate<String?>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): String? {
+        val value = NullableStringDelegate.value(source, key)
+            ?.takeIf { it.startsWith("The default value ") }
+            ?: return null
+
+        return summary(value)
+    }
+}
+
 private class ModifiersDelegate : JsonDelegate<Modifiers>() {
     override fun read(
         source: JSONObject,
@@ -1006,6 +1022,7 @@ private class DeclarationArrayDelegate<T : Declaration>(
 
 private fun getDocumentation(
     summary: String?,
+    remarks: String? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
@@ -1019,6 +1036,7 @@ private fun getDocumentation(
 ): String {
     var lines = getDocumentationLines(
         summary = summary,
+        remarks = remarks,
         preconditions = preconditions,
         postconditions = postconditions,
         parameters = parameters,
@@ -1049,6 +1067,7 @@ private fun getDocumentation(
 
 private fun getDocumentationLines(
     summary: String?,
+    remarks: String? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
@@ -1067,6 +1086,14 @@ private fun getDocumentationLines(
         } else {
             lines.addAll(summary.split("\n"))
         }
+    }
+
+    remarks?.let {
+        if (lines.isNotEmpty()) {
+            lines.add("")
+        }
+
+        lines.add(it)
     }
 
     preconditions
