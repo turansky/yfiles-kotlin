@@ -148,6 +148,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     final override val classId: ClassId = fixPackage(id)
 
     val es6name: String? by optString()
+    val es6Module: String by string()
 
     val constants: List<Constant> by declarationList { Constant(it, this) }
 

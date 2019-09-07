@@ -3,12 +3,9 @@ package com.github.turansky.yfiles
 import java.io.File
 
 internal class KotlinFileGenerator(
-    moduleName: String,
     private val types: Iterable<Type>,
     private val functionSignatures: Iterable<FunctionSignature>
 ) : FileGenerator {
-    private val moduleAnnotation = "@file:JsModule(\"$moduleName\")"
-
     override fun generate(directory: File) {
         directory.mkdirs()
         directory.deleteRecursively()
@@ -140,7 +137,9 @@ internal class KotlinFileGenerator(
 
         val header: String
             get() {
-                return moduleAnnotation + "\n" +
+                val moduleName = "yfiles/${declaration.es6Module}"
+
+                return "@file:JsModule(\"$moduleName\")\n" +
                         suppress +
                         "package ${data.packageName}\n"
             }
