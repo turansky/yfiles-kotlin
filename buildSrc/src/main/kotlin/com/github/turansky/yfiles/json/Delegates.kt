@@ -157,6 +157,7 @@ internal class StringDelegate : JsonDelegate<String>() {
             key: String
         ): String =
             source.getString(key)
+                .apply { check(isNotEmpty()) }
     }
 
     override fun read(
