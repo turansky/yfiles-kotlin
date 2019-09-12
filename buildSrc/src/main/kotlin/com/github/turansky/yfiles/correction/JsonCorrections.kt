@@ -351,6 +351,7 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getStroke") to true,
     MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getTangent") to true,
     MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getTangent") to true,
+    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getTargetArrowAnchor") to true,
     MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getObstacles") to true,
     MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getPath") to true,
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getStroke") to true,
