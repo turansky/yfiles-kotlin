@@ -1085,7 +1085,7 @@ private fun getDocumentationLines(
         if (primaryConstructor) {
             lines.add(constructor(summary))
         } else {
-            lines.addAll(summary.split("\n"))
+            lines.addAll(summary.split(LINE_DELIMETER))
         }
     }
 
@@ -1097,19 +1097,8 @@ private fun getDocumentationLines(
         lines.add(it)
     }
 
-    preconditions
-        ?.takeIf { it.isNotEmpty() }
-        ?.let {
-            lines.add("### Preconditions")
-            it.mapTo(lines, ::listItem)
-        }
-
-    postconditions
-        ?.takeIf { it.isNotEmpty() }
-        ?.let {
-            lines.add("### Postconditions")
-            it.mapTo(lines, ::listItem)
-        }
+    lines.addAll(preconditions.toNamedList("Preconditions"))
+    lines.addAll(postconditions.toNamedList("Postconditions"))
 
     typeparameters?.flatMapTo(lines) {
         it.toDoc()
@@ -1159,5 +1148,13 @@ private fun IParameter.toDoc(): List<String> {
         ?: return emptyList()
 
     return param(name, summary)
+}
+
+private fun List<String>?.toNamedList(title: String): List<String> {
+    if (this == null || isEmpty()) {
+        return emptyList()
+    }
+
+    return listOf("### $title") + map(::listItem)
 }
 
