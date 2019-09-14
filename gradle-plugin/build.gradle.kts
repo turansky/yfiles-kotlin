@@ -3,6 +3,8 @@ version = "0.0.1-SNAPSHOT"
 
 plugins {
     id("java-gradle-plugin")
+    id("com.gradle.plugin-publish") version "0.10.1"
+
     kotlin("jvm") version "1.3.50"
 }
 
@@ -31,6 +33,20 @@ gradlePlugin {
         create("yfiles") {
             id = "com.github.turansky.yfiles"
             implementationClass = "com.github.turansky.yfiles.gradle.plugin.GradlePlugin"
+        }
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/turansky/yfiles-kotlin"
+    vcsUrl = "https://github.com/turansky/yfiles-kotlin"
+
+    (plugins) {
+        "yfiles" {
+            displayName = "yFiles Kotlin/JS plugin"
+            description = "yFiles class framework helper for Kotlin/JS"
+            tags = listOf("yfiles", "kotlinjs")
+            version = project.version.toString()
         }
     }
 }
