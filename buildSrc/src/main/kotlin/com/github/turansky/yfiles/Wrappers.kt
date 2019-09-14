@@ -733,9 +733,9 @@ internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
-internal class TypeParameter(source: JSONObject) : JsonWrapper(source) {
-    val name: String by string()
-    val summary: String? by summary()
+internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter {
+    override val name: String by string()
+    override val summary: String? by summary()
     private val bounds: List<String> by stringList()
 
     init {
@@ -1111,18 +1111,12 @@ private fun getDocumentationLines(
             it.mapTo(lines, ::listItem)
         }
 
-    typeparameters?.apply {
-        asSequence()
-            .filter { it.summary != null }
-            .mapTo(lines) { param(it.name, it.summary!!) }
+    typeparameters?.flatMapTo(lines) {
+        it.toDoc()
     }
 
-    parameters?.apply {
-        asSequence()
-            .filter { it.summary != null }
-            .map { param(it.name, it.summary!!) }
-            .flatMap { it.split("\n").asSequence() }
-            .filterTo(lines) { it.isNotEmpty() }
+    parameters?.flatMapTo(lines) {
+        it.toDoc()
     }
 
     returns?.doc?.let {
@@ -1158,5 +1152,23 @@ private fun getDocumentationLines(
     }
 
     return lines.toList()
+}
+
+private fun IParameter.toDoc(): List<String> {
+    val summary = summary
+        ?: return emptyList()
+
+    return param(name, summary)
+        .split("\n")
+        // TODO: check if required
+        .filter { it.isNotEmpty() }
+        .mapIndexed { index, line ->
+            if (index == 0) {
+                line
+            } else {
+                println(line)
+                "    " + line
+            }
+        }
 }
 
