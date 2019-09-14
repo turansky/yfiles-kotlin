@@ -1,6 +1,8 @@
 package com.github.turansky.yfiles
 
 const val LIST_MARKER = "-"
+const val LINE_DELIMETER = "\n"
+const val MULTILINE_INDENT = "\n"
 
 lateinit var docBaseUrl: String
 
@@ -18,8 +20,9 @@ fun constructor(): String =
 fun constructor(summary: String): String =
     "@constructor $summary"
 
-fun param(name: String, summary: String): String =
+fun param(name: String, summary: String): List<String> =
     "@param [$name] $summary"
+        .asMultiline()
 
 fun ret(summary: String): String =
     "@return $summary"
@@ -29,3 +32,15 @@ fun throws(summary: String): String =
 
 fun see(link: String): String =
     "@see $link"
+
+private fun String.asMultiline(): List<String> =
+    split(LINE_DELIMETER)
+        // TODO: check if required
+        .filter { it.isNotEmpty() }
+        .mapIndexed { index, line ->
+            if (index == 0) {
+                line
+            } else {
+                MULTILINE_INDENT + line
+            }
+        }

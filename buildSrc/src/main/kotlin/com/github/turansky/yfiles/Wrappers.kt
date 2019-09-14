@@ -1159,16 +1159,5 @@ private fun IParameter.toDoc(): List<String> {
         ?: return emptyList()
 
     return param(name, summary)
-        .split("\n")
-        // TODO: check if required
-        .filter { it.isNotEmpty() }
-        .mapIndexed { index, line ->
-            if (index == 0) {
-                line
-            } else {
-                println(line)
-                "    " + line
-            }
-        }
 }
 
