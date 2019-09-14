@@ -1,7 +1,9 @@
 package com.github.turansky.yfiles.compiler.extensions
 
+import org.jetbrains.kotlin.codegen.CompilationException
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.js.resolve.diagnostics.findPsi
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
@@ -54,12 +56,11 @@ class YExtension : JsSyntheticTranslateExtension {
         }
 
         val type = descriptor.fqNameUnsafe.asString()
-        val reason = """
+        val message = """
             | $type couldn't implement following interfaces: ${yfilesInterfaces.joinToString()}.
             | yFiles interface implementation not supported for non-external classes yet.
         """.trimMargin()
 
-        // TODO: throw compiler error instead
-        TODO(reason)
+        throw CompilationException(message, null, descriptor.findPsi())
     }
 }
