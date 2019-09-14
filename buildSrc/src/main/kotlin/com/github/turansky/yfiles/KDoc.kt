@@ -2,7 +2,7 @@ package com.github.turansky.yfiles
 
 const val LIST_MARKER = "-"
 const val LINE_DELIMETER = "\n"
-const val MULTILINE_INDENT = "\n"
+const val MULTILINE_INDENT = "    "
 
 lateinit var docBaseUrl: String
 
