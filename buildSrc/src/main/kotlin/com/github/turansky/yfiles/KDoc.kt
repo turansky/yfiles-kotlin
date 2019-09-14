@@ -24,8 +24,9 @@ fun param(name: String, summary: String): List<String> =
     "@param [$name] $summary"
         .asMultiline()
 
-fun ret(summary: String): String =
+fun ret(summary: String): List<String> =
     "@return $summary"
+        .asMultiline()
 
 fun throws(summary: String): String =
     "@throws $summary"

@@ -1120,7 +1120,7 @@ private fun getDocumentationLines(
     }
 
     returns?.doc?.let {
-        lines.addAll(ret(it).split("\n"))
+        lines.addAll(ret(it))
     }
 
     defaultValue?.let {
