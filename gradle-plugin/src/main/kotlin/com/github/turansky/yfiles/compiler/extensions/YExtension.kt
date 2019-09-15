@@ -1,14 +1,19 @@
 package com.github.turansky.yfiles.compiler.extensions
 
+import com.github.turansky.yfiles.compiler.diagnostic.YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.YMessagesExtension
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.js.facade.exceptions.UnsupportedFeatureException
+import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
+import org.jetbrains.kotlin.diagnostics.Severity.ERROR
+import org.jetbrains.kotlin.diagnostics.SimpleDiagnostic
+import org.jetbrains.kotlin.diagnostics.reportFromPlugin
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
+import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
 private val AFFECTED_CLASS_KINDS = setOf(
@@ -54,15 +59,21 @@ class YExtension : JsSyntheticTranslateExtension {
             return
         }
 
-        val type = descriptor.fqNameUnsafe.asString()
-        val message = """
-            | $type couldn't implement following interfaces: ${yfilesInterfaces.joinToString()}.
-            | yFiles interface implementation not supported for non-external classes yet.
-        """.trimMargin()
-
-        throw UnsupportedFeatureException(
-            message,
-            IllegalStateException()
-        )
+        reportError(declaration, context, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
     }
+}
+
+private fun reportError(
+    declaration: KtPureClassOrObject,
+    context: TranslationContext,
+    diagnosticFactory: DiagnosticFactory0<KtElement>
+) {
+    val diagnostic = SimpleDiagnostic(
+        declaration.psiOrParent,
+        diagnosticFactory,
+        ERROR
+    )
+
+    context.bindingTrace()
+        .reportFromPlugin(diagnostic, YMessagesExtension)
 }
