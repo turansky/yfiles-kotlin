@@ -1,9 +1,8 @@
 package com.github.turansky.yfiles.compiler.extensions
 
-import org.jetbrains.kotlin.codegen.CompilationException
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.js.resolve.diagnostics.findPsi
+import org.jetbrains.kotlin.js.facade.exceptions.UnsupportedFeatureException
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
@@ -61,6 +60,9 @@ class YExtension : JsSyntheticTranslateExtension {
             | yFiles interface implementation not supported for non-external classes yet.
         """.trimMargin()
 
-        throw CompilationException(message, null, descriptor.findPsi())
+        throw UnsupportedFeatureException(
+            message,
+            IllegalStateException()
+        )
     }
 }
