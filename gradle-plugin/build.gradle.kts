@@ -44,7 +44,12 @@ pluginBundle {
     plugins.getByName("yfiles") {
         displayName = "yFiles Kotlin/JS plugin"
         description = "yFiles class framework helper for Kotlin/JS"
-        tags = listOf("yfiles", "kotlinjs")
+        tags = listOf(
+            "yfiles",
+            "kotlin",
+            "kotlin-js",
+            "javascript"
+        )
         version = project.version.toString()
     }
 }
