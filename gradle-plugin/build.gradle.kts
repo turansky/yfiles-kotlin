@@ -41,13 +41,11 @@ pluginBundle {
     website = "https://github.com/turansky/yfiles-kotlin"
     vcsUrl = "https://github.com/turansky/yfiles-kotlin"
 
-    (plugins) {
-        "yfiles" {
-            displayName = "yFiles Kotlin/JS plugin"
-            description = "yFiles class framework helper for Kotlin/JS"
-            tags = listOf("yfiles", "kotlinjs")
-            version = project.version.toString()
-        }
+    plugins.getByName("yfiles") {
+        displayName = "yFiles Kotlin/JS plugin"
+        description = "yFiles class framework helper for Kotlin/JS"
+        tags = listOf("yfiles", "kotlinjs")
+        version = project.version.toString()
     }
 }
 
