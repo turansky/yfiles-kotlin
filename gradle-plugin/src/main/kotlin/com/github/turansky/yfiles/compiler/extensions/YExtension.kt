@@ -11,10 +11,13 @@ import org.jetbrains.kotlin.diagnostics.reportFromPlugin
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
+import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
+
+private val YFILES_PACKAGE = identifier("yfiles")
 
 private val AFFECTED_CLASS_KINDS = setOf(
     ClassKind.CLASS,
@@ -51,8 +54,8 @@ class YExtension : JsSyntheticTranslateExtension {
         val yfilesInterfaces = externalSuperInterfaces
             .filter { it.companionObjectDescriptor != null }
             .mapNotNull { it.fqNameOrNull() }
-            .map { it.asString() }
-            .filter { it.startsWith("yfiles.") }
+            .filterNot { it.isRoot }
+            .filter { it.pathSegments().first() == YFILES_PACKAGE }
             .toList()
 
         if (yfilesInterfaces.isEmpty()) {
