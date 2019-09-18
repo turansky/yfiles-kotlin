@@ -1,5 +1,5 @@
 group = "com.github.turansky.yfiles"
-version = "0.0.2"
+version = "0.0.3-SNAPSHOT"
 
 plugins {
     id("java-gradle-plugin")
