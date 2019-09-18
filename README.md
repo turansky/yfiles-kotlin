@@ -2,7 +2,9 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # Kotlin/JS declarations generator for yFiles
-## [Gradle Plugin](gradle-plugin/README.md)
+
+## Gradle Plugin
+[Under development](gradle-plugin/README.md)
 
 ## Generation
 * Run `./gradlew build`
@@ -27,6 +29,9 @@
 
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
+
+#### Related issues
+* [KT-31126](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
 ## KDoc
 #### Supported blocks
