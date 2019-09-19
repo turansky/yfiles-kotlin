@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/turansky/yfiles-kotlin.svg?branch=master)](https://travis-ci.org/turansky/yfiles-kotlin)
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com/github/turansky/yfiles/com.github.turansky.yfiles.gradle.plugin/maven-metadata.xml.svg?label=gradle)](https://plugins.gradle.org/plugin/com.github.turansky.yfiles)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # Kotlin/JS declarations generator for yFiles
