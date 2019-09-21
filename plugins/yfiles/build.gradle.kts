@@ -9,6 +9,14 @@ repositories {
     jcenter()
 }
 
+val kotlinSourceDir: File
+    get() = kotlin
+        .sourceSets
+        .get("main")
+        .kotlin
+        .sourceDirectories
+        .singleFile
+
 tasks {
     compileKotlin {
         kotlinOptions {
