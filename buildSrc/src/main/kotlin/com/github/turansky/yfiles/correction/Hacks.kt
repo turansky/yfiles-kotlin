@@ -10,6 +10,8 @@ import org.json.JSONObject
 internal fun applyHacks(api: JSONObject) {
     val source = Source(api)
 
+    cleanYObject(source)
+
     removeUnusedFunctionSignatures(source)
     removeDuplicatedProperties(source)
     removeDuplicatedMethods(source)
@@ -42,6 +44,13 @@ internal fun applyHacks(api: JSONObject) {
     applyComparableHacks(source)
 
     fixConstructors(source)
+}
+
+private fun cleanYObject(source: Source) {
+    source.type("YObject").apply {
+        strictRemove(J_STATIC_METHODS)
+        strictRemove(J_METHODS)
+    }
 }
 
 private fun removeUnusedFunctionSignatures(source: Source) {

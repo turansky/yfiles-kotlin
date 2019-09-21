@@ -9,6 +9,7 @@ private val PRIMITIVE_CLASSES = setOf(
 )
 
 private val MARKER_CLASSES = setOf(
+    YOBJECT_CLASS,
     "yfiles.lang.EventArgs",
     "yfiles.lang.Attribute",
     "yfiles.algorithms.GraphObject",
