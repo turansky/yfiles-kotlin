@@ -1,7 +1,6 @@
 import org.gradle.api.Project
 import java.io.File
 
-private val GRADLE_PLUGIN_PREFIX = "gradle.plugin."
 private val ARTIFACT_PATH = "com/github/turansky/yfiles/gradle/plugin/KotlinPluginArtifact.kt"
 
 fun Project.preparePublish(sourceDir: File) {
@@ -9,7 +8,6 @@ fun Project.preparePublish(sourceDir: File) {
     val releaseVersion = version.copy(snapshot = false)
 
     changeVersion(sourceDir, version, releaseVersion)
-    group = group.toString().removePrefix(GRADLE_PLUGIN_PREFIX)
 }
 
 fun Project.prepareDevelopment(sourceDir: File) {
@@ -20,7 +18,6 @@ fun Project.prepareDevelopment(sourceDir: File) {
     )
 
     changeVersion(sourceDir, version, snapshotVersion)
-    group = GRADLE_PLUGIN_PREFIX + group.toString()
 }
 
 private fun Project.changeVersion(
