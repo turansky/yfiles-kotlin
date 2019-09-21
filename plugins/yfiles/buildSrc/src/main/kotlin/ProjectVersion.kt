@@ -15,6 +15,4 @@ internal fun Project.writeVersion(version: Version) {
 
     properties.setProperty("version", version.toString())
     properties.store(file.writer(), null)
-
-
 }
