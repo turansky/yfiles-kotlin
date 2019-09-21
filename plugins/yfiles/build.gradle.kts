@@ -15,7 +15,7 @@ val kotlinSourceDir: File
         .get("main")
         .kotlin
         .sourceDirectories
-        .singleFile
+        .first()
 
 tasks {
     compileKotlin {
@@ -23,6 +23,20 @@ tasks {
             jvmTarget = "1.8"
             allWarningsAsErrors = true
         }
+    }
+
+    val preparePublish by registering {
+        preparePublish(kotlinSourceDir)
+    }
+
+    val prepareDevelopment by registering {
+        prepareDevelopment(kotlinSourceDir)
+    }
+
+    val releasePlugin by registering {
+        dependsOn(preparePublish)
+        dependsOn(publishPlugins)
+        dependsOn(prepareDevelopment)
     }
 }
 
