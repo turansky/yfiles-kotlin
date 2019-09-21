@@ -207,7 +207,7 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
-        override val useJsName = data.primitive
+        override val useJsName = data.primitive || data.isYObject
 
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126

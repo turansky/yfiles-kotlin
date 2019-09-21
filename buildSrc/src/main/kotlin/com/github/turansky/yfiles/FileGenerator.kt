@@ -23,6 +23,9 @@ internal class TypeGeneratorData(
 ) : GeneratorData(fqn) {
     val jsName = alias ?: name
 
+    val isYObject: Boolean
+        get() = isYObjectClass(fqn)
+
     val primitive: Boolean
         get() = isPrimitiveClass(fqn)
 
