@@ -26,11 +26,15 @@ tasks {
     }
 
     val preparePublish by registering {
-        preparePublish(kotlinSourceDir)
+        doLast {
+            preparePublish(kotlinSourceDir)
+        }
     }
 
     val prepareDevelopment by registering {
-        prepareDevelopment(kotlinSourceDir)
+        doLast {
+            prepareDevelopment(kotlinSourceDir)
+        }
     }
 
     val releasePlugin by registering {
