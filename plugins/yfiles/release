@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+./gradlew preparePublish
+./gradlew publishPlugins
+./gradlew prepareDevelopment

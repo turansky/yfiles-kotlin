@@ -38,8 +38,9 @@ tasks {
     }
 
     publishPlugins {
-        dependsOn(preparePublish)
-        finalizedBy(prepareDevelopment)
+        doFirst {
+            group = group.toString().removePrefix("gradle.plugin.")
+        }
     }
 }
 
