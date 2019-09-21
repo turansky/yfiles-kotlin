@@ -37,10 +37,9 @@ tasks {
         }
     }
 
-    val releasePlugin by registering {
+    publishPlugins {
         dependsOn(preparePublish)
-        dependsOn(publishPlugins)
-        dependsOn(prepareDevelopment)
+        finalizedBy(prepareDevelopment)
     }
 }
 
