@@ -1,11 +1,10 @@
 import nu.studer.java.util.OrderedProperties
-import org.gradle.api.Project
 import java.io.File
 
-internal fun Project.readVersion(): Version =
-    parseVersion(version.toString())
-
-internal fun Project.writeVersion(version: Version) {
+internal fun changeProperty(
+    key: String,
+    value: String
+) {
     val properties = OrderedProperties.OrderedPropertiesBuilder()
         .withSuppressDateInComment(true)
         .build()
@@ -13,6 +12,6 @@ internal fun Project.writeVersion(version: Version) {
     val file = File("gradle.properties")
     properties.load(file.inputStream())
 
-    properties.setProperty("version", version.toString())
+    properties.setProperty(key, value)
     properties.store(file.writer(), null)
 }

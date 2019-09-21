@@ -20,12 +20,15 @@ fun Project.prepareDevelopment(sourceDir: File) {
     changeVersion(sourceDir, version, snapshotVersion)
 }
 
+internal fun Project.readVersion(): Version =
+    parseVersion(version.toString())
+
 private fun Project.changeVersion(
     sourceDir: File,
     oldVersion: Version,
     newVersion: Version
 ) {
-    writeVersion(newVersion)
+    changeProperty("version", newVersion.toString())
     version = newVersion.toString()
 
     sourceDir.resolve(ARTIFACT_PATH).apply {
