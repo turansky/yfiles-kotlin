@@ -8,6 +8,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
+private val YFILES_COMPILER_PLUGIN_ID = "com.github.turansky.yfiles"
+
 class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
 
     override fun isApplicable(project: Project, task: AbstractCompile) =
@@ -24,7 +26,7 @@ class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
         emptyList()
 
     override fun getCompilerPluginId(): String =
-        "com.github.turansky.yfiles"
+        YFILES_COMPILER_PLUGIN_ID
 
     override fun getPluginArtifact(): SubpluginArtifact =
         SubpluginArtifact(
