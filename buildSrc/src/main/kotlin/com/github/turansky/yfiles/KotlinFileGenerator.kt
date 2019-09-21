@@ -131,7 +131,7 @@ internal class KotlinFileGenerator(
 
         protected val externalAnnotation: String
             get() = exp(
-                data.name != data.jsName,
+                data.name != data.jsName && !data.isYObject,
                 "@JsName(\"${data.jsName}\")\n"
             )
 
@@ -145,8 +145,16 @@ internal class KotlinFileGenerator(
                         "package ${data.packageName}\n"
             }
 
-        protected val classDeclaration
-            get() = declaration.name + declaration.generics.declaration
+        protected val classDeclaration: String
+            get() {
+                val name = if (data.isYObject) {
+                    data.jsName
+                } else {
+                    declaration.name
+                }
+
+                return name + declaration.generics.declaration
+            }
 
         protected val documentation
             get() = declaration.documentation
@@ -279,7 +287,7 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
-            if (isObject() || data.primitive) {
+            if (isObject() || data.primitive || data.isYObject) {
                 return null
             }
 
