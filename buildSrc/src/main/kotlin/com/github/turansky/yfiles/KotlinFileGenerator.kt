@@ -226,8 +226,12 @@ internal class KotlinFileGenerator(
         }
 
         override fun parentTypes(): List<String> {
+            if (data.isYObject) {
+                return emptyList()
+            }
+
             val extendedType = declaration.extendedType()
-                ?: return super.parentTypes()
+                ?: YOBJECT_CLASS_ALIAS
 
             return sequenceOf(extendedType)
                 .plus(super.parentTypes())

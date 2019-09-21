@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles
 
+val YOBJECT_CLASS_ALIAS = "yfiles.lang.YObject"
+
 private val YOBJECT_CLASS = "yfiles.lang.Object"
 
 private val PRIMITIVE_CLASSES = setOf(
