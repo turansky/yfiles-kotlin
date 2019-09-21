@@ -30,6 +30,6 @@ class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
         SubpluginArtifact(
             groupId = "gradle.plugin.com.github.turansky.yfiles",
             artifactId = "yfiles",
-            version = "0.0.5"
+            version = "0.0.6"
         )
 }
