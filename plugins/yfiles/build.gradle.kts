@@ -1,6 +1,3 @@
-group = "gradle.plugin.com.github.turansky.yfiles"
-version = "0.0.6-SNAPSHOT"
-
 plugins {
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
