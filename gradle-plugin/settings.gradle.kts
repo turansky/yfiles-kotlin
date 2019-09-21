@@ -1,4 +1,4 @@
-rootProject.name = "yfiles-gradle-plugin"
+rootProject.name = "yfiles"
 
 pluginManagement {
     repositories {
