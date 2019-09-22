@@ -3,4 +3,18 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # yFiles Gradle Plugin for Kotlin/JS
-[On Gradle Plugin Portal](https://plugins.gradle.org/plugin/com.github.turansky.yfiles)
+
+### Terms
+- `C` - ordinal class
+- `I` - ordinal interface
+- `YC` - yFiles class
+- `YI` - yFiles interface
+
+### Planned support
+- `C : YObject`
+- `C : ... YI`
+- `C : YC, ... YI`
+
+### Planned errors
+- `C : YObject, ... YI`
+- `C : C, ... YI`
