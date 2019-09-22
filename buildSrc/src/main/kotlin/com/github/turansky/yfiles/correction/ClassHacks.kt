@@ -27,6 +27,28 @@ private fun fixClass(source: Source) {
             .firstWithName("newInstance")
             .getJSONObject(J_RETURNS)
             .put(J_TYPE, "T")
+
+        getJSONArray(J_STATIC_METHODS).apply {
+            removeAll { true }
+
+            put(
+                mapOf(
+                    J_NAME to "fixType",
+                    J_MODIFIERS to listOf(STATIC),
+                    J_PARAMETERS to listOf(
+                        mapOf(
+                            J_NAME to "type",
+                            J_TYPE to "$JS_CLASS<out $YOBJECT_CLASS_ALIAS>"
+                        ),
+                        mapOf(
+                            J_NAME to "name",
+                            J_TYPE to JS_STRING,
+                            J_MODIFIERS to listOf(OPTIONAL)
+                        )
+                    )
+                )
+            )
+        }
     }
 }
 
