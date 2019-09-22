@@ -4,6 +4,7 @@ import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 private val EXCLUDED_TYPES = setOf(
+    "yfiles.lang.Abstract",
     "yfiles.lang.Struct",
 
     "yfiles.lang.AttributeDefinition",
