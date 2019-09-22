@@ -83,12 +83,15 @@ private fun JSONObject.correctConstructors() {
         }
 }
 
+private val INT_CONSTRUCTOR_CLASSES = setOf(
+    "TimeSpan"
+)
+
 private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
     "BorderLine",
     "GridConstraintProvider",
     "YVector",
     "Matrix",
-    "TimeSpan",
     "DefaultNodePlacer",
     "Interval",
     "MinimumNodeSizeStage",
@@ -97,8 +100,9 @@ private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
 )
 
 private fun getConstructorParameterType(className: String, parameterName: String): String {
-    if (className in DOUBLE_CONSTRUCTOR_CLASSES) {
-        return JS_DOUBLE
+    when (className) {
+        in INT_CONSTRUCTOR_CLASSES -> return JS_INT
+        in DOUBLE_CONSTRUCTOR_CLASSES -> return JS_DOUBLE
     }
 
     return when (parameterName) {
