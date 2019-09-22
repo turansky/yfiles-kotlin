@@ -5,7 +5,7 @@
 # Kotlin/JS declarations generator for yFiles
 
 ## Gradle Plugin
-[Under development](gradle-plugin/README.md)
+[Under development](plugins/yfiles/README.md)
 
 ## Generation
 * Run `./gradlew build`
