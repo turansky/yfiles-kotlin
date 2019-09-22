@@ -52,7 +52,8 @@ private val STANDARD_TYPE_MAP = mapOf(
 
     "Blob" to "org.w3c.files.Blob",
 
-    "Promise" to PROMISE
+    "Promise" to PROMISE,
+    JS_CLASS to "kotlin.js.JsClass"
 )
 
 val STANDARD_IMPORTED_TYPES = STANDARD_TYPE_MAP

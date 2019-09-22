@@ -11,5 +11,7 @@ val JS_NUMBER = "number"
 val JS_INT = INT
 val JS_DOUBLE = DOUBLE
 
+val JS_CLASS = "JsClass"
+
 val JS_SVG_ELEMENT = "SVGElement"
 val JS_SVG_SVG_ELEMENT = "SVGSVGElement"
