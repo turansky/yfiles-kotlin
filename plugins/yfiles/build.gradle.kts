@@ -36,12 +36,6 @@ tasks {
             prepareDevelopment(kotlinSourceDir)
         }
     }
-
-    publishPlugins {
-        doFirst {
-            group = group.toString().removePrefix("gradle.plugin.")
-        }
-    }
 }
 
 dependencies {
