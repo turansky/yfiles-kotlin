@@ -5,6 +5,8 @@ import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
 
 internal fun applyClassHacks(source: Source) {
+    fixClass(source)
+
     addClassGeneric(source)
     addConstructorClassGeneric(source)
     addMethodClassGeneric(source)
@@ -17,7 +19,7 @@ internal fun applyClassHacks(source: Source) {
     addMapClassBounds(source)
 }
 
-private fun addClassGeneric(source: Source) {
+private fun fixClass(source: Source) {
     source.type("Class").apply {
         setSingleTypeParameter(bound = JS_OBJECT)
 
@@ -26,7 +28,9 @@ private fun addClassGeneric(source: Source) {
             .getJSONObject(J_RETURNS)
             .put(J_TYPE, "T")
     }
+}
 
+private fun addClassGeneric(source: Source) {
     source.allMethods(
         "lookup",
         "innerLookup",
