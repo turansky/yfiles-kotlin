@@ -179,6 +179,13 @@ private fun fixMethodParameterName(source: Source) {
             .first()
             .put(J_NAME, fixedName)
     }
+
+    source.type("RankAssignmentAlgorithm")
+        .jsequence(J_STATIC_METHODS)
+        .filter { it.getString(J_NAME) == "simplex" }
+        .jsequence(J_PARAMETERS)
+        .single { it.getString(J_NAME) == "_root" }
+        .put(J_NAME, "root")
 }
 
 private fun fixMethodParameterNullability(source: Source) {
