@@ -29,6 +29,8 @@ internal fun applyHacks(api: JSONObject) {
     fixPropertyType(source)
     fixPropertyNullability(source)
 
+    fixConstructorParameterName(source)
+
     fixMethodParameterName(source)
     fixMethodParameterType(source)
     fixMethodParameterNullability(source)
@@ -160,6 +162,14 @@ private fun fixPropertyNullability(source: Source) {
             require(getString(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
             put(J_TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
         }
+}
+
+private fun fixConstructorParameterName(source: Source) {
+    source.type("TimeSpan")
+        .jsequence(J_CONSTRUCTORS)
+        .jsequence(J_PARAMETERS)
+        .single { it.getString(J_NAME) == "millis" }
+        .put(J_NAME, "milliseconds")
 }
 
 private fun fixMethodParameterName(source: Source) {
