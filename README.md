@@ -10,8 +10,11 @@
 ## Generation
 * Run `./gradlew build`
 * Check source folders
-  * yFiles for HTML - `yfiles-kotlin/src/main/kotlin`
-  * VSDX Export - `vsdx-kotlin/src/main/kotlin`
+
+| Declarations                | Source folder                             |
+| :---                        | :---                                      |
+| [yFiles for HTML][11]       | `libraries/yfiles-kotlin/src/main/kotlin` |
+| [VSDX Export][21]           | `libraries/vsdx-kotlin/src/main/kotlin`   |
   
 ## Description
 | JS library                  | [yFiles for HTML][11] | [VSDX Export][21] |
