@@ -5,6 +5,7 @@ import yfiles.graph.decorator
 import yfiles.graph.invoke
 import yfiles.hierarchic.HierarchicLayout
 import yfiles.input.GraphViewerInputMode
+import yfiles.layout.LayoutOrientation
 import yfiles.view.GraphComponent
 
 fun create(): HTMLDivElement =
@@ -17,12 +18,18 @@ fun create(): HTMLDivElement =
             backgroundColor = "#CCCCCC"
         }
 
+        val layout = HierarchicLayout {
+            layoutOrientation = LayoutOrientation.LEFT_TO_RIGHT
+            automaticEdgeGrouping = true
+            gridSpacing = 20.0
+        }
+
         graph = DefaultGraph {
             val node1 = createNode()
             val node2 = createNode()
             createEdge(node1, node2)
 
-            applyLayout(HierarchicLayout())
+            applyLayout(layout)
         }
 
         graph.decorator {
