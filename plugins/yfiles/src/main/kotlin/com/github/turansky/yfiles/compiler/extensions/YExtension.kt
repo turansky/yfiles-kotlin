@@ -1,18 +1,12 @@
 package com.github.turansky.yfiles.compiler.extensions
 
 import com.github.turansky.yfiles.compiler.diagnostic.YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
-import com.github.turansky.yfiles.compiler.diagnostic.YMessagesExtension
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.Severity.ERROR
-import org.jetbrains.kotlin.diagnostics.SimpleDiagnostic
-import org.jetbrains.kotlin.diagnostics.reportFromPlugin
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
 import org.jetbrains.kotlin.name.Name.identifier
-import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
@@ -62,21 +56,6 @@ class YExtension : JsSyntheticTranslateExtension {
             return
         }
 
-        reportError(declaration, context, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        context.reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
     }
-}
-
-private fun reportError(
-    declaration: KtPureClassOrObject,
-    context: TranslationContext,
-    diagnosticFactory: DiagnosticFactory0<KtElement>
-) {
-    val diagnostic = SimpleDiagnostic(
-        declaration.psiOrParent,
-        diagnosticFactory,
-        ERROR
-    )
-
-    context.bindingTrace()
-        .reportFromPlugin(diagnostic, YMessagesExtension)
 }
