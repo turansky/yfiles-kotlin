@@ -5,5 +5,5 @@ plugins {
 
 dependencies {
     implementation(kotlin("stdlib-js"))
-    implementation(project(":yfiles-kotlin"))
+    implementation(project(":libraries:yfiles-kotlin"))
 }

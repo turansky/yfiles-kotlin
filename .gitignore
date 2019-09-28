@@ -3,8 +3,8 @@ build/
 out/
 web/
 
-yfiles-kotlin/src/
-vsdx-kotlin/src/
+libraries/yfiles-kotlin/src/
+libraries/vsdx-kotlin/src/
 
 # IDEA ignore list
 .idea/
