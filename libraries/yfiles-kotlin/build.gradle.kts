@@ -46,7 +46,7 @@ tasks {
 publishing {
     publications {
         register("mavenKotlin", MavenPublication::class) {
-            components["kotlin"]
+            from(components["kotlin"])
             artifact(tasks.JsSourcesJar.get())
         }
     }
