@@ -3,6 +3,20 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
+import java.io.File
+
+internal fun generateBaseClassMethod(moduleName: String, sourceDir: File) {
+    sourceDir.resolve("yfiles/lang/BaseClass.kt")
+        .writeText(
+            // language=kotlin
+            """
+                |@file:JsModule("$moduleName") 
+                |package yfiles.lang
+                |
+                |external fun BaseClass(vararg types: Any)
+            """.trimMargin()
+        )
+}
 
 internal fun applyClassHacks(source: Source) {
     fixClass(source)

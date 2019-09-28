@@ -3,6 +3,7 @@ package com.github.turansky.yfiles
 import com.github.turansky.yfiles.correction.applyHacks
 import com.github.turansky.yfiles.correction.correctNumbers
 import com.github.turansky.yfiles.correction.excludeUnusedTypes
+import com.github.turansky.yfiles.correction.generateBaseClassMethod
 import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
 import com.github.turansky.yfiles.vsdx.correction.correctVsdxNumbers
 import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
@@ -41,8 +42,11 @@ fun generateKotlinDeclarations(
 
     ClassRegistry.instance = ClassRegistry(types)
 
-    val fileGenerator = KotlinFileGenerator("yfiles", types, functionSignatures.values)
+    val moduleName = "yfiles"
+    val fileGenerator = KotlinFileGenerator(moduleName, types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
+
+    generateBaseClassMethod(moduleName, sourceDir)
 }
 
 fun generateVsdxKotlinDeclarations(
