@@ -8,6 +8,7 @@ internal const val IMAGE_DATA = "ImageData"
 internal fun createVsdxDataClasses(sourceDir: File) {
     sourceDir.resolve("yfiles/vsdx/$MASTER_STATE.kt")
         .writeText(
+            // language=kotlin
             """
                 |package yfiles.vsdx
                 |
@@ -22,6 +23,7 @@ internal fun createVsdxDataClasses(sourceDir: File) {
 
     sourceDir.resolve("yfiles/vsdx/$IMAGE_DATA.kt")
         .writeText(
+            // language=kotlin
             """
                 |package yfiles.vsdx
                 |
