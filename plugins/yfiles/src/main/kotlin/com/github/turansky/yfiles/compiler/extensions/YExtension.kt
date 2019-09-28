@@ -2,6 +2,9 @@ package com.github.turansky.yfiles.compiler.extensions
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
+import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
+import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
 import org.jetbrains.kotlin.js.backend.ast.JsInvocation
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
@@ -53,11 +56,16 @@ class YExtension : JsSyntheticTranslateExtension {
             .map { translateAsValueReference(it, context) }
             .toTypedArray()
 
-        val invocation = JsInvocation(
+        val baseClass = JsInvocation(
             context.findFunction("yfiles.lang", "BaseClass"),
             *arguments
         )
 
-        context.addDeclarationStatement(invocation.makeStmt())
+        val assignment = jsAssignment(
+            prototypeOf(translateAsValueReference(descriptor, context)),
+            JsInvocation(JS_OBJECT_CREATE_FUNCTION, baseClass)
+        )
+
+        context.addDeclarationStatement(assignment.makeStmt())
     }
 }
