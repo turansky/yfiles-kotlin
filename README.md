@@ -34,6 +34,26 @@
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
 
+#### Constructor methods
+
+Via `apply`
+```Kotlin
+val layout = HierarchicLayout().apply {
+    layoutOrientation = LEFT_TO_RIGHT
+    automaticEdgeGrouping = true
+    gridSpacing = 20.0
+}
+```
+
+Via constructor method
+```Kotlin
+val layout = HierarchicLayout {
+    layoutOrientation = LEFT_TO_RIGHT
+    automaticEdgeGrouping = true
+    gridSpacing = 20.0
+}
+```
+
 #### Related issues
 * [KT-31126](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
