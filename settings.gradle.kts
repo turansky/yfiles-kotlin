@@ -11,4 +11,4 @@ include("libraries:vsdx-kotlin")
 includeBuild("plugins/yfiles")
 include("plugin-tests:yfiles")
 
-include("examples:test-app")
+include("examples:simple-app")
