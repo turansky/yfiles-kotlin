@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.compiler.extensions
 
-import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
-import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.*
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
@@ -48,7 +47,7 @@ private fun TranslationContext.generateClass(
         descriptor.extendsYObject ->
             generateCustomYObject(declaration, descriptor)
         descriptor.implementsYFilesInterface ->
-            generateBaseClass(descriptor)
+            generateBaseClass(declaration, descriptor)
     }
 }
 
@@ -65,11 +64,19 @@ private fun TranslationContext.generateCustomYObject(
 }
 
 private fun TranslationContext.generateBaseClass(
+    declaration: KtPureClassOrObject,
     descriptor: ClassDescriptor
 ) {
     val interfaces = descriptor.getSuperInterfaces()
 
-    addDeclarationStatement(
-        setBaseClassPrototype(descriptor, interfaces)
-    )
+    when {
+        descriptor.isData ->
+            reportError(declaration, BASE_CLASS__DATA_CLASS_NOT_SUPPORTED)
+        descriptor.isCompanionObject ->
+            reportError(declaration, BASE_CLASS__COMPANION_OBJECT_NOT_SUPPORTED)
+        interfaces.any { !it.isYFiles() } ->
+            reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
+        else ->
+            addDeclarationStatement(setBaseClassPrototype(descriptor, interfaces))
+    }
 }
