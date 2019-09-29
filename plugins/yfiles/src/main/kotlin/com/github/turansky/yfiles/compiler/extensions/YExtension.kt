@@ -29,47 +29,47 @@ class YExtension : JsSyntheticTranslateExtension {
             }
         }
     }
+}
 
-    private fun TranslationContext.checkInterfaces(
-        declaration: KtPureClassOrObject,
-        descriptor: ClassDescriptor
-    ) {
-        if (descriptor.implementsYFilesInterface) {
-            reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
-        }
+private fun TranslationContext.checkInterfaces(
+    declaration: KtPureClassOrObject,
+    descriptor: ClassDescriptor
+) {
+    if (descriptor.implementsYFilesInterface) {
+        reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+    }
+}
+
+private fun TranslationContext.generateClass(
+    declaration: KtPureClassOrObject,
+    descriptor: ClassDescriptor
+) {
+    when {
+        descriptor.extendsYObject ->
+            generateCustomYObject(declaration, descriptor)
+        descriptor.implementsYFilesInterface ->
+            generateBaseClass(descriptor)
+    }
+}
+
+private fun TranslationContext.generateCustomYObject(
+    declaration: KtPureClassOrObject,
+    descriptor: ClassDescriptor
+) {
+    if (descriptor.getSuperInterfaces().isNotEmpty()) {
+        reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        return
     }
 
-    private fun TranslationContext.generateClass(
-        declaration: KtPureClassOrObject,
-        descriptor: ClassDescriptor
-    ) {
-        when {
-            descriptor.extendsYObject ->
-                generateCustomYObject(declaration, descriptor)
-            descriptor.implementsYFilesInterface ->
-                generateBaseClass(descriptor)
-        }
-    }
+    addDeclarationStatement(fixType(descriptor))
+}
 
-    private fun TranslationContext.generateCustomYObject(
-        declaration: KtPureClassOrObject,
-        descriptor: ClassDescriptor
-    ) {
-        if (descriptor.getSuperInterfaces().isNotEmpty()) {
-            reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
-            return
-        }
+private fun TranslationContext.generateBaseClass(
+    descriptor: ClassDescriptor
+) {
+    val interfaces = descriptor.getSuperInterfaces()
 
-        addDeclarationStatement(fixType(descriptor))
-    }
-
-    private fun TranslationContext.generateBaseClass(
-        descriptor: ClassDescriptor
-    ) {
-        val interfaces = descriptor.getSuperInterfaces()
-
-        addDeclarationStatement(
-            setBaseClassPrototype(descriptor, interfaces)
-        )
-    }
+    addDeclarationStatement(
+        setBaseClassPrototype(descriptor, interfaces)
+    )
 }
