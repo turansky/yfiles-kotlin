@@ -5,9 +5,6 @@ import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
 import java.io.File
 
-// language=kotlin
-internal val HIDDEN_METHOD = """@Deprecated(message = "For code generation only", level=DeprecationLevel.HIDDEN)"""
-
 internal fun generateBaseClassMethod(moduleName: String, sourceDir: File) {
     sourceDir.resolve("yfiles/lang/BaseClass.kt")
         .writeText(
@@ -16,7 +13,7 @@ internal fun generateBaseClassMethod(moduleName: String, sourceDir: File) {
                 |@file:JsModule("$moduleName") 
                 |package yfiles.lang
                 |
-                |$HIDDEN_METHOD
+                |$HIDDEN_METHOD_ANNOTATION
                 |external fun BaseClass(vararg types: Any)
             """.trimMargin()
         )
