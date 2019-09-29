@@ -28,7 +28,7 @@ class YExtension : JsSyntheticTranslateExtension {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (descriptor.kind) {
             CLASS -> generateClass(descriptor, context)
-            OBJECT, INTERFACE -> checkInterfaces(declaration, descriptor, context)
+            OBJECT, INTERFACE, ENUM_CLASS -> checkInterfaces(declaration, descriptor, context)
         }
     }
 
