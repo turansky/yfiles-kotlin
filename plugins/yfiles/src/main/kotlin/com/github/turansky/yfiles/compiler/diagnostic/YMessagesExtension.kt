@@ -10,8 +10,21 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             "yFiles interface implementing supported only for ordinal classes"
         )
         put(
+            BASE_CLASS__DATA_CLASS_NOT_SUPPORTED,
+            "yFiles interface implementing not supported for data classes"
+        )
+        put(
+            BASE_CLASS__COMPANION_OBJECT_NOT_SUPPORTED,
+            "yFiles interface implementing not supported for companion objects"
+        )
+
+        put(
             YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
-            "Interface implementing not supported for direct yfiles.lang.YObject inheritors"
+            "Interface implementing not supported for direct `yfiles.lang.YObject` inheritors"
+        )
+        put(
+            YOBJECT__COMPANION_OBJECT_NOT_SUPPORTED,
+            "Parent type `yfiles.lang.YObject` not supported for companion objects"
         )
     }
 }
