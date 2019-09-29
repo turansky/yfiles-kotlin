@@ -22,57 +22,54 @@ class YExtension : JsSyntheticTranslateExtension {
         }
 
         when (descriptor.kind) {
-            CLASS -> generateClass(declaration, descriptor, context)
-            OBJECT, INTERFACE, ENUM_CLASS -> checkInterfaces(declaration, descriptor, context)
+            CLASS -> context.generateClass(declaration, descriptor)
+            OBJECT, INTERFACE, ENUM_CLASS -> context.checkInterfaces(declaration, descriptor)
             else -> {
                 // do nothing
             }
         }
     }
 
-    private fun checkInterfaces(
+    private fun TranslationContext.checkInterfaces(
         declaration: KtPureClassOrObject,
-        descriptor: ClassDescriptor,
-        context: TranslationContext
+        descriptor: ClassDescriptor
     ) {
         if (descriptor.implementsYFilesInterface) {
-            context.reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+            reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         }
     }
 
-    private fun generateClass(
+    private fun TranslationContext.generateClass(
         declaration: KtPureClassOrObject,
-        descriptor: ClassDescriptor,
-        context: TranslationContext
+        descriptor: ClassDescriptor
     ) {
         when {
             descriptor.extendsYObject ->
-                generateCustomYObject(declaration, descriptor, context)
+                generateCustomYObject(declaration, descriptor)
             descriptor.implementsYFilesInterface ->
-                generateBaseClass(descriptor, context)
+                generateBaseClass(descriptor)
         }
     }
 
-    private fun generateCustomYObject(
+    private fun TranslationContext.generateCustomYObject(
         declaration: KtPureClassOrObject,
-        descriptor: ClassDescriptor,
-        context: TranslationContext
+        descriptor: ClassDescriptor
     ) {
         if (descriptor.getSuperInterfaces().isNotEmpty()) {
-            context.reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+            reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
             return
         }
 
-        context.addDeclarationStatement(context.fixType(descriptor))
+        addDeclarationStatement(fixType(descriptor))
     }
 
-    private fun generateBaseClass(
-        descriptor: ClassDescriptor,
-        context: TranslationContext
+    private fun TranslationContext.generateBaseClass(
+        descriptor: ClassDescriptor
     ) {
         val interfaces = descriptor.getSuperInterfaces()
-        context.addDeclarationStatement(
-            context.setBaseClassPrototype(descriptor, interfaces)
+
+        addDeclarationStatement(
+            setBaseClassPrototype(descriptor, interfaces)
         )
     }
 }
