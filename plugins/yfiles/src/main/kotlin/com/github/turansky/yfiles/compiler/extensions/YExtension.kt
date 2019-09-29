@@ -30,7 +30,7 @@ class YExtension : JsSyntheticTranslateExtension {
             CLASS -> generateClass(declaration, descriptor, context)
             OBJECT, INTERFACE, ENUM_CLASS -> checkInterfaces(declaration, descriptor, context)
             else -> {
-                /* do nothing */
+                // do nothing
             }
         }
     }
