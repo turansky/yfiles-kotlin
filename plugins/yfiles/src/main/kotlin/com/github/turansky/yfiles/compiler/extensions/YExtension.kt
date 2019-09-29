@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.compiler.extensions
 
-import com.github.turansky.yfiles.compiler.diagnostic.YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
-import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
@@ -36,7 +36,7 @@ private fun TranslationContext.checkInterfaces(
     descriptor: ClassDescriptor
 ) {
     if (descriptor.implementsYFilesInterface) {
-        reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        reportError(declaration, BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
     }
 }
 
@@ -57,7 +57,7 @@ private fun TranslationContext.generateCustomYObject(
     descriptor: ClassDescriptor
 ) {
     if (descriptor.getSuperInterfaces().isNotEmpty()) {
-        reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        reportError(declaration, YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         return
     }
 

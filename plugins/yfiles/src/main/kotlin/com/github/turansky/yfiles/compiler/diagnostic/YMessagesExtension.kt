@@ -6,11 +6,11 @@ import org.jetbrains.kotlin.diagnostics.rendering.DiagnosticFactoryToRendererMap
 private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
     DiagnosticFactoryToRendererMap("yfiles").apply {
         put(
-            YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
+            BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
             "yFiles interface implementing supported only for ordinal classes"
         )
         put(
-            YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
+            YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
             "Interface implementing not supported for direct yfiles.lang.YObject inheritors"
         )
     }
