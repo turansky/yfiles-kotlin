@@ -65,7 +65,10 @@ class YExtension : JsSyntheticTranslateExtension {
     ) {
         if (descriptor.getSuperInterfaces().isNotEmpty()) {
             context.reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+            return
         }
+
+        context.addDeclarationStatement(context.fixType(descriptor))
     }
 
     private fun generateBaseClass(
