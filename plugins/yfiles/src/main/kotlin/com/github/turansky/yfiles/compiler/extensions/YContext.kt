@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.compiler.extensions
 
 import com.github.turansky.yfiles.compiler.diagnostic.YMessagesExtension
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.diagnostics.SimpleDiagnostic
@@ -14,6 +15,9 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
+internal fun TranslationContext.toValueReference(descriptor: DeclarationDescriptor): JsExpression =
+    translateAsValueReference(descriptor, this)
+
 internal fun TranslationContext.findFunction(
     packageName: FqName,
     functionName: Name
@@ -22,7 +26,7 @@ internal fun TranslationContext.findFunction(
         currentModule.getPackage(packageName).memberScope,
         functionName
     )
-    return translateAsValueReference(descriptor, this)
+    return toValueReference(descriptor)
 }
 
 internal fun TranslationContext.reportError(

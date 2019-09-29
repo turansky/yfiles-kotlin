@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.js.backend.ast.JsInvocation
 import org.jetbrains.kotlin.js.backend.ast.JsStatement
 import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
-import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
@@ -29,8 +28,8 @@ internal fun TranslationContext.fixType(
     )
 
     return JsInvocation(
-        translateAsValueReference(fixType, this),
-        translateAsValueReference(descriptor, this),
+        toValueReference(fixType),
+        toValueReference(descriptor),
         JsStringLiteral(descriptor.name.identifier)
     ).makeStmt()
 }
@@ -40,7 +39,7 @@ internal fun TranslationContext.setBaseClassPrototype(
     interfaces: List<ClassDescriptor>
 ): JsStatement {
     val arguments = interfaces
-        .map { translateAsValueReference(it, this) }
+        .map { toValueReference(it) }
         .toTypedArray()
 
     val baseClass = JsInvocation(
@@ -49,7 +48,7 @@ internal fun TranslationContext.setBaseClassPrototype(
     )
 
     val assignment = jsAssignment(
-        prototypeOf(translateAsValueReference(descriptor, this)),
+        prototypeOf(toValueReference(descriptor)),
         JsInvocation(JS_OBJECT_CREATE_FUNCTION, baseClass)
     )
 
