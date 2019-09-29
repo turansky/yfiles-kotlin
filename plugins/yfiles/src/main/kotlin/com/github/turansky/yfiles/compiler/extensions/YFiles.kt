@@ -13,6 +13,9 @@ internal val YFILES_PACKAGE = FqName("yfiles")
 internal val LANG_PACKAGE = YFILES_PACKAGE.child(identifier("lang"))
 internal val YOBJECT = LANG_PACKAGE.child(identifier("YObject"))
 
+internal val YCLASS_NAME = identifier("Class")
+internal val BASE_CLASS_NAME = identifier("BaseClass")
+
 internal fun ClassDescriptor.isYFiles(): Boolean {
     if (!isExternal) {
         return false

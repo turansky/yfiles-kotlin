@@ -11,16 +11,18 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
+private val YCLASS_ID = ClassId(LANG_PACKAGE, YCLASS_NAME)
+private val FIX_TYPE = identifier("fixType")
+
 internal fun TranslationContext.fixType(
     descriptor: ClassDescriptor
 ): JsStatement {
-    val classCompanion = currentModule.findClassAcrossModuleDependencies(
-        ClassId(LANG_PACKAGE, identifier("Class"))
-    )!!.companionObjectDescriptor!!
+    val yclassCompanion = currentModule.findClassAcrossModuleDependencies(YCLASS_ID)!!
+        .companionObjectDescriptor!!
 
     val fixType = getFunctionByName(
-        classCompanion.unsubstitutedMemberScope,
-        identifier("fixType")
+        yclassCompanion.unsubstitutedMemberScope,
+        FIX_TYPE
     )
 
     return JsInvocation(
