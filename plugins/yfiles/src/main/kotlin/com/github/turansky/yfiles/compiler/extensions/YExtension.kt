@@ -27,7 +27,7 @@ class YExtension : JsSyntheticTranslateExtension {
 
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (descriptor.kind) {
-            CLASS -> generateClassSyntheticParts(descriptor, context)
+            CLASS -> generateClass(descriptor, context)
             OBJECT, INTERFACE -> checkInterfaces(declaration, descriptor, context)
         }
     }
@@ -46,7 +46,7 @@ class YExtension : JsSyntheticTranslateExtension {
         }
     }
 
-    fun generateClassSyntheticParts(
+    private fun generateClass(
         descriptor: ClassDescriptor,
         context: TranslationContext
     ) {
