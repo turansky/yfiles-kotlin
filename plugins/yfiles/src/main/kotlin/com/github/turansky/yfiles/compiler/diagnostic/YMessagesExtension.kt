@@ -14,6 +14,10 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             "yFiles interfaces could't be mixed with non-yFiles interfaces"
         )
         put(
+            BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED,
+            "yFiles interface implementing not supported for inline classes"
+        )
+        put(
             BASE_CLASS__DATA_CLASS_NOT_SUPPORTED,
             "yFiles interface implementing not supported for data classes"
         )
