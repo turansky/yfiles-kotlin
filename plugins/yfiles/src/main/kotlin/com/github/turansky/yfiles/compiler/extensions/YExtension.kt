@@ -46,19 +46,18 @@ class YExtension : JsSyntheticTranslateExtension {
         descriptor: ClassDescriptor,
         context: TranslationContext
     ) {
-        val superInterfaces = descriptor.getSuperInterfaces()
-        if (superInterfaces.isEmpty()) {
-            return
+        if (descriptor.implementsYFilesInterface) {
+            generateBaseClass(descriptor, context)
         }
+    }
 
-        val yfilesInterfaces = superInterfaces
-            .filter { it.isYFiles() }
+    private fun generateBaseClass(
+        descriptor: ClassDescriptor,
+        context: TranslationContext
+    ) {
+        val interfaces = descriptor.getSuperInterfaces()
 
-        if (yfilesInterfaces.isEmpty()) {
-            return
-        }
-
-        val arguments = yfilesInterfaces
+        val arguments = interfaces
             .map { translateAsValueReference(it, context) }
             .toTypedArray()
 
