@@ -37,11 +37,7 @@ class YExtension : JsSyntheticTranslateExtension {
         descriptor: ClassDescriptor,
         context: TranslationContext
     ) {
-        val invalidImplementation = descriptor
-            .getSuperInterfaces()
-            .any { it.isYFiles() }
-
-        if (invalidImplementation) {
+        if (descriptor.implementsYFilesInterface) {
             context.reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         }
     }
