@@ -4,14 +4,9 @@ import com.github.turansky.yfiles.compiler.diagnostic.YFILES_INTERFACE_IMPLEMENT
 import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
-import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
-import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
-import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
-import org.jetbrains.kotlin.js.backend.ast.JsInvocation
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
-import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
@@ -76,21 +71,8 @@ class YExtension : JsSyntheticTranslateExtension {
         context: TranslationContext
     ) {
         val interfaces = descriptor.getSuperInterfaces()
-
-        val arguments = interfaces
-            .map { translateAsValueReference(it, context) }
-            .toTypedArray()
-
-        val baseClass = JsInvocation(
-            context.findFunction(LANG_PACKAGE, BASE_CLASS_NAME),
-            *arguments
+        context.addDeclarationStatement(
+            context.setBaseClassPrototype(descriptor, interfaces)
         )
-
-        val assignment = jsAssignment(
-            prototypeOf(translateAsValueReference(descriptor, context)),
-            JsInvocation(JS_OBJECT_CREATE_FUNCTION, baseClass)
-        )
-
-        context.addDeclarationStatement(assignment.makeStmt())
     }
 }
