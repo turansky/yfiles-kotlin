@@ -11,8 +11,9 @@ import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtPureElement
+import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
 internal fun TranslationContext.toValueReference(descriptor: DeclarationDescriptor): JsExpression =
@@ -29,9 +30,9 @@ internal fun TranslationContext.findFunction(
     return toValueReference(descriptor)
 }
 
-internal fun TranslationContext.reportError(
-    element: KtElement,
-    diagnosticFactory: DiagnosticFactory0<KtElement>
+internal fun <T : KtElement> TranslationContext.reportError(
+    element: T,
+    diagnosticFactory: DiagnosticFactory0<T>
 ) {
     val diagnostic = SimpleDiagnostic(
         element,
@@ -44,6 +45,9 @@ internal fun TranslationContext.reportError(
 }
 
 internal fun TranslationContext.reportError(
-    declaration: KtPureElement,
-    diagnosticFactory: DiagnosticFactory0<KtElement>
-) = reportError(declaration.psiOrParent, diagnosticFactory)
+    declaration: KtPureClassOrObject,
+    diagnosticFactory: DiagnosticFactory0<KtClassOrObject>
+) = reportError(
+    element = declaration.psiOrParent as KtClassOrObject,
+    diagnosticFactory = diagnosticFactory
+)
