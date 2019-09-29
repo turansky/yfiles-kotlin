@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.compiler.extensions
 
 import com.github.turansky.yfiles.compiler.diagnostic.YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
@@ -25,10 +26,11 @@ class YExtension : JsSyntheticTranslateExtension {
             return
         }
 
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (descriptor.kind) {
-            CLASS -> generateClass(descriptor, context)
+            CLASS -> generateClass(declaration, descriptor, context)
             OBJECT, INTERFACE, ENUM_CLASS -> checkInterfaces(declaration, descriptor, context)
+            else -> { /* do nothing */
+            }
         }
     }
 
@@ -43,11 +45,25 @@ class YExtension : JsSyntheticTranslateExtension {
     }
 
     private fun generateClass(
+        declaration: KtPureClassOrObject,
         descriptor: ClassDescriptor,
         context: TranslationContext
     ) {
-        if (descriptor.implementsYFilesInterface) {
-            generateBaseClass(descriptor, context)
+        when {
+            descriptor.extendsYObject ->
+                generateCustomYObject(declaration, descriptor, context)
+            descriptor.implementsYFilesInterface ->
+                generateBaseClass(descriptor, context)
+        }
+    }
+
+    private fun generateCustomYObject(
+        declaration: KtPureClassOrObject,
+        descriptor: ClassDescriptor,
+        context: TranslationContext
+    ) {
+        if (descriptor.getSuperInterfaces().isNotEmpty()) {
+            context.reportError(declaration, YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         }
     }
 
