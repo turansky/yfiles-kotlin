@@ -49,7 +49,7 @@ private fun fixClass(source: Source) {
             put(
                 mapOf(
                     J_NAME to "fixType",
-                    J_MODIFIERS to listOf(STATIC),
+                    J_MODIFIERS to listOf(STATIC, HIDDEN),
                     J_PARAMETERS to listOf(
                         mapOf(
                             J_NAME to "type",

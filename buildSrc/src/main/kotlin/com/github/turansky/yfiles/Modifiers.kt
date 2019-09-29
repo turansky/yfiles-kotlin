@@ -14,3 +14,6 @@ internal val OPTIONAL = "optional"
 internal val CONVERSION = "conversion"
 
 internal val CANBENULL = "canbenull"
+
+// for codegen
+internal val HIDDEN = "hidden"

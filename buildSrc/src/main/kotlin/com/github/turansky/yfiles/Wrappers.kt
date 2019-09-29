@@ -353,6 +353,8 @@ internal class Modifiers(flags: List<String>) {
 
     private val canbenull = CANBENULL in flags
     val nullability = exp(canbenull, "?")
+
+    val hidden = HIDDEN in flags
 }
 
 internal abstract class TypedDeclaration(
@@ -536,6 +538,8 @@ internal class Method(
     private val final = modifiers.final
     private val open = !static && !final
 
+    private val hidden = modifiers.hidden
+
     private val isExtension by boolean()
 
     private val postconditions: List<String> by stringList(::summary)
@@ -617,7 +621,15 @@ internal class Method(
     ): String {
         val operator = exp(operatorMode, " operator ")
 
-        return "${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
+        val code = "${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
+        if (!hidden) {
+            return code
+        }
+
+        return """
+            |$HIDDEN_METHOD_ANNOTATION
+            |$code
+        """.trimMargin()
     }
 
     override fun toCode(): String {
