@@ -1,7 +1,8 @@
 package com.github.turansky.yfiles.compiler.extensions
 
+import com.github.turansky.yfiles.compiler.diagnostic.YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
@@ -13,11 +14,6 @@ import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translate
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
-private val AFFECTED_CLASS_KINDS = setOf(
-    ClassKind.CLASS,
-    ClassKind.OBJECT
-)
-
 class YExtension : JsSyntheticTranslateExtension {
     override fun generateClassSyntheticParts(
         declaration: KtPureClassOrObject,
@@ -25,14 +21,38 @@ class YExtension : JsSyntheticTranslateExtension {
         translator: DeclarationBodyVisitor,
         context: TranslationContext
     ) {
-        if (descriptor.kind !in AFFECTED_CLASS_KINDS) {
-            return
-        }
-
         if (descriptor.isExternal) {
             return
         }
 
+        @Suppress("NON_EXHAUSTIVE_WHEN")
+        when (descriptor.kind) {
+            CLASS -> generateClassSyntheticParts(descriptor, context)
+            OBJECT, INTERFACE -> checkInterfaces(declaration, descriptor, context)
+        }
+    }
+
+    private fun checkInterfaces(
+        declaration: KtPureClassOrObject,
+        descriptor: ClassDescriptor,
+        context: TranslationContext
+    ) {
+        val invalidImplementation = descriptor
+            .getSuperInterfaces()
+            .asSequence()
+            .filter { it.isExternal }
+            .filter { it.isYFiles() }
+            .any()
+
+        if (invalidImplementation) {
+            context.reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        }
+    }
+
+    fun generateClassSyntheticParts(
+        descriptor: ClassDescriptor,
+        context: TranslationContext
+    ) {
         val superInterfaces = descriptor.getSuperInterfaces()
         if (superInterfaces.isEmpty()) {
             return
