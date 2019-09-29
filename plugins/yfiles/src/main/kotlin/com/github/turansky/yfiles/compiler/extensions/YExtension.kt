@@ -82,7 +82,7 @@ class YExtension : JsSyntheticTranslateExtension {
             .toTypedArray()
 
         val baseClass = JsInvocation(
-            context.findFunction("yfiles.lang", "BaseClass"),
+            context.findFunction(LANG_PACKAGE, BASE_CLASS_NAME),
             *arguments
         )
 
