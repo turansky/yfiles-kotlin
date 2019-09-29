@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
@@ -16,7 +15,7 @@ internal fun TranslationContext.fixType(
     descriptor: ClassDescriptor
 ): JsStatement {
     val classCompanion = currentModule.findClassAcrossModuleDependencies(
-        ClassId(FqName("yfiles.lang"), identifier("Class"))
+        ClassId(LANG_PACKAGE, identifier("Class"))
     )!!.companionObjectDescriptor!!
 
     val fixType = getFunctionByName(
