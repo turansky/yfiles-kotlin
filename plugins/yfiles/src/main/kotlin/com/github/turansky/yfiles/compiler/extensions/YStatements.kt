@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.js.backend.ast.JsInvocation
 import org.jetbrains.kotlin.js.backend.ast.JsStatement
+import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.name.ClassId
@@ -25,6 +26,7 @@ internal fun TranslationContext.fixType(
 
     return JsInvocation(
         translateAsValueReference(fixType, this),
-        translateAsValueReference(descriptor, this)
+        translateAsValueReference(descriptor, this),
+        JsStringLiteral(descriptor.name.identifier)
     ).makeStmt()
 }
