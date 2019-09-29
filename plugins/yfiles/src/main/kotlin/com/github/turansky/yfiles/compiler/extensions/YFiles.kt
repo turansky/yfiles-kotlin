@@ -7,6 +7,10 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 private val YFILES_PACKAGE = identifier("yfiles")
 
 fun ClassDescriptor.isYFiles(): Boolean {
+    if (!isExternal) {
+        return false
+    }
+
     if (companionObjectDescriptor == null) {
         return false
     }

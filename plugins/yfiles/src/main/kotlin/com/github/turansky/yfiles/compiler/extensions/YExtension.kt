@@ -39,10 +39,7 @@ class YExtension : JsSyntheticTranslateExtension {
     ) {
         val invalidImplementation = descriptor
             .getSuperInterfaces()
-            .asSequence()
-            .filter { it.isExternal }
-            .filter { it.isYFiles() }
-            .any()
+            .any { it.isYFiles() }
 
         if (invalidImplementation) {
             context.reportError(declaration, YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
@@ -58,14 +55,7 @@ class YExtension : JsSyntheticTranslateExtension {
             return
         }
 
-        val externalSuperInterfaces = superInterfaces
-            .filter { it.isExternal }
-
-        if (externalSuperInterfaces.isEmpty()) {
-            return
-        }
-
-        val yfilesInterfaces = externalSuperInterfaces
+        val yfilesInterfaces = superInterfaces
             .filter { it.isYFiles() }
 
         if (yfilesInterfaces.isEmpty()) {
