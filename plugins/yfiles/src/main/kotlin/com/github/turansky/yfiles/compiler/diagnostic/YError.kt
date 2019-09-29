@@ -6,3 +6,6 @@ import org.jetbrains.kotlin.psi.KtElement
 
 internal val YFILES_INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtElement> =
     DiagnosticFactory0.create(Severity.ERROR)
+
+internal val YOBJECT_INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtElement> =
+    DiagnosticFactory0.create(Severity.ERROR)
