@@ -82,6 +82,8 @@ private fun TranslationContext.generateBaseClass(
         interfaces.any { !it.isYFiles() } ->
             reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
 
+        declaration.hasExplicitPrimaryConstructor() ->
+            reportError(declaration.primaryConstructor!!, BASE_CLASS__CONSTRUCTOR_NOT_SUPPORTED)
         declaration.hasBody() ->
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
