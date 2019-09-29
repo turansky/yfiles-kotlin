@@ -7,6 +7,9 @@ import org.jetbrains.kotlin.psi.KtElement
 internal val BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtElement> =
     DiagnosticFactory0.create(ERROR)
 
+internal val BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED: DiagnosticFactory0<KtElement> =
+    DiagnosticFactory0.create(ERROR)
+
 internal val BASE_CLASS__DATA_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtElement> =
     DiagnosticFactory0.create(ERROR)
 

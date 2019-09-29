@@ -10,6 +10,10 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             "yFiles interface implementing supported only for ordinal classes"
         )
         put(
+            BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED,
+            "yFiles interfaces could't be mixed with non-yFiles interfaces"
+        )
+        put(
             BASE_CLASS__DATA_CLASS_NOT_SUPPORTED,
             "yFiles interface implementing not supported for data classes"
         )
