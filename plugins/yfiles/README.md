@@ -8,8 +8,12 @@
 
 #### Example
 ```Kotlin
+// Generated JS: 
+// VisualTemplateBase.prototype = Object.create(BaseClass(IVisualTemplate)) 
 abstract class VisualTemplateBase: IVisualTemplate
 
+// Generated JS: 
+// ArrowBase.prototype = Object.create(BaseClass(IArrow, IVisualCreator, IBoundsProvider))
 abstract class ArrowBase: IArrow, IVisualCreator, IBoundsProvider
 ```
 
