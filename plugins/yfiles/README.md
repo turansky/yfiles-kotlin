@@ -4,17 +4,19 @@
 
 # yFiles Gradle Plugin for Kotlin/JS
 
-### Terms
-- `C` - ordinal class
-- `I` - ordinal interface
-- `YC` - yFiles class
-- `YI` - yFiles interface
+## Base Class
 
-### Planned support
-- `C : YObject`
-- `C : ... YI`
-- `C : YC, ... YI`
+#### Example
+```Kotlin
+abstract class VisualTemplateBase: IVisualTemplate
 
-### Planned errors
-- `C : YObject, ... YI`
-- `C : C, ... YI`
+abstract class ArrowBase: IArrow, IVisualCreator, IBoundsProvider
+```
+
+#### Requirements
+
+- Only yFiles interfaces extended
+- No extended class
+- No constructors
+- No properties
+- No methods
