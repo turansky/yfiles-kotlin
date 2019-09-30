@@ -14,9 +14,28 @@ abstract class ArrowBase: IArrow, IVisualCreator, IBoundsProvider
 ```
 
 #### Requirements
-
 - Only yFiles interfaces extended
 - No extended class
 - No constructors
 - No properties
 - No methods
+
+## Custom `YObject`
+
+#### Example
+```Kotlin
+// Generated JS: 
+// Class.fixType(SelectionProvider) 
+class SelectionProvider : YObject {
+    fun isSelected(item: IModelItem): Boolean = /* ... */
+}
+
+// Generated JS: 
+// Class.fixType(HighlightProvider)
+class HighlightProvider : YObject {
+    fun isHighlighted(item: IModelItem): Boolean = /* ... */
+}
+```
+
+#### Requirements
+- No extended interfaces
