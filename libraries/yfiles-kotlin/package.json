@@ -1,4 +1,5 @@
 {
+  "version": "2.2.1-SNAPSHOT",
   "dependencies": {
     "yfiles": "2.2.1"
   }
