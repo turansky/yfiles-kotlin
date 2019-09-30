@@ -4,6 +4,10 @@
 
 # yFiles Gradle Plugin for Kotlin/JS
 
+## Goal
+- Safe [interface implementing](http://docs.yworks.com/yfileshtml/#/dguide/framework_basic_interfaces#framework_implementing_interfaces)
+- OOB `YObject` support
+
 ## Base Class
 
 #### Example
