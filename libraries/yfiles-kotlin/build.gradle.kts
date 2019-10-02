@@ -1,7 +1,7 @@
 import com.github.turansky.yfiles.generateKotlinDeclarations
 
 group = "com.yworks.yfiles"
-version = "2.2.1-SNAPSHOT"
+version = "22.0.2-SNAPSHOT"
 
 plugins {
     kotlin("js")

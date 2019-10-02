@@ -1,6 +1,6 @@
 {
-  "version": "2.2.1-SNAPSHOT",
+  "version": "22.0.2-SNAPSHOT",
   "dependencies": {
-    "yfiles": "2.2.1"
+    "yfiles": "22.0.2"
   }
 }
