@@ -4,6 +4,10 @@ plugins {
 }
 
 kotlin {
+    target {
+        nodejs()
+    }
+
     sourceSets {
         main {
             dependencies {

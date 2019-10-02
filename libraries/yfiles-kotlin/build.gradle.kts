@@ -8,8 +8,18 @@ plugins {
     id("maven-publish")
 }
 
-dependencies {
-    implementation(kotlin("stdlib-js"))
+kotlin {
+    target {
+        nodejs()
+    }
+
+    sourceSets {
+        main {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+            }
+        }
+    }
 }
 
 val kotlinSourceDir: File

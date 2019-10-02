@@ -8,9 +8,19 @@ plugins {
     id("maven-publish")
 }
 
-dependencies {
-    implementation(kotlin("stdlib-js"))
-    implementation(project(":libraries:yfiles-kotlin"))
+kotlin {
+    target {
+        nodejs()
+    }
+
+    sourceSets {
+        main {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+                implementation(project(":libraries:yfiles-kotlin"))
+            }
+        }
+    }
 }
 
 val kotlinSourceDir: File
