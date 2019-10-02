@@ -32,7 +32,7 @@ tasks {
             val sourceDir = kotlinSourceDir
             delete(sourceDir)
 
-            val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.8ff904af.js"
+            val apiPath = "http://docs.yworks.com/yfileshtml/assets/api.f79373c0.js"
             generateKotlinDeclarations(apiPath, sourceDir)
         }
     }

@@ -438,16 +438,6 @@ internal val MISSED_METHODS = listOf(
 
     MethodData(
         className = "EdgePathLabelModel",
-        methodName = "findBestParameter",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("model", "ILabelModel"),
-            MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
-        ),
-        result = ResultData("ILabelModelParameter")
-    ),
-    MethodData(
-        className = "EdgePathLabelModel",
         methodName = "getParameters",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -467,16 +457,6 @@ internal val MISSED_METHODS = listOf(
 
     MethodData(
         className = "EdgeSegmentLabelModel",
-        methodName = "findBestParameter",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("model", "ILabelModel"),
-            MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
-        ),
-        result = ResultData("ILabelModelParameter")
-    ),
-    MethodData(
-        className = "EdgeSegmentLabelModel",
         methodName = "getParameters",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
@@ -492,17 +472,6 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("layoutParameter", "ILabelModelParameter")
         ),
         result = ResultData("yfiles.geometry.IOrientedRectangle")
-    ),
-
-    MethodData(
-        className = "FreeLabelModel",
-        methodName = "findBestParameter",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("model", "ILabelModel"),
-            MethodParameterData("layout", "yfiles.geometry.IOrientedRectangle")
-        ),
-        result = ResultData("ILabelModelParameter")
     ),
 
     MethodData(
