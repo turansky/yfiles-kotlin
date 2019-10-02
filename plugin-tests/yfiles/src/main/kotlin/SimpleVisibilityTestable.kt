@@ -4,7 +4,7 @@ import yfiles.view.IVisibilityTestable
 
 abstract class IVisibilityTestableBase : IVisibilityTestable
 
-class MyVisibilityTestable : IVisibilityTestableBase() {
+class SimpleVisibilityTestable : IVisibilityTestableBase() {
     override fun isVisible(
         context: ICanvasContext,
         rectangle: Rect
