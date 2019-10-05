@@ -328,7 +328,7 @@ private class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSour
 }
 
 private class SeeAlsoDoc(private val id: String) : SeeAlso() {
-    constructor(typeId: String, memberId: String) : this("$typeId#$memberId")
+    constructor(typeId: String, memberId: String) : this("$typeId%23$memberId")
 
     override fun toDoc(): String =
         link(
@@ -365,7 +365,7 @@ internal abstract class TypedDeclaration(
     private val signature: String? by optString()
     protected val type: String by TypeDelegate { parse(it, signature) }
 
-    private val seeAlsoDocs: List<SeeAlso>
+    protected val seeAlsoDocs: List<SeeAlso>
         get() {
             val docId = id ?: return emptyList()
 
@@ -476,7 +476,7 @@ internal class Property(
             preconditions = preconditions,
             defaultValue = defaultValue,
             exceptions = throws.filterNot { it.isEmpty() },
-            seeAlso = seeAlso
+            seeAlso = seeAlso + seeAlsoDocs
         )
 
     override fun toCode(): String {
