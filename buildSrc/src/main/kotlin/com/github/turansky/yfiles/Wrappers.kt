@@ -155,7 +155,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val staticProperties: List<Property> by declarationList { Property(it, this) }
 
     val methods: List<Method> by declarationList { Method(it, this) }
-    val staticMethods: List<Method> by declarationList { Method(it) }
+    val staticMethods: List<Method> by declarationList { Method(it, this) }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -206,7 +206,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         else -> ""
     }
 
-    private val constructors: List<Constructor> by declarationList { Constructor(it) }
+    private val constructors: List<Constructor> by declarationList { Constructor(it, this) }
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
 
@@ -381,7 +381,10 @@ internal abstract class TypedDeclaration(
         get() = seeAlsoDocs(parent, id)
 }
 
-internal class Constructor(source: JSONObject) : MethodBase(source) {
+internal class Constructor(
+    source: JSONObject,
+    parent: Class
+) : MethodBase(source, parent) {
     private val protected = modifiers.protected
     val public = !protected
 
@@ -396,7 +399,7 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
             summary = summary,
             preconditions = preconditions,
             parameters = parameters,
-            seeAlso = seeAlso
+            seeAlso = seeAlso + seeAlsoDocs
         )
 
     fun getPrimaryDocumentation(): String? {
@@ -404,7 +407,7 @@ internal class Constructor(source: JSONObject) : MethodBase(source) {
             summary = summary,
             preconditions = preconditions,
             parameters = parameters,
-            seeAlso = seeAlso,
+            seeAlso = seeAlso + seeAlsoDocs,
             primaryConstructor = true
         )
 
@@ -535,8 +538,8 @@ private val OPERATOR_MAP = mapOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: TypeDeclaration? = null
-) : MethodBase(source) {
+    private val parent: Type
+) : MethodBase(source, parent) {
     val abstract = modifiers.abstract
     private val static = modifiers.static
     private val protected = modifiers.protected
@@ -558,7 +561,7 @@ internal class Method(
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
     override val overridden: Boolean
-        get() = !static && ClassRegistry.instance.functionOverridden(parent!!.classId, name)
+        get() = !static && ClassRegistry.instance.functionOverridden(parent.classId, name)
 
     private val documentation: String
         get() = getDocumentation(
@@ -570,7 +573,7 @@ internal class Method(
             typeparameters = typeparameters,
             returns = returns,
             exceptions = throws.filterNot { it.isEmpty() },
-            seeAlso = seeAlso
+            seeAlso = seeAlso + seeAlsoDocs
         )
 
     private fun kotlinModificator(): String {
@@ -690,13 +693,20 @@ internal class Method(
     }
 }
 
-internal abstract class MethodBase(source: JSONObject) : Declaration(source) {
+internal abstract class MethodBase(
+    source: JSONObject,
+    private val parent: Type
+) : Declaration(source) {
+    private val id: String? by optString()
     protected val parameters: List<Parameter> by list(::Parameter)
     val options: Boolean by boolean()
 
     protected val preconditions: List<String> by stringList(::summary)
 
     protected abstract val overridden: Boolean
+
+    protected val seeAlsoDocs: List<SeeAlso>
+        get() = seeAlsoDocs(parent, id)
 
     protected fun kotlinParametersString(
         extensionMode: Boolean = false
