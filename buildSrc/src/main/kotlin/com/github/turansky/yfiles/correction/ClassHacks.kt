@@ -5,7 +5,7 @@ import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
 import java.io.File
 
-internal fun generateBaseClassMethod(moduleName: String, sourceDir: File) {
+internal fun generateClassUtils(moduleName: String, sourceDir: File) {
     sourceDir.resolve("yfiles/lang/BaseClass.kt")
         .writeText(
             // language=kotlin
@@ -15,6 +15,19 @@ internal fun generateBaseClassMethod(moduleName: String, sourceDir: File) {
                 |
                 |$HIDDEN_METHOD_ANNOTATION
                 |external fun BaseClass(vararg types: Any)
+            """.trimMargin()
+        )
+
+    sourceDir.resolve("yfiles/lang/ClassMetadata.kt")
+        .writeText(
+            // language=kotlin
+            """
+                |package yfiles.lang
+                |
+                |external interface ClassMetadata<T: Any> {
+                |   @JsName("\${'$'}class")
+                |   val yclass: Class<T>
+                |}
             """.trimMargin()
         )
 }

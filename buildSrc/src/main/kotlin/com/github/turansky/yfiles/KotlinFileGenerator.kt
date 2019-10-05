@@ -174,7 +174,7 @@ internal class KotlinFileGenerator(
         protected val generics: Generics
             get() = declaration.generics
 
-        private fun getGeneric(): String {
+        protected fun getGeneric(): String {
             var generic = data.name
             if (generic == JS_OBJECT) {
                 generic = ANY
@@ -183,11 +183,7 @@ internal class KotlinFileGenerator(
             return generic + declaration.generics.placeholder
         }
 
-        protected fun yclass() =
-            """
-                    |@JsName("\${"$"}class")
-                    |val yclass: yfiles.lang.Class<${getGeneric()}>
-                """.trimMargin()
+        protected fun yclass() = "override val yclass: yfiles.lang.Class<${getGeneric()}>"
 
         protected fun typealiasDeclaration(): String? =
             if (data.name != data.jsName) {
@@ -204,7 +200,7 @@ internal class KotlinFileGenerator(
 
         protected open val companionObjectContent =
             """
-                |companion object {
+                |companion object: yfiles.lang.ClassMetadata<${getGeneric()}> {
                 |${yclass()}
                 |
                 |${staticDeclarations.lines { it.toCode() }}
@@ -271,7 +267,7 @@ internal class KotlinFileGenerator(
         private fun primitiveContent(): String {
             return documentation +
                     """
-                        |external object ${data.jsName} {
+                        |external object ${data.jsName}: yfiles.lang.ClassMetadata<${getGeneric()}> {
                         |${yclass()}
                         |}
                     """.trimMargin()
