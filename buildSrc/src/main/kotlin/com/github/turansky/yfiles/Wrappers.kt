@@ -344,6 +344,18 @@ private fun parseSeeAlso(source: JSONObject): SeeAlso =
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
     }
 
+private fun seeAlsoDocs(
+    parent: TypeDeclaration,
+    memberId: String?
+): List<SeeAlsoDoc> {
+    val docId = memberId
+        ?: return emptyList()
+
+    return listOf(
+        SeeAlsoDoc(parent.docId, docId)
+    )
+}
+
 internal class Modifiers(flags: List<String>) {
     val static = STATIC in flags
     val final = FINAL in flags
@@ -366,13 +378,7 @@ internal abstract class TypedDeclaration(
     protected val type: String by TypeDelegate { parse(it, signature) }
 
     protected val seeAlsoDocs: List<SeeAlso>
-        get() {
-            val docId = id ?: return emptyList()
-
-            return listOf(
-                SeeAlsoDoc(parent.docId, docId)
-            )
-        }
+        get() = seeAlsoDocs(parent, id)
 }
 
 internal class Constructor(source: JSONObject) : MethodBase(source) {
