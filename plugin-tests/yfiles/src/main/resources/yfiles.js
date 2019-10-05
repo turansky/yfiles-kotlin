@@ -1,13 +1,14 @@
 class YObject {}
 
 class Class {
-    static fixType() {
-        // implement
+    static fixType(type, name) {
+        type["fixedClassName"] = name;
+        type.prototype.fixedClassName = name;
     }
 }
 
 function BaseClass(...types) {
-    // implement
+    return {}
 }
 
 class IVisibilityTestable {}
