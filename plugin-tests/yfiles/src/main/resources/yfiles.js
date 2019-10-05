@@ -1,17 +1,17 @@
-class YObject {}
+function YObject() {}
 
-class Class {
-    static fixType(type, name) {
-        type["fixedClassName"] = name;
-        type.prototype.fixedClassName = name;
-    }
-}
+function Class() {}
+
+Class.fixType = function (type, name) {
+    type["fixedClassName"] = name;
+    type.prototype.fixedClassName = name;
+};
 
 function BaseClass(...types) {
     return {}
 }
 
-class IVisibilityTestable {}
+function IVisibilityTestable() {}
 
 export {
     YObject,
