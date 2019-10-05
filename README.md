@@ -74,7 +74,15 @@ val layout = HierarchicLayout {
   * Demo
 
 #### Online Documentation
-Fast navigation to online documentation supported for classes.
+Fast navigation to online documentation supported for:
+* Type
+* Constructor
+* Method
+* Constant
+* Property
+* Event
+  * Listener
+  * Handler
 
 #### Related issues
 * [KT-32815](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
