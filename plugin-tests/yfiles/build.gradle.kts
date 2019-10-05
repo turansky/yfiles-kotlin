@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     target {
-        nodejs()
+        browser()
     }
 
     sourceSets {
