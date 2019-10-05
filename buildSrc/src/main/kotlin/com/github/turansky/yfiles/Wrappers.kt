@@ -435,7 +435,7 @@ internal class Constant(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
-            seeAlso = seeAlso
+            seeAlso = seeAlso + seeAlsoDocs
         )
 
     override fun toCode(): String {
