@@ -24,12 +24,13 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
             """
                 |package yfiles.lang
                 |
-                |external interface ClassMetadata<T: Any> {
-                |   @JsName("\${'$'}class")
-                |   val yclass: Class<T>
-                |   
-                |   fun isInstance(o:Any):Boolean
-                |}
+                |external interface ClassMetadata<T: Any>
+                |
+                |inline val <T: Any> ClassMetadata<T>.yclass:Class<T>
+                |    get() = asDynamic()["\${'$'}class"]
+                |    
+                |inline fun <T: Any> ClassMetadata<T>.isInstance(o:Any):Boolean = 
+                |    asDynamic().isInstance(o)
             """.trimMargin()
         )
 }

@@ -53,6 +53,7 @@ internal class KotlinFileGenerator(
             ?: return
 
         companionContent = "package ${data.packageName}\n\n" +
+                "import yfiles.lang.isInstance\n" +
                 companionContent.clear(data)
 
         if (generatedFile is InterfaceFile) {
@@ -183,12 +184,6 @@ internal class KotlinFileGenerator(
             return generic + declaration.generics.placeholder
         }
 
-        protected fun metadataBody() = """
-            |override val yclass: yfiles.lang.Class<${getGeneric()}>
-            |
-            |override fun isInstance(o:Any):Boolean
-        """.trimMargin()
-
         protected fun typealiasDeclaration(): String? =
             if (data.name != data.jsName) {
                 val generics = declaration.generics.asParameters()
@@ -205,8 +200,6 @@ internal class KotlinFileGenerator(
         protected open val companionObjectContent =
             """
                 |companion object: yfiles.lang.ClassMetadata<${getGeneric()}> {
-                |${metadataBody()}
-                |
                 |${staticDeclarations.lines { it.toCode() }}
                 |}
             """.trimMargin()
@@ -270,11 +263,7 @@ internal class KotlinFileGenerator(
 
         private fun primitiveContent(): String {
             return documentation +
-                    """
-                        |external object ${data.jsName}: yfiles.lang.ClassMetadata<${getGeneric()}> {
-                        |${metadataBody()}
-                        |}
-                    """.trimMargin()
+                    "external object ${data.jsName}: yfiles.lang.ClassMetadata<${getGeneric()}>"
         }
 
         private fun objectContent(): String {
