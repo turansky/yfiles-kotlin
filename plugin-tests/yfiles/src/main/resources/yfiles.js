@@ -8,8 +8,12 @@ Class.fixType = function (type, name) {
 };
 
 function BaseClass(...types) {
+    const generic = types
+        .map(type => type.name)
+        .join("-");
+
     const YClass = function () {};
-    YClass.className = types.join("-");
+    YClass.className = `BaseClass[${generic}]`;
     return YClass
 }
 
