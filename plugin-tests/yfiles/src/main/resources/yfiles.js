@@ -11,9 +11,10 @@ function BaseClass(...types) {
     const generic = types
         .map(type => type.name)
         .join("-");
+    const className = `BaseClass[${generic}]`;
 
     const YClass = function () {};
-    YClass.className = `BaseClass[${generic}]`;
+    Object.defineProperty(YClass, 'className', {get: () => className});
     return YClass
 }
 
