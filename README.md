@@ -103,6 +103,10 @@ Fast navigation to online documentation supported for:
 * Event
   * Listener
   * Handler
+  
+_Example:_
+
+![Example](assets/online-documentation.png)
 
 #### Related issues
 * [KT-32815](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
