@@ -5,6 +5,6 @@ class CustomObjectTest {
     @Test
     fun testClassName() {
         val o = CustomObject()
-        assertEquals("CustomObject", o.asDynamic().fixedClassName)
+        assertEquals("CustomObject", o.asDynamic().className)
     }
 }
