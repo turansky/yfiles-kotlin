@@ -4,12 +4,11 @@ internal fun interfaceCastExtensions(
     className: String,
     generics: Generics
 ): String {
-    val yclass = "${className}.yclass"
     val classDeclaration = className + generics.asParameters()
 
     return """
         |inline fun Any?.is$className():Boolean {
-        |   return ${yclass}.isInstance(this)
+        |   return this != null && $className.isInstance(this)
         |}
         |
         |inline fun ${generics.declaration} Any?.opt$className(): $classDeclaration? {
