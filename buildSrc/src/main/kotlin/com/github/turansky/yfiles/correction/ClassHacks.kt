@@ -27,6 +27,8 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |external interface ClassMetadata<T: Any> {
                 |   @JsName("\${'$'}class")
                 |   val yclass: Class<T>
+                |   
+                |   fun isInstance(o:Any):Boolean
                 |}
             """.trimMargin()
         )
