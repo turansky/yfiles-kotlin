@@ -34,7 +34,27 @@
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
 
-#### Constructor methods
+## Class
+
+#### Metadata
+```Kotlin
+// JS: IVisibilityTestable.$class
+val clazz = IVisibilityTestable.yclass
+
+// JS: IVisibilityTestable.isInstance(o)
+val isInstance = IVisibilityTestable.isInstance(o)
+```
+
+#### Generic
+```Kotlin
+val clazz:Class<IVisibilityTestable> = IVisibilityTestable.yclass
+
+// strict lookup
+val visibilityTestable:IVisibilityTestable? = renderer.lookup(IVisibilityTestable.yclass)
+val boundsProvider:IBoundsProvider? = renderer.lookup(IBoundsProvider.yclass)
+```
+
+## Constructor methods
 
 Via `apply`
 ```Kotlin
