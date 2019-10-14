@@ -40,29 +40,29 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |inline infix fun <T : Any> Any?.yIs(clazz: ClassMetadata<T>): Boolean =
                 |    this != null && this yIs clazz
                 |
-                |inline infix fun <T : Any> Any.yAs(clazz: ClassMetadata<T>): T? =
+                |inline infix fun <T : Any> Any.yOpt(clazz: ClassMetadata<T>): T? =
                 |    if (this yIs clazz) {
                 |        unsafeCast<T>()
                 |    } else {
                 |        null
                 |    }
                 |
-                |inline infix fun <T : Any> Any?.yAs(clazz: ClassMetadata<T>): T? {
+                |inline infix fun <T : Any> Any?.yOpt(clazz: ClassMetadata<T>): T? {
                 |    this ?: return null
                 |
-                |    return this yAs clazz
+                |    return this yOpt clazz
                 |}
                 |
-                |inline infix fun <T : Any> Any.yTo(clazz: ClassMetadata<T>): T {
+                |inline infix fun <T : Any> Any.yAs(clazz: ClassMetadata<T>): T {
                 |    require(this yIs clazz)
                 |
                 |    return unsafeCast<T>()
                 |}
                 |
-                |inline infix fun <T : Any> Any?.yTo(clazz: ClassMetadata<T>): T {
+                |inline infix fun <T : Any> Any?.yAs(clazz: ClassMetadata<T>): T {
                 |    require(this != null)
                 |
-                |    return this yTo clazz
+                |    return this yAs clazz
                 |}
             """.trimMargin()
         )

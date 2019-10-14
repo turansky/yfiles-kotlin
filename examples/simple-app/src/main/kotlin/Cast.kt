@@ -6,7 +6,7 @@ import yfiles.graph.IModelItem
 import yfiles.graph.INode
 import yfiles.lang.yAs
 import yfiles.lang.yIs
-import yfiles.lang.yTo
+import yfiles.lang.yOpt
 
 fun cast() {
     val g: IGraph = DefaultGraph()
@@ -14,6 +14,6 @@ fun cast() {
     val n2: INode = g.createNode()
 
     val isNode: Boolean = n1 yIs INode
-    val asNode: INode? = n1 yAs INode
-    val toNode: INode = n1 yTo INode
+    val optNode: INode? = n1 yOpt INode
+    val asNode: INode = n1 yAs INode
 }
