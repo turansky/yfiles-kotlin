@@ -336,7 +336,7 @@ internal class KotlinFileGenerator(
                 it + "\n\n"
             } ?: ""
 
-            content += interfaceCastExtensions(
+            content += interfaceMetadataExtensions(
                 className = data.name,
                 generics = generics
             )
