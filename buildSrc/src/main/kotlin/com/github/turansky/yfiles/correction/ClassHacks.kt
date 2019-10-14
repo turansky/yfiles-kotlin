@@ -22,6 +22,8 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
         .writeText(
             // language=kotlin
             """
+                |@file:Suppress("NOTHING_TO_INLINE")
+                |
                 |package yfiles.lang
                 |
                 |external interface ClassMetadata<T: Any>
@@ -31,6 +33,37 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |    
                 |inline fun <T: Any> ClassMetadata<T>.isInstance(o:Any):Boolean = 
                 |    asDynamic().isInstance(o)
+                |
+                |inline infix fun <T : Any> Any.yIs(clazz: ClassMetadata<T>): Boolean =
+                |    clazz.isInstance(this)
+                |
+                |inline infix fun <T : Any> Any?.yIs(clazz: ClassMetadata<T>): Boolean =
+                |    this != null && this yIs clazz
+                |
+                |inline infix fun <T : Any> Any.yAs(clazz: ClassMetadata<T>): T? =
+                |    if (this yIs clazz) {
+                |        unsafeCast<T>()
+                |    } else {
+                |        null
+                |    }
+                |
+                |inline infix fun <T : Any> Any?.yAs(clazz: ClassMetadata<T>): T? {
+                |    this ?: return null
+                |
+                |    return this yAs clazz
+                |}
+                |
+                |inline infix fun <T : Any> Any.yTo(clazz: ClassMetadata<T>): T {
+                |    require(this yIs clazz)
+                |
+                |    return unsafeCast<T>()
+                |}
+                |
+                |inline infix fun <T : Any> Any?.yTo(clazz: ClassMetadata<T>): T {
+                |    require(this != null)
+                |
+                |    return this yTo clazz
+                |}
             """.trimMargin()
         )
 }
