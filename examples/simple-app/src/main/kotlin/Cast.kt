@@ -1,3 +1,5 @@
+@file:Suppress("unused", "UNUSED_VARIABLE")
+
 import yfiles.graph.DefaultGraph
 import yfiles.graph.IGraph
 import yfiles.graph.IModelItem
