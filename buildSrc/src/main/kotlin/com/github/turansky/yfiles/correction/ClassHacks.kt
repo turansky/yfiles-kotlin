@@ -59,11 +59,8 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |    return unsafeCast<T>()
                 |}
                 |
-                |inline infix fun <T : Any> Any?.yAs(clazz: ClassMetadata<T>): T {
-                |    require(this != null)
-                |
-                |    return this yAs clazz
-                |}
+                |inline infix fun <T : Any> Any?.yAs(clazz: ClassMetadata<T>): T =
+                |    requireNotNull(this) yAs clazz
             """.trimMargin()
         )
 }
