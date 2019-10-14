@@ -53,7 +53,6 @@ internal class KotlinFileGenerator(
             ?: return
 
         companionContent = "package ${data.packageName}\n\n" +
-                "import yfiles.lang.isInstance\n" +
                 companionContent.clear(data)
 
         if (generatedFile is InterfaceFile) {
