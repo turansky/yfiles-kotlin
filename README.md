@@ -45,6 +45,17 @@ val clazz = IVisibilityTestable.yclass
 val isInstance = IVisibilityTestable.isInstance(o)
 ```
 
+#### Cast extensions
+```Kotlin
+fun (o:Any?) {
+    val isNode:Boolean = o yIs INode
+
+    val optNode:INode? = o yOpt INode
+
+    val node:INode = o yAs INode
+}
+```
+
 #### Generic
 ```Kotlin
 val clazz:Class<IVisibilityTestable> = IVisibilityTestable.yclass
