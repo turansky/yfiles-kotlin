@@ -584,7 +584,7 @@ internal class Method(
         }
 
         if (overridden) {
-            return exp(final, "final ") + "override "
+            return exp(final, "final ") + exp(abstract, "abstract ") + "override "
         }
 
         return when {
