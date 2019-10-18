@@ -35,6 +35,7 @@ internal fun applyHacks(api: JSONObject) {
     fixMethodParameterType(source)
     fixMethodParameterNullability(source)
     fixMethodNullability(source)
+    fixMethodGenericBounds(source)
 
     fixNullability(source)
 
@@ -440,4 +441,22 @@ private fun JSONObject.addMethod(
                     }
                 }
         )
+}
+
+private fun fixMethodGenericBounds(source: Source) {
+    val methodNames = setOf(
+        "getMasterItem",
+        "getViewItem"
+    )
+    source.type("IFoldingView")
+        .jsequence(J_METHODS)
+        .filter { it.getString(J_NAME) in methodNames }
+        .map { it.getJSONArray(J_TYPE_PARAMETERS) }
+        .map { it.single() as JSONObject }
+        .forEach {
+            it.put(
+                J_BOUNDS,
+                arrayOf(IMODEL_ITEM)
+            )
+        }
 }
