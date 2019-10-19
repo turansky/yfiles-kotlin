@@ -21,6 +21,7 @@ internal fun applyComparerHacks(source: Source) {
     fixComparerInheritors(source)
     fixComparerUtilMethods(source)
     fixComparerAsMethodParameter(source)
+    fixComparerAsProperty(source)
     fixNodePlacers(source)
 }
 
@@ -104,6 +105,26 @@ private fun getGeneric(
             println(methodName + " : " + parameterName)
             JS_ANY
         }
+    }
+}
+
+private fun fixComparerAsProperty(source: Source) {
+    sequenceOf(
+        Triple("TabularLayout", "nodeComparer", NODE),
+        Triple("TreeMapLayout", "nodeComparer", NODE),
+
+        Triple("EdgeRouter", "edgeComparer", EDGE),
+        Triple("SeriesParallelLayout", "defaultOutEdgeComparer", EDGE),
+        Triple("TreeLayout", "defaultOutEdgeComparer", EDGE),
+
+        Triple("AspectRatioTreeLayout", "comparer", EDGE),
+        Triple("BalloonLayout", "comparer", EDGE),
+        Triple("ClassicTreeLayout", "comparer", EDGE)
+    ).forEach { (className, propertyName, generic) ->
+        source.type(className)
+            .getJSONArray(J_PROPERTIES)
+            .firstWithName(propertyName)
+            .fixTypeGeneric(generic)
     }
 }
 
