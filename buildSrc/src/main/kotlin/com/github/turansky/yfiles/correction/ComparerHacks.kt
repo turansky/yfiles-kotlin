@@ -42,4 +42,14 @@ private fun fixNodePlacers(source: Source) {
         .map { it.getJSONObject(J_RETURNS) }
         .onEach { require(it.getString(J_TYPE) == "yfiles.collections.IComparer<$JS_ANY>") }
         .forEach { it.put(J_TYPE, "yfiles.collections.IComparer<yfiles.algorithms.Node>") }
+
+    source.types(
+        "RotatableNodePlacerBase",
+        "AssistantNodePlacer",
+        "BusNodePlacer",
+        "LeftRightNodePlacer"
+    ).map { it.jsequence(J_METHODS).first { it.getString(J_NAME) == "createComparer" } }
+        .map { it.getJSONObject(J_RETURNS) }
+        .onEach { require(it.getString(J_TYPE) == "yfiles.collections.IComparer<$JS_ANY>") }
+        .forEach { it.put(J_TYPE, "yfiles.collections.IComparer<yfiles.algorithms.Edge>") }
 }
