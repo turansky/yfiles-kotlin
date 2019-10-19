@@ -74,7 +74,8 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "PortCandidateOptimizer",
         "PortConstraintOptimizerBase",
 
-        "AssistantNodePlacer"
+        "AssistantNodePlacer",
+        "ChannelBasedPathRouting"
     ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
             val methodName = it.getString(J_NAME)
@@ -101,10 +102,8 @@ private fun getGeneric(
 
     return when (parameterName) {
         "inEdgeOrder", "outEdgeOrder" -> EDGE
-        else -> {
-            println(methodName + " : " + parameterName)
-            JS_ANY
-        }
+        "segmentInfoComparer" -> "yfiles.router.SegmentInfo"
+        else -> throw IllegalStateException("No generic found!")
     }
 }
 
