@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_ANY
+import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
 
 private val NODE = "yfiles.algorithms.Node"
@@ -43,8 +44,8 @@ private fun fixNodePlacers(source: Source) {
         "GridNodePlacer",
         "RotatableNodePlacerBase"
     ).forEach {
-        it.jsequence(J_METHODS)
-            .first { it.getString(J_NAME) == "createFromSketchComparer" }
+        it.getJSONArray(J_METHODS)
+            .firstWithName("createFromSketchComparer")
             .fixReturnTypeGeneric(NODE)
     }
 
@@ -54,8 +55,8 @@ private fun fixNodePlacers(source: Source) {
         "BusNodePlacer",
         "LeftRightNodePlacer"
     ).forEach {
-        it.jsequence(J_METHODS)
-            .first { it.getString(J_NAME) == "createComparer" }
+        it.getJSONArray(J_METHODS)
+            .firstWithName("createComparer")
             .fixReturnTypeGeneric(EDGE)
     }
 }
