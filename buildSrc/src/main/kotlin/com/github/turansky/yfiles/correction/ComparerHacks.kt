@@ -4,6 +4,7 @@ import com.github.turansky.yfiles.JS_ANY
 
 internal fun applyComparerHacks(source: Source) {
     fixComparerInheritors(source)
+    fixNodePlacers(source)
 }
 
 private fun fixComparerInheritors(source: Source) {
@@ -27,4 +28,18 @@ private fun fixComparerInheritors(source: Source) {
                     .forEach { it.put(J_TYPE, generic) }
             }
     }
+}
+
+private fun fixNodePlacers(source: Source) {
+    source.types(
+        "IFromSketchNodePlacer",
+        "AspectRatioNodePlacer",
+        "DefaultNodePlacer",
+        "DendrogramNodePlacer",
+        "GridNodePlacer",
+        "RotatableNodePlacerBase"
+    ).map { it.jsequence(J_METHODS).first { it.getString(J_NAME) == "createFromSketchComparer" } }
+        .map { it.getJSONObject(J_RETURNS) }
+        .onEach { require(it.getString(J_TYPE) == "yfiles.collections.IComparer<$JS_ANY>") }
+        .forEach { it.put(J_TYPE, "yfiles.collections.IComparer<yfiles.algorithms.Node>") }
 }
