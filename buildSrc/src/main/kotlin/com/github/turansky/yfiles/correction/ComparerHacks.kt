@@ -76,7 +76,8 @@ private fun fixComparerAsMethodParameter(source: Source) {
 
         "AssistantNodePlacer",
         "ChannelBasedPathRouting",
-        "GivenSequenceSequencer"
+        "GivenSequenceSequencer",
+        "MultiComponentLayerer"
     ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_CONSTRUCTORS) }
         .forEach {
             val methodName = it.getString(J_NAME)
@@ -96,7 +97,8 @@ private fun getGeneric(
 ): String {
     when (methodName) {
         "sortNodes",
-        "GivenSequenceSequencer" -> return NODE
+        "GivenSequenceSequencer",
+        "MultiComponentLayerer" -> return NODE
 
         "sortEdges", "sortInEdges", "sortOutEdges",
         "createCompoundComparer" -> return EDGE
@@ -114,6 +116,7 @@ private fun fixComparerAsProperty(source: Source) {
         Triple("TabularLayout", "nodeComparer", NODE),
         Triple("TreeMapLayout", "nodeComparer", NODE),
         Triple("GivenSequenceSequencer", "sequenceComparer", NODE),
+        Triple("MultiComponentLayerer", "componentComparer", NODE),
 
         Triple("EdgeRouter", "edgeComparer", EDGE),
         Triple("SeriesParallelLayout", "defaultOutEdgeComparer", EDGE),
