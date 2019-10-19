@@ -7,5 +7,6 @@ libraries/yfiles-kotlin/src/
 libraries/vsdx-kotlin/src/
 
 # IDEA ignore list
-.idea/
+.idea/*
+!.idea/icon.png
 *.iml
