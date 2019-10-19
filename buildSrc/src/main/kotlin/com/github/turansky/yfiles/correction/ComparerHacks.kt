@@ -151,7 +151,9 @@ private fun fixNodePlacers(source: Source) {
         "RotatableNodePlacerBase",
         "AssistantNodePlacer",
         "BusNodePlacer",
-        "LeftRightNodePlacer"
+        "LeftRightNodePlacer",
+        "DefaultNodePlacer",
+        "DendrogramNodePlacer"
     ).forEach {
         it.getJSONArray(J_METHODS)
             .firstWithName("createComparer")
