@@ -27,8 +27,8 @@ private fun fixComparerInheritors(source: Source) {
                     put(0, "yfiles.collections.IComparer<$generic>")
                 }
 
-                jsequence(J_METHODS)
-                    .filter { it.getString(J_NAME) == "compare" }
+                getJSONArray(J_METHODS)
+                    .firstWithName("compare")
                     .jsequence(J_PARAMETERS)
                     .forEach { it.put(J_TYPE, generic) }
             }
