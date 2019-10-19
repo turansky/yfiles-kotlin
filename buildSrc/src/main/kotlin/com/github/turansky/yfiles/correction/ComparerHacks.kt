@@ -75,11 +75,22 @@ private fun fixComparerAsMethodParameter(source: Source) {
 
             it.optJsequence(J_PARAMETERS)
                 .filter { it.getString(J_TYPE) in DEFAULT_COMPARERS }
-                .forEach { it.fixTypeGeneric(getGeneric(methodName, it.getString(J_NAME))) }
+                .forEach {
+                    val generic = getGeneric(methodName, it.getString(J_NAME))
+                    it.fixTypeGeneric(generic)
+                }
         }
 }
 
-private fun getGeneric(methodName: String, parameterName: String): String {
+private fun getGeneric(
+    methodName: String,
+    parameterName: String
+): String {
+    when (methodName) {
+        "sortNodes" -> return NODE
+        "sortEdges", "sortInEdges", "sortOutEdges" -> return EDGE
+    }
+
     println(methodName + " : " + parameterName)
     return JS_ANY
 }
