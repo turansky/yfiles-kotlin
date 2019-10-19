@@ -68,7 +68,10 @@ private fun fixComparerUtilMethods(source: Source) {
 private fun fixComparerAsMethodParameter(source: Source) {
     source.types(
         "Graph",
-        "YNode"
+        "YNode",
+
+        "PortCandidateOptimizer",
+        "PortConstraintOptimizerBase"
     ).jsequence(J_METHODS)
         .forEach {
             val methodName = it.getString(J_NAME)
@@ -91,8 +94,13 @@ private fun getGeneric(
         "sortEdges", "sortInEdges", "sortOutEdges" -> return EDGE
     }
 
-    println(methodName + " : " + parameterName)
-    return JS_ANY
+    return when (parameterName) {
+        "inEdgeOrder", "outEdgeOrder" -> EDGE
+        else -> {
+            println(methodName + " : " + parameterName)
+            JS_ANY
+        }
+    }
 }
 
 private fun fixNodePlacers(source: Source) {
