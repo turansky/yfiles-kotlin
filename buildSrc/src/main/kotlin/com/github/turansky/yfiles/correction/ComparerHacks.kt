@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_ANY
+import org.json.JSONObject
 
 private val NODE = "yfiles.algorithms.Node"
 private val EDGE = "yfiles.algorithms.Edge"
@@ -41,18 +42,27 @@ private fun fixNodePlacers(source: Source) {
         "DendrogramNodePlacer",
         "GridNodePlacer",
         "RotatableNodePlacerBase"
-    ).map { it.jsequence(J_METHODS).first { it.getString(J_NAME) == "createFromSketchComparer" } }
-        .map { it.getJSONObject(J_RETURNS) }
-        .onEach { require(it.getString(J_TYPE) == "yfiles.collections.IComparer<$JS_ANY>") }
-        .forEach { it.put(J_TYPE, "yfiles.collections.IComparer<yfiles.algorithms.Node>") }
+    ).forEach {
+        it.jsequence(J_METHODS)
+            .first { it.getString(J_NAME) == "createFromSketchComparer" }
+            .fixReturnTypeGeneric(NODE)
+    }
 
     source.types(
         "RotatableNodePlacerBase",
         "AssistantNodePlacer",
         "BusNodePlacer",
         "LeftRightNodePlacer"
-    ).map { it.jsequence(J_METHODS).first { it.getString(J_NAME) == "createComparer" } }
-        .map { it.getJSONObject(J_RETURNS) }
-        .onEach { require(it.getString(J_TYPE) == "yfiles.collections.IComparer<$JS_ANY>") }
-        .forEach { it.put(J_TYPE, "yfiles.collections.IComparer<yfiles.algorithms.Edge>") }
+    ).forEach {
+        it.jsequence(J_METHODS)
+            .first { it.getString(J_NAME) == "createComparer" }
+            .fixReturnTypeGeneric(EDGE)
+    }
+}
+
+private fun JSONObject.fixReturnTypeGeneric(generic: String) {
+    getJSONObject(J_RETURNS).apply {
+        require(getString(J_TYPE) == "yfiles.collections.IComparer<$JS_ANY>")
+        put(J_TYPE, "yfiles.collections.IComparer<$generic>")
+    }
 }
