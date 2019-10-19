@@ -124,7 +124,7 @@ private fun fixComparerAsProperty(source: Source) {
         source.type(className)
             .getJSONArray(J_PROPERTIES)
             .firstWithName(propertyName)
-            .fixTypeGeneric(generic)
+            .fixTypeGeneric("in $generic")
     }
 }
 
