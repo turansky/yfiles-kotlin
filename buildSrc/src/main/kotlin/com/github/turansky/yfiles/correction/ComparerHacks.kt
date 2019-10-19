@@ -2,6 +2,9 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_ANY
 
+private val NODE = "yfiles.algorithms.Node"
+private val EDGE = "yfiles.algorithms.Edge"
+
 internal fun applyComparerHacks(source: Source) {
     fixComparerInheritors(source)
     fixNodePlacers(source)
@@ -9,9 +12,9 @@ internal fun applyComparerHacks(source: Source) {
 
 private fun fixComparerInheritors(source: Source) {
     sequenceOf(
-        "DefaultOutEdgeComparer" to "yfiles.algorithms.Edge",
-        "NodeOrderComparer" to "yfiles.algorithms.Node",
-        "NodeWeightComparer" to "yfiles.algorithms.Node"
+        "DefaultOutEdgeComparer" to EDGE,
+        "NodeOrderComparer" to NODE,
+        "NodeWeightComparer" to NODE
     ).forEach { (className, generic) ->
         source.type(className)
             .apply {
