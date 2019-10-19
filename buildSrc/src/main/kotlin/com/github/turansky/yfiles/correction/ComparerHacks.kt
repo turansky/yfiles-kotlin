@@ -77,7 +77,7 @@ private fun fixComparerAsMethodParameter(source: Source) {
                 .filter { it.getString(J_TYPE) in DEFAULT_COMPARERS }
                 .forEach {
                     val generic = getGeneric(methodName, it.getString(J_NAME))
-                    it.fixTypeGeneric(generic)
+                    it.fixTypeGeneric("in $generic")
                 }
         }
 }
