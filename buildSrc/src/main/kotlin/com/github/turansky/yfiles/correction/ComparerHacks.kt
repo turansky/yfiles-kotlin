@@ -71,8 +71,10 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "YNode",
 
         "PortCandidateOptimizer",
-        "PortConstraintOptimizerBase"
-    ).jsequence(J_METHODS)
+        "PortConstraintOptimizerBase",
+
+        "AssistantNodePlacer"
+    ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
             val methodName = it.getString(J_NAME)
 
@@ -91,7 +93,9 @@ private fun getGeneric(
 ): String {
     when (methodName) {
         "sortNodes" -> return NODE
-        "sortEdges", "sortInEdges", "sortOutEdges" -> return EDGE
+
+        "sortEdges", "sortInEdges", "sortOutEdges",
+        "createCompoundComparer" -> return EDGE
     }
 
     return when (parameterName) {
