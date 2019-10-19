@@ -6,6 +6,7 @@ import org.json.JSONObject
 
 private val NODE = "yfiles.algorithms.Node"
 private val EDGE = "yfiles.algorithms.Edge"
+private val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
 private val DEFAULT_COMPARER = comparer(JS_ANY)
 
@@ -14,6 +15,7 @@ private fun comparer(generic: String): String =
 
 internal fun applyComparerHacks(source: Source) {
     fixComparerInheritors(source)
+    fixComparerUtilMethods(source)
     fixNodePlacers(source)
 }
 
@@ -37,6 +39,24 @@ private fun fixComparerInheritors(source: Source) {
                     .jsequence(J_PARAMETERS)
                     .forEach { it.put(J_TYPE, generic) }
             }
+    }
+}
+
+private fun fixComparerUtilMethods(source: Source) {
+    val staticMethods = source.type("Comparers")
+        .getJSONArray(J_STATIC_METHODS)
+
+    sequenceOf(
+        "createIntDataComparer" to GRAPH_OBJECT,
+        "createNumberDataComparer" to GRAPH_OBJECT,
+
+        "createIntDataSourceComparer" to EDGE,
+        "createIntDataTargetComparer" to EDGE,
+        "createNumberDataSourceComparer" to EDGE,
+        "createNumberDataTargetComparer" to EDGE
+    ).forEach { (methodName, generic) ->
+        staticMethods.firstWithName(methodName)
+            .fixReturnTypeGeneric(generic)
     }
 }
 
