@@ -67,7 +67,11 @@ private fun fixMethodParameter(source: Source) {
         "ChannelBasedPathRouting",
         "OrthogonalPatternEdgeRouter",
 
-        "ILayer"
+        "ILayer",
+
+        "IElementFactory",
+        "DefaultElementFactory",
+        "MultiPageLayout"
     ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
             val methodName = it.getString(J_NAME)
@@ -104,6 +108,9 @@ private fun getGeneric(
         "nodeLabels" -> "yfiles.layout.INodeLabelLayout"
         "edgeLabels" -> "yfiles.layout.IEdgeLabelLayout"
         "selfLoops" -> EDGE
+
+        "edgeIds", "originalEdgeIds" -> JS_ANY
+
         else -> throw IllegalStateException("No generic found!")
     }
 }

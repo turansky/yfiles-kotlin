@@ -25,15 +25,6 @@ internal fun parseType(type: String): String {
         return "$ICOMPARABLE<*>"
     }
 
-    // TODO: remove after generic support finish
-    if (type.startsWith("$YLIST<")) {
-        return type
-    }
-
-    if (type == YLIST) {
-        return "$YLIST<*>"
-    }
-
     getKotlinType(type)?.let {
         return it
     }
