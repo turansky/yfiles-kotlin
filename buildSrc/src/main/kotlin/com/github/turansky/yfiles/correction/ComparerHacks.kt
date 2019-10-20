@@ -9,6 +9,8 @@ private val NODE = "yfiles.algorithms.Node"
 private val EDGE = "yfiles.algorithms.Edge"
 private val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
+private val SEGMENT_INFO = "yfiles.router.SegmentInfo"
+
 private val DEFAULT_COMPARERS = setOf(
     comparer(JS_ANY),
     comparer(JS_OBJECT)
@@ -106,7 +108,7 @@ private fun getGeneric(
 
     return when (parameterName) {
         "inEdgeOrder", "outEdgeOrder" -> EDGE
-        "segmentInfoComparer" -> "yfiles.router.SegmentInfo"
+        "segmentInfoComparer" -> SEGMENT_INFO
         else -> throw IllegalStateException("No generic found!")
     }
 }
@@ -162,7 +164,16 @@ private fun fixReturnType(source: Source) {
         .getJSONArray(J_STATIC_METHODS)
         .firstWithName("createCompoundComparer")
         .fixReturnTypeGeneric(EDGE)
+
+    source.method("EdgeRouter", "createDefaultEdgeOrderComparer")
+        .fixReturnTypeGeneric(EDGE)
+
+    source.method("ChannelBasedPathRouting", "createSegmentInfoComparer")
+        .fixReturnTypeGeneric(SEGMENT_INFO)
 }
+
+private fun Source.method(className: String, methodName: String) =
+    type(className).method(methodName)
 
 private fun JSONObject.method(methodName: String) =
     getJSONArray(J_METHODS)
