@@ -157,6 +157,11 @@ private fun fixReturnType(source: Source) {
         it.method("createComparer")
             .fixReturnTypeGeneric(EDGE)
     }
+
+    source.type("AssistantNodePlacer")
+        .getJSONArray(J_STATIC_METHODS)
+        .firstWithName("createCompoundComparer")
+        .fixReturnTypeGeneric(EDGE)
 }
 
 private fun JSONObject.method(methodName: String) =
