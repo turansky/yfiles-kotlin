@@ -1,13 +1,14 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.NODE
+import com.github.turansky.yfiles.*
 import org.json.JSONObject
+
+private fun ylist(generic: String): String =
+    "$YLIST<$generic>"
 
 internal fun applyYListHacks(source: Source) {
     fixYList(source)
+    fixMethodParameter(source)
 }
 
 private fun fixYList(source: Source) {
@@ -49,3 +50,37 @@ private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
     } else {
         emptySequence()
     }
+
+private fun fixMethodParameter(source: Source) {
+    source.types(
+        "OrthogonalPatternEdgeRouter"
+    ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_CONSTRUCTORS) }
+        .forEach {
+            val methodName = it.getString(J_NAME)
+
+            it.optJsequence(J_PARAMETERS)
+                .filter { it.getString(J_TYPE) == YLIST }
+                .forEach {
+                    val generic = getGeneric(methodName, it.getString(J_NAME))
+                    it.fixTypeGeneric(generic)
+                }
+        }
+}
+
+private fun getGeneric(
+    methodName: String,
+    parameterName: String
+): String {
+    println(methodName)
+
+    return when (parameterName) {
+        "path" -> YPOINT
+        else -> throw IllegalStateException("No generic found!")
+    }
+}
+
+private fun JSONObject.fixTypeGeneric(generic: String) {
+    require(getString(J_TYPE) == YLIST)
+
+    put(J_TYPE, ylist(generic))
+}
