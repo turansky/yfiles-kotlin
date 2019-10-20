@@ -14,3 +14,6 @@ val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
 val SEGMENT_INFO = "yfiles.router.SegmentInfo"
 val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
+
+val NODE_LABEL_CANDIDATE = "yfiles.layout.NodeLabelCandidate"
+val EDGE_LABEL_CANDIDATE = "yfiles.layout.EdgeLabelCandidate"

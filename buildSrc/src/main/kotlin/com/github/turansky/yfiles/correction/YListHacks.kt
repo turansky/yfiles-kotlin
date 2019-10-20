@@ -9,6 +9,7 @@ private fun ylist(generic: String): String =
 internal fun applyYListHacks(source: Source) {
     fixYList(source)
     fixMethodParameter(source)
+    fixReturnType(source)
 }
 
 private fun fixYList(source: Source) {
@@ -77,6 +78,28 @@ private fun getGeneric(
         "path" -> YPOINT
         else -> throw IllegalStateException("No generic found!")
     }
+}
+
+private fun fixReturnType(source: Source) {
+    sequenceOf(
+        "INodeLabelLayoutModel" to NODE_LABEL_CANDIDATE,
+        "DiscreteNodeLabelLayoutModel" to NODE_LABEL_CANDIDATE,
+        "FreeNodeLabelLayoutModel" to NODE_LABEL_CANDIDATE,
+
+        "IEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE,
+        "DiscreteEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE,
+        "FreeEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE,
+        "SliderEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE
+    ).forEach { (className, generic) ->
+        source.type(className)
+            .method("getLabelCandidates")
+            .fixReturnTypeGeneric(generic)
+    }
+}
+
+private fun JSONObject.fixReturnTypeGeneric(generic: String) {
+    getJSONObject(J_RETURNS)
+        .fixTypeGeneric(generic)
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
