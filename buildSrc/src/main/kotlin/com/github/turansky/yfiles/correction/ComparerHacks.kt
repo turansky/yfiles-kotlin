@@ -22,7 +22,7 @@ internal fun applyComparerHacks(source: Source) {
     fixComparerUtilMethods(source)
     fixComparerAsMethodParameter(source)
     fixComparerAsProperty(source)
-    fixNodePlacers(source)
+    fixReturnType(source)
 }
 
 private fun fixComparerInheritors(source: Source) {
@@ -133,7 +133,7 @@ private fun fixComparerAsProperty(source: Source) {
     }
 }
 
-private fun fixNodePlacers(source: Source) {
+private fun fixReturnType(source: Source) {
     source.types(
         "IFromSketchNodePlacer",
         "AspectRatioNodePlacer",
@@ -142,8 +142,7 @@ private fun fixNodePlacers(source: Source) {
         "GridNodePlacer",
         "RotatableNodePlacerBase"
     ).forEach {
-        it.getJSONArray(J_METHODS)
-            .firstWithName("createFromSketchComparer")
+        it.method("createFromSketchComparer")
             .fixReturnTypeGeneric(NODE)
     }
 
@@ -155,11 +154,14 @@ private fun fixNodePlacers(source: Source) {
         "DefaultNodePlacer",
         "DendrogramNodePlacer"
     ).forEach {
-        it.getJSONArray(J_METHODS)
-            .firstWithName("createComparer")
+        it.method("createComparer")
             .fixReturnTypeGeneric(EDGE)
     }
 }
+
+private fun JSONObject.method(methodName: String) =
+    getJSONArray(J_METHODS)
+        .firstWithName(methodName)
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
     getJSONObject(J_RETURNS)
