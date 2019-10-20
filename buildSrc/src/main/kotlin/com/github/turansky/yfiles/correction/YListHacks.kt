@@ -62,6 +62,7 @@ private fun fixMethodParameter(source: Source) {
         "LabelingBase",
         "SelfLoopCalculator",
         "IntersectionAlgorithm",
+        "ChannelBasedPathRouting",
         "OrthogonalPatternEdgeRouter",
 
         "ILayer"
@@ -88,6 +89,9 @@ private fun getGeneric(
 
         methodName == "setNodeOrder" && parameterName == "list" ->
             return NODE
+
+        methodName == "createSegmentInfoComparer" && parameterName == "channels" ->
+            return "yfiles.router.Channel"
     }
 
     return when (parameterName) {
