@@ -62,7 +62,9 @@ private fun fixMethodParameter(source: Source) {
         "LabelingBase",
         "SelfLoopCalculator",
         "IntersectionAlgorithm",
-        "OrthogonalPatternEdgeRouter"
+        "OrthogonalPatternEdgeRouter",
+
+        "ILayer"
     ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
             val methodName = it.getString(J_NAME)
@@ -83,6 +85,9 @@ private fun getGeneric(
     when {
         methodName == "intersect" && parameterName == "objects" ->
             return "yfiles.algorithms.IPlaneObject"
+
+        methodName == "setNodeOrder" && parameterName == "list" ->
+            return NODE
     }
 
     return when (parameterName) {
