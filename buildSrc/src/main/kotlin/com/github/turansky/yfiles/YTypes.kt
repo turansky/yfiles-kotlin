@@ -5,6 +5,8 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
 
+val YLIST = "yfiles.algorithms.YList"
+
 val NODE = "yfiles.algorithms.Node"
 val EDGE = "yfiles.algorithms.Edge"
 val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"

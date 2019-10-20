@@ -160,3 +160,8 @@ internal fun JSONObject.addGeneric(generic: String) {
     val type = getString(J_TYPE)
     put(J_TYPE, "$type<$generic>")
 }
+
+internal fun JSONObject.addExtendsGeneric(generic: String) {
+    val type = getString(J_EXTENDS)
+    put(J_EXTENDS, "$type<$generic>")
+}
