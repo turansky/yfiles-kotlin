@@ -133,6 +133,19 @@ private fun fixComparerAsProperty(source: Source) {
             .firstWithName(propertyName)
             .fixTypeGeneric("in $generic")
     }
+
+    source.types(
+        "TreeLayout",
+        "SeriesParallelLayout"
+    ).forEach {
+        it.getJSONArray(J_CONSTANTS)
+            .firstWithName("OUT_EDGE_COMPARER_DP_KEY")
+            .apply {
+                require(getString(J_TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
+
+                put(J_TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
+            }
+    }
 }
 
 private fun fixReturnType(source: Source) {
