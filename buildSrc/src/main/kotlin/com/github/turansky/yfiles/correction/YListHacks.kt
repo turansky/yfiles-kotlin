@@ -107,6 +107,15 @@ private fun fixReturnType(source: Source) {
             .method("getLabelCandidates")
             .fixReturnTypeGeneric(generic)
     }
+
+    sequenceOf(
+        Triple("Geom", "calcConvexHull", YPOINT),
+        Triple("ShortestPathAlgorithm", "kShortestPaths", "yfiles.algorithms.EdgeList")
+    ).forEach { (className, methodName, generic) ->
+        source.type(className)
+            .staticMethod(methodName)
+            .fixReturnTypeGeneric(generic)
+    }
 }
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
