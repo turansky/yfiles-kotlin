@@ -9,6 +9,7 @@ private fun ylist(generic: String): String =
 internal fun applyYListHacks(source: Source) {
     fixYList(source)
     fixMethodParameter(source)
+    fixProperty(source)
     fixReturnType(source)
 }
 
@@ -77,6 +78,17 @@ private fun getGeneric(
     return when (parameterName) {
         "path" -> YPOINT
         else -> throw IllegalStateException("No generic found!")
+    }
+}
+
+private fun fixProperty(source: Source) {
+    sequenceOf(
+        Triple("ILayer", "sameLayerEdges", EDGE),
+        Triple("EdgeCellInfo", "cellSegmentInfos", "yfiles.router.CellSegmentInfo")
+    ).forEach { (className, propertyName, generic) ->
+        source.type(className)
+            .property(propertyName)
+            .fixTypeGeneric(generic)
     }
 }
 
