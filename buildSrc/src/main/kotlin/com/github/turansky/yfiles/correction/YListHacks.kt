@@ -55,6 +55,8 @@ private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
 
 private fun fixMethodParameter(source: Source) {
     source.types(
+        "YList",
+
         "Geom",
         "TriangulationAlgorithm",
         "LayoutGraph",
@@ -84,6 +86,9 @@ private fun getGeneric(
     parameterName: String
 ): String {
     when {
+        methodName == "splice" && parameterName == "list" ->
+            return "T"
+
         methodName == "intersect" && parameterName == "objects" ->
             return "yfiles.algorithms.IPlaneObject"
 
