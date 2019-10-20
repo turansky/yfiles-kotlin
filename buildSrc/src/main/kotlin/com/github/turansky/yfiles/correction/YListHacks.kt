@@ -59,6 +59,7 @@ private fun fixMethodParameter(source: Source) {
         "TriangulationAlgorithm",
         "LayoutGraph",
 
+        "IntersectionAlgorithm",
         "OrthogonalPatternEdgeRouter"
     ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
@@ -77,7 +78,10 @@ private fun getGeneric(
     methodName: String,
     parameterName: String
 ): String {
-    println(methodName)
+    when {
+        methodName == "intersect" && parameterName == "objects" ->
+            return "yfiles.algorithms.IPlaneObject"
+    }
 
     return when (parameterName) {
         "path", "points" -> YPOINT
