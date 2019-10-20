@@ -113,7 +113,7 @@ private fun getConstructorParameterType(className: String, parameterName: String
 }
 
 private fun JSONObject.correctProperties() {
-    correctProperties("staticProperties")
+    correctProperties(J_STATIC_PROPERTIES)
     correctProperties(J_PROPERTIES)
 }
 
