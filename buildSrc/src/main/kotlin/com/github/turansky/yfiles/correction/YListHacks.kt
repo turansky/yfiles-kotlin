@@ -55,8 +55,12 @@ private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
 
 private fun fixMethodParameter(source: Source) {
     source.types(
+        "Geom",
+        "TriangulationAlgorithm",
+        "LayoutGraph",
+
         "OrthogonalPatternEdgeRouter"
-    ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_CONSTRUCTORS) }
+    ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
             val methodName = it.getString(J_NAME)
 
@@ -76,7 +80,7 @@ private fun getGeneric(
     println(methodName)
 
     return when (parameterName) {
-        "path" -> YPOINT
+        "path", "points" -> YPOINT
         else -> throw IllegalStateException("No generic found!")
     }
 }
