@@ -181,6 +181,9 @@ private fun fixReturnType(source: Source) {
     source.method("EdgeRouter", "createDefaultEdgeOrderComparer")
         .fixReturnTypeGeneric(EDGE)
 
+    source.method("TreeLayout", "getOutEdgeComparer")
+        .fixReturnTypeGeneric(EDGE)
+
     source.method("ChannelBasedPathRouting", "createSegmentInfoComparer")
         .fixReturnTypeGeneric(SEGMENT_INFO)
 }
