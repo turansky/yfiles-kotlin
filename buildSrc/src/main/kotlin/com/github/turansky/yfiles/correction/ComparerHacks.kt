@@ -1,16 +1,8 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
-
-private val NODE = "yfiles.algorithms.Node"
-private val EDGE = "yfiles.algorithms.Edge"
-private val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
-
-private val SEGMENT_INFO = "yfiles.router.SegmentInfo"
-private val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
 
 private val DEFAULT_COMPARERS = setOf(
     comparer(JS_ANY),
