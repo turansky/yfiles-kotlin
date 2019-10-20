@@ -113,6 +113,17 @@ private fun fixReturnType(source: Source) {
     }
 
     sequenceOf(
+        "LayoutGraph" to "getPathList",
+        "LayoutGraph" to "getPointList",
+
+        "EdgeInfo" to "calculatePathPoints"
+    ).forEach { (className, methodName) ->
+        source.type(className)
+            .method(methodName)
+            .fixReturnTypeGeneric(YPOINT)
+    }
+
+    sequenceOf(
         Triple("Geom", "calcConvexHull", YPOINT),
         Triple("ShortestPathAlgorithm", "kShortestPaths", "yfiles.algorithms.EdgeList")
     ).forEach { (className, methodName, generic) ->
