@@ -10,6 +10,7 @@ private val EDGE = "yfiles.algorithms.Edge"
 private val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
 private val SEGMENT_INFO = "yfiles.router.SegmentInfo"
+private val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
 
 private val DEFAULT_COMPARERS = setOf(
     comparer(JS_ANY),
@@ -79,7 +80,9 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "AssistantNodePlacer",
         "ChannelBasedPathRouting",
         "GivenSequenceSequencer",
-        "MultiComponentLayerer"
+        "MultiComponentLayerer",
+
+        "SwimlaneDescriptor"
     ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_CONSTRUCTORS) }
         .forEach {
             val methodName = it.getString(J_NAME)
@@ -104,6 +107,8 @@ private fun getGeneric(
 
         "sortEdges", "sortInEdges", "sortOutEdges",
         "createCompoundComparer" -> return EDGE
+
+        "SwimlaneDescriptor" -> return SWIMLANE_DESCRIPTOR
     }
 
     return when (parameterName) {
@@ -126,7 +131,9 @@ private fun fixComparerAsProperty(source: Source) {
 
         Triple("AspectRatioTreeLayout", "comparer", EDGE),
         Triple("BalloonLayout", "comparer", EDGE),
-        Triple("ClassicTreeLayout", "comparer", EDGE)
+        Triple("ClassicTreeLayout", "comparer", EDGE),
+
+        Triple("SwimlaneDescriptor", "comparer", SWIMLANE_DESCRIPTOR)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
             .getJSONArray(J_PROPERTIES)
