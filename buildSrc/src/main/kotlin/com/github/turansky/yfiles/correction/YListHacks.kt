@@ -59,6 +59,7 @@ private fun fixMethodParameter(source: Source) {
         "TriangulationAlgorithm",
         "LayoutGraph",
 
+        "LabelingBase",
         "IntersectionAlgorithm",
         "OrthogonalPatternEdgeRouter"
     ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
@@ -85,6 +86,8 @@ private fun getGeneric(
 
     return when (parameterName) {
         "path", "points" -> YPOINT
+        "nodeLabels" -> "yfiles.layout.INodeLabelLayout"
+        "edgeLabels" -> "yfiles.layout.IEdgeLabelLayout"
         else -> throw IllegalStateException("No generic found!")
     }
 }
