@@ -14,6 +14,8 @@ val J_IMPLEMENTS = "implements"
 
 val J_CONSTRUCTORS = "constructors"
 
+val J_CONSTANTS = "constants"
+
 val J_STATIC_PROPERTIES = "staticProperties"
 val J_PROPERTIES = "properties"
 val J_FIELDS = "fields"

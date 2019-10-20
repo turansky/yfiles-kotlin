@@ -92,7 +92,7 @@ private fun fixUnionMethods(source: Source) {
 
 private fun fixConstantGenerics(source: Source) {
     source.type("IListEnumerable")
-        .getJSONArray("constants")
+        .getJSONArray(J_CONSTANTS)
         .firstWithName("EMPTY")
         .also {
             val type = it.getString(J_TYPE)

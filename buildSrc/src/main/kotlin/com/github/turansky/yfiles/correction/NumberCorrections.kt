@@ -30,12 +30,12 @@ internal fun correctNumbers(source: JSONObject) {
 }
 
 private fun JSONObject.correctConstants() {
-    if (!has("constants")) {
+    if (!has(J_CONSTANTS)) {
         return
     }
 
     val className = getString(J_NAME)
-    jsequence("constants")
+    jsequence(J_CONSTANTS)
         .filter { it.getString(J_TYPE) != JS_NUMBER }
         .filter { it.getString(J_TYPE).contains(JS_NUMBER) }
         .forEach {
