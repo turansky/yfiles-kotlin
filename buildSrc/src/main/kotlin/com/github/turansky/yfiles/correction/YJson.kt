@@ -44,6 +44,10 @@ internal fun JSONObject.methodParameters(
     return result
 }
 
+internal fun JSONObject.method(methodName: String) =
+    getJSONArray(J_METHODS)
+        .firstWithName(methodName)
+
 internal fun JSONObject.property(name: String): JSONObject =
     getJSONArray(J_PROPERTIES)
         .firstWithName(name)

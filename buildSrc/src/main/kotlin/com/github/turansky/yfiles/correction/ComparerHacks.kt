@@ -173,8 +173,7 @@ private fun fixReturnType(source: Source) {
     }
 
     source.type("AssistantNodePlacer")
-        .getJSONArray(J_STATIC_METHODS)
-        .firstWithName("createCompoundComparer")
+        .staticMethod("createCompoundComparer")
         .fixReturnTypeGeneric(EDGE)
 
     source.method("EdgeRouter", "createDefaultEdgeOrderComparer")
@@ -189,10 +188,6 @@ private fun fixReturnType(source: Source) {
 
 private fun Source.method(className: String, methodName: String) =
     type(className).method(methodName)
-
-private fun JSONObject.method(methodName: String) =
-    getJSONArray(J_METHODS)
-        .firstWithName(methodName)
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
     getJSONObject(J_RETURNS)
