@@ -24,7 +24,6 @@ internal fun applyHacks(api: JSONObject) {
     fixFunctionGenerics(source)
 
     fixReturnType(source)
-    fixImplementedTypes(source)
 
     fixPropertyType(source)
     fixPropertyNullability(source)
@@ -121,25 +120,12 @@ private fun fixFunctionGenerics(source: Source) {
 }
 
 private fun fixReturnType(source: Source) {
-    source.types("EdgeList", "YNodeList")
-        .forEach {
-            it.getJSONArray(J_METHODS)
-                .firstWithName("getEnumerator")
-                .getJSONObject(J_RETURNS)
-                .put(J_TYPE, "yfiles.collections.IEnumerator<$JS_OBJECT>")
-        }
-
     source.type("SvgExport").apply {
         getJSONArray(J_METHODS)
             .firstWithName("exportSvg")
             .getJSONObject(J_RETURNS)
             .put(J_TYPE, JS_SVG_SVG_ELEMENT)
     }
-}
-
-private fun fixImplementedTypes(source: Source) {
-    source.types("EdgeList", "YNodeList")
-        .forEach { it.strictRemove(J_IMPLEMENTS) }
 }
 
 private fun fixPropertyType(source: Source) {

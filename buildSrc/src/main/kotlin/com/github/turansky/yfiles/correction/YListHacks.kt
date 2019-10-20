@@ -1,8 +1,9 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ANY
+import com.github.turansky.yfiles.EDGE
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.NODE
 import org.json.JSONObject
 
 internal fun applyYListHacks(source: Source) {
@@ -14,10 +15,10 @@ private fun fixYList(source: Source) {
         .fixGeneric()
 
     source.type("YNodeList")
-        .addExtendsGeneric(ANY)
+        .addExtendsGeneric(NODE)
 
     source.type("EdgeList")
-        .addExtendsGeneric(ANY)
+        .addExtendsGeneric(EDGE)
 }
 
 private fun JSONObject.fixGeneric() {
