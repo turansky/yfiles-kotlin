@@ -61,7 +61,7 @@ private fun fixCursorUtil(source: Source) {
             sequenceOf(secondParameter, getJSONObject(J_RETURNS))
                 .forEach {
                     val type = it.getString(J_TYPE)
-                        .replace("<$JS_ANY>", "<T>")
+                        .replace("<$JS_OBJECT>", "<T>")
 
                     it.put(J_TYPE, type)
                 }
