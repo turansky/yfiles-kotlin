@@ -157,7 +157,7 @@ private fun fixReturnType(source: Source) {
 
     sequenceOf(
         Triple("Geom", "calcConvexHull", YPOINT),
-        Triple("ShortestPathAlgorithm", "kShortestPaths", "yfiles.algorithms.EdgeList")
+        Triple("ShortestPathAlgorithm", "kShortestPaths", EDGE_LIST)
     ).forEach { (className, methodName, generic) ->
         source.type(className)
             .staticMethod(methodName)

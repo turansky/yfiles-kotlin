@@ -9,6 +9,8 @@ private fun cursor(generic: String): String =
 internal fun applyCursorHacks(source: Source) {
     fixCursor(source)
     fixCursorUtil(source)
+    fixMethodParameter(source)
+    fixReturnType(source)
 }
 
 private fun fixCursor(source: Source) {
@@ -69,4 +71,52 @@ private fun fixCursorUtil(source: Source) {
                 .put(OPTIONAL)
         }
     }
+}
+
+private fun fixMethodParameter(source: Source) {
+    val nodeParameterNames = setOf(
+        "subNodes",
+        "nodeSubset"
+    )
+
+    source.types(
+        "Graph",
+        "LayoutGraph",
+        "DefaultLayoutGraph"
+    ).jsequence(J_CONSTRUCTORS)
+        .flatMap { it.optJsequence(J_PARAMETERS) }
+        .filter { it.getString(J_NAME) in nodeParameterNames }
+        .forEach { it.fixTypeGeneric(NODE) }
+
+    source.types(
+        "GraphPartitionManager",
+        "LayoutGraphHider"
+    ).map { it.method("hideItemCursor") }
+        .map { it.firstParameter }
+        .forEach { it.fixTypeGeneric(GRAPH_OBJECT) }
+}
+
+private fun fixReturnType(source: Source) {
+    source.type("YPointPath")
+        .method("cursor")
+        .fixReturnTypeGeneric(YPOINT)
+
+    source.type("PathAlgorithm")
+        .staticMethod("findAllPathsCursor")
+        .fixReturnTypeGeneric(EDGE_LIST)
+
+    source.type("ShortestPathAlgorithm")
+        .staticMethod("kShortestPathsCursor")
+        .fixReturnTypeGeneric(EDGE_LIST)
+}
+
+private fun JSONObject.fixReturnTypeGeneric(generic: String) {
+    getJSONObject(J_RETURNS)
+        .fixTypeGeneric(generic)
+}
+
+private fun JSONObject.fixTypeGeneric(generic: String) {
+    require(getString(J_TYPE) == CURSOR)
+
+    put(J_TYPE, cursor(generic))
 }

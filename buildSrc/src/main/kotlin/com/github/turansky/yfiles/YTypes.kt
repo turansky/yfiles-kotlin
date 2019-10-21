@@ -8,6 +8,7 @@ val IMODEL_ITEM = "yfiles.graph.IModelItem"
 val CURSOR = "yfiles.algorithms.ICursor"
 val YLIST = "yfiles.algorithms.YList"
 val YPOINT = "yfiles.algorithms.YPoint"
+val EDGE_LIST = "yfiles.algorithms.EdgeList"
 
 val NODE = "yfiles.algorithms.Node"
 val EDGE = "yfiles.algorithms.Edge"
