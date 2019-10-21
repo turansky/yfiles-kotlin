@@ -54,5 +54,19 @@ private fun fixCursorUtil(source: Source) {
                     .filter { it.getString(J_TYPE) == CURSOR }
                     .forEach { it.put(J_TYPE, cursor("T")) }
             }
+
+        staticMethod("toArray").apply {
+            sequenceOf(secondParameter, getJSONObject(J_RETURNS))
+                .forEach {
+                    val type = it.getString(J_TYPE)
+                        .replace("<$JS_ANY>", "<T>")
+
+                    it.put(J_TYPE, type)
+                }
+
+            secondParameter
+                .getJSONArray(J_MODIFIERS)
+                .put(OPTIONAL)
+        }
     }
 }
