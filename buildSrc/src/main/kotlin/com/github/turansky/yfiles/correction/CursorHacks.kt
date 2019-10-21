@@ -8,6 +8,7 @@ private fun cursor(generic: String): String =
 
 internal fun applyCursorHacks(source: Source) {
     fixCursor(source)
+    fixCursorUtil(source)
 }
 
 private fun fixCursor(source: Source) {
@@ -28,8 +29,30 @@ private fun fixCursor(source: Source) {
 }
 
 private fun JSONObject.fixGeneric() {
-    setSingleTypeParameter("out T", ANY)
+    setSingleTypeParameter("out T", JS_ANY)
 
     property("current")
         .put(J_TYPE, "T")
+}
+
+private fun fixCursorUtil(source: Source) {
+    source.type("Cursors").apply {
+        jsequence(J_STATIC_METHODS)
+            .onEach {
+                val name = it.getString(J_NAME)
+                val bound = when (name) {
+                    "createNodeCursor" -> NODE
+                    "createEdgeCursor" -> EDGE
+                    else -> JS_ANY
+                }
+
+                it.setSingleTypeParameter(bound = bound)
+            }
+            .forEach {
+                it.jsequence(J_PARAMETERS)
+                    .plus(it.getJSONObject(J_RETURNS))
+                    .filter { it.getString(J_TYPE) == CURSOR }
+                    .forEach { it.put(J_TYPE, cursor("T")) }
+            }
+    }
 }
