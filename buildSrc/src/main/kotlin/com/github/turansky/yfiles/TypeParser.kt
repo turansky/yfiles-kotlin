@@ -25,6 +25,15 @@ internal fun parseType(type: String): String {
         return "$ICOMPARABLE<*>"
     }
 
+    // TODO: remove after generic support finish
+    if (type.startsWith("$CURSOR<")) {
+        return type
+    }
+
+    if (type == CURSOR) {
+        return "$CURSOR<*>"
+    }
+
     getKotlinType(type)?.let {
         return it
     }

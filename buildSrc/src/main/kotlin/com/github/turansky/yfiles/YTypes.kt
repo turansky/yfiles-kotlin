@@ -5,6 +5,7 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
 
+val CURSOR = "yfiles.algorithms.ICursor"
 val YLIST = "yfiles.algorithms.YList"
 val YPOINT = "yfiles.algorithms.YPoint"
 
