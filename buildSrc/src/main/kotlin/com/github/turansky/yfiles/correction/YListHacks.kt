@@ -36,10 +36,12 @@ private fun JSONObject.fixGeneric() {
         .plus(jsequence(J_PROPERTIES))
         .forEach {
             val type = it.getString(J_TYPE)
-            val newType = if (type == JS_ANY || type == JS_OBJECT) {
-                "T"
-            } else {
-                type.replace("<$JS_ANY>", "<T>")
+            val newType = when (type) {
+                JS_ANY, JS_OBJECT -> "T"
+                CURSOR -> "$CURSOR<T>"
+
+                else -> type
+                    .replace("<$JS_ANY>", "<T>")
                     .replace("<$JS_OBJECT>", "<T>")
             }
             it.put(J_TYPE, newType)
