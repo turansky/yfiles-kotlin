@@ -62,3 +62,6 @@ private fun parseGenericParameters(parameters: String): List<String> {
 
     return result.toList()
 }
+
+internal fun String.asReadOnly(): String =
+    replace("Array<", "Array<out ")

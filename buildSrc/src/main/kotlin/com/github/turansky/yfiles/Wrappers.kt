@@ -813,7 +813,7 @@ internal class Generics(private val parameters: List<TypeParameter>) {
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by optString()
-    val type: String by TypeDelegate { parse(it, signature) }
+    val type: String by TypeDelegate { parse(it, signature).asReadOnly() }
     override val doc: String? by summary()
 }
 
