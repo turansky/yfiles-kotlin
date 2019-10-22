@@ -43,6 +43,7 @@ internal fun applyHacks(api: JSONObject) {
     fieldToProperties(source)
 
     applyClassHacks(source)
+    applyCollectionHacks(source)
     applyComparableHacks(source)
     applyComparerHacks(source)
     applyCursorHacks(source)
