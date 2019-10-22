@@ -47,6 +47,7 @@ internal fun applyHacks(api: JSONObject) {
     applyComparableHacks(source)
     applyComparerHacks(source)
     applyCursorHacks(source)
+    applyListHacks(source)
     applyYListHacks(source)
 
     fixConstructors(source)
