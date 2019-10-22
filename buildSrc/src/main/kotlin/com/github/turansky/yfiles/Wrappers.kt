@@ -375,7 +375,7 @@ internal abstract class TypedDeclaration(
 ) : Declaration(source) {
     private val id: String? by optString()
     private val signature: String? by optString()
-    protected val type: String by TypeDelegate { parse(it, signature) }
+    protected val type: String by TypeDelegate { parse(it, signature).asReadOnly() }
 
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
