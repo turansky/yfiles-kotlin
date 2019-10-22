@@ -22,8 +22,15 @@ internal fun applyCollectionHacks(source: Source) {
             it.property("sourcePortCandidates"),
             it.property("targetPortCandidates")
         )
-    }
-        .forEach { it.fixTypeGeneric("yfiles.layout.PortCandidate") }
+    }.forEach { it.fixTypeGeneric("yfiles.layout.PortCandidate") }
+
+    source.type("PartitionGrid")
+        .jsequence(J_METHODS)
+        .single { it.getString(J_ID) == "PartitionGrid-method-createCellSpanId(yfiles.collections.ICollection,yfiles.collections.ICollection)" }
+        .apply {
+            firstParameter.fixTypeGeneric("yfiles.layout.RowDescriptor")
+            secondParameter.fixTypeGeneric("yfiles.layout.ColumnDescriptor")
+        }
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
