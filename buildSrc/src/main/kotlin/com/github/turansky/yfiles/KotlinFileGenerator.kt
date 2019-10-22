@@ -318,9 +318,13 @@ internal class KotlinFileGenerator(
             val content = super.content()
                 .replace("abstract ", "")
 
+            val interfaceDeclaration = classDeclaration
+                .replace("IEnumerator<", "IEnumerator<out ")
+                .replace("IEnumerable<", "IEnumerable<out ")
+
             return documentation +
                     externalAnnotation +
-                    "external interface $classDeclaration ${parentString()} {\n" +
+                    "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
                     "}"
