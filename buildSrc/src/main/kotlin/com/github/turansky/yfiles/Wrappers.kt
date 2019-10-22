@@ -693,12 +693,17 @@ internal class Method(
     }
 }
 
+private val EXCLUDED_READ_ONLY = setOf(
+    "copyTo",
+    "toArray"
+)
+
 internal abstract class MethodBase(
     source: JSONObject,
     private val parent: Type
 ) : Declaration(source) {
     private val id: String? by optString()
-    protected val parameters: List<Parameter> by list(::Parameter)
+    protected val parameters: List<Parameter> by list { Parameter(it, name !in EXCLUDED_READ_ONLY) }
     val options: Boolean by boolean()
 
     protected val preconditions: List<String> by stringList(::summary)
@@ -752,11 +757,14 @@ internal class ParameterModifiers(flags: List<String>) {
     val nullability = exp(canbenull, "?")
 }
 
-internal class Parameter(source: JSONObject) : JsonWrapper(source), IParameter {
+internal class Parameter(
+    source: JSONObject,
+    private val readOnly: Boolean = true
+) : JsonWrapper(source), IParameter {
     override val name: String by string()
     private val signature: String? by optString()
     val lambda: Boolean = signature != null
-    val type: String by TypeDelegate { parse(it, signature) }
+    val type: String by TypeDelegate { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
@@ -876,7 +884,7 @@ private class EventListener(
 ) : JsonWrapper(source) {
     val name: String by string()
     val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
-    val parameters: List<Parameter> by list(::Parameter)
+    val parameters: List<Parameter> by list { Parameter(it) }
 
     val overriden: Boolean
         get() = ClassRegistry.instance

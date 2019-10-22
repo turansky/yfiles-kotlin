@@ -65,3 +65,10 @@ private fun parseGenericParameters(parameters: String): List<String> {
 
 internal fun String.asReadOnly(): String =
     replace("Array<", "Array<out ")
+
+internal fun String.inMode(readOnly: Boolean): String =
+    if (readOnly) {
+        asReadOnly()
+    } else {
+        replace("Array<", "Array<in ")
+    }
