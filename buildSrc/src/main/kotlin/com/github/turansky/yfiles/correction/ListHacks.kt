@@ -50,8 +50,10 @@ private fun fixMethodParameter(source: Source) {
         "IObstaclePartition",
 
         "EdgeRouterPath",
-        "PathSearchExtension"
-    ).jsequence(J_METHODS)
+        "PathSearchExtension",
+        "SegmentGroup",
+        "SegmentInfo"
+    ).flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) }
         .flatMap { it.optJsequence(J_PARAMETERS) }
         .filter { it.getString(J_TYPE) in DEFAULT_LISTS }
         .forEach {
@@ -60,6 +62,7 @@ private fun fixMethodParameter(source: Source) {
                 "obstacles" -> OBSTACLE
                 "allEnterIntervals" -> "yfiles.router.Interval"
                 "segmentInfos" -> SEGMENT_INFO
+                "cellSegmentInfos" -> "yfiles.router.CellSegmentInfo"
                 "entrances", "allStartEntrances" -> "yfiles.router.CellEntrance"
                 else -> throw IllegalStateException("No generic found!")
             }
