@@ -375,10 +375,17 @@ internal abstract class TypedDeclaration(
 ) : Declaration(source) {
     private val id: String? by optString()
     private val signature: String? by optString()
-    protected val type: String by TypeDelegate { parse(it, signature).asReadOnly() }
+    protected val type: String by TypeDelegate {
+        parse(it, signature).run {
+            if (fixGeneric) asReadOnly() else this
+        }
+    }
 
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
+
+    protected open val fixGeneric: Boolean
+        get() = false
 }
 
 internal class Constructor(
@@ -477,6 +484,9 @@ internal class Property(
 
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverridden(parent.classId, name)
+
+    override val fixGeneric: Boolean
+        get() = name != "children"
 
     private val documentation: String
         get() = getDocumentation(
