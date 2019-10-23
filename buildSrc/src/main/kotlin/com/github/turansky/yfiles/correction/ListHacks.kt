@@ -20,10 +20,16 @@ internal fun applyListHacks(source: Source) {
 
 private fun fixProperty(source: Source) {
     sequenceOf(
-        Triple("EdgeInfo", "edgeCellInfos", "yfiles.router.EdgeCellInfo"),
         Triple("CompositeLayoutStage", "layoutStages", "yfiles.layout.ILayoutStage"),
 
-        Triple("EdgeRouterEdgeLayoutDescriptor", "intermediateRoutingPoints", YPOINT)
+        Triple("EdgeInfo", "edgeCellInfos", "yfiles.router.EdgeCellInfo"),
+        Triple("EdgeRouter", "registeredPartitionExtensions", "yfiles.router.IGraphPartitionExtension"),
+        Triple("EdgeRouter", "registeredPathSearchExtensions", "yfiles.router.PathSearchExtension"),
+
+        Triple("EdgeRouterEdgeLayoutDescriptor", "intermediateRoutingPoints", YPOINT),
+        Triple("SegmentGroup", "segmentInfos", "yfiles.router.SegmentInfo"),
+
+        Triple("RotatableNodePlacerBase", "createdChildren", YPOINT)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
             .getJSONArray(J_PROPERTIES)
