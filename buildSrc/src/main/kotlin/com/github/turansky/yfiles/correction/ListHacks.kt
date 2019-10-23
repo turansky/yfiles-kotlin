@@ -14,6 +14,7 @@ private fun list(generic: String): String =
 
 internal fun applyListHacks(source: Source) {
     fixProperty(source)
+    fixMethodParameter(source)
     fixReturnType(source)
 }
 
@@ -26,15 +27,45 @@ private fun fixProperty(source: Source) {
         Triple("EdgeRouter", "registeredPathSearchExtensions", "yfiles.router.PathSearchExtension"),
 
         Triple("EdgeRouterEdgeLayoutDescriptor", "intermediateRoutingPoints", YPOINT),
-        Triple("SegmentGroup", "segmentInfos", "yfiles.router.SegmentInfo"),
+        Triple("SegmentGroup", "segmentInfos", SEGMENT_INFO),
 
-        Triple("RotatableNodePlacerBase", "createdChildren", YPOINT)
+        Triple("RotatableNodePlacerBase", "createdChildren", NODE)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
             .getJSONArray(J_PROPERTIES)
             .firstWithName(propertyName)
             .fixTypeGeneric(generic)
     }
+}
+
+private fun fixMethodParameter(source: Source) {
+    source.types(
+        "ChannelBasedPathRouting",
+        "DynamicObstacleDecomposition",
+        "GraphPartition",
+        "GraphPartitionExtensionAdapter",
+
+        "IDecompositionListener",
+        "IEnterIntervalCalculator",
+        "IObstaclePartition",
+
+        "EdgeRouterPath",
+        "PathSearchExtension"
+    ).jsequence(J_METHODS)
+        .flatMap { it.optJsequence(J_PARAMETERS) }
+        .filter { it.getString(J_TYPE) in DEFAULT_LISTS }
+        .forEach {
+            val generic = when (it.getString(J_NAME)) {
+                "subCells" -> PARTITION_CELL
+                "obstacles" -> OBSTACLE
+                "allEnterIntervals" -> "yfiles.router.Interval"
+                "segmentInfos" -> SEGMENT_INFO
+                "entrances", "allStartEntrances" -> "yfiles.router.CellEntrance"
+                else -> throw IllegalStateException("No generic found!")
+            }
+
+            it.fixTypeGeneric(generic)
+        }
 }
 
 private fun fixReturnType(source: Source) {
@@ -52,7 +83,7 @@ private fun fixReturnType(source: Source) {
                 "getNeighbors" -> PARTITION_CELL
 
                 "getNodes" -> NODE
-                "getObstacles" -> "yfiles.router.Obstacle"
+                "getObstacles" -> OBSTACLE
 
                 else -> return@forEach
             }

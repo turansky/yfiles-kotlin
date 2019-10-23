@@ -22,4 +22,5 @@ val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
 val NODE_LABEL_CANDIDATE = "yfiles.layout.NodeLabelCandidate"
 val EDGE_LABEL_CANDIDATE = "yfiles.layout.EdgeLabelCandidate"
 
+val OBSTACLE = "yfiles.router.Obstacle"
 val PARTITION_CELL = "yfiles.router.PartitionCell"
