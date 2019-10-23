@@ -321,6 +321,7 @@ internal class KotlinFileGenerator(
             val interfaceDeclaration = classDeclaration
                 .replace("IEnumerator<", "IEnumerator<out ")
                 .replace("IEnumerable<", "IEnumerable<out ")
+                .replace("IListEnumerable<", "IListEnumerable<out ")
 
             return documentation +
                     externalAnnotation +
