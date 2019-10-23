@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.YPOINT
 import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
 
@@ -19,7 +20,10 @@ internal fun applyListHacks(source: Source) {
 
 private fun fixProperty(source: Source) {
     sequenceOf(
-        Triple("EdgeInfo", "edgeCellInfos", "yfiles.router.EdgeCellInfo")
+        Triple("EdgeInfo", "edgeCellInfos", "yfiles.router.EdgeCellInfo"),
+        Triple("CompositeLayoutStage", "layoutStages", "yfiles.layout.ILayoutStage"),
+
+        Triple("EdgeRouterEdgeLayoutDescriptor", "intermediateRoutingPoints", YPOINT)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
             .getJSONArray(J_PROPERTIES)
