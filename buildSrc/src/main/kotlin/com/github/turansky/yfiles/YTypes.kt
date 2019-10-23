@@ -15,6 +15,7 @@ val EDGE = "yfiles.algorithms.Edge"
 val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
 val COLLECTION = "yfiles.collections.ICollection"
+val LIST = "yfiles.collections.IList"
 
 val SEGMENT_INFO = "yfiles.router.SegmentInfo"
 val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
