@@ -1,8 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.YPOINT
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 import org.json.JSONObject
 
@@ -16,6 +14,7 @@ private fun list(generic: String): String =
 
 internal fun applyListHacks(source: Source) {
     fixProperty(source)
+    fixReturnType(source)
 }
 
 private fun fixProperty(source: Source) {
@@ -36,6 +35,30 @@ private fun fixProperty(source: Source) {
             .firstWithName(propertyName)
             .fixTypeGeneric(generic)
     }
+}
+
+private fun fixReturnType(source: Source) {
+    source.types(
+        "IPartition",
+        "IObstaclePartition",
+        "DynamicObstacleDecomposition",
+        "GraphPartition"
+    ).jsequence(J_METHODS)
+        .forEach {
+            val generic = when (it.getString(J_NAME)) {
+                "getCells",
+                "getCellsForNode",
+                "getCellsForObstacle",
+                "getNeighbors" -> PARTITION_CELL
+
+                "getNodes" -> NODE
+                "getObstacles" -> "yfiles.router.Obstacle"
+
+                else -> return@forEach
+            }
+
+            it.fixReturnTypeGeneric(generic)
+        }
 }
 
 private fun Source.method(className: String, methodName: String) =
