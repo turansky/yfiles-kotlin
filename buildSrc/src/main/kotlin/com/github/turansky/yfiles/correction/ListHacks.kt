@@ -40,6 +40,8 @@ private fun fixProperty(source: Source) {
 
 private fun fixMethodParameter(source: Source) {
     source.types(
+        "YPointPath",
+
         "ChannelBasedPathRouting",
         "DynamicObstacleDecomposition",
         "GraphPartition",
@@ -55,14 +57,16 @@ private fun fixMethodParameter(source: Source) {
         "SegmentInfo",
 
         "RootNodeAlignment"
-    ).flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) }
+    ).flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .flatMap { it.optJsequence(J_PARAMETERS) }
         .filter { it.getString(J_TYPE) in DEFAULT_LISTS }
         .forEach {
             val generic = when (it.getString(J_NAME)) {
+                "l" -> YPOINT
+
                 "subCells" -> PARTITION_CELL
                 "obstacles" -> OBSTACLE
-                "allEnterIntervals" -> "yfiles.router.Interval"
+                "allEnterIntervals" -> "yfiles.router.OrthogonalInterval"
                 "segmentInfos" -> SEGMENT_INFO
                 "cellSegmentInfos" -> "yfiles.router.CellSegmentInfo"
                 "entrances", "allStartEntrances" -> "yfiles.router.CellEntrance"
@@ -98,6 +102,10 @@ private fun fixReturnType(source: Source) {
 
             it.fixReturnTypeGeneric(generic)
         }
+
+    source.type("YPointPath")
+        .method("toList")
+        .fixReturnTypeGeneric(YPOINT)
 }
 
 private fun Source.method(className: String, methodName: String) =
