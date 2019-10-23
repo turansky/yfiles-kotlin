@@ -52,7 +52,9 @@ private fun fixMethodParameter(source: Source) {
         "EdgeRouterPath",
         "PathSearchExtension",
         "SegmentGroup",
-        "SegmentInfo"
+        "SegmentInfo",
+
+        "RootNodeAlignment"
     ).flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) }
         .flatMap { it.optJsequence(J_PARAMETERS) }
         .filter { it.getString(J_TYPE) in DEFAULT_LISTS }
@@ -64,6 +66,9 @@ private fun fixMethodParameter(source: Source) {
                 "segmentInfos" -> SEGMENT_INFO
                 "cellSegmentInfos" -> "yfiles.router.CellSegmentInfo"
                 "entrances", "allStartEntrances" -> "yfiles.router.CellEntrance"
+
+                "shapes" -> "yfiles.tree.RotatedSubtreeShape"
+
                 else -> throw IllegalStateException("No generic found!")
             }
 
