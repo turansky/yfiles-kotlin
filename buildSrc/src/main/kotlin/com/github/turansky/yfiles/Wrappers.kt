@@ -1135,7 +1135,7 @@ private fun getDocumentationLines(
         if (primaryConstructor) {
             lines.add(constructor(summary))
         } else {
-            lines.addAll(summary.split(LINE_DELIMETER))
+            lines.addAll(summary.split(LINE_DELIMITER))
         }
     }
 

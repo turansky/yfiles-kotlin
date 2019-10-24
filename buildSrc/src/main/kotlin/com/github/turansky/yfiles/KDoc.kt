@@ -1,8 +1,8 @@
 package com.github.turansky.yfiles
 
 const val LIST_MARKER = "-"
-const val LINE_DELIMETER = "\n"
-const val MULTILINE_INDENT = "    "
+const val LINE_DELIMITER = "\n"
+const val MULTILINE_INDENT = "  "
 
 lateinit var docBaseUrl: String
 
@@ -35,7 +35,7 @@ fun see(link: String): String =
     "@see $link"
 
 private fun String.asMultiline(): List<String> =
-    split(LINE_DELIMETER)
+    split(LINE_DELIMITER)
         // TODO: check if required
         .filter { it.isNotEmpty() }
         .mapIndexed { index, line ->
