@@ -224,6 +224,7 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
+    MethodDeclaration(className = "IEnumerable", methodName = "last") to false,
 
     MethodDeclaration(className = "Dendrogram", methodName = "getNodeAtLevel") to true,
     MethodDeclaration(className = "Dendrogram", methodName = "getOriginalNode") to true,
