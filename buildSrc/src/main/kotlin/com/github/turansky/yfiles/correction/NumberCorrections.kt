@@ -87,6 +87,13 @@ private val INT_CONSTRUCTOR_CLASSES = setOf(
     "TimeSpan"
 )
 
+private val INT_SIZE_CLASSES = setOf(
+    "ICursor",
+    "IEnumerable",
+    "GeneralPath",
+    "UndoEngine"
+)
+
 private val DOUBLE_CONSTRUCTOR_CLASSES = setOf(
     "BorderLine",
     "GridConstraintProvider",
@@ -134,6 +141,7 @@ private fun getPropertyType(className: String, propertyName: String): String =
         propertyName.endsWith("Cost") -> JS_DOUBLE
         propertyName.endsWith("Ratio") -> JS_DOUBLE
 
+        propertyName == "size" && className in INT_SIZE_CLASSES -> JS_INT
         className == "BalloonLayout" && propertyName == "minimumNodeDistance" -> JS_INT
 
         propertyName.endsWith("Distance") -> JS_DOUBLE

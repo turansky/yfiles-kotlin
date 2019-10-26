@@ -65,7 +65,6 @@ internal val INT_PROPERTIES = setOf(
     "n",
     "e",
     "k",
-    "size",
     "degree",
     "inDegree",
     "outDegree",

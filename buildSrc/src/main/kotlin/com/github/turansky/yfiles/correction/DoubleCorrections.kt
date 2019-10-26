@@ -83,6 +83,7 @@ internal val DOUBLE_METHODS = setOf(
 )
 
 internal val DOUBLE_PROPERTIES = setOf(
+    "size",
     "c",
     "min",
     "max",
