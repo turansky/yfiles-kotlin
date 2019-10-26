@@ -385,7 +385,7 @@ internal abstract class TypedDeclaration(
         get() = seeAlsoDocs(parent, id)
 
     protected open val fixGeneric: Boolean
-        get() = false
+        get() = true
 }
 
 internal class Constructor(
