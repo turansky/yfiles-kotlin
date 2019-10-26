@@ -49,7 +49,7 @@ internal fun TranslationContext.setBaseClassPrototype(
 
     val assignment = jsAssignment(
         prototypeOf(toValueReference(descriptor)),
-        JsInvocation(JS_OBJECT_CREATE_FUNCTION, baseClass)
+        JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
     )
 
     return assignment.makeStmt()

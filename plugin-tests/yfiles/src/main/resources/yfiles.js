@@ -14,7 +14,7 @@ function BaseClass(...types) {
     const className = `BaseClass[${generic}]`;
 
     const YClass = function () {};
-    Object.defineProperty(YClass, 'className', {get: () => className});
+    Object.defineProperty(YClass.prototype, 'className', { get: () => className })
     return YClass
 }
 
