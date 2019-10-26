@@ -55,11 +55,6 @@ internal class KotlinFileGenerator(
         companionContent = "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
-        if (generatedFile is InterfaceFile) {
-            companionContent = "@file:Suppress(\"NOTHING_TO_INLINE\")\n\n" +
-                    companionContent
-        }
-
         dir.resolve("$fileName.ext.kt")
             .writeText(companionContent)
     }
@@ -336,14 +331,7 @@ internal class KotlinFileGenerator(
                 memberEvents.filter { !it.overriden }
 
         override fun companionContent(): String? {
-            var content = typealiasDeclaration()?.let {
-                it + "\n\n"
-            } ?: ""
-
-            content += interfaceMetadataExtensions(
-                className = data.name,
-                generics = generics
-            )
+            val content = typealiasDeclaration()
 
             if (defaultDeclarations.isEmpty()) {
                 return content
@@ -352,7 +340,11 @@ internal class KotlinFileGenerator(
             val extensions = defaultDeclarations
                 .lines { it.toExtensionCode() }
 
-            return "$extensions\n\n$content"
+            return if (content != null) {
+                "$extensions\n\n$content"
+            } else {
+                extensions
+            }
         }
     }
 
