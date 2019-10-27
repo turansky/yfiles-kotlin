@@ -191,9 +191,12 @@ internal class KotlinFileGenerator(
                 .lines { it.toCode() }
         }
 
-        protected open val companionObjectContent =
-            """
-                |companion object: yfiles.lang.ClassMetadata<${getGeneric()}> {
+        protected open val metadataClass: String
+            get() = "yfiles.lang.ClassMetadata"
+
+        protected val companionObjectContent: String
+            get() = """
+                |companion object: $metadataClass<${getGeneric()}> {
                 |${staticDeclarations.lines { it.toCode() }}
                 |}
             """.trimMargin()
@@ -329,6 +332,9 @@ internal class KotlinFileGenerator(
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract } +
                 memberEvents.filter { !it.overriden }
+
+        override val metadataClass: String
+            get() = "yfiles.lang.InterfaceMetadata"
 
         override fun companionContent(): String? {
             val content = typealiasDeclaration()

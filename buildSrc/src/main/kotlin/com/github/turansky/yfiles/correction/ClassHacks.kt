@@ -28,6 +28,8 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |
                 |external interface ClassMetadata<T: Any>
                 |
+                |external interface InterfaceMetadata<T: Any>: ClassMetadata<T>
+                |
                 |inline val <T: Any> ClassMetadata<T>.yclass:Class<T>
                 |    get() = asDynamic()["\${'$'}class"]
                 |    
