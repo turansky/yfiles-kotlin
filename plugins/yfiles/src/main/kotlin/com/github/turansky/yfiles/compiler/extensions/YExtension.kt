@@ -87,8 +87,10 @@ private fun TranslationContext.generateBaseClass(
         declaration.hasBody() ->
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
-        else ->
+        else -> {
             addDeclarationStatement(setBaseClassPrototype(descriptor, interfaces))
+            addDeclarationStatement(reassignConstructor(descriptor))
+        }
     }
 }
 
