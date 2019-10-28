@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
@@ -95,4 +95,4 @@ private fun TranslationContext.generateBaseClass(
 }
 
 private fun KtPureClassOrObject.hasBody(): Boolean =
-    declarations.any { it is KtParameter || it is KtNamedFunction }
+    declarations.any { it is KtProperty || it is KtNamedFunction }
