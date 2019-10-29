@@ -13,16 +13,6 @@ class BaseClassTest {
         )
     }
 
-    @Test
-    fun comboClassConstructor() {
-        val jsClass = ComboClass::class.js
-
-        assertEquals(
-            jsClass.asDynamic().prototype.constructor,
-            jsClass
-        )
-    }
-
     @Ignore
     @Test
     fun superComboClassName() {

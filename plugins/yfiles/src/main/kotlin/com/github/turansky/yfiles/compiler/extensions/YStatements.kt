@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
 import org.jetbrains.kotlin.js.backend.ast.JsInvocation
-import org.jetbrains.kotlin.js.backend.ast.JsNameRef
 import org.jetbrains.kotlin.js.backend.ast.JsStatement
 import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
@@ -51,19 +50,6 @@ internal fun TranslationContext.setBaseClassPrototype(
     val assignment = jsAssignment(
         prototypeOf(toValueReference(descriptor)),
         JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
-    )
-
-    return assignment.makeStmt()
-}
-
-internal fun TranslationContext.reassignConstructor(
-    descriptor: ClassDescriptor
-): JsStatement {
-    val clazz = toValueReference(descriptor)
-
-    val assignment = jsAssignment(
-        JsNameRef("constructor", prototypeOf(clazz)),
-        clazz
     )
 
     return assignment.makeStmt()
