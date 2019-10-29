@@ -14,6 +14,27 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 private val YCLASS_ID = ClassId(LANG_PACKAGE, YCLASS_NAME)
 private val FIX_TYPE = identifier("fixType")
 
+private val __PROTO__ = "__proto__"
+private val CONSTRUCTOR = "constructor"
+private val CALL = "call"
+
+private val SUPER_CONSTRUCTOR_CALL = listOf(
+    __PROTO__,
+    __PROTO__,
+    CONSTRUCTOR,
+    CALL
+)
+
+private fun nameReference(
+    qualifier: JsExpression,
+    idents: List<String>
+): JsNameRef =
+    idents.asSequence()
+        .drop(1)
+        .fold(JsNameRef(idents.first(), qualifier)) { ref, ident ->
+            JsNameRef(ident, ref)
+        }
+
 internal fun TranslationContext.fixType(
     descriptor: ClassDescriptor
 ): JsStatement {
@@ -46,14 +67,13 @@ internal fun TranslationContext.baseClass(
 }
 
 internal fun TranslationContext.baseSuperCall(
-    descriptor: ClassDescriptor,
-    baseClass: JsExpression
+    descriptor: ClassDescriptor
 ): JsStatement {
     val superCall = JsFunction(
         scope(),
         JsBlock(
             JsInvocation(
-                JsNameRef("call", baseClass),
+                nameReference(JsThisRef(), SUPER_CONSTRUCTOR_CALL),
                 JsThisRef()
             ).makeStmt()
         ),
