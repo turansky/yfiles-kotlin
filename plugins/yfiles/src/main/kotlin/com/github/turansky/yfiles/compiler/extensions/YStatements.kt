@@ -5,9 +5,7 @@ import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
-import org.jetbrains.kotlin.js.backend.ast.JsInvocation
-import org.jetbrains.kotlin.js.backend.ast.JsStatement
-import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
+import org.jetbrains.kotlin.js.backend.ast.*
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name.identifier
@@ -34,23 +32,45 @@ internal fun TranslationContext.fixType(
     ).makeStmt()
 }
 
-internal fun TranslationContext.setBaseClassPrototype(
-    descriptor: ClassDescriptor,
+internal fun TranslationContext.baseClass(
     interfaces: List<ClassDescriptor>
-): JsStatement {
+): JsExpression {
     val arguments = interfaces
         .map { toValueReference(it) }
         .toTypedArray()
 
-    val baseClass = JsInvocation(
+    return JsInvocation(
         findFunction(LANG_PACKAGE, BASE_CLASS_NAME),
         *arguments
     )
+}
 
-    val assignment = jsAssignment(
-        prototypeOf(toValueReference(descriptor)),
-        JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
+internal fun TranslationContext.baseSuperCall(
+    descriptor: ClassDescriptor,
+    baseClass: JsExpression
+): JsStatement {
+    val superCall = JsFunction(
+        scope(),
+        JsBlock(
+            JsInvocation(
+                JsNameRef("call", baseClass),
+                JsThisRef()
+            ).makeStmt()
+        ),
+        "Replace original empty constructor method"
     )
 
-    return assignment.makeStmt()
+    return jsAssignment(
+        toValueReference(descriptor),
+        superCall
+    ).makeStmt()
 }
+
+internal fun TranslationContext.setBaseClassPrototype(
+    descriptor: ClassDescriptor,
+    baseClass: JsExpression
+): JsStatement =
+    jsAssignment(
+        prototypeOf(toValueReference(descriptor)),
+        JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
+    ).makeStmt()
