@@ -696,9 +696,16 @@ internal class Method(
         val genericDeclaration = (parent.generics + generics).declaration
         val returnOperator = exp(returns != null, "return ")
 
+        val methodCall = if (parameters.none { it.modifiers.vararg }) {
+            "$name($callParameters)"
+        } else {
+            require(parameters.size == 1)
+            "$name.apply(this, $callParameters)"
+        }
+
         return documentation +
                 "inline fun $genericDeclaration ${parent.classDeclaration}.$name($extParameters)$returnSignature {\n" +
-                "    $returnOperator $AS_DYNAMIC.$name($callParameters)\n" +
+                "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
     }
 }
