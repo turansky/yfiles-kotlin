@@ -25,6 +25,12 @@ tasks {
         }
     }
 
+    jar {
+        into("META-INF") {
+            from("$projectDir/LICENSE.md")
+        }
+    }
+
     val preparePublish by registering {
         doLast {
             preparePublish(kotlinSourceDir)
