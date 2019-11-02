@@ -14,7 +14,7 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |package yfiles.lang
                 |
                 |$HIDDEN_METHOD_ANNOTATION
-                |external fun BaseClass(vararg types: Any)
+                |external fun BaseClass(vararg types: Any):JsClass<out YObject>
             """.trimMargin()
         )
 
