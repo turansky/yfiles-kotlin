@@ -15,6 +15,8 @@ private val TYPE_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" dat
 private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
 private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
 
+private val DIGIT_CLEAN_REGEX = Regex("(\\.[0-9]+)d`")
+
 private fun String.fixApiLinks(): String {
     return this
         .replace(" data-text=\"\"", "")
@@ -52,4 +54,5 @@ private fun String.fixMarkdown(): String {
         .replace("<ul><li>", "\n$LIST_MARKER ")
         .replace("</li><li>", "\n$LIST_MARKER ")
         .replace("</li></ul>", "")
+        .replace(DIGIT_CLEAN_REGEX, "$1`")
 }
