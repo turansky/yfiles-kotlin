@@ -5,6 +5,7 @@ internal val PUBLIC = "public"
 internal val STATIC = "static"
 internal val FINAL = "final"
 internal val RO = "ro"
+internal val WO = "wo"
 internal val ABSTRACT = "abstract"
 internal val PROTECTED = "protected"
 

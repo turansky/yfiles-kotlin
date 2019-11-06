@@ -360,6 +360,7 @@ internal class Modifiers(flags: List<String>) {
     val static = STATIC in flags
     val final = FINAL in flags
     val readOnly = RO in flags
+    val writeOnly = WO in flags
     val abstract = ABSTRACT in flags
     val protected = PROTECTED in flags
 
