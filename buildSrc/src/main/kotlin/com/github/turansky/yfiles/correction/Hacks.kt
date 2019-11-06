@@ -377,7 +377,13 @@ private fun fieldToProperties(source: Source) {
     source.types()
         .filter { it.has(J_FIELDS) }
         .forEach { type ->
-            val fields = type.getJSONArray(J_FIELDS)
+            val fields = type.getJSONArray(J_FIELDS).apply {
+                asSequence()
+                    .map { it as JSONObject }
+                    .map { it.getJSONArray(J_MODIFIERS) }
+                    .forEach { it.put(if (FINAL in it) RO else FINAL) }
+            }
+
             if (type.has(J_PROPERTIES)) {
                 val properties = type.getJSONArray(J_PROPERTIES)
                 fields.forEach { properties.put(it) }
