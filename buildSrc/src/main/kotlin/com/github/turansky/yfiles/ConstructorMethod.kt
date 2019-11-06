@@ -35,7 +35,7 @@ private fun Class.canHaveConstructorMethod(): Boolean =
     when {
         abstract -> false
         generics.isNotEmpty() -> false
-        extendedType() == null && properties.none { it.public && it.getterSetter } -> false
+        extendedType() == null && properties.none { it.public && it.writable } -> false
         else -> true
     }
 

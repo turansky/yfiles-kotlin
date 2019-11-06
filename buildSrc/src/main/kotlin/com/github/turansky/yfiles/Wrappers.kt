@@ -470,7 +470,7 @@ internal class Property(
     val static = modifiers.static
     private val protected = modifiers.protected
     val public = !protected
-    val getterSetter = !modifiers.readOnly
+    val writable = !modifiers.readOnly
 
     val abstract = modifiers.abstract
     private val final = modifiers.final
@@ -516,7 +516,7 @@ internal class Property(
             }
         }
 
-        str += if (getterSetter) "var " else "val "
+        str += if (writable) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
         return "$documentation$str"
@@ -528,10 +528,10 @@ internal class Property(
 
         val generics = parent.generics.declaration
 
-        var str = "inline " + if (getterSetter) "var " else "val "
+        var str = "inline " + if (writable) "var " else "val "
         str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $AS_DYNAMIC.$name"
-        if (getterSetter) {
+        if (writable) {
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
