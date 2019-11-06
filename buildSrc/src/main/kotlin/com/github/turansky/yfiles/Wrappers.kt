@@ -472,6 +472,7 @@ internal class Property(
     private val protected = modifiers.protected
     val public = !protected
     val writable = !modifiers.readOnly
+    val writeOnly = modifiers.writeOnly
 
     val abstract = modifiers.abstract
     private val final = modifiers.final
@@ -520,11 +521,20 @@ internal class Property(
         str += if (writable) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
+        if (writeOnly) {
+            str += """
+                |
+                |   @Deprecated(message = "Write only property", level = DeprecationLevel.HIDDEN)
+                |   get() = definedExternally
+            """.trimMargin()
+        }
+
         return "$documentation$str"
     }
 
     override fun toExtensionCode(): String {
         require(!protected)
+        require(!writeOnly)
         requireNotNull(parent)
 
         val generics = parent.generics.declaration
