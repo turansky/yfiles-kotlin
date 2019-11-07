@@ -6,6 +6,13 @@ internal fun applyEventHacks(source: Source) {
         .plus(source.functionSignatures.run { keySet().map { getJSONObject(it) } })
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filter { it.getString(J_NAME) == "evt" }
-        .forEach { it.put(J_NAME, "event") }
+        .forEach {
+            val name = when (it.getString(J_NAME)) {
+                "evt" -> "event"
+                "src", "eventSource" -> "source"
+                else -> return@forEach
+            }
+
+            it.put(J_NAME, name)
+        }
 }
