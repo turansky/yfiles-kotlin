@@ -32,6 +32,8 @@ private fun String.fixApiLinks(): String {
         .replace("[$JS_NUMBER.", "[$DOUBLE.")
         .replace("[$JS_BOOLEAN]", "[$BOOLEAN]")
         .replace("more NaN values", "more `NaN` values")
+        .replace(">evt<", ">event<")
+        .replace(">evt.", ">event.")
         .also { check(!it.contains("<api-link")) }
 }
 
