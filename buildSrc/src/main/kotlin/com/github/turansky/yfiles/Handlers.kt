@@ -28,16 +28,16 @@ internal fun getHandlerData(listenerType: String): HandlerData {
     }
 }
 
-private fun getEventHandlerData(argsType: String): HandlerData {
-    if (argsType.startsWith("yfiles.collections.ItemEventArgs<")) {
-        val itemType = between(argsType, "<", ">")
+private fun getEventHandlerData(eventType: String): HandlerData {
+    if (eventType.startsWith("yfiles.collections.ItemEventArgs<")) {
+        val itemType = between(eventType, "<", ">")
         return HandlerData(
             handlerType = "(item:$itemType) -> Unit",
-            listenerBody = "{ _, args -> handler(args.item) }"
+            listenerBody = "{ _, event -> handler(event.item) }"
         )
     }
 
-    return when (argsType) {
+    return when (eventType) {
         "yfiles.lang.EventArgs" ->
             EMPTY_HANDLER_DATA
 
@@ -55,8 +55,8 @@ private fun getEventHandlerData(argsType: String): HandlerData {
 
         else ->
             HandlerData(
-                handlerType = "(args:$argsType) -> Unit",
-                listenerBody = "{ _, args -> handler(args) }"
+                handlerType = "(event:$eventType) -> Unit",
+                listenerBody = "{ _, event -> handler(event) }"
             )
     }
 }
@@ -70,25 +70,25 @@ private val EMPTY_HANDLER_DATA =
 private val PROPERTY_HANDLER_DATA =
     HandlerData(
         handlerType = "(propertyName:String) -> Unit",
-        listenerBody = "{ _, args -> handler(args.propertyName) }"
+        listenerBody = "{ _, event -> handler(event.propertyName) }"
     )
 
 private val INPUT_MODE_HANDLER_DATA =
     HandlerData(
         handlerType = "(context:yfiles.input.IInputModeContext) -> Unit",
-        listenerBody = "{ _, args -> handler(args.context) }"
+        listenerBody = "{ _, event -> handler(event.context) }"
     )
 
 private val MARQUEE_HANDLER_DATA =
     HandlerData(
         handlerType = "(rectangle:yfiles.geometry.Rect) -> Unit",
-        listenerBody = "{ _, args -> handler(args.rectangle) }"
+        listenerBody = "{ _, event -> handler(event.rectangle) }"
     )
 
 private val LASSO_HANDLER_DATA =
     HandlerData(
         handlerType = "(selectionPath:yfiles.geometry.GeneralPath) -> Unit",
-        listenerBody = "{ _, args -> handler(args.selectionPath) }"
+        listenerBody = "{ _, event -> handler(event.selectionPath) }"
     )
 
 internal data class HandlerData(
