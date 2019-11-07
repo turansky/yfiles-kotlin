@@ -53,7 +53,7 @@ private fun String.getImportedClasses(className: String): List<String> {
         .plus(
             STANDARD_IMPORTED_TYPES
                 .asSequence()
-                .filter { code.contains(it) }
+                .filter { it in code }
         )
         .sorted()
         .toList()

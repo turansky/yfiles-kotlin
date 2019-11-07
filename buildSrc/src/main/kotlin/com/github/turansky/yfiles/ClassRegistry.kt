@@ -44,7 +44,7 @@ internal class ClassRegistry(
     ): Boolean {
         if (checkCurrentClass) {
             val funs = functionsMap.getValue(className)
-            if (funs.contains(functionName)) {
+            if (functionName in funs) {
                 return true
             }
         }
@@ -60,7 +60,7 @@ internal class ClassRegistry(
     ): Boolean {
         if (checkCurrentClass) {
             val props = propertiesMap.getValue(className)
-            if (props.contains(propertyName)) {
+            if (propertyName in props) {
                 return true
             }
         }
@@ -76,7 +76,7 @@ internal class ClassRegistry(
     ): Boolean {
         if (checkCurrentClass) {
             val listeners = listenerMap.getValue(className)
-            if (listeners.contains(listenerName)) {
+            if (listenerName in listeners) {
                 return true
             }
         }

@@ -34,7 +34,7 @@ private fun String.fixApiLinks(): String {
         .replace("more NaN values", "more `NaN` values")
         .replace(">evt<", ">event<")
         .replace(">evt.", ">event.")
-        .also { check(!it.contains("<api-link")) }
+        .also { check("<api-link" !in it) }
 }
 
 private val ENCODED_GENERIC_START = Regex("(<code>[^<]*)&lt;")

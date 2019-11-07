@@ -58,5 +58,5 @@ private val STANDARD_TYPE_MAP = mapOf(
 
 val STANDARD_IMPORTED_TYPES = STANDARD_TYPE_MAP
     .values
-    .filter { it.contains(".") }
+    .filter { "." in it }
     .toSet()
