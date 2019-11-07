@@ -37,7 +37,7 @@ private fun JSONObject.correctConstants() {
     val className = getString(J_NAME)
     jsequence(J_CONSTANTS)
         .filter { it.getString(J_TYPE) != JS_NUMBER }
-        .filter { it.getString(J_TYPE).contains(JS_NUMBER) }
+        .filter { JS_NUMBER in it.getString(J_TYPE) }
         .forEach {
             if (it.has(J_SIGNATURE)) {
                 check(className == "HierarchicalClustering")
@@ -49,7 +49,7 @@ private fun JSONObject.correctConstants() {
             check(type.endsWith("DpKey<$JS_NUMBER>"))
 
             val name = it.getString(J_NAME)
-            val generic = if (name.contains("_ID_") || name.contains("_INDEX_")) {
+            val generic = if ("_ID_" in name || "_INDEX_" in name) {
                 JS_INT
             } else {
                 JS_DOUBLE
@@ -160,7 +160,7 @@ private fun JSONObject.correctPropertiesGeneric() {
     }
 
     jsequence(J_PROPERTIES)
-        .filter { it.getString(J_TYPE).contains("$JS_NUMBER>") }
+        .filter { "$JS_NUMBER>" in it.getString(J_TYPE) }
         .forEach { it.put(J_TYPE, getPropertyGenericType(it.getString(J_NAME), it.getString(J_TYPE))) }
 
     jsequence(J_PROPERTIES)
@@ -347,7 +347,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
         .filter { it.has("signature") }
         .forEach {
             val signature = it.getString("signature")
-            if (signature.contains(",$JS_NUMBER")) {
+            if (",$JS_NUMBER" in signature) {
                 it.put("signature", signature.replace(",$JS_NUMBER", ",$JS_INT"))
             }
         }

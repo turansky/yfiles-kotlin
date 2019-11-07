@@ -368,7 +368,7 @@ private fun removeThisParameters(source: Source) {
                     .replace("Func5<", "Func3<")
 
                 it.put(J_SIGNATURE, signature)
-            } else if (signature.contains(FROM_FUNC_RUDIMENT)) {
+            } else if (FROM_FUNC_RUDIMENT in signature) {
                 it.put(J_SIGNATURE, signature.replace(FROM_FUNC_RUDIMENT, "Func2<TSource,T>"))
             }
         }
