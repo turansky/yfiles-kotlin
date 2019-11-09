@@ -340,8 +340,8 @@ internal class KotlinFileGenerator(
         override val metadataClass: String
             get() = "yfiles.lang.InterfaceMetadata"
 
-        override fun companionContent(): String? {
-            return sequenceOf(
+        override fun companionContent(): String? =
+            listOfNotNull(
                 invokeExtension(
                     className = declaration.name,
                     generics = declaration.generics
@@ -350,9 +350,8 @@ internal class KotlinFileGenerator(
                     if (isNotEmpty()) lines { it.toExtensionCode() } else null
                 },
                 typealiasDeclaration()
-            ).filterNotNull()
-                .joinToString("\n\n")
-        }
+            ).takeIf { it.isNotEmpty() }
+                ?.joinToString("\n\n")
     }
 
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
