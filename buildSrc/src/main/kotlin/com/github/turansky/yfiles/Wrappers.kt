@@ -797,7 +797,13 @@ internal class Parameter(
     val modifiers: ParameterModifiers by ParameterModifiersDelegate()
 }
 
-internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter {
+internal interface ITypeParameter {
+    val name: String
+
+    fun toCode(): String
+}
+
+internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter, ITypeParameter {
     override val name: String by string()
     override val summary: String? by summary()
     private val bounds: List<String> by stringList()
@@ -815,7 +821,15 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParamet
         }
 }
 
-internal class Generics(private val parameters: List<TypeParameter>) {
+internal class CustomTypeParameter(
+    override val name: String,
+    private val bound: String
+) : ITypeParameter {
+    override fun toCode(): String =
+        "$name : $bound"
+}
+
+internal class Generics(private val parameters: List<ITypeParameter>) {
     val declaration: String
         get() = if (parameters.isNotEmpty()) {
             "<${parameters.byComma { it.toCode() }}> "
