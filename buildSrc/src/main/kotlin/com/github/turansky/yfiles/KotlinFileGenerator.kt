@@ -285,9 +285,9 @@ internal class KotlinFileGenerator(
                 typealiasDeclaration(),
                 declaration.toConstructorMethodCode(),
                 invokeExtension(
-                    declaration.name,
-                    declaration.generics,
-                    declaration.final
+                    className = declaration.name,
+                    generics = declaration.generics,
+                    final = declaration.final
                 )
             )
 
@@ -306,7 +306,7 @@ internal class KotlinFileGenerator(
         }
     }
 
-    inner class InterfaceFile(declaration: Interface) : GeneratedFile(declaration) {
+    inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
             return memberProperties.filter { it.abstract } +
                     memberFunctions.filter { it.abstract } +
@@ -341,20 +341,17 @@ internal class KotlinFileGenerator(
             get() = "yfiles.lang.InterfaceMetadata"
 
         override fun companionContent(): String? {
-            val content = typealiasDeclaration()
-
-            if (defaultDeclarations.isEmpty()) {
-                return content
-            }
-
-            val extensions = defaultDeclarations
-                .lines { it.toExtensionCode() }
-
-            return if (content != null) {
-                "$extensions\n\n$content"
-            } else {
-                extensions
-            }
+            return sequenceOf(
+                invokeExtension(
+                    className = declaration.name,
+                    generics = declaration.generics
+                ),
+                defaultDeclarations.run {
+                    if (isNotEmpty()) lines { it.toExtensionCode() } else null
+                },
+                typealiasDeclaration()
+            ).filterNotNull()
+                .joinToString("\n\n")
         }
     }
 

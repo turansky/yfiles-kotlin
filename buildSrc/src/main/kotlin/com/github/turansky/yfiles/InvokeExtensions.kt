@@ -3,6 +3,9 @@ package com.github.turansky.yfiles
 private const val T = "T"
 
 private val INVOKE_TARGETS = setOf(
+    "GraphComponent",
+    "SvgExport",
+
     "BendDecorator",
     "EdgeDecorator",
     "GraphDecorator",
@@ -11,7 +14,15 @@ private val INVOKE_TARGETS = setOf(
     "PortDecorator",
     "StripeDecorator",
     "StripeLabelDecorator",
-    "TableDecorator"
+    "TableDecorator",
+
+    "INodeStyle",
+    "IPortStyle",
+    "IEdgeStyle",
+    "IBendStyle",
+    "ILabelStyle",
+
+    "Visual"
 )
 
 internal fun invokeExtension(
