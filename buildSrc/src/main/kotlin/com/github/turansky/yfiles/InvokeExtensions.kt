@@ -4,7 +4,6 @@ private const val T = "T"
 
 private val INVOKE_TARGETS = setOf(
     "GraphComponent",
-    "SvgExport",
 
     "BendDecorator",
     "EdgeDecorator",
@@ -15,12 +14,6 @@ private val INVOKE_TARGETS = setOf(
     "StripeDecorator",
     "StripeLabelDecorator",
     "TableDecorator",
-
-    "INodeStyle",
-    "IPortStyle",
-    "IEdgeStyle",
-    "IBendStyle",
-    "ILabelStyle",
 
     "Visual"
 )
@@ -49,7 +42,7 @@ internal fun invokeExtension(
 
     return """
         |inline operator fun ${typeGenerics.declaration} $receiverType.invoke(
-        |    block: $type.() -> Unit
+        |    block: $receiverType.() -> Unit
         |): $receiverType = apply(block)
     """.trimMargin()
 }
