@@ -66,7 +66,7 @@ val visibilityTestable:IVisibilityTestable? = renderer.lookup(IVisibilityTestabl
 val boundsProvider:IBoundsProvider? = renderer.lookup(IBoundsProvider.yclass)
 ```
 
-## Constructor methods
+## Factory methods
 
 Via `apply`
 ```Kotlin
@@ -77,7 +77,7 @@ val layout = HierarchicLayout().apply {
 }
 ```
 
-Via constructor method
+Via factory method
 ```Kotlin
 val layout = HierarchicLayout {
     layoutOrientation = LEFT_TO_RIGHT
