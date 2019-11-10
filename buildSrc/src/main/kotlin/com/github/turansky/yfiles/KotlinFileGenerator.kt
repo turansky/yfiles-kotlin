@@ -283,7 +283,7 @@ internal class KotlinFileGenerator(
 
             var content = listOfNotNull(
                 typealiasDeclaration(),
-                declaration.toConstructorMethodCode(),
+                declaration.toFactoryMethodCode(),
                 invokeExtension(
                     className = declaration.name,
                     generics = declaration.generics,

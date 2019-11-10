@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles
 
-private val HAS_CONSTRUCTOR_METHOD = setOf(
+private val HAS_FACTORY_METHOD = setOf(
     "Matrix",
     "GeneralPath",
 
@@ -11,8 +11,8 @@ private val HAS_CONSTRUCTOR_METHOD = setOf(
     "Stroke"
 )
 
-internal fun Class.toConstructorMethodCode(): String? {
-    if (!hasConstructorMethod()) {
+internal fun Class.toFactoryMethodCode(): String? {
+    if (!hasFactoryMethod()) {
         return null
     }
 
@@ -32,17 +32,17 @@ internal fun Class.toConstructorMethodCode(): String? {
         """.trimMargin()
 }
 
-private fun Class.hasConstructorMethod(): Boolean {
+private fun Class.hasFactoryMethod(): Boolean {
     return when {
-        name in HAS_CONSTRUCTOR_METHOD -> true
-        !canHaveConstructorMethod() -> false
+        name in HAS_FACTORY_METHOD -> true
+        !canHaveFactoryMethod() -> false
         primaryConstructor == null -> false
         secondaryConstructors.any { it.public } -> false
-        else -> primaryConstructor.isConstructorMethodSource()
+        else -> primaryConstructor.isFactoryMethodSource()
     }
 }
 
-private fun Class.canHaveConstructorMethod(): Boolean =
+private fun Class.canHaveFactoryMethod(): Boolean =
     when {
         abstract -> false
         generics.isNotEmpty() -> false
@@ -50,5 +50,5 @@ private fun Class.canHaveConstructorMethod(): Boolean =
         else -> true
     }
 
-private fun Constructor.isConstructorMethodSource(): Boolean =
+private fun Constructor.isFactoryMethodSource(): Boolean =
     public && isDefault()
