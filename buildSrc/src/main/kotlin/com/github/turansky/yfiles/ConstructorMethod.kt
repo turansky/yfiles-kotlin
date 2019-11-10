@@ -6,7 +6,9 @@ private val HAS_CONSTRUCTOR_METHOD = setOf(
 
     "GridNodePlacer",
 
+    "DashStyle",
     "GraphComponent",
+    "PatternFill",
     "Stroke"
 )
 
@@ -15,7 +17,7 @@ internal fun Class.toConstructorMethodCode(): String? {
         return null
     }
 
-    val freezeBlock = if (methods.any { it.name == "freeze" }) {
+    val freezeBlock = if (methods.any { it.name == "freeze" } || name == "PatternFill") {
         "\n.apply { freeze() }"
     } else {
         ""
