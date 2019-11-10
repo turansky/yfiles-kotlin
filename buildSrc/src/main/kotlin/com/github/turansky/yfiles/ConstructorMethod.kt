@@ -3,7 +3,11 @@ package com.github.turansky.yfiles
 private val HAS_CONSTRUCTOR_METHOD = setOf(
     "Matrix",
     "GeneralPath",
-    "GridNodePlacer"
+
+    "GridNodePlacer",
+
+    "GraphComponent",
+    "Stroke"
 )
 
 internal fun Class.toConstructorMethodCode(): String? {
