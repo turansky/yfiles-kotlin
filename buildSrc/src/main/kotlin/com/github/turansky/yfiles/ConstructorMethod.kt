@@ -8,7 +8,6 @@ private val HAS_CONSTRUCTOR_METHOD = setOf(
 
     "DashStyle",
     "GraphComponent",
-    "PatternFill",
     "Stroke"
 )
 
