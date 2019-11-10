@@ -15,12 +15,18 @@ internal fun Class.toConstructorMethodCode(): String? {
         return null
     }
 
+    val freezeBlock = if (methods.any { it.name == "freeze" }) {
+        "\n.apply { freeze() }"
+    } else {
+        ""
+    }
+
     return """
             |inline fun $name(
             |    block: $name.() -> Unit
             |): $name {
             |    return $name()
-            |        .apply(block)
+            |        .apply(block)$freezeBlock
             |}
         """.trimMargin()
 }
