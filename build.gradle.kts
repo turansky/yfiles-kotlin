@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 
 plugins {
-    kotlin("js") version "1.3.50" apply false
+    kotlin("js") version "1.3.60" apply false
 }
 
 allprojects {
