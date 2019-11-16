@@ -22,7 +22,7 @@
 | :---                        |         :---:         |      :---:        |
 | Documentation               |        [API][12]      |     [API][22]     |
 | Module                      |        `yfiles`       |   `yfiles/vsdx`   |
-| Version                     |         `22.0.2`       |      `1.0.0`      |
+| Version                     |         `22.0.2`      |      `1.0.0`      |
 | Module format               |         `ES6`         |       `ES6`       |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
 | Nullability fixes           |         2500+         |         -         |
