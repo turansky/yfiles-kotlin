@@ -16,18 +16,12 @@ internal fun Class.toFactoryMethodCode(): String? {
         return null
     }
 
-    val freezeBlock = if (methods.any { it.name == "freeze" } || name == "PatternFill") {
-        "\n.apply { freeze() }"
-    } else {
-        ""
-    }
-
     return """
             |inline fun $name(
             |    block: $name.() -> Unit
             |): $name {
             |    return $name()
-            |        .apply(block)$freezeBlock
+            |        .apply(block)
             |}
         """.trimMargin()
 }
