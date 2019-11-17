@@ -23,7 +23,7 @@ class YExtension : JsSyntheticTranslateExtension {
         }
 
         when (descriptor.kind) {
-            CLASS -> context.generateClass(declaration, descriptor)
+            CLASS -> context.generateClass(declaration, descriptor, translator)
             OBJECT, INTERFACE, ENUM_CLASS -> context.checkInterfaces(declaration, descriptor)
             else -> {
                 // do nothing
@@ -43,13 +43,14 @@ private fun TranslationContext.checkInterfaces(
 
 private fun TranslationContext.generateClass(
     declaration: KtPureClassOrObject,
-    descriptor: ClassDescriptor
+    descriptor: ClassDescriptor,
+    translator: DeclarationBodyVisitor
 ) {
     when {
         descriptor.extendsYObject ->
             generateCustomYObject(declaration, descriptor)
         descriptor.implementsYFilesInterface ->
-            generateBaseClass(declaration, descriptor)
+            generateBaseClass(declaration, descriptor, translator)
     }
 }
 
@@ -67,7 +68,8 @@ private fun TranslationContext.generateCustomYObject(
 
 private fun TranslationContext.generateBaseClass(
     declaration: KtPureClassOrObject,
-    descriptor: ClassDescriptor
+    descriptor: ClassDescriptor,
+    translator: DeclarationBodyVisitor
 ) {
     val interfaces = descriptor.getSuperInterfaces()
 
@@ -88,7 +90,7 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
         else -> {
-            addDeclarationStatement(baseSuperCall(descriptor))
+            translator.addInitializerStatement(baseSuperCall())
             addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass(interfaces)))
         }
     }

@@ -66,25 +66,11 @@ internal fun TranslationContext.baseClass(
     )
 }
 
-internal fun TranslationContext.baseSuperCall(
-    descriptor: ClassDescriptor
-): JsStatement {
-    val superCall = JsFunction(
-        scope(),
-        JsBlock(
-            JsInvocation(
-                nameReference(JsThisRef(), SUPER_CONSTRUCTOR_CALL),
-                JsThisRef()
-            ).makeStmt()
-        ),
-        "Replace original empty constructor method"
-    )
-
-    return jsAssignment(
-        toValueReference(descriptor),
-        superCall
+internal fun baseSuperCall(): JsStatement =
+    JsInvocation(
+        nameReference(JsThisRef(), SUPER_CONSTRUCTOR_CALL),
+        JsThisRef()
     ).makeStmt()
-}
 
 internal fun TranslationContext.setBaseClassPrototype(
     descriptor: ClassDescriptor,
