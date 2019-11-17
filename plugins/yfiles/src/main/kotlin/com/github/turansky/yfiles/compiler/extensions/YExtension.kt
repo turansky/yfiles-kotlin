@@ -88,14 +88,8 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
         else -> {
-            val baseClass = declareConstantValue(
-                "Y" + descriptor.name.identifier,
-                "BaseClass",
-                baseClass(interfaces),
-                descriptor
-            )
-            addDeclarationStatement(baseSuperCall(descriptor, baseClass))
-            addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass))
+            addDeclarationStatement(baseSuperCall(descriptor))
+            addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass(interfaces)))
         }
     }
 }
