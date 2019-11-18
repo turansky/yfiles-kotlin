@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
 private val YCLASS_ID = ClassId(LANG_PACKAGE, YCLASS_NAME)
 private val FIX_TYPE = identifier("fixType")
+private const val CONSTRUCTOR = "constructor"
 
 internal fun TranslationContext.fixType(
     descriptor: ClassDescriptor
@@ -76,18 +77,24 @@ internal fun TranslationContext.configurePrototype(
     baseClass: JsExpression
 ): JsExpression {
     val classId = descriptor.name.identifier
+    val classRef = toValueReference(descriptor)
+    val classPrototype = prototypeOf(classRef)
     return addFunctionButNotExport(
         JsName(generateName("configure", classId, "prototype")),
         JsFunction(
             scope(),
             JsBlock(
                 jsAssignment(
-                    prototypeOf(toValueReference(descriptor)),
+                    classPrototype,
                     JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
+                ).makeStmt(),
+                jsAssignment(
+                    JsNameRef(CONSTRUCTOR, classPrototype),
+                    classRef
                 ).makeStmt(),
                 JsReturn(JsBooleanLiteral(true))
             ),
-            "$classId prototype configuration method"
+            "$classId prototype configuration"
         )
     ).let { JsInvocation(it.makeRef()) }
 }
