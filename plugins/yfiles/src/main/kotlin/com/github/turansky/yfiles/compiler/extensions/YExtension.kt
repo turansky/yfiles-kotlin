@@ -90,7 +90,7 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
         else -> {
-            val baseClassName = descriptor.name.identifier + "__BaseClass"
+            val baseClassName = generateName(descriptor.name.identifier, "BaseClass")
             val baseClass = declareConstantValue(
                 baseClassName,
                 "yfiles",

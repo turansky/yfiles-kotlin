@@ -55,7 +55,7 @@ private fun TranslationContext.wrapBaseClass(
     name: String
 ): JsExpression =
     addFunctionButNotExport(
-        JsName("create__$name"),
+        JsName(generateName("create", name)),
         JsFunction(
             scope(),
             JsBlock(
