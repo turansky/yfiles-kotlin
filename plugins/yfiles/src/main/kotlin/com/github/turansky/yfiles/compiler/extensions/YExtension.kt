@@ -11,8 +11,6 @@ import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
-private const val YFILES_TAG = "yfiles"
-
 class YExtension : JsSyntheticTranslateExtension {
     override fun generateClassSyntheticParts(
         declaration: KtPureClassOrObject,
@@ -95,19 +93,15 @@ private fun TranslationContext.generateBaseClass(
             val classId = descriptor.name.identifier
             val baseClassName = generateName(classId, "BaseClass")
             val baseClass = declareConstantValue(
-                baseClassName,
-                baseClassName,
-                baseClass(interfaces, baseClassName),
-                null
+                suggestedName = baseClassName,
+                value = baseClass(interfaces, baseClassName)
             )
 
             translator.addInitializerStatement(baseSuperCall(baseClass))
 
             declareConstantValue(
-                generateName(classId, "prototypeConfigured"),
-                generateName(classId, "prototypeConfigured"),
-                configurePrototype(descriptor, baseClass),
-                null
+                suggestedName = generateName(classId, "prototypeConfigured"),
+                value = configurePrototype(descriptor, baseClass)
             ).also { addDeclarationStatement(it.makeStmt()) }
         }
     }

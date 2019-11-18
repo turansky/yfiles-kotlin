@@ -44,10 +44,23 @@ internal fun <T : KtElement> TranslationContext.reportError(
         .reportFromPlugin(diagnostic, YMessagesExtension)
 }
 
+internal fun TranslationContext.declareConstantValue(
+    suggestedName: String,
+    value: JsExpression
+): JsExpression =
+    declareConstantValue(
+        suggestedName,
+        suggestedName,
+        value,
+        null
+    )
+
 internal fun TranslationContext.reportError(
     declaration: KtPureClassOrObject,
     diagnosticFactory: DiagnosticFactory0<KtClassOrObject>
-) = reportError(
-    element = declaration.psiOrParent as KtClassOrObject,
-    diagnosticFactory = diagnosticFactory
-)
+) {
+    reportError(
+        element = declaration.psiOrParent as KtClassOrObject,
+        diagnosticFactory = diagnosticFactory
+    )
+}
