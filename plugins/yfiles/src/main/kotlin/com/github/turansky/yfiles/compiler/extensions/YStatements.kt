@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
 import org.jetbrains.kotlin.js.backend.ast.*
+import org.jetbrains.kotlin.js.translate.context.Namer.CALL_FUNCTION
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.utils.addFunctionButNotExport
 import org.jetbrains.kotlin.name.ClassId
@@ -85,9 +86,9 @@ private fun TranslationContext.wrapBaseClass(
         )
     ).let { JsInvocation(it.makeRef()) }
 
-internal fun baseSuperCall(): JsStatement =
+internal fun baseSuperCall(baseClass: JsExpression): JsStatement =
     JsInvocation(
-        nameReference(JsThisRef(), SUPER_CONSTRUCTOR_CALL),
+        JsNameRef(CALL_FUNCTION, baseClass),
         JsThisRef()
     ).makeStmt()
 

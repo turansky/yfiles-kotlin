@@ -90,8 +90,6 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
         else -> {
-            translator.addInitializerStatement(baseSuperCall())
-
             val baseClassName = descriptor.name.identifier + "__BaseClass"
             val baseClass = declareConstantValue(
                 baseClassName,
@@ -100,6 +98,7 @@ private fun TranslationContext.generateBaseClass(
                 descriptor
             )
 
+            translator.addInitializerStatement(baseSuperCall(baseClass))
             addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass))
         }
     }
