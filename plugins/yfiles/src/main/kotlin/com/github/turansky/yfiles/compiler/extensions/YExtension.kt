@@ -92,16 +92,23 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
 
         else -> {
-            val baseClassName = generateName(descriptor.name.identifier, "BaseClass")
+            val classId = descriptor.name.identifier
+            val baseClassName = generateName(classId, "BaseClass")
             val baseClass = declareConstantValue(
                 baseClassName,
-                YFILES_TAG,
+                baseClassName,
                 baseClass(interfaces, baseClassName),
-                descriptor
+                null
             )
 
             translator.addInitializerStatement(baseSuperCall(baseClass))
-            addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass))
+
+            declareConstantValue(
+                generateName(classId, "prototypeConfigured"),
+                generateName(classId, "prototypeConfigured"),
+                configurePrototype(descriptor, baseClass),
+                null
+            ).also { addDeclarationStatement(it.makeStmt()) }
         }
     }
 }

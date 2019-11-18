@@ -71,11 +71,23 @@ internal fun baseSuperCall(baseClass: JsExpression): JsStatement =
         JsThisRef()
     ).makeStmt()
 
-internal fun TranslationContext.setBaseClassPrototype(
+internal fun TranslationContext.configurePrototype(
     descriptor: ClassDescriptor,
     baseClass: JsExpression
-): JsStatement =
-    jsAssignment(
-        prototypeOf(toValueReference(descriptor)),
-        JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
-    ).makeStmt()
+): JsExpression {
+    val classId = descriptor.name.identifier
+    return addFunctionButNotExport(
+        JsName(generateName("configure", classId, "prototype")),
+        JsFunction(
+            scope(),
+            JsBlock(
+                jsAssignment(
+                    prototypeOf(toValueReference(descriptor)),
+                    JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
+                ).makeStmt(),
+                JsReturn(JsBooleanLiteral(true))
+            ),
+            "$classId prototype configuration method"
+        )
+    ).let { JsInvocation(it.makeRef()) }
+}
