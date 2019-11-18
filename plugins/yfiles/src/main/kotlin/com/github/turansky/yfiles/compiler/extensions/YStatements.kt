@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
 import org.jetbrains.kotlin.js.backend.ast.*
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
+import org.jetbrains.kotlin.js.translate.utils.addFunctionButNotExport
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
@@ -54,7 +55,8 @@ internal fun TranslationContext.fixType(
 }
 
 internal fun TranslationContext.baseClass(
-    interfaces: List<ClassDescriptor>
+    interfaces: List<ClassDescriptor>,
+    name: String
 ): JsExpression {
     val arguments = interfaces
         .map { toValueReference(it) }
@@ -63,8 +65,25 @@ internal fun TranslationContext.baseClass(
     return JsInvocation(
         findFunction(LANG_PACKAGE, BASE_CLASS_NAME),
         *arguments
-    )
+    ).let { wrapBaseClass(it, name) }
 }
+
+// TODO: remove after ticket fix
+//  https://youtrack.jetbrains.com/issue/KT-34735
+private fun TranslationContext.wrapBaseClass(
+    baseClass: JsExpression,
+    name: String
+): JsExpression =
+    addFunctionButNotExport(
+        JsName("create__$name"),
+        JsFunction(
+            scope(),
+            JsBlock(
+                JsReturn(baseClass)
+            ),
+            "$name factory method"
+        )
+    ).let { JsInvocation(it.makeRef()) }
 
 internal fun baseSuperCall(): JsStatement =
     JsInvocation(

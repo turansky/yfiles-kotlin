@@ -91,7 +91,16 @@ private fun TranslationContext.generateBaseClass(
 
         else -> {
             translator.addInitializerStatement(baseSuperCall())
-            addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass(interfaces)))
+
+            val baseClassName = descriptor.name.identifier + "__BaseClass"
+            val baseClass = declareConstantValue(
+                baseClassName,
+                "yfiles",
+                baseClass(interfaces, baseClassName),
+                descriptor
+            )
+
+            addDeclarationStatement(setBaseClassPrototype(descriptor, baseClass))
         }
     }
 }
