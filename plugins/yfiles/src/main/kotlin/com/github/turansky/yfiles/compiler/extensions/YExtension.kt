@@ -6,8 +6,6 @@ import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
@@ -84,11 +82,6 @@ private fun TranslationContext.generateBaseClass(
         interfaces.any { !it.isYFiles() } ->
             reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
 
-        declaration.hasExplicitPrimaryConstructor() ->
-            reportError(declaration.primaryConstructor!!, BASE_CLASS__CONSTRUCTOR_NOT_SUPPORTED)
-        declaration.hasBody() ->
-            reportError(declaration, BASE_CLASS__BODY_NOT_SUPPORTED)
-
         else -> {
             val classId = descriptor.name.identifier
             val baseClassName = generateName(classId, "BaseClass")
@@ -106,6 +99,3 @@ private fun TranslationContext.generateBaseClass(
         }
     }
 }
-
-private fun KtPureClassOrObject.hasBody(): Boolean =
-    declarations.any { it is KtProperty || it is KtNamedFunction }
