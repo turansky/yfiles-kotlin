@@ -9,25 +9,26 @@
 - Safe [interface implementing](http://docs.yworks.com/yfileshtml/#/dguide/framework_basic_interfaces#framework_implementing_interfaces)
 - OOB `YObject` support
 
-## Base Class
+## Interface(s) implementing
 
 #### Example
 ```Kotlin
-// Generated JS: 
-// VisualTemplateBase.prototype = Object.create(BaseClass(IVisualTemplate)) 
-abstract class VisualTemplateBase: IVisualTemplate
+// Generated prototype (JS): 
+// MyVisualTemplate.prototype = Object.create(BaseClass(IVisualTemplate).prototype) 
+class MyVisualTemplate: IVisualTemplate {
+    /* body */
+}
 
-// Generated JS: 
-// ArrowBase.prototype = Object.create(BaseClass(IArrow, IVisualCreator, IBoundsProvider))
-abstract class ArrowBase: IArrow, IVisualCreator, IBoundsProvider
+// Generated prototype (JS): 
+// MyArrow.prototype = Object.create(BaseClass(IArrow, IVisualCreator, IBoundsProvider).prototype)
+class MyArrow: IArrow, IVisualCreator, IBoundsProvider {
+    /* body */
+}
 ```
 
 #### Requirements
-- Only yFiles interfaces extended
+- Only yFiles interfaces implemented
 - No extended class
-- No constructors
-- No properties
-- No methods
 
 ## Custom `YObject`
 
