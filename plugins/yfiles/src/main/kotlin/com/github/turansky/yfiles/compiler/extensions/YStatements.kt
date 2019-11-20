@@ -21,7 +21,7 @@ private const val CONSTRUCTOR = "constructor"
 
 internal fun TranslationContext.fixType(
     descriptor: ClassDescriptor
-): JsStatement {
+): JsExpression {
     val yclassCompanion = currentModule.findClassAcrossModuleDependencies(YCLASS_ID)!!
         .companionObjectDescriptor!!
 
@@ -35,6 +35,28 @@ internal fun TranslationContext.fixType(
         toValueReference(descriptor),
         JsStringLiteral(descriptor.name.identifier)
     ).makeStmt()
+        .let { wrapFixType(it, descriptor) }
+}
+
+// TODO: remove after ticket fix
+//  https://youtrack.jetbrains.com/issue/KT-34735
+private fun TranslationContext.wrapFixType(
+    fixStatement: JsStatement,
+    descriptor: ClassDescriptor
+): JsExpression {
+    val name = descriptor.name.identifier
+
+    return addFunctionButNotExport(
+        JsName(generateName("fix", name, "yyyType")),
+        JsFunction(
+            scope(),
+            JsBlock(
+                fixStatement,
+                JsReturn(JsBooleanLiteral(true))
+            ),
+            "$name factory method"
+        )
+    ).let { JsInvocation(it.makeRef()) }
 }
 
 internal fun TranslationContext.baseClass(
