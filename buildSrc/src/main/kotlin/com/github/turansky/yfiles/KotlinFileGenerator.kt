@@ -326,6 +326,7 @@ internal class KotlinFileGenerator(
                 .replace("IListEnumerable<", "IListEnumerable<out ")
 
             return documentation +
+                    "@yfiles.lang.Interface\n" +
                     externalAnnotation +
                     "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
