@@ -11,7 +11,7 @@ internal fun generateInterfaceMarker(sourceDir: File) {
                 |package yfiles.lang
                 |
                 |@Target(AnnotationTarget.CLASS)
-                |@Retention(AnnotationRetention.SOURCE)
+                |@Retention(AnnotationRetention.BINARY)
                 |internal annotation class Interface
             """.trimMargin()
         )

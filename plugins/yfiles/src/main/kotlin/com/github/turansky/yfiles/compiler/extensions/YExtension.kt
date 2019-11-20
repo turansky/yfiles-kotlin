@@ -79,7 +79,7 @@ private fun TranslationContext.generateBaseClass(
         descriptor.isCompanionObject ->
             reportError(declaration, BASE_CLASS__COMPANION_OBJECT_NOT_SUPPORTED)
 
-        interfaces.any { !it.isYFiles() } ->
+        interfaces.any { !it.isYFilesInterface() } ->
             reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
 
         else -> {

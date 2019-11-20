@@ -3,8 +3,6 @@ package com.github.turansky.yfiles.compiler.extensions
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name.identifier
-import org.jetbrains.kotlin.name.isSubpackageOf
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameOrNull
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
@@ -16,20 +14,10 @@ internal val YOBJECT = LANG_PACKAGE.child(identifier("YObject"))
 internal val YCLASS_NAME = identifier("Class")
 internal val BASE_CLASS_NAME = identifier("BaseClass")
 
-internal fun ClassDescriptor.isYFiles(): Boolean {
-    if (!isExternal) {
-        return false
-    }
+private val YFILES_INTERFACE = LANG_PACKAGE.child(identifier("Interface"))
 
-    if (companionObjectDescriptor == null) {
-        return false
-    }
-
-    val fqName = fqNameOrNull()
-        ?: return false
-
-    return fqName.isSubpackageOf(YFILES_PACKAGE)
-}
+internal fun ClassDescriptor.isYFilesInterface(): Boolean =
+    isExternal && annotations.hasAnnotation(YFILES_INTERFACE)
 
 internal val ClassDescriptor.extendsYObject: Boolean
     get() {
@@ -40,4 +28,4 @@ internal val ClassDescriptor.extendsYObject: Boolean
     }
 
 internal val ClassDescriptor.implementsYFilesInterface: Boolean
-    get() = getSuperInterfaces().any { it.isYFiles() }
+    get() = getSuperInterfaces().any { it.isYFilesInterface() }
