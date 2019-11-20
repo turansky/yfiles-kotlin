@@ -61,10 +61,7 @@ private fun TranslationContext.generateCustomYObject(
         return
     }
 
-    declareConstantValue(
-        suggestedName = generateName(descriptor.name.identifier, "yyyType", "fixed"),
-        value = fixType(descriptor)
-    ).also { addDeclarationStatement(it.makeStmt()) }
+    addDeclarationStatement(fixType(descriptor))
 }
 
 private fun TranslationContext.generateBaseClass(
