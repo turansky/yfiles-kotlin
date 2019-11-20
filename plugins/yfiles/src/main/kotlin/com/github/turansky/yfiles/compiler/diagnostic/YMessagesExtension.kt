@@ -7,7 +7,7 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
     DiagnosticFactoryToRendererMap("yfiles").apply {
         put(
             BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
-            "yFiles interface implementing supported only for ordinal classes"
+            "yFiles interface implementing supported only for ordinal classes and objects"
         )
         put(
             BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED,

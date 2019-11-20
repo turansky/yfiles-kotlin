@@ -1,6 +1,8 @@
 package com.github.turansky.yfiles.compiler.extensions
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
@@ -76,8 +78,15 @@ internal fun TranslationContext.configurePrototype(
     descriptor: ClassDescriptor,
     baseClass: JsExpression
 ): JsExpression {
+    val primaryConstructor: DeclarationDescriptor =
+        if (descriptor.kind == ClassKind.OBJECT) {
+            descriptor.constructors.first()
+        } else {
+            descriptor
+        }
+
     val classId = descriptor.name.identifier
-    val classRef = toValueReference(descriptor)
+    val classRef = toValueReference(primaryConstructor)
     val classPrototype = prototypeOf(classRef)
     return addFunctionButNotExport(
         JsName(generateName("configure", classId, "prototype")),
