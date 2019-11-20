@@ -3,11 +3,17 @@
 
     <id>com.github.turansky.yfiles</id>
 
-    <description>yFiles class framework helper</description>
+    <description>
+        # yFiles class framework helper
+        * Inheritance checks
+    </description>
 
-    <change-notes>Initial release of the plugin.</change-notes>
+    <change-notes>
+        # 0.0.1
+        Initial release of the plugin.
 
-    <version>0.0.1</version>
+        [More information](https://github.com/turansky/yfiles-kotlin)
+    </change-notes>
 
     <vendor url="https://github.com/turansky">Victor Turansky</vendor>
 
