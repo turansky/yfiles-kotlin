@@ -1,0 +1,17 @@
+<idea-plugin url="https://github.com/turansky/yfiles-kotlin">
+    <name>yFiles</name>
+
+    <id>com.github.turansky.yfiles</id>
+
+    <description>yFiles class framework helper</description>
+
+    <change-notes>Initial release of the plugin.</change-notes>
+
+    <version>0.0.1</version>
+
+    <vendor url="https://github.com/turansky">Victor Turansky</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <idea-version since-build="183" until-build="183.*"/>
+</idea-plugin>
