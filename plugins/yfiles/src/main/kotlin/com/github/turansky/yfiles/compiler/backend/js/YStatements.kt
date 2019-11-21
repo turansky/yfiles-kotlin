@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
+import org.jetbrains.kotlin.ir.backend.js.utils.Namer.CONSTRUCTOR_NAME
 import org.jetbrains.kotlin.ir.backend.js.utils.Namer.JS_OBJECT_CREATE_FUNCTION
 import org.jetbrains.kotlin.js.backend.ast.*
 import org.jetbrains.kotlin.js.translate.context.Namer.CALL_FUNCTION
@@ -18,7 +19,6 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
 private val YCLASS_ID = ClassId(LANG_PACKAGE, YCLASS_NAME)
 private val FIX_TYPE = identifier("fixType")
-private const val CONSTRUCTOR = "constructor"
 
 internal fun TranslationContext.fixType(
     descriptor: ClassDescriptor
@@ -92,7 +92,7 @@ internal fun TranslationContext.configurePrototype(
                     JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
                 ).makeStmt(),
                 jsAssignment(
-                    JsNameRef(CONSTRUCTOR, classPrototype),
+                    JsNameRef(CONSTRUCTOR_NAME, classPrototype),
                     classRef
                 ).makeStmt(),
                 JsReturn(JsBooleanLiteral(true))
