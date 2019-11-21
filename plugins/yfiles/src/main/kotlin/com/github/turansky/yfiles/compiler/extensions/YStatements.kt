@@ -1,5 +1,8 @@
 package com.github.turansky.yfiles.compiler.extensions
 
+import com.github.turansky.yfiles.compiler.backend.common.BASE_CLASS_NAME
+import com.github.turansky.yfiles.compiler.backend.common.LANG_PACKAGE
+import com.github.turansky.yfiles.compiler.backend.common.YCLASS_NAME
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.jsAssignment
