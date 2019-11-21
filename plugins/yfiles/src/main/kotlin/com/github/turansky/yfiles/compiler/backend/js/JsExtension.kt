@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtensio
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
-class YExtension : JsSyntheticTranslateExtension {
+class JsExtension : JsSyntheticTranslateExtension {
     override fun generateClassSyntheticParts(
         declaration: KtPureClassOrObject,
         descriptor: ClassDescriptor,
