@@ -24,11 +24,6 @@ class MyVisualTemplate: IVisualTemplate {
 class MyArrow: IArrow, IVisualCreator, IBoundsProvider {
     /* body */
 }
-
-// Objects supported too
-object VoidVisualTemplate: IVisualTemplate {
-    /* body */
-}
 ```
 
 #### Requirements
