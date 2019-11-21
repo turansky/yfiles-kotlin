@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.compiler.extensions
+package com.github.turansky.yfiles.compiler.backend.js
 
 import com.github.turansky.yfiles.compiler.diagnostic.YMessagesExtension
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor

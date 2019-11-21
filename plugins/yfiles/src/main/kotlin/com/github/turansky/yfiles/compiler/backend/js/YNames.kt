@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.compiler.extensions
+package com.github.turansky.yfiles.compiler.backend.js
 
 private val DELIMITER = "$"
 

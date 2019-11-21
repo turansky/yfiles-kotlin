@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.compiler.extensions
+package com.github.turansky.yfiles.compiler.backend.js
 
 import com.github.turansky.yfiles.compiler.backend.common.extendsYObject
 import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface

@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.compiler.extensions
 
 import com.github.turansky.yfiles.compiler.backend.ir.IrExtension
+import com.github.turansky.yfiles.compiler.backend.js.YExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
