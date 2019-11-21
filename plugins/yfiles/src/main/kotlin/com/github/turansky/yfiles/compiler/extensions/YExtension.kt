@@ -21,8 +21,8 @@ class YExtension : JsSyntheticTranslateExtension {
         }
 
         when (descriptor.kind) {
-            CLASS, OBJECT -> context.generateClass(declaration, descriptor, translator)
-            INTERFACE, ENUM_CLASS -> context.checkInterfaces(declaration, descriptor)
+            CLASS -> context.generateClass(declaration, descriptor, translator)
+            OBJECT, INTERFACE, ENUM_CLASS -> context.checkInterfaces(declaration, descriptor)
             else -> {
                 // do nothing
             }
