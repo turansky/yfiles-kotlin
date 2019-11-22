@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_ANY
+import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.YID
 import java.io.File
 
@@ -38,4 +39,12 @@ internal fun applyIdHacks(source: Source) {
 
             it.put(J_TYPE, newType)
         }
+
+    source.types()
+        .flatMap { it.optJsequence(J_METHODS) }
+        .filter { it.has(J_PARAMETERS) }
+        .jsequence(J_PARAMETERS)
+        .filter { it.getString(J_TYPE) == JS_OBJECT }
+        .filter { it.getString(J_NAME).endsWith("Id") }
+        .forEach { it.put(J_TYPE, YID) }
 }
