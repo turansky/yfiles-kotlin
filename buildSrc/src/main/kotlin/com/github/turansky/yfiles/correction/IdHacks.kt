@@ -21,7 +21,10 @@ internal fun generateIdUtils(sourceDir: File) {
 
 private val ID_DP_KEYS = setOf(
     "yfiles.algorithms.EdgeDpKey<$JS_ANY>",
-    "yfiles.algorithms.NodeDpKey<$JS_ANY>"
+    "yfiles.algorithms.NodeDpKey<$JS_ANY>",
+
+    "yfiles.algorithms.IEdgeLabelLayoutDpKey<$JS_ANY>",
+    "yfiles.algorithms.INodeLabelLayoutDpKey<$JS_ANY>"
 )
 
 internal fun applyIdHacks(source: Source) {
