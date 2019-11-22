@@ -40,11 +40,15 @@ internal fun applyIdHacks(source: Source) {
             it.put(J_TYPE, newType)
         }
 
+    val likeObjectTypes = setOf(JS_OBJECT, JS_ANY)
     source.types()
-        .flatMap { it.optJsequence(J_METHODS) }
-        .filter { it.has(J_PARAMETERS) }
-        .jsequence(J_PARAMETERS)
-        .filter { it.getString(J_TYPE) == JS_OBJECT }
+        .flatMap {
+            it.optJsequence(J_METHODS)
+                .filter { it.has(J_PARAMETERS) }
+                .jsequence(J_PARAMETERS)
+                .plus(it.optJsequence(J_PROPERTIES))
+        }
+        .filter { it.getString(J_TYPE) in likeObjectTypes }
         .filter { it.getString(J_NAME).endsWith("Id") }
         .forEach { it.put(J_TYPE, YID) }
 }
