@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.YID
+import org.json.JSONObject
 import java.io.File
 
 internal fun generateIdUtils(sourceDir: File) {
@@ -45,6 +46,13 @@ internal fun applyIdHacks(source: Source) {
         JS_ANY
     )
 
+    typedItems(source)
+        .filter { it.getString(J_TYPE) in likeObjectTypes }
+        .filter { it.getString(J_NAME).endsWith("Id") }
+        .forEach { it.put(J_TYPE, YID) }
+}
+
+private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .flatMap {
             it.optJsequence(J_METHODS)
@@ -52,7 +60,3 @@ internal fun applyIdHacks(source: Source) {
                 .jsequence(J_PARAMETERS)
                 .plus(it.optJsequence(J_PROPERTIES))
         }
-        .filter { it.getString(J_TYPE) in likeObjectTypes }
-        .filter { it.getString(J_NAME).endsWith("Id") }
-        .forEach { it.put(J_TYPE, YID) }
-}
