@@ -42,6 +42,7 @@ internal fun applyHacks(api: JSONObject) {
     addMissedMethods(source)
     fieldToProperties(source)
 
+    applyIdHacks(source)
     applyClassHacks(source)
     applyCollectionHacks(source)
     applyComparableHacks(source)

@@ -43,6 +43,7 @@ fun generateKotlinDeclarations(
     val fileGenerator = KotlinFileGenerator(moduleName, types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 
+    generateIdUtils(sourceDir)
     generateInterfaceMarker(sourceDir)
     generateClassUtils(moduleName, sourceDir)
 }

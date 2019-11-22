@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles
 
+val YID = "yfiles.lang.Id"
+
 val YCLASS = "yfiles.lang.Class"
 val ICOMPARABLE = "yfiles.lang.IComparable"
 
