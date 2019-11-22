@@ -256,6 +256,29 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
     }
 }
 
+private class DpData(override val source: JSONObject) : HasSource {
+    private val domain: DpDataItem by DpDataItemDelegate()
+    private val values: DpDataItem by DpDataItemDelegate()
+
+    fun toDoc(): List<String> =
+        listOf(
+            "Domain - ${domain.toDoc()}",
+            "Values - ${values.toDoc()}"
+        )
+}
+
+private class DpDataItem(override val source: JSONObject) : HasSource {
+    private val type: String by string()
+    private val summary: String? by summary()
+
+    fun toDoc(): String {
+        val summary = summary
+            ?: return "[$type]"
+
+        return "[$type] $summary"
+    }
+}
+
 private class ExceptionDescription(override val source: JSONObject) : HasSource {
     private val REDUNDANT_NULL_WARNING = Regex("if the specified .+ is `null`\\.?")
 
@@ -449,6 +472,8 @@ internal class Constant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
+    private val dpdata: DpData? by DpDataDelegate()
+
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
@@ -1048,6 +1073,26 @@ private class TypeReferenceDelegate : JsonDelegate<TypeReference?>() {
     }
 }
 
+private class DpDataDelegate : JsonDelegate<DpData?>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): DpData? =
+        if (source.has(key)) {
+            DpData(source.getJSONObject(key))
+        } else {
+            null
+        }
+}
+
+private class DpDataItemDelegate : JsonDelegate<DpDataItem>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): DpDataItem =
+        DpDataItem(source.getJSONObject(key))
+}
+
 private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
     private val KEY = "y.default"
 
@@ -1106,6 +1151,7 @@ private class DeclarationArrayDelegate<T : Declaration>(
 private fun getDocumentation(
     summary: String?,
     remarks: String? = null,
+    dpdata: DpData? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
@@ -1120,6 +1166,7 @@ private fun getDocumentation(
     var lines = getDocumentationLines(
         summary = summary,
         remarks = remarks,
+        dpdata = dpdata,
         preconditions = preconditions,
         postconditions = postconditions,
         parameters = parameters,
@@ -1151,6 +1198,7 @@ private fun getDocumentation(
 private fun getDocumentationLines(
     summary: String?,
     remarks: String? = null,
+    dpdata: DpData? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
     parameters: List<IParameter>? = null,
@@ -1177,6 +1225,14 @@ private fun getDocumentationLines(
         }
 
         lines.add(it)
+    }
+
+    dpdata?.let {
+        if (lines.isNotEmpty()) {
+            lines.add("")
+        }
+
+        lines.addAll(it.toDoc())
     }
 
     lines.addAll(preconditions.toNamedList("Preconditions"))
