@@ -111,7 +111,7 @@ private fun getGeneric(
         "edgeLabels" -> "yfiles.layout.IEdgeLabelLayout"
         "selfLoops" -> EDGE
 
-        "edgeIds", "originalEdgeIds" -> JS_ANY
+        "edgeIds", "originalEdgeIds" -> YID
 
         else -> throw IllegalStateException("No generic found!")
     }
