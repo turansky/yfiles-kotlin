@@ -10,6 +10,9 @@ internal fun generateIdUtils(sourceDir: File) {
                 |package yfiles.lang
                 |
                 |external interface Id
+                |
+                |fun Id(source:Any):Id = 
+                |    source.unsafeCast<Id>()
             """.trimMargin()
         )
 }
