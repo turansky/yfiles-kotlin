@@ -6,5 +6,5 @@ internal val KOTLIN_PLUGIN_ARTIFACT: SubpluginArtifact
     get() = SubpluginArtifact(
         groupId = "gradle.plugin.com.github.turansky.yfiles",
         artifactId = "gradle-plugin",
-        version = "0.4.2-SNAPSHOT"
+        version = "0.4.3-SNAPSHOT"
     )
