@@ -40,7 +40,11 @@ internal fun applyIdHacks(source: Source) {
             it.put(J_TYPE, newType)
         }
 
-    val likeObjectTypes = setOf(JS_OBJECT, JS_ANY)
+    val likeObjectTypes = setOf(
+        JS_OBJECT,
+        JS_ANY
+    )
+
     source.types()
         .flatMap {
             it.optJsequence(J_METHODS)
