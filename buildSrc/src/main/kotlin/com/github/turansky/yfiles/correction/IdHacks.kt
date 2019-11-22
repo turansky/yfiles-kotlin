@@ -47,9 +47,18 @@ internal fun applyIdHacks(source: Source) {
     )
 
     typedItems(source)
-        .filter { it.getString(J_TYPE) in likeObjectTypes }
         .filter { it.getString(J_NAME).endsWith("Id") }
+        .filter { it.getString(J_TYPE) in likeObjectTypes }
         .forEach { it.put(J_TYPE, YID) }
+
+    typedItems(source)
+        .filter { it.getString(J_NAME).endsWith("Ids") }
+        .forEach {
+            val newType = it.getString(J_TYPE)
+                .replace(",$JS_ANY>", ",$YID>")
+
+            it.put(J_TYPE, newType)
+        }
 }
 
 private fun typedItems(source: Source): Sequence<JSONObject> =
