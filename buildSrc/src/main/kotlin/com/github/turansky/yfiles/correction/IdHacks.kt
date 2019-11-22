@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.JS_ANY
+import com.github.turansky.yfiles.YID
 import java.io.File
 
 internal fun generateIdUtils(sourceDir: File) {
@@ -17,7 +19,20 @@ internal fun generateIdUtils(sourceDir: File) {
         )
 }
 
-@Suppress("UNUSED_PARAMETER")
+private val ID_DP_KEYS = setOf(
+    "yfiles.algorithms.EdgeDpKey<$JS_ANY>",
+    "yfiles.algorithms.NodeDpKey<$JS_ANY>"
+)
+
 internal fun applyIdHacks(source: Source) {
-    // implement
+    source.types()
+        .flatMap { it.optJsequence(J_CONSTANTS) }
+        .filter { it.getString(J_TYPE) in ID_DP_KEYS }
+        .filter { it.getString(J_NAME).endsWith("_ID_DP_KEY") }
+        .forEach {
+            val newType = it.getString(J_TYPE)
+                .replace("<$JS_ANY>", "<$YID>")
+
+            it.put(J_TYPE, newType)
+        }
 }
