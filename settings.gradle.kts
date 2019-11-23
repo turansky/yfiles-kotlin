@@ -9,6 +9,6 @@ include("libraries:yfiles-kotlin")
 include("libraries:vsdx-kotlin")
 
 includeBuild("gradle-plugin")
-include("plugin-tests:yfiles")
+include("gradle-plugin-test")
 
 include("examples:simple-app")
