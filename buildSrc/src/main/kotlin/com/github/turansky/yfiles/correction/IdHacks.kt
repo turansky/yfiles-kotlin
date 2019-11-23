@@ -47,7 +47,7 @@ internal fun applyIdHacks(source: Source) {
     )
 
     typedItems(source)
-        .filter { it.getString(J_NAME).endsWith("Id") }
+        .filter { looksLikeId(it.getString(J_NAME)) }
         .filter { it.getString(J_TYPE) in likeObjectTypes }
         .forEach { it.put(J_TYPE, YID) }
 
@@ -61,10 +61,13 @@ internal fun applyIdHacks(source: Source) {
         }
 }
 
+private fun looksLikeId(name: String): Boolean =
+    name == "id" || name.endsWith("Id") || name.endsWith("ID")
+
 private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .flatMap {
-            it.optJsequence(J_METHODS)
+            (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS))
                 .filter { it.has(J_PARAMETERS) }
                 .jsequence(J_PARAMETERS)
                 .plus(it.optJsequence(J_PROPERTIES))
