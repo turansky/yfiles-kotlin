@@ -6,6 +6,11 @@ import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import com.github.turansky.yfiles.compiler.diagnostic.*
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
+import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
+import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
+import org.jetbrains.kotlin.js.backend.ast.JsBlock
+import org.jetbrains.kotlin.js.backend.ast.JsFunction
+import org.jetbrains.kotlin.js.backend.ast.JsReturn
 import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
@@ -33,7 +38,7 @@ class JsExtension : JsSyntheticTranslateExtension {
         }
 
         if (descriptor.isCompanionObject) {
-            enrichCompanionObject(descriptor, translator)
+            context.enrichCompanionObject(descriptor)
         }
     }
 }
@@ -108,9 +113,8 @@ private fun TranslationContext.generateBaseClass(
     }
 }
 
-private fun enrichCompanionObject(
-    companionDescriptor: ClassDescriptor,
-    translator: DeclarationBodyVisitor
+private fun TranslationContext.enrichCompanionObject(
+    companionDescriptor: ClassDescriptor
 ) {
     val descriptor = companionDescriptor.containingDeclaration as? ClassDescriptor
         ?: return
@@ -119,9 +123,18 @@ private fun enrichCompanionObject(
         return
     }
 
-    translator.addProperty(
-        descriptor = YClassPropertyDescriptor(companionDescriptor),
-        getter = JsStringLiteral("YYYY-CLAZZ-YYYY"),
-        setter = null
+    val constructor = companionDescriptor.constructors.single()
+    addDeclarationStatement(
+        defineProperty(
+            prototypeOf(toValueReference(constructor)),
+            "\$class",
+            JsFunction(
+                scope(),
+                JsBlock(
+                    JsReturn(JsStringLiteral("YYYY-CLASS-YYYY"))
+                ),
+                ""
+            )
+        ).makeStmt()
     )
 }
