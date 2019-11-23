@@ -6,6 +6,7 @@ import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import com.github.turansky.yfiles.compiler.diagnostic.*
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
+import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
@@ -29,6 +30,10 @@ class JsExtension : JsSyntheticTranslateExtension {
             else -> {
                 // do nothing
             }
+        }
+
+        if (descriptor.isCompanionObject) {
+            enrichCompanionObject(descriptor, translator)
         }
     }
 }
@@ -101,4 +106,22 @@ private fun TranslationContext.generateBaseClass(
             ).also { addDeclarationStatement(it.makeStmt()) }
         }
     }
+}
+
+private fun enrichCompanionObject(
+    companionDescriptor: ClassDescriptor,
+    translator: DeclarationBodyVisitor
+) {
+    val descriptor = companionDescriptor.containingDeclaration as? ClassDescriptor
+        ?: return
+
+    if (!descriptor.extendsYObject && !descriptor.implementsYFilesInterface) {
+        return
+    }
+
+    translator.addProperty(
+        descriptor = YClassPropertyDescriptor(companionDescriptor),
+        getter = JsStringLiteral("YYYY-CLAZZ-YYYY"),
+        setter = null
+    )
 }
