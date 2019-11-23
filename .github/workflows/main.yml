@@ -16,5 +16,5 @@ jobs:
       - name: Build with Gradle
         run: |
           ./gradlew build
-          cd ide-plugins/yfiles
+          cd idea-plugin
           ./gradlew build
