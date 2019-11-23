@@ -10,13 +10,15 @@ import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.js.backend.ast.JsBlock
 import org.jetbrains.kotlin.js.backend.ast.JsFunction
+import org.jetbrains.kotlin.js.backend.ast.JsNameRef
 import org.jetbrains.kotlin.js.backend.ast.JsReturn
-import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
+
+private const val YCLASS = "\$class"
 
 class JsExtension : JsSyntheticTranslateExtension {
     override fun generateClassSyntheticParts(
@@ -126,14 +128,14 @@ private fun TranslationContext.enrichCompanionObject(
     val constructor = companionDescriptor.constructors.single()
     addDeclarationStatement(
         defineProperty(
-            prototypeOf(toValueReference(constructor)),
-            "\$class",
-            JsFunction(
+            receiver = prototypeOf(toValueReference(constructor)),
+            name = YCLASS,
+            getter = JsFunction(
                 scope(),
                 JsBlock(
-                    JsReturn(JsStringLiteral("YYYY-CLASS-YYYY"))
+                    JsReturn(JsNameRef(YCLASS, toValueReference(descriptor)))
                 ),
-                ""
+                "\$class proxy for companion object"
             )
         ).makeStmt()
     )
