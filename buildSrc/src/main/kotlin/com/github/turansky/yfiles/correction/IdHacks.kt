@@ -59,6 +59,16 @@ internal fun applyIdHacks(source: Source) {
 
             it.put(J_TYPE, newType)
         }
+
+    source.type("BusRouterBusDescriptor")
+        .jsequence(J_CONSTRUCTORS)
+        .jsequence(J_PARAMETERS)
+        .forEach {
+            val name = it.getString(J_NAME)
+            if (name.endsWith("ID")) {
+                it.put(J_NAME, name.replace("ID", "Id"))
+            }
+        }
 }
 
 private fun looksLikeId(name: String): Boolean =
