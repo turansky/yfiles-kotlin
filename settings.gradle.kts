@@ -8,7 +8,7 @@ pluginManagement {
 include("libraries:yfiles-kotlin")
 include("libraries:vsdx-kotlin")
 
-includeBuild("plugins/yfiles")
+includeBuild("gradle-plugin")
 include("plugin-tests:yfiles")
 
 include("examples:simple-app")
