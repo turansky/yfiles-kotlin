@@ -17,7 +17,7 @@ jobs:
         run: |
           ./gradlew build
           cd idea-plugin
-          ./gradlew build
+          ./gradlew buildPlugin
           cd ..
           cd idea-plugin-test
           ./gradlew build
