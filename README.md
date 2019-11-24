@@ -35,6 +35,9 @@
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
 
+#### Related issues
+* [KT-34770](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
+
 ## Class
 
 #### Metadata
