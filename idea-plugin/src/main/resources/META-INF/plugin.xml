@@ -13,11 +13,11 @@ yFiles class framework helper
 <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">Gradle plugin</a><br>
 ]]></description>
 
-    <change-notes>
-        Initial release of the plugin.
-
-        [More information](https://github.com/turansky/yfiles-kotlin)
-    </change-notes>
+    <change-notes><![CDATA[
+Initial release of the plugin
+<br>
+<a href="https://github.com/turansky/yfiles-kotlin">More information</a>
+]]></change-notes>
 
     <vendor url="https://github.com/turansky">Victor Turansky</vendor>
 
