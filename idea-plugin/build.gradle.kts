@@ -14,6 +14,10 @@ dependencies {
     implementation(kotlin("stdlib"))
 }
 
+intellij {
+    version = "2019.2.4"
+}
+
 tasks.wrapper {
     gradleVersion = "6.0.1"
     distributionType = Wrapper.DistributionType.ALL

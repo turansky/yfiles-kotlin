@@ -19,6 +19,4 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.kotlin</depends>
-
-    <idea-version since-build="183" until-build="183.*"/>
 </idea-plugin>
