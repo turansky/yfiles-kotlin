@@ -5,6 +5,8 @@ version = "1.0.0-SNAPSHOT"
 
 plugins {
     kotlin("js")
+    id("de.undercouch.download")
+
     id("maven-publish")
 }
 
