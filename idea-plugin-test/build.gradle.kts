@@ -1,11 +1,12 @@
 plugins {
     kotlin("js") version "1.3.60"
+    id("com.github.turansky.yfiles") version "0.5.0"
 }
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+repositories {
+    gradlePluginPortal()
+    jcenter()
+    mavenLocal()
 }
 
 kotlin {
@@ -17,6 +18,7 @@ kotlin {
         main {
             dependencies {
                 implementation(kotlin("stdlib-js"))
+                implementation("com.yworks.yfiles:yfiles-kotlin:22.0.2-SNAPSHOT")
             }
         }
     }
