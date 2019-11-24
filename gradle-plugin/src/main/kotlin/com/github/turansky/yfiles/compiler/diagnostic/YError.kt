@@ -29,3 +29,7 @@ internal val YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<K
 
 internal val YOBJECT__COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
     errorDiagnosticFactory()
+
+
+internal val CLASS_METADATA__INVALID_TYPE_PARAMETER: DiagnosticFactory0<KtClassOrObject> =
+    errorDiagnosticFactory()

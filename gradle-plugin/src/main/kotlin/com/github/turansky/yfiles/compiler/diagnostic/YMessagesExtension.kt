@@ -34,6 +34,11 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             YOBJECT__COMPANION_OBJECT_NOT_SUPPORTED,
             "Parent type `yfiles.lang.YObject` not supported for companion objects"
         )
+
+        put(
+            CLASS_METADATA__INVALID_TYPE_PARAMETER,
+            "Invalid type parameter for ClassMetadata"
+        )
     }
 }
 
