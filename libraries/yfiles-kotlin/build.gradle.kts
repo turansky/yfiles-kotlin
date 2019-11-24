@@ -63,12 +63,6 @@ tasks {
         dependsOn(generateDeclarations)
         finalizedBy("publishToMavenLocal")
     }
-
-    JsJar {
-        from(project.projectDir) {
-            include("package.json")
-        }
-    }
 }
 
 publishing {
