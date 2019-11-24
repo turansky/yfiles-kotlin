@@ -22,7 +22,7 @@ intellij {
     setPlugins("org.jetbrains.kotlin:1.3.60-release-IJ2019.2-1")
 }
 
-val isNotCI = System.getenv()["CI"] == null
+val isNotCI = !System.getenv().containsKey("CI")
 
 tasks {
     publishPlugin {
