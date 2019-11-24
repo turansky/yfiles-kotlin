@@ -20,9 +20,13 @@ intellij {
     setPlugins("org.jetbrains.kotlin:1.3.60-release-IJ2019.2-1")
 }
 
+val isNotCI = System.getenv()["CI"] == null
+
 tasks {
     publishPlugin {
-        setToken(project.property("intellij.publish.token"))
+        if (isNotCI) {
+            setToken(project.property("intellij.publish.token"))
+        }
     }
 
     wrapper {
