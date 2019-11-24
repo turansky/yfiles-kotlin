@@ -21,10 +21,6 @@ intellij {
 }
 
 tasks {
-    publishPlugin {
-        setToken(getProperty("intellijPublishToken"))
-    }
-
     wrapper {
         gradleVersion = "6.0.1"
         distributionType = Wrapper.DistributionType.ALL
