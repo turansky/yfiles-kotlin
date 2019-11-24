@@ -7,14 +7,12 @@ import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import org.json.JSONObject
 import java.io.File
-import java.net.URL
 
-private fun loadJson(
-    path: String,
+private fun readJson(
+    file: File,
     action: JSONObject.() -> Unit
 ): JSONObject =
-    URL(path)
-        .readText(DEFAULT_CHARSET)
+    file.readText(DEFAULT_CHARSET)
         .run { substring(indexOf("{")) }
         .run { JSONObject(this) }
         .apply(action)
@@ -22,10 +20,10 @@ private fun loadJson(
         .run { JSONObject(this) }
 
 fun generateKotlinDeclarations(
-    apiPath: String,
+    apiFile: File,
     sourceDir: File
 ) {
-    val source = loadJson(apiPath) {
+    val source = readJson(apiFile) {
         applyHacks(this)
         excludeUnusedTypes(this)
         correctNumbers(this)
@@ -49,10 +47,10 @@ fun generateKotlinDeclarations(
 }
 
 fun generateVsdxKotlinDeclarations(
-    apiPath: String,
+    apiFile: File,
     sourceDir: File
 ) {
-    val source = loadJson(apiPath) {
+    val source = readJson(apiFile) {
         applyVsdxHacks(this)
         correctVsdxNumbers(this)
     }

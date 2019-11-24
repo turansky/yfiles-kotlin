@@ -1,4 +1,5 @@
 import com.github.turansky.yfiles.generateVsdxKotlinDeclarations
+import de.undercouch.gradle.tasks.download.Download
 
 group = "com.yworks.yfiles"
 version = "1.0.0-SNAPSHOT"
@@ -40,14 +41,23 @@ tasks {
         }
     }
 
+    val apiDescriptorFile = File(buildDir, "api.js")
+
+    val downloadApiDescriptor by registering(Download::class) {
+        src("https://docs.yworks.com/vsdx-html/assets/api.56a9cdca.js")
+        dest(apiDescriptorFile)
+        overwrite(true)
+    }
+
     val generateDeclarations by registering {
         doLast {
             val sourceDir = kotlinSourceDir
-            delete(sourceDir)
+                .also { delete(it) }
 
-            val apiPath = "https://docs.yworks.com/vsdx-html/assets/api.56a9cdca.js"
-            generateVsdxKotlinDeclarations(apiPath, sourceDir)
+            generateVsdxKotlinDeclarations(apiDescriptorFile, sourceDir)
         }
+
+        dependsOn(downloadApiDescriptor)
     }
 
     compileKotlinJs {
