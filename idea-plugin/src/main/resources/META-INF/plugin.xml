@@ -16,7 +16,4 @@
     </change-notes>
 
     <vendor url="https://github.com/turansky">Victor Turansky</vendor>
-
-    <depends>com.intellij.modules.platform</depends>
-    <depends>org.jetbrains.kotlin</depends>
 </idea-plugin>
