@@ -37,7 +37,7 @@ val kotlinSourceDir: File
 tasks {
     clean {
         doLast {
-            delete("src", "out")
+            delete("src")
         }
     }
 
