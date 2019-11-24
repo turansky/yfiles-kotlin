@@ -27,7 +27,7 @@
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
 | Nullability fixes           |         2500+         |         -         |
 | Numberability*              |           ✔           |         ✔         |
-| Strict [Class][31] generic  |           ✔           |         ✔         |
+| Strict [`Class`][31] generic  |           ✔           |         ✔         |
 | Trait support**             |           ✔           |         ✔         |
 | Operators                   |           ✔           |         ✔         |
 | Operator aliases            |           ✔           |         ✔         |
@@ -36,7 +36,7 @@
 \** - via extension methods
 
 #### Related issues
-* [KT-34770](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
+* [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
 
 ## Class
 
@@ -90,7 +90,7 @@ val layout = HierarchicLayout {
 ```
 
 #### Related issues
-* [KT-31126](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
+* [`KT-31126`](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
 ## KDoc
 #### Supported blocks
@@ -124,10 +124,10 @@ _Example:_
 ![Example](assets/online-documentation.png)
 
 #### Related issues
-* [KT-32815](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
-* [IDEA-219818](https://youtrack.jetbrains.com/issue/IDEA-219818) - Broken links with double anchor `#`
-* [KT-32640](https://youtrack.jetbrains.com/issue/KT-32640) - Broken markdown links in `@see` block
-* [KT-32720](https://youtrack.jetbrains.com/issue/KT-32720) - `@see` is recommended?
+* [`KT-32815`](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
+* [`IDEA-219818`](https://youtrack.jetbrains.com/issue/IDEA-219818) - Broken links with double anchor `#`
+* [`KT-32640`](https://youtrack.jetbrains.com/issue/KT-32640) - Broken markdown links in `@see` block
+* [`KT-32720`](https://youtrack.jetbrains.com/issue/KT-32720) - `@see` is recommended?
 
 [11]: https://www.yworks.com/products/yfiles-for-html
 [12]: http://docs.yworks.com/yfileshtml/
