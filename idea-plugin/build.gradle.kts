@@ -15,6 +15,8 @@ dependencies {
 }
 
 intellij {
+    pluginName = "yfiles"
+
     version = "2019.2.4"
 
     setPlugins("org.jetbrains.kotlin:1.3.60-release-IJ2019.2-1")
