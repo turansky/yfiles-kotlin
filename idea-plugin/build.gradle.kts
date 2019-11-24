@@ -20,7 +20,13 @@ intellij {
     setPlugins("org.jetbrains.kotlin:1.3.60-release-IJ2019.2-1")
 }
 
-tasks.wrapper {
-    gradleVersion = "6.0.1"
-    distributionType = Wrapper.DistributionType.ALL
+tasks {
+    publishPlugin {
+        setToken(getProperty("intellijPublishToken"))
+    }
+
+    wrapper {
+        gradleVersion = "6.0.1"
+        distributionType = Wrapper.DistributionType.ALL
+    }
 }
