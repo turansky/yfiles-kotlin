@@ -3,17 +3,23 @@
 
     <id>com.github.turansky.yfiles</id>
 
-    <description>
-        # yFiles class framework helper
-        * Inheritance checks
-    </description>
+    <description><![CDATA[
+yFiles class framework helper
+<h3>About yFiles</h3>
+<a href="https://www.yworks.com/products/yfiles-for-html">yFiles for HTML</a><br>
+<a href="https://docs.yworks.com/yfileshtml/#/dguide/yfiles_class_framework">yFiles class framework</a><br>
+<h3>yFiles & Kotlin/JS</h3>
+<a href="https://github.com/turansky/yfiles-kotlin">Kotlin/JS declarations</a><br>
+<a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">Gradle plugin</a><br>
+]]></description>
 
     <change-notes>
-        # 0.0.1
         Initial release of the plugin.
 
         [More information](https://github.com/turansky/yfiles-kotlin)
     </change-notes>
 
     <vendor url="https://github.com/turansky">Victor Turansky</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
 </idea-plugin>
