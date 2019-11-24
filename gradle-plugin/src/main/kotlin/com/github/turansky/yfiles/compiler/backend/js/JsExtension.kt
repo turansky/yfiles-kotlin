@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.compiler.backend.js
 
+import com.github.turansky.yfiles.compiler.backend.common.asClassMetadata
 import com.github.turansky.yfiles.compiler.backend.common.extendsYObject
 import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
@@ -124,6 +125,10 @@ private fun TranslationContext.enrichCompanionObject(
     if (!descriptor.extendsYObject && !descriptor.implementsYFilesInterface) {
         return
     }
+
+    companionDescriptor.asClassMetadata() ?: return
+
+    // TODO: add ClassMetadata generic check
 
     val constructor = companionDescriptor.constructors.single()
     addDeclarationStatement(
