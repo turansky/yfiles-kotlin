@@ -9,6 +9,9 @@
 ## Gradle Plugin
 [Can resolve inheritance problems](gradle-plugin)
 
+## IDEA Plugin
+[In development...](idea-plugin)
+
 ## Generation
 * Run `./gradlew build`
 * Check source folders
