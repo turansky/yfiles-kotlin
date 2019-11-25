@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.ICLONEABLE
 import com.github.turansky.yfiles.json.firstWithName
+import org.json.JSONObject
 
 internal fun applyCloneableHacks(source: Source) {
     fixClass(source)
@@ -26,8 +27,12 @@ private fun fixImplementedType(source: Source) {
             type.getJSONArray(J_IMPLEMENTS).apply {
                 val index = indexOf(ICLONEABLE)
                 if (index != -1) {
-                    val typeId = type.getString(J_ID)
-                    put(index, "$ICLONEABLE<$typeId>")
+                    if (type.hasCloneableSuperType(source)) {
+                        remove(index)
+                    } else {
+                        val typeId = type.getString(J_ID)
+                        put(index, "$ICLONEABLE<$typeId>")
+                    }
                 }
             }
         }
@@ -43,3 +48,31 @@ private fun fixImplementedType(source: Source) {
                 .forEach { it.put(J_TYPE, type.getString(J_ID)) }
         }
 }
+
+private fun JSONObject.hasCloneableSuperType(source: Source): Boolean {
+    if (getString(J_ID) == "yfiles.tree.DefaultNodePlacer") {
+        return true
+    }
+
+    if (!has(J_IMPLEMENTS)) {
+        return false
+    }
+
+    return getJSONArray(J_IMPLEMENTS)
+        .asSequence()
+        .map { it as String }
+        .map { it.toClassName() }
+        .map { source.type(it) }
+        .filter { it.has(J_IMPLEMENTS) }
+        .map { it.getJSONArray(J_IMPLEMENTS) }
+        .flatMap { it.asSequence() }
+        .map { it as String }
+        .any { it.startsWith(ICLONEABLE) }
+}
+
+private fun String.toClassName(): String =
+    when (this) {
+        "yfiles.hierarchic.INodePlacer" -> "IHierarchicLayoutNodePlacer"
+        "yfiles.tree.INodePlacer" -> "ITreeLayoutNodePlacer"
+        else -> substringAfterLast(".")
+    }
