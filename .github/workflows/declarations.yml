@@ -1,4 +1,4 @@
-name: CI
+name: declarations
 
 on: [push]
 
@@ -16,9 +16,5 @@ jobs:
       - name: Build
         run: |
           ./gradlew build
-          cd idea-plugin
-          ./gradlew buildPlugin -Dorg.gradle.project.intellij.publish.token=unknown
-          cd ..
           cd idea-plugin-test
           ./gradlew build
-          cd ..
