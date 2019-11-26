@@ -92,11 +92,7 @@ internal fun JSONObject.setSingleTypeParameter(
     put(
         J_TYPE_PARAMETERS,
         jArray(
-            jObject(J_NAME to name).apply {
-                if (bound != null) {
-                    put(J_BOUNDS, arrayOf(bound))
-                }
-            }
+            typeParameter(name, bound)
         )
     )
 }
@@ -108,14 +104,7 @@ internal fun JSONObject.addFirstTypeParameter(
     val parameters = getJSONArray(J_TYPE_PARAMETERS)
         .toMutableList()
 
-    parameters.add(
-        0,
-        jObject(J_NAME to name).apply {
-            if (bound != null) {
-                put(J_BOUNDS, arrayOf(bound))
-            }
-        }
-    )
+    parameters.add(0, typeParameter(name, bound))
 
     put(J_TYPE_PARAMETERS, parameters.toList())
 }
@@ -127,11 +116,21 @@ internal fun JSONObject.setTypeParameters(
     put(
         J_TYPE_PARAMETERS,
         jArray(
-            jObject(J_NAME to name1),
-            jObject(J_NAME to name2)
+            typeParameter(name1),
+            typeParameter(name2)
         )
     )
 }
+
+private fun typeParameter(
+    name: String,
+    bound: String? = null
+): JSONObject =
+    jObject(J_NAME to name).apply {
+        if (bound != null) {
+            put(J_BOUNDS, arrayOf(bound))
+        }
+    }
 
 internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
     getJSONArray(name)
