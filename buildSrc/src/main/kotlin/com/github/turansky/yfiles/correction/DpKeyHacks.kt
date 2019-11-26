@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.EDGE
 import com.github.turansky.yfiles.GRAPH_OBJECT
+import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.NODE
 import org.json.JSONObject
 
@@ -15,7 +16,7 @@ private val DP_KEY_BASE_KEY = "TKey"
 private val DP_KEY_BASE_DECLARATION = "yfiles.algorithms.DpKeyBase<"
 
 private val DP_KEY_GENERIC_MAP = mapOf(
-    DP_KEY_BASE to "TKey",
+    DP_KEY_BASE to DP_KEY_BASE_KEY,
 
     "GraphDpKey" to "yfiles.algorithms.Graph",
 
@@ -30,7 +31,7 @@ private val DP_KEY_GENERIC_MAP = mapOf(
 
 private fun fixClass(source: Source) {
     source.type(DP_KEY_BASE).apply {
-        addFirstTypeParameter(DP_KEY_BASE_KEY)
+        addFirstTypeParameter(DP_KEY_BASE_KEY, JS_OBJECT)
 
         methodParameters(
             "equalsCore",
