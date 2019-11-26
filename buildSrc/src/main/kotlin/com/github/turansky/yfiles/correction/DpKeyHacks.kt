@@ -49,7 +49,7 @@ private fun fixClass(source: Source) {
 
     source.type("DpKeyItemCollection")
         .property("dpKey")
-        .updateDpKeyGeneric(J_TYPE, "T")
+        .updateDpKeyGeneric(J_TYPE, "*")
 }
 
 private fun JSONObject.updateDpKeyGeneric(
