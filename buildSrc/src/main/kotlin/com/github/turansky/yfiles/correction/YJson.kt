@@ -101,6 +101,25 @@ internal fun JSONObject.setSingleTypeParameter(
     )
 }
 
+internal fun JSONObject.addFirstTypeParameter(
+    name: String,
+    bound: String? = null
+) {
+    val parameters = getJSONArray(J_TYPE_PARAMETERS)
+        .toMutableList()
+
+    parameters.add(
+        0,
+        jObject(J_NAME to name).apply {
+            if (bound != null) {
+                put(J_BOUNDS, arrayOf(bound))
+            }
+        }
+    )
+
+    put(J_TYPE_PARAMETERS, parameters.toList())
+}
+
 internal fun JSONObject.setTypeParameters(
     name1: String,
     name2: String
