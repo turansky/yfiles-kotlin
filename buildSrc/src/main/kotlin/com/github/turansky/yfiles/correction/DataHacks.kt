@@ -1,16 +1,35 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
     fixDataMaps(source)
 }
 
+private val IDATA_MAP = "yfiles.algorithms.IDataMap"
+
 private val MAP_INTERFACES = setOf(
     "yfiles.algorithms.IEdgeMap",
     "yfiles.algorithms.INodeMap"
 )
+
+private fun fixDataMap(source: Source) {
+    source.type(IDATA_MAP.substringAfterLast("."))
+        .put(
+            J_TYPE_PARAMETERS,
+            jArray(
+                typeParameter("K", JS_OBJECT),
+                typeParameter("V", JS_OBJECT)
+            )
+        )
+
+    source.types()
+        .flatMap { it.getTypeHolders() }
+        .filter { it.getString(J_TYPE) == IDATA_MAP }
+        .forEach { it.put(J_TYPE, "$IDATA_MAP<*, *>") }
+}
 
 private fun fixDataMaps(source: Source) {
     MAP_INTERFACES.forEach {

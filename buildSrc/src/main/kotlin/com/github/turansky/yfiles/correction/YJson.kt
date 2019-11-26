@@ -122,7 +122,7 @@ internal fun JSONObject.setTypeParameters(
     )
 }
 
-private fun typeParameter(
+internal fun typeParameter(
     name: String,
     bound: String? = null
 ): JSONObject =
