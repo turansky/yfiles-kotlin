@@ -7,6 +7,7 @@ import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
+    fixDataProvider(source)
     fixDataMap(source)
     fixDataMaps(source)
 }
@@ -46,6 +47,11 @@ private fun fixDataProvider(source: Source) {
 
     source.type("DataProviderBase")
         .addKeyValueTypeParameters()
+
+    source.type("MapperDataProviderAdapter")
+        .getJSONArray(J_TYPE_PARAMETERS)
+        .getJSONObject(1)
+        .put(J_BOUNDS, arrayOf(JS_OBJECT))
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
