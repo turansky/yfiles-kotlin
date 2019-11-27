@@ -9,6 +9,7 @@ internal fun applyDataHacks(source: Source) {
     fixDataMaps(source)
 }
 
+private val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
 private val IDATA_MAP = "yfiles.algorithms.IDataMap"
 
 private val MAP_INTERFACES = setOf(
@@ -21,6 +22,22 @@ private val TYPE_MAP = mapOf(
     "INodeMap" to "Node,V",
     "DataMapAdapter" to "K,V"
 )
+
+private fun fixDataProvider(source: Source) {
+    source.type(IDATA_PROVIDER.substringAfterLast("."))
+        .put(
+            J_TYPE_PARAMETERS,
+            jArray(
+                typeParameter("K", JS_OBJECT),
+                typeParameter("V", JS_OBJECT)
+            )
+        )
+
+    source.types()
+        .flatMap { it.getTypeHolders() }
+        .filter { it.getString(J_TYPE) == IDATA_PROVIDER }
+        .forEach { it.put(J_TYPE, "$IDATA_PROVIDER<*, *>") }
+}
 
 private fun fixDataMap(source: Source) {
     source.type(IDATA_MAP.substringAfterLast("."))
@@ -65,7 +82,7 @@ private fun fixDataMaps(source: Source) {
 }
 
 fun JSONObject.getTypeHolders() =
-    (optJsequence(J_STATIC_METHODS) + optJsequence(J_METHODS))
+    (optJsequence(J_CONSTRUCTORS) + optJsequence(J_STATIC_METHODS) + optJsequence(J_METHODS))
         .flatMap { it.optJsequence(J_PARAMETERS) + it.returnsSequence() }
         .plus(optJsequence(J_PROPERTIES))
 
