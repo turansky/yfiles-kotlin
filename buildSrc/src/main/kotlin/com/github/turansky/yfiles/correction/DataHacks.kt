@@ -8,11 +8,13 @@ import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
     fixDataProvider(source)
+    fixDataAcceptor(source)
     fixDataMap(source)
     fixDataMaps(source)
 }
 
 private val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
+private val IDATA_ACCEPTOR = "yfiles.algorithms.IDataAcceptor"
 private val IDATA_MAP = "yfiles.algorithms.IDataMap"
 
 private val MAP_INTERFACES = setOf(
@@ -27,6 +29,12 @@ private val DATA_PROVIDER_TYPE_MAP = mapOf(
 
     "DataProviderBase" to "K,V",
     "MapperDataProviderAdapter" to "TKey,TValue"
+)
+
+private val DATA_ACCEPTOR_TYPE_MAP = mapOf(
+    "IDataMap" to "K,V",
+    "IEdgeMap" to "$EDGE,V",
+    "INodeMap" to "$NODE,V"
 )
 
 private val DATA_MAP_TYPE_MAP = mapOf(
@@ -57,6 +65,22 @@ private fun fixDataProvider(source: Source) {
         source.type(className)
             .getJSONArray(J_IMPLEMENTS)
             .apply { put(indexOf(IDATA_PROVIDER), "$IDATA_PROVIDER<$typeParameters>") }
+    }
+}
+
+private fun fixDataAcceptor(source: Source) {
+    source.type(IDATA_ACCEPTOR.substringAfterLast("."))
+        .addKeyValueTypeParameters()
+
+    source.types()
+        .flatMap { it.getTypeHolders() }
+        .filter { it.getString(J_TYPE) == IDATA_ACCEPTOR }
+        .forEach { it.put(J_TYPE, "$IDATA_ACCEPTOR<*, *>") }
+
+    for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
+        source.type(className)
+            .getJSONArray(J_IMPLEMENTS)
+            .apply { put(indexOf(IDATA_ACCEPTOR), "$IDATA_ACCEPTOR<$typeParameters>") }
     }
 }
 
