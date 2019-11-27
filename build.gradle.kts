@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 
 plugins {
-    kotlin("js") version "1.3.60" apply false
+    kotlin("js") version "1.3.61" apply false
     id("de.undercouch.download") version "4.0.2" apply false
 }
 
