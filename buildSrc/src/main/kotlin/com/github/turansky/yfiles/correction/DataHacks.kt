@@ -133,12 +133,20 @@ private fun JSONObject.getDefaultTypeParameters(): String {
 }
 
 private fun getDefaultTypeParameter(name: String, type: String): String =
-    when {
-        type == JS_BOOLEAN -> type
-        type == JS_NUMBER -> getDefaultNumberTypeParameter(name)
+    when (type) {
+        JS_BOOLEAN -> type
+        JS_NUMBER -> getDefaultNumberTypeParameter(name)
+        JS_OBJECT -> getDefaultObjectTypeParameter(name)
 
-        type == "yfiles.collections.IComparer<T>" -> "yfiles.collections.IComparer<*>"
-        "." in type -> type
+        "yfiles.collections.IComparer<T>" -> "yfiles.collections.IComparer<*>"
+
+        else -> type
+    }
+
+private fun getDefaultObjectTypeParameter(name: String): String =
+    when (name) {
+        "busIDAcceptor",
+        "partitionIDDP" -> YID
 
         else -> "*"
     }
@@ -146,7 +154,6 @@ private fun getDefaultTypeParameter(name: String, type: String): String =
 private fun getDefaultNumberTypeParameter(name: String): String =
     when (name) {
         "connectorMap" -> "yfiles.tree.ParentConnectorDirection"
-        "busIDAcceptor" -> YID
 
         "eCapDP",
         "edgeLength",
@@ -205,6 +212,10 @@ private fun JSONObject.getDataMapsTypeParameter(): String {
 
     return when (type) {
         JS_NUMBER -> getDataMapsNumberTypeParameter(getString(J_NAME))
+        JS_OBJECT -> when (getString(J_NAME)) {
+            "partitionIDMap" -> YID
+            else -> type
+        }
         else -> type
     }
 }
