@@ -122,21 +122,31 @@ private fun JSONObject.getDefaultTypeParameters(): String {
         return "*,*"
     }
 
+    val name = getString(J_NAME)
     return getJSONObject(J_DP_DATA)
         .run {
-            val keyType = getDefaultTypeParameter(getJSONObject(J_DOMAIN).getString(J_TYPE))
-            val valueType = getDefaultTypeParameter(getJSONObject(J_VALUES).getString(J_TYPE))
+            val keyType = getDefaultTypeParameter(name, getJSONObject(J_DOMAIN).getString(J_TYPE))
+            val valueType = getDefaultTypeParameter(name, getJSONObject(J_VALUES).getString(J_TYPE))
 
             "$keyType,$valueType"
         }
 }
 
-private fun getDefaultTypeParameter(type: String): String =
+private fun getDefaultTypeParameter(name: String, type: String): String =
     when {
         type == JS_BOOLEAN -> type
+        type == JS_NUMBER -> getDefaultNumberTypeParameter(name)
 
         type == "yfiles.collections.IComparer<T>" -> "yfiles.collections.IComparer<*>"
         "." in type -> type
+
+        else -> "*"
+    }
+
+private fun getDefaultNumberTypeParameter(name: String): String =
+    when (name) {
+        "connectorMap" -> "yfiles.tree.ParentConnectorDirection"
+        "busIDAcceptor" -> YID
 
         else -> "*"
     }
