@@ -141,8 +141,11 @@ private fun fixMethodTypes(source: Source) {
             .forEach {
                 val name = it.getString(J_NAME)
 
-                if (name == "set") {
-                    it.getJSONArray(J_PARAMETERS)
+                when (name) {
+                    "get" -> it.getJSONObject(J_RETURNS)
+                        .put(J_TYPE, valueTypeParameter)
+
+                    "set" -> it.getJSONArray(J_PARAMETERS)
                         .firstWithName("value")
                         .put(J_TYPE, valueTypeParameter)
                 }
