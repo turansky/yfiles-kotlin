@@ -115,14 +115,14 @@ private fun JSONObject.getDefaultTypeParameters(): String {
 
     return getJSONObject(J_DP_DATA)
         .run {
-            val keyType = getDataMapTypeParameter(getJSONObject(J_DOMAIN).getString(J_TYPE))
-            val valueType = getDataMapTypeParameter(getJSONObject(J_VALUES).getString(J_TYPE))
+            val keyType = getDefaultTypeParameter(getJSONObject(J_DOMAIN).getString(J_TYPE))
+            val valueType = getDefaultTypeParameter(getJSONObject(J_VALUES).getString(J_TYPE))
 
             "$keyType,$valueType"
         }
 }
 
-private fun getDataMapTypeParameter(type: String): String =
+private fun getDefaultTypeParameter(type: String): String =
     when {
         type == JS_BOOLEAN -> type
 
