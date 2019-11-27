@@ -35,3 +35,7 @@ val J_SUMMARY = "summary"
 
 val J_DEFAULT = "y.default"
 val J_VALUE = "value"
+
+val J_DP_DATA = "dpdata"
+val J_DOMAIN = "domain"
+val J_VALUES = "values"

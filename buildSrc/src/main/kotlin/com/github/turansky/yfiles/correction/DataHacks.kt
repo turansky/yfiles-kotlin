@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.EDGE
+import com.github.turansky.yfiles.JS_BOOLEAN
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.NODE
 import com.github.turansky.yfiles.json.firstWithName
@@ -112,7 +113,19 @@ private fun fixDataMaps(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it.getString(J_TYPE) in MAP_INTERFACES }
-        .forEach { it.put(J_TYPE, it.getString(J_TYPE) + "<*>") }
+        .forEach {
+            var typeParameter = "*"
+            if (it.has(J_DP_DATA)) {
+                val valueType = it.getJSONObject(J_DP_DATA)
+                    .getJSONObject(J_VALUES)
+                    .getString(J_TYPE)
+
+                if (valueType == JS_BOOLEAN || "." in valueType) {
+                    typeParameter = valueType
+                }
+            }
+            it.put(J_TYPE, it.getString(J_TYPE) + "<$typeParameter>")
+        }
 
     source.type("Graph")
         .jsequence(J_PROPERTIES)
