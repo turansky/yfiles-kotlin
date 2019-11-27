@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.JS_BOOLEAN
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.NODE
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
@@ -127,7 +124,7 @@ private fun fixDataMaps(source: Source) {
         }
 }
 
-fun JSONObject.getDataMapsTypeParameter(): String {
+private fun JSONObject.getDataMapsTypeParameter(): String {
     if (!has(J_DP_DATA)) {
         return "*"
     }
@@ -138,10 +135,40 @@ fun JSONObject.getDataMapsTypeParameter(): String {
 
     return when {
         type == JS_BOOLEAN -> type
+        type == JS_NUMBER -> getDataMapsNumberTypeParameter(getString(J_NAME))
         "." in type -> type
         else -> "*"
     }
 }
+
+private fun getDataMapsNumberTypeParameter(name: String): String =
+    when (name) {
+        "clusterIDs",
+        "compNum",
+        "compNumber",
+        "dualsNM",
+        "flowEM",
+        "groupIDs",
+        "intWeight",
+        "layer",
+        "layerID",
+        "layerIDMap",
+        "minLength",
+        "rank",
+        "result",
+        "subtreeDepthMap",
+        "subtreeSizeMap" -> INT
+
+        "centrality",
+        "closeness",
+        "dist",
+        "edgeCentrality",
+        "map",
+        "maxDist",
+        "nodeCentrality" -> DOUBLE
+
+        else -> throw IllegalArgumentException("No type parameter for data map: $name")
+    }
 
 private fun fixMethodTypes(source: Source) {
     source.types(
