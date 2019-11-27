@@ -76,7 +76,7 @@ private fun fixDataAcceptor(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it.getString(J_TYPE) == IDATA_ACCEPTOR }
-        .forEach { it.put(J_TYPE, "$IDATA_ACCEPTOR<*, *>") }
+        .forEach { it.put(J_TYPE, "$IDATA_ACCEPTOR<${it.getDefaultTypeParameters()}>") }
 
     for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
         source.type(className)
@@ -101,11 +101,14 @@ private fun fixDataMap(source: Source) {
     }
 }
 
-private fun JSONObject.getDataMapTypeParameters(): String {
+private fun JSONObject.getDataMapTypeParameters(): String =
     if (optString(J_NAME) == "connectorMap") {
-        return "$NODE,yfiles.tree.ParentConnectorDirection"
+        "$NODE,yfiles.tree.ParentConnectorDirection"
+    } else {
+        getDefaultTypeParameters()
     }
 
+private fun JSONObject.getDefaultTypeParameters(): String {
     if (!has(J_DP_DATA)) {
         return "*,*"
     }
