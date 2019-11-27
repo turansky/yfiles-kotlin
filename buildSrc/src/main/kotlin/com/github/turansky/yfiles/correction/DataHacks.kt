@@ -133,11 +133,9 @@ private fun JSONObject.getDataMapsTypeParameter(): String {
         .getJSONObject(J_VALUES)
         .getString(J_TYPE)
 
-    return when {
-        type == JS_BOOLEAN -> type
-        type == JS_NUMBER -> getDataMapsNumberTypeParameter(getString(J_NAME))
-        "." in type -> type
-        else -> "*"
+    return when (type) {
+        JS_NUMBER -> getDataMapsNumberTypeParameter(getString(J_NAME))
+        else -> type
     }
 }
 
