@@ -5,6 +5,7 @@ import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
+    fixDataMap(source)
     fixDataMaps(source)
 }
 
@@ -13,6 +14,12 @@ private val IDATA_MAP = "yfiles.algorithms.IDataMap"
 private val MAP_INTERFACES = setOf(
     "yfiles.algorithms.IEdgeMap",
     "yfiles.algorithms.INodeMap"
+)
+
+private val TYPE_MAP = mapOf(
+    "IEdgeMap" to "Edge,V",
+    "INodeMap" to "Node,V",
+    "DataMapAdapter" to "K,V"
 )
 
 private fun fixDataMap(source: Source) {
@@ -29,6 +36,12 @@ private fun fixDataMap(source: Source) {
         .flatMap { it.getTypeHolders() }
         .filter { it.getString(J_TYPE) == IDATA_MAP }
         .forEach { it.put(J_TYPE, "$IDATA_MAP<*, *>") }
+
+    for ((className, typeParameters) in TYPE_MAP) {
+        source.type(className)
+            .getJSONArray(J_IMPLEMENTS)
+            .apply { put(indexOf(IDATA_MAP), "$IDATA_MAP<$typeParameters>") }
+    }
 }
 
 private fun fixDataMaps(source: Source) {
