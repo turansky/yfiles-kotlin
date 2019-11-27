@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.EDGE
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.NODE
+import com.github.turansky.yfiles.json.firstWithName
 import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
 
@@ -11,6 +12,8 @@ internal fun applyDataHacks(source: Source) {
     fixDataAcceptor(source)
     fixDataMap(source)
     fixDataMaps(source)
+
+    fixMethodTypes(source)
 }
 
 private val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
@@ -118,6 +121,37 @@ private fun fixDataMaps(source: Source) {
             MAP_INTERFACES.find { it in type }
                 ?.also { property.put(J_TYPE, type.replace(it, "$it<*>")) }
         }
+}
+
+private fun fixMethodTypes(source: Source) {
+    source.types(
+        "IDataProvider",
+        "IDataAcceptor",
+
+        "DataProviderBase",
+        "DataMapAdapter",
+
+        "MapperDataProviderAdapter"
+    ).forEach {
+        val typeParameters = it.getJSONArray(J_TYPE_PARAMETERS)
+        val keyTypeParameter = typeParameters.getJSONObject(0).getString(J_NAME)
+        val valueTypeParameter = typeParameters.getJSONObject(1).getString(J_NAME)
+
+        it.jsequence(J_METHODS)
+            .forEach {
+                val name = it.getString(J_NAME)
+
+                if (name == "set") {
+                    it.getJSONArray(J_PARAMETERS)
+                        .firstWithName("value")
+                        .put(J_TYPE, valueTypeParameter)
+                }
+
+                it.jsequence(J_PARAMETERS)
+                    .filter { it.getString(J_NAME) == "dataHolder" }
+                    .forEach { it.put(J_TYPE, keyTypeParameter) }
+            }
+    }
 }
 
 private fun JSONObject.addKeyValueTypeParameters() {
