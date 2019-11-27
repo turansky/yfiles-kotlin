@@ -92,7 +92,7 @@ private fun fixDataMap(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it.getString(J_TYPE) == IDATA_MAP }
-        .forEach { it.put(J_TYPE, "$IDATA_MAP<*, *>") }
+        .forEach { it.put(J_TYPE, "$IDATA_MAP<${it.getDataMapTypeParameters()}>") }
 
     for ((className, typeParameters) in DATA_MAP_TYPE_MAP) {
         source.type(className)
@@ -100,6 +100,34 @@ private fun fixDataMap(source: Source) {
             .apply { put(indexOf(IDATA_MAP), "$IDATA_MAP<$typeParameters>") }
     }
 }
+
+private fun JSONObject.getDataMapTypeParameters(): String {
+    if (optString(J_NAME) == "connectorMap") {
+        return "$NODE,yfiles.tree.ParentConnectorDirection"
+    }
+
+    if (!has(J_DP_DATA)) {
+        return "*,*"
+    }
+
+    return getJSONObject(J_DP_DATA)
+        .run {
+            val keyType = getDataMapTypeParameter(getJSONObject(J_DOMAIN).getString(J_TYPE))
+            val valueType = getDataMapTypeParameter(getJSONObject(J_VALUES).getString(J_TYPE))
+
+            "$keyType,$valueType"
+        }
+}
+
+private fun getDataMapTypeParameter(type: String): String =
+    when {
+        type == JS_BOOLEAN -> type
+
+        type == "yfiles.collections.IComparer<T>" -> "yfiles.collections.IComparer<*>"
+        "." in type -> type
+
+        else -> "*"
+    }
 
 private fun fixDataMaps(source: Source) {
     MAP_INTERFACES.forEach {
