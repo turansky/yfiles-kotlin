@@ -52,7 +52,7 @@ private fun fixDataProvider(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it.getString(J_TYPE) == IDATA_PROVIDER }
-        .forEach { it.put(J_TYPE, "$IDATA_PROVIDER<*, *>") }
+        .forEach { it.put(J_TYPE, "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>") }
 
     source.type("DataProviderBase")
         .addKeyValueTypeParameters()
@@ -66,6 +66,15 @@ private fun fixDataProvider(source: Source) {
         source.type(className)
             .getJSONArray(J_IMPLEMENTS)
             .apply { put(indexOf(IDATA_PROVIDER), "$IDATA_PROVIDER<$typeParameters>") }
+    }
+}
+
+private fun JSONObject.getDataProviderTypeParameters(): String {
+    val name = optString(J_NAME)
+    return if (!has(J_DP_DATA) && name == "subtreeShapeProvider" || name == "nodeShapeProvider") {
+        "$NODE,yfiles.tree.SubtreeShape"
+    } else {
+        getDefaultTypeParameters()
     }
 }
 
@@ -102,7 +111,7 @@ private fun fixDataMap(source: Source) {
 }
 
 private fun JSONObject.getDataMapTypeParameters(): String =
-    if (optString(J_NAME) == "connectorMap") {
+    if (!has(J_DP_DATA) && optString(J_NAME) == "connectorMap") {
         "$NODE,yfiles.tree.ParentConnectorDirection"
     } else {
         getDefaultTypeParameters()
