@@ -148,7 +148,27 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "connectorMap" -> "yfiles.tree.ParentConnectorDirection"
         "busIDAcceptor" -> YID
 
-        else -> "*"
+        "eCapDP",
+        "edgeLength",
+        "keys",
+        "layerId",
+        "lCapDP",
+        "minLength",
+        "normalizedLayerId",
+        "uCapDP",
+        "w",
+        "weight" -> INT
+
+        "cost",
+        "cost0DP",
+        "costDP",
+        "edgeCost",
+        "edgeCosts",
+        "edgeWeights",
+        "heuristicCost",
+        "supplyDP" -> DOUBLE
+
+        else -> throw IllegalArgumentException("No type parameter for data map: $name")
     }
 
 private fun fixDataMaps(source: Source) {
