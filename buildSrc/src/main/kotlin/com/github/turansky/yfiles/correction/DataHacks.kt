@@ -114,16 +114,7 @@ private fun fixDataMaps(source: Source) {
         .flatMap { it.getTypeHolders() }
         .filter { it.getString(J_TYPE) in MAP_INTERFACES }
         .forEach {
-            var typeParameter = "*"
-            if (it.has(J_DP_DATA)) {
-                val valueType = it.getJSONObject(J_DP_DATA)
-                    .getJSONObject(J_VALUES)
-                    .getString(J_TYPE)
-
-                if (valueType == JS_BOOLEAN || "." in valueType) {
-                    typeParameter = valueType
-                }
-            }
+            val typeParameter = it.getDataMapsTypeParameter()
             it.put(J_TYPE, it.getString(J_TYPE) + "<$typeParameter>")
         }
 
@@ -134,6 +125,22 @@ private fun fixDataMaps(source: Source) {
             MAP_INTERFACES.find { it in type }
                 ?.also { property.put(J_TYPE, type.replace(it, "$it<*>")) }
         }
+}
+
+fun JSONObject.getDataMapsTypeParameter(): String {
+    if (!has(J_DP_DATA)) {
+        return "*"
+    }
+
+    val type = getJSONObject(J_DP_DATA)
+        .getJSONObject(J_VALUES)
+        .getString(J_TYPE)
+
+    return when {
+        type == JS_BOOLEAN -> type
+        "." in type -> type
+        else -> "*"
+    }
 }
 
 private fun fixMethodTypes(source: Source) {
