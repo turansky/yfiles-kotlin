@@ -6,7 +6,7 @@ import org.json.JSONObject
 internal fun applyComparableHacks(source: Source) {
     source.type("IComparable")
         .apply {
-            setSingleTypeParameter()
+            setSingleTypeParameter(bound = "IComparable<T>")
             configureCompareTo("T")
         }
 
