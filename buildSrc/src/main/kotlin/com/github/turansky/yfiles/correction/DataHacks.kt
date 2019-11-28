@@ -6,6 +6,8 @@ import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
+    fixGraph(source)
+
     fixDataProvider(source)
     fixDataAcceptor(source)
     fixDataMap(source)
@@ -44,6 +46,35 @@ private val DATA_MAP_TYPE_MAP = mapOf(
 
     "DataMapAdapter" to "K,V"
 )
+
+private fun fixGraph(source: Source) {
+    val methods = source.type("Graph")
+        .getJSONArray(J_METHODS)
+
+    methods.firstWithName("getDataProvider").apply {
+        addKeyValueTypeParameters()
+        firstParameter.put(J_TYPE, "DpKeyBase<K,V>")
+
+        getJSONObject(J_RETURNS)
+            .addGeneric("K,V")
+    }
+
+    methods.firstWithName("addDataProvider").apply {
+        addKeyValueTypeParameters()
+        firstParameter.put(J_TYPE, "DpKeyBase<K,V>")
+
+        secondParameter.addGeneric("K,V")
+    }
+
+    sequenceOf("createEdgeMap", "createNodeMap")
+        .map { methods.firstWithName(it) }
+        .forEach {
+            it.setSingleTypeParameter("V", JS_OBJECT)
+
+            it.getJSONObject(J_RETURNS)
+                .addGeneric("V")
+        }
+}
 
 private fun fixDataProvider(source: Source) {
     source.type(IDATA_PROVIDER.substringAfterLast("."))
