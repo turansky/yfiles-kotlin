@@ -28,3 +28,7 @@ val EDGE_LABEL_CANDIDATE = "yfiles.layout.EdgeLabelCandidate"
 
 val OBSTACLE = "yfiles.router.Obstacle"
 val PARTITION_CELL = "yfiles.router.PartitionCell"
+
+val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
+val IDATA_ACCEPTOR = "yfiles.algorithms.IDataAcceptor"
+val IDATA_MAP = "yfiles.algorithms.IDataMap"

@@ -1,14 +1,13 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.YID
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
 
 internal fun applyDpataHacks(source: Source) {
     fixGraph(source)
     fixLayoutGraphAdapter(source)
     fixTreeLayout(source)
+    fixGraphPartitionManager(source)
 }
 
 private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
@@ -77,4 +76,13 @@ private fun fixTreeLayout(source: Source) {
         properties.firstWithName(propertyName)
             .addGeneric("$EDGE,$valueType")
     }
+}
+
+private fun fixGraphPartitionManager(source: Source) {
+    val type = source.type("GraphPartitionManager")
+    (type.optJsequence(CONSTRUCTORS) + type.optJsequence(METHODS))
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME] == "partitionId" }
+        .filter { it[TYPE] == IDATA_PROVIDER }
+        .forEach { it.addGeneric("$GRAPH_OBJECT,$YID") }
 }

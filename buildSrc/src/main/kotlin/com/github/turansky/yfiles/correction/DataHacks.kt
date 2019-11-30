@@ -13,10 +13,6 @@ internal fun applyDataHacks(source: Source) {
     fixMethodTypes(source)
 }
 
-private val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
-private val IDATA_ACCEPTOR = "yfiles.algorithms.IDataAcceptor"
-private val IDATA_MAP = "yfiles.algorithms.IDataMap"
-
 private val MAP_INTERFACES = setOf(
     "yfiles.algorithms.IEdgeMap",
     "yfiles.algorithms.INodeMap"

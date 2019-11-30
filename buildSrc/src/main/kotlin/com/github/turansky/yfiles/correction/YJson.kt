@@ -160,6 +160,15 @@ internal fun JSONObject.optJsequence(key: JArrayKey): Sequence<JSONObject> =
 internal fun Sequence<JSONObject>.jsequence(key: JArrayKey): Sequence<JSONObject> =
     flatMap { it.jsequence(key) }
 
+internal fun Sequence<JSONObject>.optFlatMap(key: JArrayKey): Sequence<JSONObject> =
+    flatMap {
+        if (it.has(key)) {
+            it.jsequence(key)
+        } else {
+            emptySequence()
+        }
+    }
+
 internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
     if (has(key)) {
         jsequence(key)
