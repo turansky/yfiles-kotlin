@@ -399,7 +399,7 @@ private fun fieldToProperties(source: Source) {
                 val properties = type[J_PROPERTIES]
                 fields.forEach { properties.put(it) }
             } else {
-                type.put(J_PROPERTIES, fields)
+                type[J_PROPERTIES] = fields
             }
             type.strictRemove(J_FIELDS)
         }
@@ -409,7 +409,7 @@ private fun JSONObject.addMethod(
     methodData: MethodData
 ) {
     if (!has(J_METHODS)) {
-        put(J_METHODS, emptyList<Any>())
+        set(J_METHODS, emptyList<Any>())
     }
 
     val result = methodData.result
@@ -461,10 +461,5 @@ private fun fixMethodGenericBounds(source: Source) {
         .filter { it[J_NAME] in methodNames }
         .map { it[J_TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
-        .forEach {
-            it.put(
-                J_BOUNDS,
-                arrayOf(IMODEL_ITEM)
-            )
-        }
+        .forEach { it[J_BOUNDS] = arrayOf(IMODEL_ITEM) }
 }

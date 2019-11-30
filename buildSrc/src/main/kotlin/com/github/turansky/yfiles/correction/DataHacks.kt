@@ -91,7 +91,7 @@ private fun fixDataProvider(source: Source) {
     source.type("MapperDataProviderAdapter")
         .get(J_TYPE_PARAMETERS)
         .getJSONObject(1)
-        .put(J_BOUNDS, arrayOf(JS_OBJECT))
+        .set(J_BOUNDS, arrayOf(JS_OBJECT))
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
@@ -312,7 +312,7 @@ private fun fixMethodTypes(source: Source) {
 }
 
 private fun JSONObject.addKeyValueTypeParameters() {
-    put(
+    set(
         J_TYPE_PARAMETERS,
         jArray(
             typeParameter("K", JS_OBJECT),

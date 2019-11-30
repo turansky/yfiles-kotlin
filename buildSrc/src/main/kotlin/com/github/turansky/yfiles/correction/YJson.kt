@@ -89,7 +89,7 @@ internal fun JSONObject.setSingleTypeParameter(
     name: String = "T",
     bound: String? = null
 ) {
-    put(
+    set(
         J_TYPE_PARAMETERS,
         jArray(
             typeParameter(name, bound)
@@ -106,14 +106,14 @@ internal fun JSONObject.addFirstTypeParameter(
 
     parameters.add(0, typeParameter(name, bound))
 
-    put(J_TYPE_PARAMETERS, parameters.toList())
+    set(J_TYPE_PARAMETERS, parameters.toList())
 }
 
 internal fun JSONObject.setTypeParameters(
     name1: String,
     name2: String
 ) {
-    put(
+    set(
         J_TYPE_PARAMETERS,
         jArray(
             typeParameter(name1),
@@ -128,7 +128,7 @@ internal fun typeParameter(
 ): JSONObject =
     jObject(J_NAME to name).apply {
         if (bound != null) {
-            put(J_BOUNDS, arrayOf(bound))
+            set(J_BOUNDS, arrayOf(bound))
         }
     }
 

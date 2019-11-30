@@ -351,7 +351,7 @@ private fun addClassBounds(source: Source) {
                         "yfiles.graph.ItemChangedEventArgs" -> "yfiles.graph.ITagOwner"
                         else -> IMODEL_ITEM
                     }
-                    it.put(J_BOUNDS, arrayOf(bound))
+                    it[J_BOUNDS] = arrayOf(bound)
                 }
         }
 
@@ -383,19 +383,19 @@ private fun addClassBounds(source: Source) {
 
         "ItemSelectionChangedEventArgs"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
-        .forEach { it.put(J_BOUNDS, arrayOf(IMODEL_ITEM)) }
+        .forEach { it[J_BOUNDS] = arrayOf(IMODEL_ITEM) }
 
     source.type("ResultItemMapping")
         .jsequence(J_TYPE_PARAMETERS)
         .first()
-        .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
+        .set(J_BOUNDS, arrayOf(IMODEL_ITEM))
 
     source.type("GraphModelManager")
         .jsequence(J_METHODS)
         .first { it[J_NAME] == "createHitTester" }
         .jsequence(J_TYPE_PARAMETERS)
         .single()
-        .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
+        .set(J_BOUNDS, arrayOf(IMODEL_ITEM))
 
     source.types(
         "ResultItemCollection",
@@ -408,14 +408,14 @@ private fun addClassBounds(source: Source) {
 
         "Future"
     ).map { it.jsequence(J_TYPE_PARAMETERS).single() }
-        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
+        .forEach { it[J_BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types(
         "ResultItemMapping",
         "GraphBuilderItemEventArgs",
         "ItemChangedEventArgs"
     ).map { it[J_TYPE_PARAMETERS].get(1) as JSONObject }
-        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
+        .forEach { it[J_BOUNDS] = arrayOf(JS_OBJECT) }
 }
 
 private fun addTypeParameterBounds(source: Source) {
@@ -433,10 +433,9 @@ private fun addTypeParameterBounds(source: Source) {
                 it.jsequence(J_TYPE_PARAMETERS)
                     .filter { !it.has(J_BOUNDS) }
                     .forEach {
-                        val name = it[J_NAME]
-                        val bound = boundMap.get(name)
+                        val bound = boundMap[it[J_NAME]]
                         if (bound != null) {
-                            it.put(J_BOUNDS, arrayOf(bound))
+                            it[J_BOUNDS] = arrayOf(bound)
                         }
                     }
             }
@@ -457,7 +456,7 @@ private fun addTypeParameterBounds(source: Source) {
                         val name = it[J_NAME]
                         val bound = boundMap.get(name)
                         if (bound != null) {
-                            it.put(J_BOUNDS, arrayOf(bound))
+                            it[J_BOUNDS] = arrayOf(bound)
                         }
                     }
             }
@@ -469,9 +468,7 @@ private fun addTypeParameterBounds(source: Source) {
     ).jsequence(J_METHODS)
         .filter { "Metadata" in it[J_NAME] }
         .jsequence(J_TYPE_PARAMETERS)
-        .forEach {
-            it.put(J_BOUNDS, arrayOf(JS_OBJECT))
-        }
+        .forEach { it[J_BOUNDS] = arrayOf(JS_OBJECT) }
 }
 
 private val JSONObject.classBoundPair: Pair<String, String>?
@@ -515,7 +512,7 @@ private fun addMapClassBounds(source: Source) {
         "IMapper",
         "Mapper"
     ).map { it.jsequence(J_TYPE_PARAMETERS).first() }
-        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
+        .forEach { it[J_BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types()
         .flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
@@ -523,5 +520,5 @@ private fun addMapClassBounds(source: Source) {
         .map { it.jsequence(J_TYPE_PARAMETERS).first() }
         .filterNot { it.has(J_BOUNDS) }
         .filter { it[J_NAME] == "K" }
-        .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
+        .forEach { it[J_BOUNDS] = arrayOf(JS_OBJECT) }
 }

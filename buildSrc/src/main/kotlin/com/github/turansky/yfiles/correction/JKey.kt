@@ -69,14 +69,14 @@ internal operator fun JSONObject.set(key: JStringKey, value: String) {
     put(key.name, value)
 }
 
-internal fun JSONObject.put(key: JArrayKey, value: Array<*>) {
+internal operator fun JSONObject.set(key: JArrayKey, value: Array<*>) {
     put(key.name, value)
 }
 
-internal fun JSONObject.put(key: JArrayKey, value: List<*>) {
+internal operator fun JSONObject.set(key: JArrayKey, value: List<*>) {
     put(key.name, value)
 }
 
-internal fun JSONObject.put(key: JArrayKey, value: JSONArray) {
+internal operator fun JSONObject.set(key: JArrayKey, value: JSONArray) {
     put(key.name, value)
 }

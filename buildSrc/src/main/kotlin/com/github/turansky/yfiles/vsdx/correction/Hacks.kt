@@ -121,13 +121,11 @@ private fun fixPackage(source: VsdxSource) {
     source.types()
         .filter { it.has(J_IMPLEMENTS) }
         .forEach {
-            val implementedTypes = it[J_IMPLEMENTS]
+            it[J_IMPLEMENTS] = it[J_IMPLEMENTS]
                 .asSequence()
                 .map { it as String }
                 .map { it.fixVsdxPackage() }
                 .toList()
-
-            it.put(J_IMPLEMENTS, implementedTypes)
         }
 
     source.functionSignatures.apply {
@@ -182,13 +180,11 @@ private fun fixTypes(source: VsdxSource) {
     source.types()
         .filter { it.has(J_IMPLEMENTS) }
         .forEach {
-            val implementedTypes = it[J_IMPLEMENTS]
+            it[J_IMPLEMENTS] = it[J_IMPLEMENTS]
                 .asSequence()
                 .map { it as String }
                 .map { getFixedType(it) }
                 .toList()
-
-            it.put(J_IMPLEMENTS, implementedTypes)
         }
 
     source.types()
