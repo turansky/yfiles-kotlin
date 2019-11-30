@@ -176,7 +176,7 @@ private fun fixPropertyNullability(source: Source) {
 private fun fixConstructorParameterName(source: Source) {
     source.type("TimeSpan")
         .flatMap(CONSTRUCTORS)
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .single { it[NAME] == "millis" }
         .set(NAME, "milliseconds")
 }
@@ -192,7 +192,7 @@ private fun fixMethodParameterName(source: Source) {
     source.type("RankAssignmentAlgorithm")
         .flatMap(STATIC_METHODS)
         .filter { it[NAME] == "simplex" }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .single { it[NAME] == "_root" }
         .set(NAME, "root")
 }

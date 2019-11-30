@@ -37,9 +37,9 @@ internal fun applyComparableHacks(source: Source) {
         "DefaultOutEdgeComparer",
         "NodeOrderComparer",
         "NodeWeightComparer"
-    ).jsequence(METHODS)
+    ).flatMap(METHODS)
         .filter { it[NAME] == "compare" }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .forEach { it.changeNullability(false) }
 }
 

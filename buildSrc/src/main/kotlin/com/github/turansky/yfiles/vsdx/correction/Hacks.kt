@@ -263,7 +263,7 @@ private fun fixGeneric(source: VsdxSource) {
 
 private fun fixMethodModifier(source: VsdxSource) {
     source.types("IMasterProvider", "IShapeProcessingStep")
-        .jsequence(METHODS)
+        .flatMap(METHODS)
         .forEach { it[MODIFIERS].put(ABSTRACT) }
 }
 
@@ -292,7 +292,7 @@ private fun JSONObject.fixSummary() {
 private fun fixSummary(source: VsdxSource) {
     source.type("VsdxExport")
         .flatMap(METHODS)
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filter { it.has(SUMMARY) }
         .forEach {
             it[SUMMARY] = it[SUMMARY]

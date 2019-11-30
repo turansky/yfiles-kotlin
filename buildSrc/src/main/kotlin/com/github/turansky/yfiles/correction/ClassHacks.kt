@@ -284,7 +284,7 @@ private fun addMapperMetadataGeneric(source: Source) {
     type.setTypeParameters("TKey", "TValue")
 
     type.flatMap(CONSTRUCTORS)
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filter { it[NAME] == "metadata" }
         .forEach { it.addGeneric("TKey,TValue") }
 
@@ -464,9 +464,9 @@ private fun addTypeParameterBounds(source: Source) {
     source.types(
         "IMapperRegistry",
         "MapperRegistry"
-    ).jsequence(METHODS)
+    ).flatMap(METHODS)
         .filter { "Metadata" in it[NAME] }
-        .jsequence(TYPE_PARAMETERS)
+        .flatMap(TYPE_PARAMETERS)
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 }
 

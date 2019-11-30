@@ -9,7 +9,7 @@ internal class VsdxSource(private val api: JSONObject) {
 
     private val types: List<JSONObject> = api
         .flatMap(NAMESPACES)
-        .jsequence(TYPES)
+        .flatMap(TYPES)
         .toList()
 
     private val typeMap = types.associateBy { it.uid }

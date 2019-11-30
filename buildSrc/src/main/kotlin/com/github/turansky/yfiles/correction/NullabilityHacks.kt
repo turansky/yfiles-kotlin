@@ -72,7 +72,7 @@ private fun fixConstructorNullability(source: Source) {
         "ItemModelManager",
         "CollectionModelManager"
     ).flatMap { it.flatMap(CONSTRUCTORS) }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filter { it[TYPE].startsWith(YCLASS) }
         .filter { it[NAME] != "deserializerTargetType" }
         .forEach { it.changeNullability(false) }
@@ -341,11 +341,11 @@ private fun fixAlgorithmsNullability(source: Source) {
         "TransitivityAlgorithm",
         "TreeAlgorithm",
         "TriangulationAlgorithm"
-    ).jsequence(STATIC_METHODS)
+    ).flatMap(STATIC_METHODS)
         .filter { it.has(PARAMETERS) }
         .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
         .filterNot { it[NAME] in excludedMethods }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filterNot { it[NAME] in excludedParameters }
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -406,7 +406,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "YVector"
     ).flatMap { it.flatMap(METHODS) + it.flatMap(STATIC_METHODS) + it.flatMap(CONSTRUCTORS) }
         .filter { it[ID] in yMethodIds || it.get(NAME) in yMethods }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -458,11 +458,11 @@ private fun fixLayoutNullability(source: Source) {
         "NormalizeGraphElementOrderStage",
         "PortConstraint",
         "Swimlanes"
-    ).jsequence(STATIC_METHODS)
+    ).flatMap(STATIC_METHODS)
         .filter { it.has(PARAMETERS) }
         .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
         .filterNot { it[NAME] in excludedMethods }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
@@ -722,10 +722,10 @@ private fun fixRouterNullability(source: Source) {
 
     source.types(
         "BusRepresentations"
-    ).jsequence(STATIC_METHODS)
+    ).flatMap(STATIC_METHODS)
         .filter { it.has(PARAMETERS) }
         .filterNot { it[NAME] in excludedMethods }
-        .jsequence(PARAMETERS)
+        .flatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 

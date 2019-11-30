@@ -80,7 +80,7 @@ private fun fixMethodParameter(source: Source) {
         "Graph",
         "LayoutGraph",
         "DefaultLayoutGraph"
-    ).jsequence(CONSTRUCTORS)
+    ).flatMap(CONSTRUCTORS)
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] in nodeParameterNames }
         .forEach { it.fixTypeGeneric(NODE) }

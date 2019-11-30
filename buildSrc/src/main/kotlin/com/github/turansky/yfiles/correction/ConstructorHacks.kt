@@ -32,7 +32,7 @@ private fun fixOptionality(source: Source) {
         "MultiPageLayout",
         "OrganicPartitionGridLayoutStage",
         "TreeComponentLayout"
-    ).jsequence(CONSTRUCTORS)
+    ).flatMap(CONSTRUCTORS)
         .filter { it.has(PARAMETERS) }
         .filter { it[PARAMETERS].length() == 1 }
         .map { it.firstParameter }

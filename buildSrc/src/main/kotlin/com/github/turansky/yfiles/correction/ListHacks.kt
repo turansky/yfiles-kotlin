@@ -86,7 +86,7 @@ private fun fixReturnType(source: Source) {
         "IObstaclePartition",
         "DynamicObstacleDecomposition",
         "GraphPartition"
-    ).jsequence(METHODS)
+    ).flatMap(METHODS)
         .forEach {
             val generic = when (it[NAME]) {
                 "getCells",
