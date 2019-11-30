@@ -30,4 +30,9 @@ internal fun applyIncrementalHintHacks(source: Source) {
             .get(RETURNS)
             .also { it[TYPE] = it[TYPE].replace(",$JS_ANY>", ",$INCREMENTAL_HINT>") }
     }
+
+    source.types("HierarchicLayout", "HierarchicLayoutCore")
+        .map { it[CONSTANTS] }
+        .map { it.firstWithName("INCREMENTAL_HINTS_DP_KEY") }
+        .forEach { it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$INCREMENTAL_HINT>") }
 }
