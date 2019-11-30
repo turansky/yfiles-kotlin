@@ -7,6 +7,7 @@ import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
     fixGraph(source)
+    fixLayoutGraphAdapter(source)
 
     fixDataProvider(source)
     fixDataAcceptor(source)
@@ -15,6 +16,8 @@ internal fun applyDataHacks(source: Source) {
 
     fixMethodTypes(source)
 }
+
+private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
 
 private val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
 private val IDATA_ACCEPTOR = "yfiles.algorithms.IDataAcceptor"
@@ -53,7 +56,7 @@ private fun fixGraph(source: Source) {
 
     methods.firstWithName("getDataProvider").apply {
         addKeyValueTypeParameters()
-        firstParameter[TYPE] = "DpKeyBase<K,V>"
+        firstParameter[TYPE] = GENERIC_DP_KEY
 
         get(RETURNS)
             .addGeneric("K,V")
@@ -61,7 +64,7 @@ private fun fixGraph(source: Source) {
 
     methods.firstWithName("addDataProvider").apply {
         addKeyValueTypeParameters()
-        firstParameter[TYPE] = "DpKeyBase<K,V>"
+        firstParameter[TYPE] = GENERIC_DP_KEY
 
         secondParameter.addGeneric("K,V")
     }
@@ -74,6 +77,28 @@ private fun fixGraph(source: Source) {
             it[RETURNS]
                 .addGeneric("V")
         }
+}
+
+private fun fixLayoutGraphAdapter(source: Source) {
+    val methods = source.type("LayoutGraphAdapter")
+        .get(METHODS)
+
+    methods.firstWithName("getDataProvider").apply {
+        addKeyValueTypeParameters()
+        firstParameter[TYPE] = GENERIC_DP_KEY
+
+        get(RETURNS)
+            .addGeneric("K,V")
+    }
+
+    methods.firstWithName("addDataProvider").apply {
+        get(PARAMETERS)
+            .firstWithName("dataKey")
+            .set(TYPE, GENERIC_DP_KEY)
+
+        get(RETURNS)
+            .addGeneric("K,V")
+    }
 }
 
 private fun fixDataProvider(source: Source) {
