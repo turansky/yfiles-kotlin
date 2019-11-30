@@ -75,7 +75,7 @@ private fun removeUnusedFunctionSignatures(source: Source) {
 
 private fun fixUnionMethods(source: Source) {
     val methods = source.type("GraphModelManager")
-        .getJSONArray(J_METHODS)
+        .get(J_METHODS)
 
     val unionMethods = methods
         .asSequence()
@@ -100,7 +100,7 @@ private fun fixUnionMethods(source: Source) {
 
 private fun fixConstantGenerics(source: Source) {
     source.type("IListEnumerable")
-        .getJSONArray(J_CONSTANTS)
+        .get(J_CONSTANTS)
         .firstWithName("EMPTY")
         .also {
             val type = it.getString(J_TYPE)
@@ -126,7 +126,7 @@ private fun fixFunctionGenerics(source: Source) {
 
     source.type("List")
         .staticMethod("from")
-        .getJSONArray(J_TYPE_PARAMETERS)
+        .get(J_TYPE_PARAMETERS)
         .put(jObject(J_NAME to "T"))
 
     source.type("IContextLookupChainLink")
@@ -139,7 +139,7 @@ private fun fixFunctionGenerics(source: Source) {
 
 private fun fixReturnType(source: Source) {
     source.type("SvgExport").apply {
-        getJSONArray(J_METHODS)
+        get(J_METHODS)
             .firstWithName("exportSvg")
             .getJSONObject(J_RETURNS)
             .put(J_TYPE, JS_SVG_SVG_ELEMENT)
@@ -163,7 +163,7 @@ private fun fixPropertyNullability(source: Source) {
     }
 
     source.type("SvgVisualGroup")
-        .getJSONArray(J_PROPERTIES)
+        .get(J_PROPERTIES)
         .firstWithName("children")
         .apply {
             require(getString(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
@@ -213,8 +213,8 @@ private fun fixMethodParameterNullability(source: Source) {
     source.types()
         .optionalArray(J_METHODS)
         .filter { it.getString(J_NAME) in BROKEN_NULLABILITY_METHODS }
-        .filter { it.getJSONArray(J_PARAMETERS).length() == 1 }
-        .map { it.getJSONArray(J_PARAMETERS).single() }
+        .filter { it[J_PARAMETERS].length() == 1 }
+        .map { it[J_PARAMETERS].single() }
         .map { it as JSONObject }
         .onEach { require(it.getString(J_TYPE) == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
@@ -285,7 +285,7 @@ private fun removeDuplicatedProperties(source: Source) {
         .forEach { declaration ->
             val properties = source
                 .type(declaration.className)
-                .getJSONArray(J_PROPERTIES)
+                .get(J_PROPERTIES)
 
             val property = properties
                 .firstWithName(declaration.propertyName)
@@ -299,7 +299,7 @@ private fun removeDuplicatedMethods(source: Source) {
         .forEach { declaration ->
             val methods = source
                 .type(declaration.className)
-                .getJSONArray(J_METHODS)
+                .get(J_METHODS)
 
             val method = methods
                 .firstWithName(declaration.methodName)
@@ -312,7 +312,7 @@ private fun removeSystemMethods(source: Source) {
     source.types()
         .filter { it.has(J_METHODS) }
         .forEach {
-            val methods = it.getJSONArray(J_METHODS)
+            val methods = it[J_METHODS]
             val systemMetods = methods.asSequence()
                 .map { it as JSONObject }
                 .filter { it.getString(J_NAME) in SYSTEM_FUNCTIONS }
@@ -334,10 +334,10 @@ private fun removeArtifitialParameters(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .forEach {
             val artifitialParameters = it.jsequence(J_PARAMETERS)
-                .filter { it.getJSONArray(J_MODIFIERS).contains(ARTIFICIAL) }
+                .filter { it[J_MODIFIERS].contains(ARTIFICIAL) }
                 .toList()
 
-            val parameters = it.getJSONArray(J_PARAMETERS)
+            val parameters = it[J_PARAMETERS]
             artifitialParameters.forEach {
                 parameters.removeItem(it)
             }
@@ -361,7 +361,7 @@ private fun removeThisParameters(source: Source) {
                 .jsequence(parameter)
         }
         .filter { it.has(J_PARAMETERS) }
-        .map { it.getJSONArray(J_PARAMETERS) }
+        .map { it[J_PARAMETERS] }
         .filter { it.length() > 0 }
         .onEach {
             if ((it.last() as JSONObject).getString(J_NAME) == "thisArg") {
@@ -392,15 +392,15 @@ private fun fieldToProperties(source: Source) {
     source.types()
         .filter { it.has(J_FIELDS) }
         .forEach { type ->
-            val fields = type.getJSONArray(J_FIELDS).apply {
+            val fields = type[J_FIELDS].apply {
                 asSequence()
                     .map { it as JSONObject }
-                    .map { it.getJSONArray(J_MODIFIERS) }
+                    .map { it[J_MODIFIERS] }
                     .forEach { it.put(if (FINAL in it) RO else FINAL) }
             }
 
             if (type.has(J_PROPERTIES)) {
-                val properties = type.getJSONArray(J_PROPERTIES)
+                val properties = type[J_PROPERTIES]
                 fields.forEach { properties.put(it) }
             } else {
                 type.put(J_PROPERTIES, fields)
@@ -422,7 +422,7 @@ private fun JSONObject.addMethod(
         modifiers += result.modifiers
     }
 
-    getJSONArray(J_METHODS)
+    get(J_METHODS)
         .put(
             mutableMapOf(
                 J_NAME to methodData.methodName,
@@ -463,7 +463,7 @@ private fun fixMethodGenericBounds(source: Source) {
     source.type("IFoldingView")
         .jsequence(J_METHODS)
         .filter { it.getString(J_NAME) in methodNames }
-        .map { it.getJSONArray(J_TYPE_PARAMETERS) }
+        .map { it[J_TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach {
             it.put(

@@ -23,7 +23,7 @@ internal fun correctNumbers(source: JSONObject) {
     (source
         .getJSONObject(J_FUNCTION_SIGNATURES)
         .getJSONObject("yfiles.view.AnimationCallback")
-        .getJSONArray(J_PARAMETERS)
+        .get(J_PARAMETERS)
         .single() as JSONObject)
         .put(J_TYPE, JS_DOUBLE)
 

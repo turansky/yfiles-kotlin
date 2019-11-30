@@ -23,7 +23,7 @@ internal fun applyComparableHacks(source: Source) {
         .forEach {
             val id = it.getString(J_ID)
 
-            val implements = it.getJSONArray(J_IMPLEMENTS)
+            val implements = it[J_IMPLEMENTS]
             implements.put(
                 implements.indexOf(ICOMPARABLE),
                 "$ICOMPARABLE<$id>"

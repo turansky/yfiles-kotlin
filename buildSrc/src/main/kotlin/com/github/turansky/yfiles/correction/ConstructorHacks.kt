@@ -34,7 +34,7 @@ private fun fixOptionality(source: Source) {
         "TreeComponentLayout"
     ).jsequence(J_CONSTRUCTORS)
         .filter { it.has(J_PARAMETERS) }
-        .filter { it.getJSONArray(J_PARAMETERS).length() == 1 }
+        .filter { it[J_PARAMETERS].length() == 1 }
         .map { it.firstParameter }
         .filter { it.getString(J_NAME).contains("core") }
         .forEach { it.changeOptionality(true) }
@@ -45,7 +45,7 @@ private fun mergeConstructors(type: JSONObject) {
         return
     }
 
-    val constructors = type.getJSONArray(J_CONSTRUCTORS)
+    val constructors = type[J_CONSTRUCTORS]
     if (constructors.length() != 2) {
         return
     }
@@ -61,9 +61,9 @@ private fun mergeConstructors(type: JSONObject) {
 
     constructors.removeItem(firstConstructor)
     secondConstructor
-        .getJSONArray(J_PARAMETERS)
+        .get(J_PARAMETERS)
         .let { it.getJSONObject(it.length() - 1) }
-        .getJSONArray(J_MODIFIERS)
+        .get(J_MODIFIERS)
         .put(OPTIONAL)
 }
 
@@ -95,7 +95,7 @@ private fun mergeRequired(
 
 private val JSONObject.parametersCount: Int
     get() = when {
-        has(J_PARAMETERS) -> getJSONArray(J_PARAMETERS).length()
+        has(J_PARAMETERS) -> get(J_PARAMETERS).length()
         else -> 0
     }
 

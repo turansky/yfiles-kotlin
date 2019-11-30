@@ -32,7 +32,7 @@ private fun fixProperty(source: Source) {
         Triple("RotatableNodePlacerBase", "createdChildren", NODE)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .getJSONArray(J_PROPERTIES)
+            .get(J_PROPERTIES)
             .firstWithName(propertyName)
             .fixTypeGeneric(generic)
     }

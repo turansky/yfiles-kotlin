@@ -121,7 +121,7 @@ private fun fixPackage(source: VsdxSource) {
     source.types()
         .filter { it.has(J_IMPLEMENTS) }
         .forEach {
-            val implementedTypes = it.getJSONArray(J_IMPLEMENTS)
+            val implementedTypes = it[J_IMPLEMENTS]
                 .asSequence()
                 .map { it as String }
                 .map { it.fixVsdxPackage() }
@@ -182,7 +182,7 @@ private fun fixTypes(source: VsdxSource) {
     source.types()
         .filter { it.has(J_IMPLEMENTS) }
         .forEach {
-            val implementedTypes = it.getJSONArray(J_IMPLEMENTS)
+            val implementedTypes = it[J_IMPLEMENTS]
                 .asSequence()
                 .map { it as String }
                 .map { getFixedType(it) }
@@ -269,7 +269,7 @@ private fun fixGeneric(source: VsdxSource) {
 private fun fixMethodModifier(source: VsdxSource) {
     source.types("IMasterProvider", "IShapeProcessingStep")
         .jsequence(J_METHODS)
-        .forEach { it.getJSONArray(J_MODIFIERS).put(ABSTRACT) }
+        .forEach { it[J_MODIFIERS].put(ABSTRACT) }
 }
 
 private val YFILES_API_REGEX = Regex("<a href=\"https://docs.yworks.com/yfileshtml/#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")

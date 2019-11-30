@@ -88,12 +88,12 @@ private fun fixClass(source: Source) {
     source.type("Class").apply {
         setSingleTypeParameter(bound = JS_OBJECT)
 
-        getJSONArray(J_METHODS)
+        get(J_METHODS)
             .firstWithName("newInstance")
             .getJSONObject(J_RETURNS)
             .put(J_TYPE, "T")
 
-        getJSONArray(J_STATIC_METHODS).apply {
+        get(J_STATIC_METHODS).apply {
             removeAll { true }
 
             put(
@@ -136,7 +136,7 @@ private fun addClassGeneric(source: Source) {
             it.getJSONObject(J_RETURNS)
                 .put(J_TYPE, "T")
 
-            it.getJSONArray(J_MODIFIERS)
+            it[J_MODIFIERS]
                 .put(CANBENULL)
         }
 
@@ -307,7 +307,7 @@ private fun addMapperMetadataGeneric(source: Source) {
         }
 
     source.type("MapperOutputHandler")
-        .getJSONArray(J_PROPERTIES)
+        .get(J_PROPERTIES)
         .firstWithName("mapperMetadata")
         .addGeneric("TKey,TData")
 
@@ -315,7 +315,7 @@ private fun addMapperMetadataGeneric(source: Source) {
         "IMapperRegistry",
         "MapperRegistry"
     ).forEach {
-        val methods = it.getJSONArray(J_METHODS)
+        val methods = it[J_METHODS]
         methods.firstWithName("getMapperMetadata")
             .apply {
                 setTypeParameters("K", "V")
@@ -415,7 +415,7 @@ private fun addClassBounds(source: Source) {
         "ResultItemMapping",
         "GraphBuilderItemEventArgs",
         "ItemChangedEventArgs"
-    ).map { it.getJSONArray(J_TYPE_PARAMETERS).get(1) as JSONObject }
+    ).map { it[J_TYPE_PARAMETERS].get(1) as JSONObject }
         .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
 }
 

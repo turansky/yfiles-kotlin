@@ -54,7 +54,7 @@ internal object J_VALUES : JObjectKey("values")
 
 internal fun JSONObject.has(key: JKey) = has(key.name)
 
-internal fun JSONObject.getJSONArray(key: JArrayKey): JSONArray = getJSONArray(key.name)
+internal operator fun JSONObject.get(key: JArrayKey): JSONArray = getJSONArray(key.name)
 
 internal fun JSONObject.getJSONObject(key: JObjectKey): JSONObject = getJSONObject(key.name)
 

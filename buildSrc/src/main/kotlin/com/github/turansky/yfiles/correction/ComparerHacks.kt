@@ -28,14 +28,14 @@ private fun fixComparerInheritors(source: Source) {
     ).forEach { (className, generic) ->
         source.type(className)
             .apply {
-                getJSONArray(J_IMPLEMENTS).apply {
+                get(J_IMPLEMENTS).apply {
                     require(length() == 1)
                     require(get(0) in DEFAULT_COMPARERS)
 
                     put(0, comparer(generic))
                 }
 
-                getJSONArray(J_METHODS)
+                get(J_METHODS)
                     .firstWithName("compare")
                     .jsequence(J_PARAMETERS)
                     .forEach { it.put(J_TYPE, generic) }
@@ -45,7 +45,7 @@ private fun fixComparerInheritors(source: Source) {
 
 private fun fixComparerUtilMethods(source: Source) {
     val staticMethods = source.type("Comparers")
-        .getJSONArray(J_STATIC_METHODS)
+        .get(J_STATIC_METHODS)
 
     sequenceOf(
         "createIntDataComparer" to GRAPH_OBJECT,
@@ -128,7 +128,7 @@ private fun fixComparerAsProperty(source: Source) {
         Triple("SwimlaneDescriptor", "comparer", SWIMLANE_DESCRIPTOR)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .getJSONArray(J_PROPERTIES)
+            .get(J_PROPERTIES)
             .firstWithName(propertyName)
             .fixTypeGeneric("in $generic")
     }
@@ -137,7 +137,7 @@ private fun fixComparerAsProperty(source: Source) {
         "TreeLayout",
         "SeriesParallelLayout"
     ).forEach {
-        it.getJSONArray(J_CONSTANTS)
+        it[J_CONSTANTS]
             .firstWithName("OUT_EDGE_COMPARER_DP_KEY")
             .apply {
                 require(getString(J_TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")

@@ -8,7 +8,7 @@ import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
 internal fun JSONObject.staticMethod(name: String): JSONObject =
-    getJSONArray(J_STATIC_METHODS)
+    get(J_STATIC_METHODS)
         .firstWithName(name)
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
@@ -30,10 +30,10 @@ internal fun JSONObject.methodParameters(
     parameterName: String,
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
-    val result = getJSONArray(J_METHODS)
+    val result = get(J_METHODS)
         .objects { it.getString(J_NAME) == methodName }
         .flatMap {
-            it.getJSONArray(J_PARAMETERS)
+            it[J_PARAMETERS]
                 .objects { it.getString(J_NAME) == parameterName }
                 .filter(parameterFilter)
         }
@@ -45,18 +45,18 @@ internal fun JSONObject.methodParameters(
 }
 
 internal fun JSONObject.method(methodName: String) =
-    getJSONArray(J_METHODS)
+    get(J_METHODS)
         .firstWithName(methodName)
 
 internal fun JSONObject.property(name: String): JSONObject =
-    getJSONArray(J_PROPERTIES)
+    get(J_PROPERTIES)
         .firstWithName(name)
 
 internal fun JSONObject.addProperty(
     propertyName: String,
     type: String
 ) {
-    getJSONArray(J_PROPERTIES)
+    get(J_PROPERTIES)
         .put(
             mapOf(
                 J_NAME to propertyName,
@@ -73,7 +73,7 @@ internal fun JSONObject.changeOptionality(optional: Boolean) =
     changeModifier(OPTIONAL, optional)
 
 private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
-    val modifiers = getJSONArray(J_MODIFIERS)
+    val modifiers = get(J_MODIFIERS)
     val index = modifiers.indexOf(modifier)
 
     require((index == -1) == value)
@@ -101,7 +101,7 @@ internal fun JSONObject.addFirstTypeParameter(
     name: String,
     bound: String? = null
 ) {
-    val parameters = getJSONArray(J_TYPE_PARAMETERS)
+    val parameters = get(J_TYPE_PARAMETERS)
         .toMutableList()
 
     parameters.add(0, typeParameter(name, bound))
@@ -171,11 +171,11 @@ internal fun JSONObject.parameter(name: String): JSONObject {
 }
 
 internal val JSONObject.firstParameter: JSONObject
-    get() = getJSONArray(J_PARAMETERS)
+    get() = get(J_PARAMETERS)
         .get(0) as JSONObject
 
 internal val JSONObject.secondParameter: JSONObject
-    get() = getJSONArray(J_PARAMETERS)
+    get() = get(J_PARAMETERS)
         .get(1) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {

@@ -49,7 +49,7 @@ private val DATA_MAP_TYPE_MAP = mapOf(
 
 private fun fixGraph(source: Source) {
     val methods = source.type("Graph")
-        .getJSONArray(J_METHODS)
+        .get(J_METHODS)
 
     methods.firstWithName("getDataProvider").apply {
         addKeyValueTypeParameters()
@@ -89,13 +89,13 @@ private fun fixDataProvider(source: Source) {
         .addKeyValueTypeParameters()
 
     source.type("MapperDataProviderAdapter")
-        .getJSONArray(J_TYPE_PARAMETERS)
+        .get(J_TYPE_PARAMETERS)
         .getJSONObject(1)
         .put(J_BOUNDS, arrayOf(JS_OBJECT))
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
-            .getJSONArray(J_IMPLEMENTS)
+            .get(J_IMPLEMENTS)
             .apply { put(indexOf(IDATA_PROVIDER), "$IDATA_PROVIDER<$typeParameters>") }
     }
 }
@@ -120,7 +120,7 @@ private fun fixDataAcceptor(source: Source) {
 
     for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
         source.type(className)
-            .getJSONArray(J_IMPLEMENTS)
+            .get(J_IMPLEMENTS)
             .apply { put(indexOf(IDATA_ACCEPTOR), "$IDATA_ACCEPTOR<$typeParameters>") }
     }
 }
@@ -136,7 +136,7 @@ private fun fixDataMap(source: Source) {
 
     for ((className, typeParameters) in DATA_MAP_TYPE_MAP) {
         source.type(className)
-            .getJSONArray(J_IMPLEMENTS)
+            .get(J_IMPLEMENTS)
             .apply { put(indexOf(IDATA_MAP), "$IDATA_MAP<$typeParameters>") }
     }
 }
@@ -290,7 +290,7 @@ private fun fixMethodTypes(source: Source) {
 
         "MapperDataProviderAdapter"
     ).forEach {
-        val typeParameters = it.getJSONArray(J_TYPE_PARAMETERS)
+        val typeParameters = it[J_TYPE_PARAMETERS]
         val keyTypeParameter = typeParameters.getJSONObject(0).getString(J_NAME)
         val valueTypeParameter = typeParameters.getJSONObject(1).getString(J_NAME)
 
@@ -302,7 +302,7 @@ private fun fixMethodTypes(source: Source) {
                     "get" -> it.getJSONObject(J_RETURNS)
                         .put(J_TYPE, valueTypeParameter)
 
-                    "set" -> it.getJSONArray(J_PARAMETERS)
+                    "set" -> it.get(J_PARAMETERS)
                         .firstWithName("value")
                         .put(J_TYPE, valueTypeParameter)
                 }

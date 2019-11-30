@@ -13,7 +13,7 @@ internal fun applyCloneableHacks(source: Source) {
 private fun fixClass(source: Source) {
     source.type("ICloneable").apply {
         setSingleTypeParameter(name = "out T", bound = "$ICLONEABLE<T>")
-        getJSONArray(J_METHODS)
+        get(J_METHODS)
             .firstWithName("clone")
             .getJSONObject(J_RETURNS)
             .put(J_TYPE, "T")
@@ -24,7 +24,7 @@ private fun fixImplementedType(source: Source) {
     source.types()
         .filter { it.has(J_IMPLEMENTS) }
         .forEach { type ->
-            type.getJSONArray(J_IMPLEMENTS).apply {
+            type[J_IMPLEMENTS].apply {
                 val index = indexOf(ICLONEABLE)
                 if (index != -1) {
                     if (type.hasCloneableSuperType(source)) {
@@ -58,13 +58,13 @@ private fun JSONObject.hasCloneableSuperType(source: Source): Boolean {
         return false
     }
 
-    return getJSONArray(J_IMPLEMENTS)
+    return get(J_IMPLEMENTS)
         .asSequence()
         .map { it as String }
         .map { it.toClassName() }
         .map { source.type(it) }
         .filter { it.has(J_IMPLEMENTS) }
-        .map { it.getJSONArray(J_IMPLEMENTS) }
+        .map { it[J_IMPLEMENTS] }
         .flatMap { it.asSequence() }
         .map { it as String }
         .any { it.startsWith(ICLONEABLE) }

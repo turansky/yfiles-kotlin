@@ -27,7 +27,7 @@ internal fun excludeUnusedTypes(api: JSONObject) {
         .jsequence(J_NAMESPACES)
         .optionalArray(J_NAMESPACES)
         .forEach {
-            val types = it.getJSONArray(J_TYPES)
+            val types = it[J_TYPES]
 
             val excludedTypes = types
                 .asSequence()

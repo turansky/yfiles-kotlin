@@ -27,7 +27,7 @@ private fun fixYList(source: Source) {
 private fun JSONObject.fixGeneric() {
     setSingleTypeParameter(bound = JS_ANY)
 
-    getJSONArray(J_IMPLEMENTS).apply {
+    get(J_IMPLEMENTS).apply {
         put(0, getString(0).replace("<$JS_ANY>", "<T>"))
     }
 

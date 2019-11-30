@@ -24,7 +24,7 @@ private fun fixCursor(source: Source) {
         "IPointCursor" to YPOINT
     ).forEach { (className, generic) ->
         source.type(className)
-            .getJSONArray(J_IMPLEMENTS).apply {
+            .get(J_IMPLEMENTS).apply {
                 put(0, getString(0) + "<$generic>")
             }
     }
@@ -67,8 +67,7 @@ private fun fixCursorUtil(source: Source) {
                     it.put(J_TYPE, type)
                 }
 
-            secondParameter
-                .getJSONArray(J_MODIFIERS)
+            secondParameter[J_MODIFIERS]
                 .put(OPTIONAL)
         }
     }
