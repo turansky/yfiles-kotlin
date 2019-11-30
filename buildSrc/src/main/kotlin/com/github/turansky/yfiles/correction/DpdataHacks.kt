@@ -9,10 +9,9 @@ internal fun applyDpataHacks(source: Source) {
     fixLayoutGraphAdapter(source)
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
-    fixHierarchicLayoutCore(source)
+    fixHierarchic(source)
     fixTriangulator(source)
     fixYGraphAdapter(source)
-    fixWeightedLayerer(source)
 
     fixDataProviders(source)
     fixMaps(source)
@@ -107,7 +106,7 @@ private fun fixGraphPartitionManager(source: Source) {
         .forEach { it.addGeneric("$GRAPH_OBJECT,$YID") }
 }
 
-private fun fixHierarchicLayoutCore(source: Source) {
+private fun fixHierarchic(source: Source) {
     val methods = source.type("HierarchicLayoutCore")[METHODS]
 
     sequenceOf(
@@ -119,6 +118,13 @@ private fun fixHierarchicLayoutCore(source: Source) {
         methods[methodName][RETURNS]
             .addGeneric(typeParameters)
     }
+
+    source.type("PortCandidateOptimizer")[METHODS]
+        .get("getPortCandidateSetDataProvider")[RETURNS]
+        .addGeneric("$NODE,yfiles.layout.PortCandidateSet")
+
+    source.type("WeightedLayerer")[PROPERTIES]["weight"]
+        .addGeneric("$EDGE,$JS_INT")
 }
 
 private fun fixTriangulator(source: Source) {
@@ -173,10 +179,6 @@ private fun fixYGraphAdapter(source: Source) {
             .map { it.firstParameter }
             .forEach { it.addGeneric("T") }
     }
-}
-
-private fun fixWeightedLayerer(source: Source) {
-    source.type("WeightedLayerer")[PROPERTIES]["weight"].addGeneric("$EDGE,$JS_INT")
 }
 
 private fun fixDataProviders(source: Source) {
