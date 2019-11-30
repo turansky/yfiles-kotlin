@@ -10,6 +10,7 @@ internal fun applyDpataHacks(source: Source) {
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
     fixHierarchicLayoutCore(source)
+    fixYGraphAdapter(source)
     fixWeightedLayerer(source)
 
     fixDataProviders(source)
@@ -107,6 +108,25 @@ private fun fixHierarchicLayoutCore(source: Source) {
     ).forEach { (methodName, typeParameters) ->
         methods[methodName][RETURNS]
             .addGeneric(typeParameters)
+    }
+}
+
+private fun fixYGraphAdapter(source: Source) {
+    val names = setOf(
+        "createDataMap",
+        "createDataProvider"
+    )
+
+    source.type("YGraphAdapter").also {
+        it.flatMap(METHODS)
+            .filter { it[NAME] in names }
+            .map { it[RETURNS] }
+            .forEach { it.addGeneric("K,V") }
+
+        it[METHODS]["createMapper"].also {
+            it[TYPE_PARAMETERS]["T"][BOUNDS] = arrayOf(JS_OBJECT)
+            it.firstParameter.addGeneric("$GRAPH_OBJECT,T")
+        }
     }
 }
 
