@@ -32,7 +32,7 @@ private fun JSONObject.fixGeneric() {
     }
 
     (jsequence(CONSTRUCTORS) + jsequence(METHODS))
-        .flatMap { it.optJsequence(PARAMETERS) + it.returnsSequence() }
+        .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
         .plus(jsequence(PROPERTIES))
         .forEach {
             val type = it[TYPE]
@@ -74,11 +74,11 @@ private fun fixMethodParameter(source: Source) {
         "IElementFactory",
         "DefaultElementFactory",
         "MultiPageLayout"
-    ).flatMap { it.optJsequence(METHODS) + it.optJsequence(STATIC_METHODS) }
+    ).flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .forEach {
             val methodName = it[NAME]
 
-            it.optJsequence(PARAMETERS)
+            it.optFlatMap(PARAMETERS)
                 .filter { it[TYPE] == YLIST }
                 .forEach {
                     val generic = getGeneric(methodName, it[NAME])

@@ -88,7 +88,7 @@ private fun fixTreeLayout(source: Source) {
 
 private fun fixGraphPartitionManager(source: Source) {
     val type = source.type("GraphPartitionManager")
-    (type.optJsequence(CONSTRUCTORS) + type.optJsequence(METHODS))
+    (type.optFlatMap(CONSTRUCTORS) + type.optFlatMap(METHODS))
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] == "partitionId" }
         .filter { it[TYPE] == IDATA_PROVIDER }

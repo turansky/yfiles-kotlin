@@ -57,8 +57,8 @@ private fun fixMethodParameter(source: Source) {
         "SegmentInfo",
 
         "RootNodeAlignment"
-    ).flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS) + it.optJsequence(STATIC_METHODS) }
-        .flatMap { it.optJsequence(PARAMETERS) }
+    ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .flatMap { it.optFlatMap(PARAMETERS) }
         .filter { it[TYPE] in DEFAULT_LISTS }
         .forEach {
             val generic = when (it[NAME]) {

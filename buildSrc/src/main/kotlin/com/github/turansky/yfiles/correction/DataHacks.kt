@@ -279,9 +279,9 @@ private fun JSONObject.getTypeParameterName(index: Int): String =
         .removePrefix("out ")
 
 private fun JSONObject.getTypeHolders() =
-    (optJsequence(CONSTRUCTORS) + optJsequence(STATIC_METHODS) + optJsequence(METHODS))
-        .flatMap { it.optJsequence(PARAMETERS) + it.returnsSequence() }
-        .plus(optJsequence(PROPERTIES))
+    (optFlatMap(CONSTRUCTORS) + optFlatMap(STATIC_METHODS) + optFlatMap(METHODS))
+        .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
+        .plus(optFlatMap(PROPERTIES))
 
 private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
     if (has(RETURNS)) {

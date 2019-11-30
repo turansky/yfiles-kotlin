@@ -75,11 +75,11 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "MultiComponentLayerer",
 
         "SwimlaneDescriptor"
-    ).flatMap { it.jsequence(METHODS) + it.optJsequence(STATIC_METHODS) + it.optJsequence(CONSTRUCTORS) }
+    ).flatMap { it.jsequence(METHODS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(CONSTRUCTORS) }
         .forEach {
             val methodName = it[NAME]
 
-            it.optJsequence(PARAMETERS)
+            it.optFlatMap(PARAMETERS)
                 .filter { it[TYPE] in DEFAULT_COMPARERS }
                 .forEach {
                     val generic = getGeneric(methodName, it[NAME])

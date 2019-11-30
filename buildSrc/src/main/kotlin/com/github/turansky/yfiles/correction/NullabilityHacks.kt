@@ -99,7 +99,7 @@ private fun fixPropertyNullability(source: Source) {
     }
 
     source.types()
-        .flatMap { it.optJsequence(PROPERTIES) }
+        .flatMap { it.optFlatMap(PROPERTIES) }
         .filter { it[NAME] == "coreLayout" || it.hasNullDefaultValue() }
         .forEach { it.changeNullability(true) }
 }
@@ -175,7 +175,7 @@ private fun fixCollectionsNullability(source: Source) {
             "Mapper" -> includedMethods = includedMethods - "delete"
         }
 
-        return (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        return (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filter { it[ID] in includedMethodIds || it.get(NAME) in includedMethods }
     }
 
@@ -351,8 +351,8 @@ private fun fixAlgorithmsNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
-            .plus(type.optJsequence(CONSTRUCTORS))
+        (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
+            .plus(type.optFlatMap(CONSTRUCTORS))
             .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
             .filterNot { it[NAME] in excludedMethods }
 
@@ -467,8 +467,8 @@ private fun fixLayoutNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.optJsequence(METHODS) + type.optJsequence(STATIC_METHODS))
-            .plus(type.optJsequence(CONSTRUCTORS))
+        (type.optFlatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+            .plus(type.optFlatMap(CONSTRUCTORS))
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -524,7 +524,7 @@ private fun fixCommonLayoutNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -560,7 +560,7 @@ private fun fixStageNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -599,7 +599,7 @@ private fun fixMultipageNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -646,7 +646,7 @@ private fun fixHierarchicNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
             .filterNot { it[NAME] in excludedMethods }
 
@@ -730,13 +730,13 @@ private fun fixRouterNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.optJsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        (type.optFlatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filterNot { it[NAME] in excludedMethods }
             .let {
                 if (type[NAME].endsWith("Router")) {
                     it
                 } else {
-                    it + type.optJsequence(CONSTRUCTORS)
+                    it + type.optFlatMap(CONSTRUCTORS)
                 }
             }
 
@@ -801,7 +801,7 @@ private fun fixTreeNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.jsequence(METHODS) + type.optJsequence(STATIC_METHODS))
+        (type.jsequence(METHODS) + type.optFlatMap(STATIC_METHODS))
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(

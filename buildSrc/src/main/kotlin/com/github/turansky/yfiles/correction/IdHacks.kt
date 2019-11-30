@@ -31,7 +31,7 @@ private val ID_DP_KEYS = setOf(
 
 internal fun applyIdHacks(source: Source) {
     source.types()
-        .flatMap { it.optJsequence(CONSTANTS) }
+        .flatMap { it.optFlatMap(CONSTANTS) }
         .filter { it[TYPE] in ID_DP_KEYS }
         .filter { it[NAME].endsWith("_ID_DP_KEY") }
         .forEach {
@@ -77,7 +77,7 @@ private fun looksLikeId(name: String): Boolean =
 private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .flatMap {
-            (it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS))
+            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS))
                 .optFlatMap(PARAMETERS)
-                .plus(it.optJsequence(PROPERTIES))
+                .plus(it.optFlatMap(PROPERTIES))
         }

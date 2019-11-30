@@ -4,7 +4,7 @@ import org.json.JSONObject
 
 internal fun applyEventHacks(source: Source) {
     source.types()
-        .flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS) }
+        .flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .plus(source.functionSignatures.run { keySet().map { getJSONObject(it) } })
         .optFlatMap(PARAMETERS)
         .forEach {

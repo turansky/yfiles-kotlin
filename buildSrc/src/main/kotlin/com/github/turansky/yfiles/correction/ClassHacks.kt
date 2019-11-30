@@ -344,7 +344,7 @@ private fun addClassBounds(source: Source) {
 
     source.types()
         .forEach { type ->
-            type.optJsequence(TYPE_PARAMETERS)
+            type.optFlatMap(TYPE_PARAMETERS)
                 .filter { it[NAME] in typeNames }
                 .forEach {
                     val bound = when (type[ID]) {
@@ -441,7 +441,7 @@ private fun addTypeParameterBounds(source: Source) {
         }
 
     source.types()
-        .flatMap { it.optJsequence(METHODS) + it.optJsequence(STATIC_METHODS) }
+        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .filter { it.has(TYPE_PARAMETERS) }
         .forEach {
             val boundMap = it.jsequence(PARAMETERS)
@@ -514,7 +514,7 @@ private fun addMapClassBounds(source: Source) {
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types()
-        .flatMap { it.optJsequence(METHODS) + it.optJsequence(STATIC_METHODS) }
+        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .filter { it.has(TYPE_PARAMETERS) }
         .map { it.jsequence(TYPE_PARAMETERS).first() }
         .filterNot { it.has(BOUNDS) }

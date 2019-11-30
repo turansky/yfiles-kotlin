@@ -189,15 +189,15 @@ private fun fixTypes(source: VsdxSource) {
 
     source.types()
         .flatMap {
-            (it.optJsequence(CONSTRUCTORS) + it.optJsequence(STATIC_METHODS) + it.optJsequence(METHODS))
+            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(METHODS))
                 .flatMap {
-                    it.optJsequence(PARAMETERS) + if (it.has(RETURNS)) {
+                    it.optFlatMap(PARAMETERS) + if (it.has(RETURNS)) {
                         sequenceOf(it[RETURNS])
                     } else {
                         emptySequence()
                     }
                 }
-                .plus(it.optJsequence(PROPERTIES))
+                .plus(it.optFlatMap(PROPERTIES))
         }
         .forEach { it.fixType() }
 
@@ -301,10 +301,10 @@ private fun fixSummary(source: VsdxSource) {
 
     source.types()
         .onEach { it.fixSummary() }
-        .onEach { it.optJsequence(PROPERTIES).forEach { it.fixSummary() } }
-        .flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(STATIC_METHODS) + it.optJsequence(METHODS) }
+        .onEach { it.optFlatMap(PROPERTIES).forEach { it.fixSummary() } }
+        .flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(METHODS) }
         .onEach { it.fixSummary() }
-        .flatMap { it.optJsequence(PARAMETERS) }
+        .flatMap { it.optFlatMap(PARAMETERS) }
         .forEach { it.fixSummary() }
 
     source.types()

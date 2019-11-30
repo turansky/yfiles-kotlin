@@ -147,7 +147,7 @@ internal fun JSONObject.jsequence(key: JArrayKey): Sequence<JSONObject> =
         .asSequence()
         .map { it as JSONObject }
 
-internal fun JSONObject.optJsequence(key: JArrayKey): Sequence<JSONObject> =
+internal fun JSONObject.optFlatMap(key: JArrayKey): Sequence<JSONObject> =
     if (has(key)) {
         jsequence(key)
     } else {
