@@ -30,7 +30,7 @@ private fun fixImplementedType(source: Source) {
                     if (type.hasCloneableSuperType(source)) {
                         remove(index)
                     } else {
-                        val typeId = type.getString(J_ID)
+                        val typeId = type[J_ID]
                         put(index, "$ICLONEABLE<$typeId>")
                     }
                 }
@@ -39,18 +39,18 @@ private fun fixImplementedType(source: Source) {
 
     source.types()
         .filter { it.has(J_METHODS) }
-        .filterNot { it.getString(J_ID) == ICLONEABLE }
+        .filterNot { it[J_ID] == ICLONEABLE }
         .forEach { type ->
             type.jsequence(J_METHODS)
-                .filter { it.getString(J_NAME) == "clone" }
+                .filter { it[J_NAME] == "clone" }
                 .filterNot { it.has(J_PARAMETERS) }
                 .map { it[J_RETURNS] }
-                .forEach { it.put(J_TYPE, type.getString(J_ID)) }
+                .forEach { it.put(J_TYPE, type[J_ID]) }
         }
 }
 
 private fun JSONObject.hasCloneableSuperType(source: Source): Boolean {
-    if (getString(J_ID) == "yfiles.tree.DefaultNodePlacer") {
+    if (get(J_ID) == "yfiles.tree.DefaultNodePlacer") {
         return true
     }
 

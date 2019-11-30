@@ -47,7 +47,7 @@ private fun fixConstructorNullability(source: Source) {
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     source.type("MultiComponentLayerer")
@@ -74,8 +74,8 @@ private fun fixConstructorNullability(source: Source) {
         "CollectionModelManager"
     ).flatMap { it.jsequence(J_CONSTRUCTORS) }
         .jsequence(J_PARAMETERS)
-        .filter { it.getString(J_TYPE).startsWith(YCLASS) }
-        .filter { it.getString(J_NAME) != "deserializerTargetType" }
+        .filter { it[J_TYPE].startsWith(YCLASS) }
+        .filter { it[J_NAME] != "deserializerTargetType" }
         .forEach { it.changeNullability(false) }
 
     source.types(
@@ -96,12 +96,12 @@ private fun fixPropertyNullability(source: Source) {
         }
 
         val default = get(J_DEFAULT)
-        return default.has(J_VALUE) && default.getString(J_VALUE) == "null"
+        return default.has(J_VALUE) && default[J_VALUE] == "null"
     }
 
     source.types()
         .flatMap { it.optJsequence(J_PROPERTIES) }
-        .filter { it.getString(J_NAME) == "coreLayout" || it.hasNullDefaultValue() }
+        .filter { it[J_NAME] == "coreLayout" || it.hasNullDefaultValue() }
         .forEach { it.changeNullability(true) }
 }
 
@@ -171,13 +171,13 @@ private fun fixCollectionsNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
         var includedMethods = INCLUDED_METHODS
-        when (type.getString(J_NAME)) {
+        when (type[J_NAME]) {
             "List" -> includedMethods = includedMethods - listOf("push", "sort", "splice")
             "Mapper" -> includedMethods = includedMethods - "delete"
         }
 
         return (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filter { it.getString(J_ID) in includedMethodIds || it.getString(J_NAME) in includedMethods }
+            .filter { it[J_ID] in includedMethodIds || it.get(J_NAME) in includedMethods }
     }
 
     source.types(
@@ -200,8 +200,8 @@ private fun fixCollectionsNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
-        .filterNot { it.getString(J_NAME) in excludedParameters }
+        .filterNot { it[J_TYPE] in excludedTypes }
+        .filterNot { it[J_NAME] in excludedParameters }
         .forEach { it.changeNullability(false) }
 }
 
@@ -230,10 +230,10 @@ private fun fixGraphNullability(source: Source) {
 
         "GroupingSupport"
     ).flatMap { it.jsequence(J_METHODS) }
-        .filter { it.getString(J_NAME) in INCLUDED_METHODS }
+        .filter { it[J_NAME] in INCLUDED_METHODS }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -252,11 +252,11 @@ private fun fixGraphmlNullability(source: Source) {
     source.types(
         "GraphMLIOHandler"
     ).flatMap { it.jsequence(J_METHODS) }
-        .filterNot { it.getString(J_NAME) in EXCLUDED_METHODS }
+        .filterNot { it[J_NAME] in EXCLUDED_METHODS }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filter { it.getString(J_NAME) in INCLUDED_PARAMETERS }
-        .filter { it.getString(J_TYPE) == JS_OBJECT }
+        .filter { it[J_NAME] in INCLUDED_PARAMETERS }
+        .filter { it[J_TYPE] == JS_OBJECT }
         .forEach { it.changeNullability(false) }
 }
 
@@ -347,18 +347,18 @@ private fun fixAlgorithmsNullability(source: Source) {
         "TriangulationAlgorithm"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
-        .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-        .filterNot { it.getString(J_NAME) in excludedMethods }
+        .filterNot { it[J_ID] in EXCLUDED_METHOD_IDS }
+        .filterNot { it[J_NAME] in excludedMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in excludedParameters }
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_NAME] in excludedParameters }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .plus(type.optJsequence(J_CONSTRUCTORS))
-            .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_ID] in EXCLUDED_METHOD_IDS }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "AffineLine",
@@ -382,7 +382,7 @@ private fun fixAlgorithmsNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     val yMethodIds = setOf(
@@ -410,9 +410,9 @@ private fun fixAlgorithmsNullability(source: Source) {
         "YOrientedRectangle",
         "YVector"
     ).flatMap { it.jsequence(J_METHODS) + it.jsequence(J_STATIC_METHODS) + it.jsequence(J_CONSTRUCTORS) }
-        .filter { it.getString(J_ID) in yMethodIds || it.getString(J_NAME) in yMethods }
+        .filter { it[J_ID] in yMethodIds || it.get(J_NAME) in yMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -465,16 +465,16 @@ private fun fixLayoutNullability(source: Source) {
         "Swimlanes"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
-        .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-        .filterNot { it.getString(J_NAME) in excludedMethods }
+        .filterNot { it[J_ID] in EXCLUDED_METHOD_IDS }
+        .filterNot { it[J_NAME] in excludedMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.optJsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
             .plus(type.optJsequence(J_CONSTRUCTORS))
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "LayoutGraph",
@@ -514,7 +514,7 @@ private fun fixLayoutNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -531,7 +531,7 @@ private fun fixCommonLayoutNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "SequentialLayout",
@@ -549,7 +549,7 @@ private fun fixCommonLayoutNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -568,7 +568,7 @@ private fun fixStageNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "BendConverter",
@@ -591,7 +591,7 @@ private fun fixStageNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -608,7 +608,7 @@ private fun fixMultipageNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "IElementFactory",
@@ -622,7 +622,7 @@ private fun fixMultipageNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -656,8 +656,8 @@ private fun fixHierarchicNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_ID) in EXCLUDED_METHOD_IDS }
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_ID] in EXCLUDED_METHOD_IDS }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "IItemFactory",
@@ -710,8 +710,8 @@ private fun fixHierarchicNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_NAME) in excludedParameters }
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_NAME] in excludedParameters }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -734,16 +734,16 @@ private fun fixRouterNullability(source: Source) {
         "BusRepresentations"
     ).jsequence(J_STATIC_METHODS)
         .filter { it.has(J_PARAMETERS) }
-        .filterNot { it.getString(J_NAME) in excludedMethods }
+        .filterNot { it[J_NAME] in excludedMethods }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.optJsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_NAME] in excludedMethods }
             .let {
-                if (type.getString(J_NAME).endsWith("Router")) {
+                if (type[J_NAME].endsWith("Router")) {
                     it
                 } else {
                     it + type.optJsequence(J_CONSTRUCTORS)
@@ -792,7 +792,7 @@ private fun fixRouterNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
@@ -813,7 +813,7 @@ private fun fixTreeNullability(source: Source) {
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         (type.jsequence(J_METHODS) + type.optJsequence(J_STATIC_METHODS))
-            .filterNot { it.getString(J_NAME) in excludedMethods }
+            .filterNot { it[J_NAME] in excludedMethods }
 
     source.types(
         "IProcessor",
@@ -854,6 +854,6 @@ private fun fixTreeNullability(source: Source) {
     ).flatMap { getAffectedMethods(it) }
         .filter { it.has(J_PARAMETERS) }
         .jsequence(J_PARAMETERS)
-        .filterNot { it.getString(J_TYPE) in excludedTypes }
+        .filterNot { it[J_TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }

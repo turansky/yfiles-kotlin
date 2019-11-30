@@ -82,7 +82,7 @@ private fun fixDataProvider(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it.getString(J_TYPE) == IDATA_PROVIDER }
+        .filter { it[J_TYPE] == IDATA_PROVIDER }
         .forEach { it.put(J_TYPE, "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>") }
 
     source.type("DataProviderBase")
@@ -115,7 +115,7 @@ private fun fixDataAcceptor(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it.getString(J_TYPE) == IDATA_ACCEPTOR }
+        .filter { it[J_TYPE] == IDATA_ACCEPTOR }
         .forEach { it.put(J_TYPE, "$IDATA_ACCEPTOR<${it.getDefaultTypeParameters()}>") }
 
     for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
@@ -131,7 +131,7 @@ private fun fixDataMap(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it.getString(J_TYPE) == IDATA_MAP }
+        .filter { it[J_TYPE] == IDATA_MAP }
         .forEach { it.put(J_TYPE, "$IDATA_MAP<${it.getDataMapTypeParameters()}>") }
 
     for ((className, typeParameters) in DATA_MAP_TYPE_MAP) {
@@ -153,11 +153,11 @@ private fun JSONObject.getDefaultTypeParameters(): String {
         return "*,*"
     }
 
-    val name = getString(J_NAME)
+    val name = get(J_NAME)
     return get(J_DP_DATA)
         .run {
-            val keyType = getDefaultTypeParameter(name, get(J_DOMAIN).getString(J_TYPE))
-            val valueType = getDefaultTypeParameter(name, get(J_VALUES).getString(J_TYPE))
+            val keyType = getDefaultTypeParameter(name, get(J_DOMAIN)[J_TYPE])
+            val valueType = getDefaultTypeParameter(name, get(J_VALUES)[J_TYPE])
 
             "$keyType,$valueType"
         }
@@ -217,16 +217,16 @@ private fun fixDataMaps(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it.getString(J_TYPE) in MAP_INTERFACES }
+        .filter { it[J_TYPE] in MAP_INTERFACES }
         .forEach {
             val typeParameter = it.getDataMapsTypeParameter()
-            it.put(J_TYPE, it.getString(J_TYPE) + "<$typeParameter>")
+            it.put(J_TYPE, it[J_TYPE] + "<$typeParameter>")
         }
 
     source.type("Graph")
         .jsequence(J_PROPERTIES)
         .forEach { property ->
-            val type = property.getString(J_TYPE)
+            val type = property[J_TYPE]
             MAP_INTERFACES.find { it in type }
                 ?.also { property.put(J_TYPE, type.replace(it, "$it<*>")) }
         }
@@ -237,13 +237,11 @@ private fun JSONObject.getDataMapsTypeParameter(): String {
         return "*"
     }
 
-    val type = get(J_DP_DATA)
-        .get(J_VALUES)
-        .getString(J_TYPE)
+    val type = get(J_DP_DATA)[J_VALUES][J_TYPE]
 
     return when (type) {
-        JS_NUMBER -> getDataMapsNumberTypeParameter(getString(J_NAME))
-        JS_OBJECT -> when (getString(J_NAME)) {
+        JS_NUMBER -> getDataMapsNumberTypeParameter(get(J_NAME))
+        JS_OBJECT -> when (get(J_NAME)) {
             "partitionIDMap" -> YID
             else -> type
         }
@@ -291,12 +289,12 @@ private fun fixMethodTypes(source: Source) {
         "MapperDataProviderAdapter"
     ).forEach {
         val typeParameters = it[J_TYPE_PARAMETERS]
-        val keyTypeParameter = typeParameters.getJSONObject(0).getString(J_NAME)
-        val valueTypeParameter = typeParameters.getJSONObject(1).getString(J_NAME)
+        val keyTypeParameter = typeParameters.getJSONObject(0)[J_NAME]
+        val valueTypeParameter = typeParameters.getJSONObject(1)[J_NAME]
 
         it.jsequence(J_METHODS)
             .forEach {
-                val name = it.getString(J_NAME)
+                val name = it[J_NAME]
 
                 when (name) {
                     "get" -> it[J_RETURNS]
@@ -308,7 +306,7 @@ private fun fixMethodTypes(source: Source) {
                 }
 
                 it.jsequence(J_PARAMETERS)
-                    .filter { it.getString(J_NAME) == "dataHolder" }
+                    .filter { it[J_NAME] == "dataHolder" }
                     .forEach { it.put(J_TYPE, keyTypeParameter) }
             }
     }

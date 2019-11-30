@@ -32,7 +32,7 @@ internal fun excludeUnusedTypes(api: JSONObject) {
             val excludedTypes = types
                 .asSequence()
                 .map { it as JSONObject }
-                .filter { it.getString(J_ID) in EXCLUDED_TYPES }
+                .filter { it[J_ID] in EXCLUDED_TYPES }
                 .toList()
 
             excludedTypes.forEach {

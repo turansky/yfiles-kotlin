@@ -144,11 +144,11 @@ private fun JSONObject.correctProperties() {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(J_PROPERTIES)
         .forEach {
-            val propertyName = it.getString(J_NAME)
-            when (it.getString(J_TYPE)) {
+            val propertyName = it[J_NAME]
+            when (it[J_TYPE]) {
                 JS_NUMBER -> it.put(J_TYPE, getPropertyType(className, propertyName))
                 "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                     val generic = getPropertyType(className, propertyName)
@@ -184,15 +184,15 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(key)
         .filter { it.has(J_PARAMETERS) }
         .forEach { method ->
-            val methodName = method.getString(J_NAME)
+            val methodName = method[J_NAME]
             method.jsequence(J_PARAMETERS)
                 .forEach {
-                    val parameterName = it.getString(J_NAME)
-                    when (it.getString(J_TYPE)) {
+                    val parameterName = it[J_NAME]
+                    when (it[J_TYPE]) {
                         JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
                         "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                             val generic = getParameterType(className, methodName, parameterName)
@@ -232,13 +232,13 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(key)
         .filter { it.has(J_RETURNS) }
         .forEach {
-            val methodName = it.getString(J_NAME)
+            val methodName = it[J_NAME]
             it[J_RETURNS].apply {
-                when (getString(J_TYPE)) {
+                when (get(J_TYPE)) {
                     JS_NUMBER -> put(J_TYPE, getReturnType(className, methodName))
                     "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                         val generic = getReturnType(className, methodName)

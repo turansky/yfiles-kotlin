@@ -80,7 +80,7 @@ private fun fixUnionMethods(source: Source) {
     val unionMethods = methods
         .asSequence()
         .map { it as JSONObject }
-        .filter { it.getString(J_NAME) == "getCanvasObjectGroup" }
+        .filter { it[J_NAME] == "getCanvasObjectGroup" }
         .toList()
 
     unionMethods
@@ -103,7 +103,7 @@ private fun fixConstantGenerics(source: Source) {
         .get(J_CONSTANTS)
         .firstWithName("EMPTY")
         .also {
-            val type = it.getString(J_TYPE)
+            val type = it[J_TYPE]
                 .replace("<T>", "<$JS_OBJECT>")
             it.put(J_TYPE, type)
         }
@@ -111,7 +111,7 @@ private fun fixConstantGenerics(source: Source) {
     source.type("LabelLayoutKeys")
         .jsequence(J_CONSTANTS)
         .forEach {
-            val type = it.getString(J_TYPE)
+            val type = it[J_TYPE]
             if (type.endsWith("<yfiles.layout.LabelLayoutData>")) {
                 val newType = type.replace("<yfiles.layout.LabelLayoutData>", "<Array<yfiles.layout.LabelLayoutData>>")
                 it.put(J_TYPE, newType)
@@ -166,7 +166,7 @@ private fun fixPropertyNullability(source: Source) {
         .get(J_PROPERTIES)
         .firstWithName("children")
         .apply {
-            require(getString(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
+            require(get(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
             put(J_TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
         }
 }
@@ -175,23 +175,23 @@ private fun fixConstructorParameterName(source: Source) {
     source.type("TimeSpan")
         .jsequence(J_CONSTRUCTORS)
         .jsequence(J_PARAMETERS)
-        .single { it.getString(J_NAME) == "millis" }
+        .single { it[J_NAME] == "millis" }
         .put(J_NAME, "milliseconds")
 }
 
 private fun fixMethodParameterName(source: Source) {
     PARAMETERS_CORRECTION.forEach { data, fixedName ->
         source.type(data.className)
-            .methodParameters(data.methodName, data.parameterName, { it.getString(J_NAME) != fixedName })
+            .methodParameters(data.methodName, data.parameterName, { it[J_NAME] != fixedName })
             .first()
             .put(J_NAME, fixedName)
     }
 
     source.type("RankAssignmentAlgorithm")
         .jsequence(J_STATIC_METHODS)
-        .filter { it.getString(J_NAME) == "simplex" }
+        .filter { it[J_NAME] == "simplex" }
         .jsequence(J_PARAMETERS)
-        .single { it.getString(J_NAME) == "_root" }
+        .single { it[J_NAME] == "_root" }
         .put(J_NAME, "root")
 }
 
@@ -212,16 +212,16 @@ private fun fixMethodParameterNullability(source: Source) {
 
     source.types()
         .optionalArray(J_METHODS)
-        .filter { it.getString(J_NAME) in BROKEN_NULLABILITY_METHODS }
+        .filter { it[J_NAME] in BROKEN_NULLABILITY_METHODS }
         .filter { it[J_PARAMETERS].length() == 1 }
         .map { it[J_PARAMETERS].single() }
         .map { it as JSONObject }
-        .onEach { require(it.getString(J_TYPE) == "yfiles.layout.LayoutGraph") }
+        .onEach { require(it[J_TYPE] == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
 
     source.types()
         .flatMap { it.allMethodParameters() }
-        .filter { it.getString(J_NAME) == "dataHolder" }
+        .filter { it[J_NAME] == "dataHolder" }
         .forEach { it.changeNullability(false) }
 
     source.types(
@@ -230,7 +230,7 @@ private fun fixMethodParameterNullability(source: Source) {
         "HighlightIndicatorManager",
         "SelectionIndicatorManager"
     ).flatMap { it.jsequence(J_METHODS) }
-        .filter { it.getString(J_NAME) in MODEL_MANAGER_ITEM_METHODS }
+        .filter { it[J_NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
 }
@@ -252,7 +252,7 @@ private fun fixMethodNullability(source: Source) {
         .forEach { (className, methodName), nullable ->
             source.type(className)
                 .jsequence(J_STATIC_METHODS)
-                .filter { it.getString(J_NAME) == methodName }
+                .filter { it[J_NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
 
@@ -260,7 +260,7 @@ private fun fixMethodNullability(source: Source) {
         .forEach { (className, methodName), nullable ->
             source.type(className)
                 .jsequence(J_METHODS)
-                .filter { it.getString(J_NAME) == methodName }
+                .filter { it[J_NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
 }
@@ -315,7 +315,7 @@ private fun removeSystemMethods(source: Source) {
             val methods = it[J_METHODS]
             val systemMetods = methods.asSequence()
                 .map { it as JSONObject }
-                .filter { it.getString(J_NAME) in SYSTEM_FUNCTIONS }
+                .filter { it[J_NAME] in SYSTEM_FUNCTIONS }
                 .toList()
 
             systemMetods.forEach {
@@ -364,7 +364,7 @@ private fun removeThisParameters(source: Source) {
         .map { it[J_PARAMETERS] }
         .filter { it.length() > 0 }
         .onEach {
-            if ((it.last() as JSONObject).getString(J_NAME) == "thisArg") {
+            if ((it.last() as JSONObject)[J_NAME] == "thisArg") {
                 it.strictRemove(it.length() - 1)
             }
         }
@@ -372,7 +372,7 @@ private fun removeThisParameters(source: Source) {
         .map { it as JSONObject }
         .filter { it.has(J_SIGNATURE) }
         .forEach {
-            var signature = it.getString(J_SIGNATURE)
+            var signature = it[J_SIGNATURE]
             if (signature.contains(FUNC_RUDIMENT)) {
                 signature = signature
                     .replace(FUNC_RUDIMENT, "")
@@ -462,7 +462,7 @@ private fun fixMethodGenericBounds(source: Source) {
     )
     source.type("IFoldingView")
         .jsequence(J_METHODS)
-        .filter { it.getString(J_NAME) in methodNames }
+        .filter { it[J_NAME] in methodNames }
         .map { it[J_TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach {

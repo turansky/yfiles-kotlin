@@ -77,12 +77,12 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "SwimlaneDescriptor"
     ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_CONSTRUCTORS) }
         .forEach {
-            val methodName = it.getString(J_NAME)
+            val methodName = it[J_NAME]
 
             it.optJsequence(J_PARAMETERS)
-                .filter { it.getString(J_TYPE) in DEFAULT_COMPARERS }
+                .filter { it[J_TYPE] in DEFAULT_COMPARERS }
                 .forEach {
-                    val generic = getGeneric(methodName, it.getString(J_NAME))
+                    val generic = getGeneric(methodName, it[J_NAME])
                     it.fixTypeGeneric("in $generic")
                 }
         }
@@ -140,7 +140,7 @@ private fun fixComparerAsProperty(source: Source) {
         it[J_CONSTANTS]
             .firstWithName("OUT_EDGE_COMPARER_DP_KEY")
             .apply {
-                require(getString(J_TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
+                require(get(J_TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
 
                 put(J_TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
             }
@@ -195,7 +195,7 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(getString(J_TYPE) in DEFAULT_COMPARERS)
+    require(get(J_TYPE) in DEFAULT_COMPARERS)
 
     put(J_TYPE, comparer(generic))
 }

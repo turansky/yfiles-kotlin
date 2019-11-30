@@ -31,10 +31,10 @@ internal fun JSONObject.methodParameters(
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
     val result = get(J_METHODS)
-        .objects { it.getString(J_NAME) == methodName }
+        .objects { it[J_NAME] == methodName }
         .flatMap {
             it[J_PARAMETERS]
-                .objects { it.getString(J_NAME) == parameterName }
+                .objects { it[J_NAME] == parameterName }
                 .filter(parameterFilter)
         }
 
@@ -162,12 +162,12 @@ internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
         return jsequence(J_PARAMETERS)
-            .first { it.getString(J_NAME) in typeNames }
+            .first { it[J_NAME] in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
     return jsequence(J_PARAMETERS)
-        .first { it.getString(J_NAME) == name }
+        .first { it[J_NAME] == name }
 }
 
 internal val JSONObject.firstParameter: JSONObject
@@ -179,11 +179,11 @@ internal val JSONObject.secondParameter: JSONObject
         .get(1) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {
-    val type = getString(J_TYPE)
+    val type = get(J_TYPE)
     put(J_TYPE, "$type<$generic>")
 }
 
 internal fun JSONObject.addExtendsGeneric(generic: String) {
-    val type = getString(J_EXTENDS)
+    val type = get(J_EXTENDS)
     put(J_EXTENDS, "$type<$generic>")
 }

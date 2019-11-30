@@ -163,13 +163,13 @@ private fun addClassGeneric(source: Source) {
         "setLookup"
     )
         .map { it.firstParameter }
-        .filter { it.getString(J_TYPE) == YCLASS }
+        .filter { it[J_TYPE] == YCLASS }
         .forEach {
             it.addGeneric("T")
         }
 
     source.allMethods("factoryLookupChainLink", "add", "addConstant")
-        .filter { it.firstParameter.getString(J_NAME) == "contextType" }
+        .filter { it.firstParameter[J_NAME] == "contextType" }
         .forEach {
             it.parameter("contextType").addGeneric("TContext")
             it.parameter("resultType").addGeneric("TResult")
@@ -177,7 +177,7 @@ private fun addClassGeneric(source: Source) {
 
     source.allMethods("addConstant", "ofType")
         .map { it.firstParameter }
-        .filter { it.getString(J_NAME) == "resultType" }
+        .filter { it[J_NAME] == "resultType" }
         .forEach { it.addGeneric("TResult") }
 
     source.allMethods(
@@ -195,7 +195,7 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.allMethods("addRegistryOutputMapper")
-        .filter { it.firstParameter.getString(J_NAME) == "modelItemType" }
+        .filter { it.firstParameter[J_NAME] == "modelItemType" }
         .forEach {
             it.parameter("modelItemType").addGeneric("TModelItem")
             it.parameter("valueType").addGeneric("TValue")
@@ -203,9 +203,9 @@ private fun addClassGeneric(source: Source) {
 
     source.type("GraphMLIOHandler")
         .allMethodParameters()
-        .filter { it.getString(J_TYPE) == YCLASS }
+        .filter { it[J_TYPE] == YCLASS }
         .forEach {
-            when (it.getString(J_NAME)) {
+            when (it[J_NAME]) {
                 "keyType" -> it.addGeneric("TKey")
                 "modelItemType" -> it.addGeneric("TKey")
                 "dataType" -> it.addGeneric("TData")
@@ -225,8 +225,8 @@ private fun addClassGeneric(source: Source) {
         "createDataMap",
         "createDataProvider"
     )
-        .filter { it.firstParameter.getString(J_NAME) == "keyType" }
-        .filter { it.secondParameter.getString(J_NAME) == "valueType" }
+        .filter { it.firstParameter[J_NAME] == "keyType" }
+        .filter { it.secondParameter[J_NAME] == "valueType" }
         .forEach {
             it.parameter("keyType").addGeneric("K")
             it.parameter("valueType").addGeneric("V")
@@ -236,12 +236,12 @@ private fun addClassGeneric(source: Source) {
 private fun addConstructorClassGeneric(source: Source) {
     source.types()
         .forEach { type ->
-            val typeName = type.getString(J_NAME)
+            val typeName = type[J_NAME]
             type.optionalArray(J_CONSTRUCTORS)
                 .optionalArray(J_PARAMETERS)
-                .filter { it.getString(J_TYPE) == YCLASS }
+                .filter { it[J_TYPE] == YCLASS }
                 .forEach {
-                    val name = it.getString(J_NAME)
+                    val name = it[J_NAME]
                     val generic = when (name) {
                         "edgeStyleType" -> "TStyle"
                         "decoratedType" -> "TDecoratedType"
@@ -286,12 +286,12 @@ private fun addMapperMetadataGeneric(source: Source) {
 
     type.jsequence(J_CONSTRUCTORS)
         .jsequence(J_PARAMETERS)
-        .filter { it.getString(J_NAME) == "metadata" }
+        .filter { it[J_NAME] == "metadata" }
         .forEach { it.addGeneric("TKey,TValue") }
 
     type.jsequence(J_PROPERTIES)
         .forEach {
-            when (it.getString(J_NAME)) {
+            when (it[J_NAME]) {
                 "keyType" -> it.addGeneric("TKey")
                 "valueType" -> it.addGeneric("TValue")
             }
@@ -346,9 +346,9 @@ private fun addClassBounds(source: Source) {
     source.types()
         .forEach { type ->
             type.optJsequence(J_TYPE_PARAMETERS)
-                .filter { it.getString(J_NAME) in typeNames }
+                .filter { it[J_NAME] in typeNames }
                 .forEach {
-                    val bound = when (type.getString(J_ID)) {
+                    val bound = when (type[J_ID]) {
                         "yfiles.graph.ItemChangedEventArgs" -> "yfiles.graph.ITagOwner"
                         else -> IMODEL_ITEM
                     }
@@ -393,7 +393,7 @@ private fun addClassBounds(source: Source) {
 
     source.type("GraphModelManager")
         .jsequence(J_METHODS)
-        .first { it.getString(J_NAME) == "createHitTester" }
+        .first { it[J_NAME] == "createHitTester" }
         .jsequence(J_TYPE_PARAMETERS)
         .single()
         .put(J_BOUNDS, arrayOf(IMODEL_ITEM))
@@ -434,7 +434,7 @@ private fun addTypeParameterBounds(source: Source) {
                 it.jsequence(J_TYPE_PARAMETERS)
                     .filter { !it.has(J_BOUNDS) }
                     .forEach {
-                        val name = it.getString(J_NAME)
+                        val name = it[J_NAME]
                         val bound = boundMap.get(name)
                         if (bound != null) {
                             it.put(J_BOUNDS, arrayOf(bound))
@@ -455,7 +455,7 @@ private fun addTypeParameterBounds(source: Source) {
                 it.jsequence(J_TYPE_PARAMETERS)
                     .filter { !it.has(J_BOUNDS) }
                     .forEach {
-                        val name = it.getString(J_NAME)
+                        val name = it[J_NAME]
                         val bound = boundMap.get(name)
                         if (bound != null) {
                             it.put(J_BOUNDS, arrayOf(bound))
@@ -468,7 +468,7 @@ private fun addTypeParameterBounds(source: Source) {
         "IMapperRegistry",
         "MapperRegistry"
     ).jsequence(J_METHODS)
-        .filter { it.getString(J_NAME).contains("Metadata") }
+        .filter { it[J_NAME].contains("Metadata") }
         .jsequence(J_TYPE_PARAMETERS)
         .forEach {
             it.put(J_BOUNDS, arrayOf(JS_OBJECT))
@@ -477,7 +477,7 @@ private fun addTypeParameterBounds(source: Source) {
 
 private val JSONObject.classBoundPair: Pair<String, String>?
     get() {
-        val type = getString(J_TYPE)
+        val type = get(J_TYPE)
         if (type.startsWith("$YCLASS<")) {
             val generic = between(type, "$YCLASS<", ">")
             if (generic.contains(".")) {
@@ -487,7 +487,7 @@ private val JSONObject.classBoundPair: Pair<String, String>?
             val bound = when {
                 generic == "TModelItem" -> IMODEL_ITEM
                 generic == "TDecoratedType" -> IMODEL_ITEM
-                getString(J_NAME) == "modelItemType" -> IMODEL_ITEM
+                get(J_NAME) == "modelItemType" -> IMODEL_ITEM
                 else -> JS_OBJECT
             }
 
@@ -523,6 +523,6 @@ private fun addMapClassBounds(source: Source) {
         .filter { it.has(J_TYPE_PARAMETERS) }
         .map { it.jsequence(J_TYPE_PARAMETERS).first() }
         .filterNot { it.has(J_BOUNDS) }
-        .filter { it.getString(J_NAME) == "K" }
+        .filter { it[J_NAME] == "K" }
         .forEach { it.put(J_BOUNDS, arrayOf(JS_OBJECT)) }
 }

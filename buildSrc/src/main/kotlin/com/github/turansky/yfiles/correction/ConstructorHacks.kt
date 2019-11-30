@@ -36,7 +36,7 @@ private fun fixOptionality(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .filter { it[J_PARAMETERS].length() == 1 }
         .map { it.firstParameter }
-        .filter { it.getString(J_NAME).contains("core") }
+        .filter { it[J_NAME].contains("core") }
         .forEach { it.changeOptionality(true) }
 }
 
@@ -102,7 +102,7 @@ private val JSONObject.parametersCount: Int
 private val JSONObject.parametersNames: List<String>
     get() = if (has(J_PARAMETERS)) {
         jsequence(J_PARAMETERS)
-            .map { it.getString(J_NAME) }
+            .map { it[J_NAME] }
             .toList()
     } else {
         emptyList()

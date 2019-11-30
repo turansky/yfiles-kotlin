@@ -108,14 +108,14 @@ private fun String.fixVsdxPackage(): String =
 private fun fixPackage(source: VsdxSource) {
     source.types()
         .forEach {
-            val id = it.getString(J_ID)
+            val id = it[J_ID]
             it.put(J_ID, "yfiles.$id")
         }
 
     source.types()
         .filter { it.has(J_EXTENDS) }
         .forEach {
-            it.put(J_EXTENDS, it.getString(J_EXTENDS).fixVsdxPackage())
+            it.put(J_EXTENDS, it[J_EXTENDS].fixVsdxPackage())
         }
 
     source.types()
@@ -146,12 +146,12 @@ private fun fixPackage(source: VsdxSource) {
 
 private fun JSONObject.fixType() {
     if (has(J_SIGNATURE)) {
-        val signature = getFixedType(getString(J_SIGNATURE))
+        val signature = getFixedType(get(J_SIGNATURE))
             .fixVsdxPackage()
 
         put(J_SIGNATURE, signature)
     } else {
-        val type = getFixedType(getString(J_TYPE))
+        val type = getFixedType(get(J_TYPE))
             .fixVsdxPackage()
 
         put(J_TYPE, type)
@@ -280,7 +280,7 @@ private fun JSONObject.fixSummary() {
         return
     }
 
-    val summary = getString(J_SUMMARY)
+    val summary = get(J_SUMMARY)
         .replace(YFILES_API_REGEX) {
             val type = YFILES_TYPE_MAP.getValue(it.groupValues.get(1))
             "[$type]"
@@ -300,7 +300,7 @@ private fun fixSummary(source: VsdxSource) {
         .jsequence(J_PARAMETERS)
         .filter { it.has(J_SUMMARY) }
         .forEach {
-            val summary = it.getString(J_SUMMARY)
+            val summary = it[J_SUMMARY]
                 .replace("""data-member="createDefault()"""", """data-member="createDefault"""")
 
             it.put(J_SUMMARY, summary)
@@ -321,7 +321,7 @@ private fun fixSummary(source: VsdxSource) {
         .map { it[J_RETURNS] }
         .filter { it.has(J_DOC) }
         .forEach {
-            val doc = it.getString(J_DOC)
+            val doc = it[J_DOC]
                 .replace("\r", " ")
 
             it.put(J_DOC, doc)

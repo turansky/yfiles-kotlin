@@ -41,7 +41,7 @@ private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
         jsequence(J_STATIC_METHODS)
             .onEach {
-                val name = it.getString(J_NAME)
+                val name = it[J_NAME]
                 val bound = when (name) {
                     "createNodeCursor" -> NODE
                     "createEdgeCursor" -> EDGE
@@ -53,14 +53,14 @@ private fun fixCursorUtil(source: Source) {
             .forEach {
                 it.jsequence(J_PARAMETERS)
                     .plus(it[J_RETURNS])
-                    .filter { it.getString(J_TYPE) == CURSOR }
+                    .filter { it[J_TYPE] == CURSOR }
                     .forEach { it.put(J_TYPE, cursor("T")) }
             }
 
         staticMethod("toArray").apply {
             sequenceOf(secondParameter, get(J_RETURNS))
                 .forEach {
-                    val type = it.getString(J_TYPE)
+                    val type = it[J_TYPE]
                         .replace("<$JS_ANY>", "<T>")
                         .replace("<$JS_OBJECT>", "<T>")
 
@@ -85,7 +85,7 @@ private fun fixMethodParameter(source: Source) {
         "DefaultLayoutGraph"
     ).jsequence(J_CONSTRUCTORS)
         .flatMap { it.optJsequence(J_PARAMETERS) }
-        .filter { it.getString(J_NAME) in nodeParameterNames }
+        .filter { it[J_NAME] in nodeParameterNames }
         .forEach { it.fixTypeGeneric(NODE) }
 
     source.types(
@@ -116,7 +116,7 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(getString(J_TYPE) == CURSOR)
+    require(get(J_TYPE) == CURSOR)
 
     put(J_TYPE, cursor(generic))
 }

@@ -57,7 +57,7 @@ private fun JSONObject.updateDpKeyGeneric(
     field: JStringKey,
     generic: String
 ) {
-    val value = getString(field)
+    val value = get(field)
     require(value.startsWith(DP_KEY_BASE_DECLARATION))
     put(field, value.replace(DP_KEY_BASE_DECLARATION, "$DP_KEY_BASE_DECLARATION$generic,"))
 }

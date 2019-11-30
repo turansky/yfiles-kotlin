@@ -35,7 +35,7 @@ private fun JSONObject.fixGeneric() {
         .flatMap { it.optJsequence(J_PARAMETERS) + it.returnsSequence() }
         .plus(jsequence(J_PROPERTIES))
         .forEach {
-            val type = it.getString(J_TYPE)
+            val type = it[J_TYPE]
             val newType = when (type) {
                 JS_ANY, JS_OBJECT -> "T"
                 CURSOR -> "$CURSOR<T>"
@@ -76,12 +76,12 @@ private fun fixMethodParameter(source: Source) {
         "MultiPageLayout"
     ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .forEach {
-            val methodName = it.getString(J_NAME)
+            val methodName = it[J_NAME]
 
             it.optJsequence(J_PARAMETERS)
-                .filter { it.getString(J_TYPE) == YLIST }
+                .filter { it[J_TYPE] == YLIST }
                 .forEach {
-                    val generic = getGeneric(methodName, it.getString(J_NAME))
+                    val generic = getGeneric(methodName, it[J_NAME])
                     it.fixTypeGeneric(generic)
                 }
         }
@@ -171,7 +171,7 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(getString(J_TYPE) == YLIST)
+    require(get(J_TYPE) == YLIST)
 
     put(J_TYPE, ylist(generic))
 }

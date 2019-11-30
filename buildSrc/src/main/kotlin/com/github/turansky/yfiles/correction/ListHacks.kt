@@ -59,9 +59,9 @@ private fun fixMethodParameter(source: Source) {
         "RootNodeAlignment"
     ).flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
         .flatMap { it.optJsequence(J_PARAMETERS) }
-        .filter { it.getString(J_TYPE) in DEFAULT_LISTS }
+        .filter { it[J_TYPE] in DEFAULT_LISTS }
         .forEach {
-            val generic = when (it.getString(J_NAME)) {
+            val generic = when (it[J_NAME]) {
                 "l" -> YPOINT
 
                 "subCells" -> PARTITION_CELL
@@ -88,7 +88,7 @@ private fun fixReturnType(source: Source) {
         "GraphPartition"
     ).jsequence(J_METHODS)
         .forEach {
-            val generic = when (it.getString(J_NAME)) {
+            val generic = when (it[J_NAME]) {
                 "getCells",
                 "getCellsForNode",
                 "getCellsForObstacle",
@@ -117,7 +117,7 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(getString(J_TYPE) in DEFAULT_LISTS)
+    require(get(J_TYPE) in DEFAULT_LISTS)
 
     put(J_TYPE, list(generic))
 }

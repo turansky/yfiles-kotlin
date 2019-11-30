@@ -28,12 +28,12 @@ internal class Source(private val api: JSONObject) {
         types.asSequence()
             .map { it.optionalArray(J_METHODS) + it.optionalArray(J_STATIC_METHODS) }
             .flatMap { it.asSequence() }
-            .filter { it.getString(J_NAME) in methodNames }
+            .filter { it[J_NAME] in methodNames }
 
     private val JSONObject.uid: String
         get() = if (has(J_ES6_NAME)) {
-            getString(J_ES6_NAME)
+            get(J_ES6_NAME)
         } else {
-            getString(J_NAME)
+            get(J_NAME)
         }
 }

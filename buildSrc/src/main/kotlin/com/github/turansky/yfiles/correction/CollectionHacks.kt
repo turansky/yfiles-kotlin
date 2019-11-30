@@ -26,7 +26,7 @@ internal fun applyCollectionHacks(source: Source) {
 
     source.type("PartitionGrid")
         .jsequence(J_METHODS)
-        .single { it.getString(J_ID) == "PartitionGrid-method-createCellSpanId(yfiles.collections.ICollection,yfiles.collections.ICollection)" }
+        .single { it[J_ID] == "PartitionGrid-method-createCellSpanId(yfiles.collections.ICollection,yfiles.collections.ICollection)" }
         .apply {
             firstParameter.fixTypeGeneric("yfiles.layout.RowDescriptor")
             secondParameter.fixTypeGeneric("yfiles.layout.ColumnDescriptor")
@@ -34,7 +34,7 @@ internal fun applyCollectionHacks(source: Source) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(getString(J_TYPE) in DEFAULT_COLLECTIONS)
+    require(get(J_TYPE) in DEFAULT_COLLECTIONS)
 
     put(J_TYPE, collection(generic))
 }

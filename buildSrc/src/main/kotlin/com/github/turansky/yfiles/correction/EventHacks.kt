@@ -17,9 +17,9 @@ internal fun applyEventHacks(source: Source) {
 }
 
 fun JSONObject.getNewName(): String? =
-    when (getString(J_NAME)) {
+    when (get(J_NAME)) {
         "evt" -> "event"
-        "args" -> if (getString(J_TYPE).endsWith("Args")) {
+        "args" -> if (get(J_TYPE).endsWith("Args")) {
             "event"
         } else {
             null

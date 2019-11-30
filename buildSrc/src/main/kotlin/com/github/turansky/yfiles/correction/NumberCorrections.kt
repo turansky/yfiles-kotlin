@@ -34,10 +34,10 @@ private fun JSONObject.correctConstants() {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(J_CONSTANTS)
-        .filter { it.getString(J_TYPE) != JS_NUMBER }
-        .filter { JS_NUMBER in it.getString(J_TYPE) }
+        .filter { it[J_TYPE] != JS_NUMBER }
+        .filter { JS_NUMBER in it[J_TYPE] }
         .forEach {
             if (it.has(J_SIGNATURE)) {
                 check(className == "HierarchicalClustering")
@@ -45,10 +45,10 @@ private fun JSONObject.correctConstants() {
                 return@forEach
             }
 
-            val type = it.getString(J_TYPE)
+            val type = it[J_TYPE]
             check(type.endsWith("DpKey<$JS_NUMBER>"))
 
-            val name = it.getString(J_NAME)
+            val name = it[J_NAME]
             val generic = if ("_ID_" in name || "_INDEX_" in name) {
                 JS_INT
             } else {
@@ -63,17 +63,17 @@ private fun JSONObject.correctConstructors() {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(J_CONSTRUCTORS)
         .optionalArray(J_PARAMETERS)
-        .filter { it.getString(J_TYPE) == JS_NUMBER }
-        .forEach { it.put(J_TYPE, getConstructorParameterType(className, it.getString(J_NAME))) }
+        .filter { it[J_TYPE] == JS_NUMBER }
+        .forEach { it.put(J_TYPE, getConstructorParameterType(className, it[J_NAME])) }
 
     jsequence(J_CONSTRUCTORS)
         .optionalArray(J_PARAMETERS)
-        .filter { it.getString(J_TYPE) == "Array<$JS_NUMBER>" }
+        .filter { it[J_TYPE] == "Array<$JS_NUMBER>" }
         .forEach {
-            val genericType = when (val name = it.getString(J_NAME)) {
+            val genericType = when (val name = it[J_NAME]) {
                 "dashes" -> JS_DOUBLE
                 "rowLayout", "columnLayout" -> JS_INT
                 else -> throw IllegalStateException("Unexpected constructor parameter $name")
@@ -129,10 +129,10 @@ private fun JSONObject.correctProperties(key: JArrayKey) {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(key)
-        .filter { it.getString(J_TYPE) == JS_NUMBER }
-        .forEach { it.put(J_TYPE, getPropertyType(className, it.getString(J_NAME))) }
+        .filter { it[J_TYPE] == JS_NUMBER }
+        .forEach { it.put(J_TYPE, getPropertyType(className, it[J_NAME])) }
 }
 
 private fun getPropertyType(className: String, propertyName: String): String =
@@ -160,18 +160,18 @@ private fun JSONObject.correctPropertiesGeneric() {
     }
 
     jsequence(J_PROPERTIES)
-        .filter { "$JS_NUMBER>" in it.getString(J_TYPE) }
-        .forEach { it.put(J_TYPE, getPropertyGenericType(it.getString(J_NAME), it.getString(J_TYPE))) }
+        .filter { "$JS_NUMBER>" in it[J_TYPE] }
+        .forEach { it.put(J_TYPE, getPropertyGenericType(it[J_NAME], it[J_TYPE])) }
 
     jsequence(J_PROPERTIES)
         .filter { it.has(J_SIGNATURE) }
         .forEach {
-            val signature = it.getString(J_SIGNATURE)
+            val signature = it[J_SIGNATURE]
             if (!signature.endsWith(",$JS_NUMBER>")) {
                 return@forEach
             }
 
-            val name = it.getString(J_NAME)
+            val name = it[J_NAME]
             check(name == "metric" || name == "heuristic")
             it.put("signature", signature.replace("$JS_NUMBER>", "$JS_DOUBLE>"))
         }
@@ -203,14 +203,14 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(key)
         .filter { it.has(J_RETURNS) }
         .forEach {
-            val methodName = it.getString(J_NAME)
+            val methodName = it[J_NAME]
             val returns = it[J_RETURNS]
 
-            when (returns.getString(J_TYPE)) {
+            when (returns[J_TYPE]) {
                 JS_NUMBER -> returns.put(J_TYPE, getReturnType(className, methodName))
                 "Array<$JS_NUMBER>" -> returns.put(J_TYPE, "Array<$JS_DOUBLE>")
                 "yfiles.collections.IEnumerable<$JS_NUMBER>" -> {
@@ -249,15 +249,15 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
         return
     }
 
-    val className = getString(J_NAME)
+    val className = get(J_NAME)
     jsequence(key)
         .filter { it.has(J_PARAMETERS) }
         .forEach { method ->
-            val methodName = method.getString(J_NAME)
+            val methodName = method[J_NAME]
             method.jsequence(J_PARAMETERS)
                 .forEach {
-                    val parameterName = it.getString(J_NAME)
-                    when (it.getString(J_TYPE)) {
+                    val parameterName = it.get(J_NAME)
+                    when (it.get(J_TYPE)) {
                         JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
                         "Array<$JS_NUMBER>" -> {
                             val generic = getGenericParameterType(className, methodName, parameterName)
@@ -337,7 +337,7 @@ private val INT_SIGNATURE_CLASSES = setOf(
 
 private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
-        .filter { it.getString(J_NAME) in INT_SIGNATURE_CLASSES }
+        .filter { it[J_NAME] in INT_SIGNATURE_CLASSES }
         .flatMap { type ->
             sequenceOf(J_CONSTRUCTORS, J_METHODS, J_STATIC_METHODS)
                 .filter { type.has(it) }
@@ -346,7 +346,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
         .optionalArray(J_PARAMETERS)
         .filter { it.has(J_SIGNATURE) }
         .forEach {
-            val signature = it.getString(J_SIGNATURE)
+            val signature = it[J_SIGNATURE]
             if (",$JS_NUMBER" in signature) {
                 it.put(J_SIGNATURE, signature.replace(",$JS_NUMBER", ",$JS_INT"))
             }

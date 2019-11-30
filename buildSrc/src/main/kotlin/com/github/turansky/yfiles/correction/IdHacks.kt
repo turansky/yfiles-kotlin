@@ -32,10 +32,10 @@ private val ID_DP_KEYS = setOf(
 internal fun applyIdHacks(source: Source) {
     source.types()
         .flatMap { it.optJsequence(J_CONSTANTS) }
-        .filter { it.getString(J_TYPE) in ID_DP_KEYS }
-        .filter { it.getString(J_NAME).endsWith("_ID_DP_KEY") }
+        .filter { it[J_TYPE] in ID_DP_KEYS }
+        .filter { it[J_NAME].endsWith("_ID_DP_KEY") }
         .forEach {
-            val newType = it.getString(J_TYPE)
+            val newType = it[J_TYPE]
                 .replace("<$JS_ANY>", "<$YID>")
 
             it.put(J_TYPE, newType)
@@ -47,14 +47,14 @@ internal fun applyIdHacks(source: Source) {
     )
 
     typedItems(source)
-        .filter { looksLikeId(it.getString(J_NAME)) }
-        .filter { it.getString(J_TYPE) in likeObjectTypes }
+        .filter { looksLikeId(it[J_NAME]) }
+        .filter { it[J_TYPE] in likeObjectTypes }
         .forEach { it.put(J_TYPE, YID) }
 
     typedItems(source)
-        .filter { it.getString(J_NAME).endsWith("Ids") }
+        .filter { it[J_NAME].endsWith("Ids") }
         .forEach {
-            val newType = it.getString(J_TYPE)
+            val newType = it[J_TYPE]
                 .replace(",$JS_ANY>", ",$YID>")
 
             it.put(J_TYPE, newType)
@@ -64,7 +64,7 @@ internal fun applyIdHacks(source: Source) {
         .jsequence(J_CONSTRUCTORS)
         .jsequence(J_PARAMETERS)
         .forEach {
-            val name = it.getString(J_NAME)
+            val name = it[J_NAME]
             if (name.endsWith("ID")) {
                 it.put(J_NAME, name.replace("ID", "Id"))
             }
