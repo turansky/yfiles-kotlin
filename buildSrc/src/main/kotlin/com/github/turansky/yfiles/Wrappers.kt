@@ -863,8 +863,14 @@ internal class Generics(private val parameters: List<ITypeParameter>) {
         }
 
     fun asParameters(): String =
+        asParameters { it }
+
+    fun asAliasParameters(): String =
+        asParameters { it.removePrefix("in ").removePrefix("out ") }
+
+    private fun asParameters(transform: (String) -> String): String =
         if (parameters.isNotEmpty()) {
-            "<${parameters.byComma { it.name }}> "
+            "<${parameters.byComma { transform(it.name) }}> "
         } else {
             ""
         }
