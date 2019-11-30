@@ -24,12 +24,6 @@ internal class VsdxSource(private val api: JSONObject) {
         classNames.asSequence()
             .map { type(it) }
 
-    fun allMethods(vararg methodNames: String): Sequence<JSONObject> =
-        types.asSequence()
-            .map { it.optionalArray(J_METHODS) + it.optionalArray(J_STATIC_METHODS) }
-            .flatMap { it.asSequence() }
-            .filter { it.getString(J_NAME) in methodNames }
-
     private val JSONObject.uid: String
         get() = if (has("es6name")) {
             getString("es6name")
