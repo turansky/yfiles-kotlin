@@ -112,21 +112,43 @@ private fun fixHierarchicLayoutCore(source: Source) {
 }
 
 private fun fixYGraphAdapter(source: Source) {
-    val names = setOf(
+    val dataNames = setOf(
         "createDataMap",
         "createDataProvider"
     )
 
+    val graphDataNames = setOf(
+        "createEdgeMap",
+        "createNodeMap"
+    )
+
+    val mapperNames = setOf(
+        "createEdgeMapper",
+        "createNodeMapper"
+    )
+
     source.type("YGraphAdapter").also {
         it.flatMap(METHODS)
-            .filter { it[NAME] in names }
+            .filter { it[NAME] in dataNames }
             .map { it[RETURNS] }
             .forEach { it.addGeneric("K,V") }
 
         it[METHODS]["createMapper"].also {
-            it[TYPE_PARAMETERS]["T"][BOUNDS] = arrayOf(JS_OBJECT)
+            it.strictBound("T")
             it.firstParameter.addGeneric("$GRAPH_OBJECT,T")
         }
+
+        it.flatMap(METHODS)
+            .filter { it[NAME] in graphDataNames }
+            .onEach { it.strictBound("V") }
+            .map { it[RETURNS] }
+            .forEach { it.addGeneric("V") }
+
+        it.flatMap(METHODS)
+            .filter { it[NAME] in mapperNames }
+            .onEach { it.strictBound("T") }
+            .map { it.firstParameter }
+            .forEach { it.addGeneric("T") }
     }
 }
 
@@ -178,4 +200,8 @@ private fun fixDataProviders(source: Source) {
 
             it[RETURNS].addGeneric("$keyType,$valueType")
         }
+}
+
+private fun JSONObject.strictBound(name: String) {
+    get(TYPE_PARAMETERS)[name][BOUNDS] = arrayOf(JS_OBJECT)
 }
