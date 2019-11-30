@@ -190,7 +190,7 @@ private fun Source.method(className: String, methodName: String) =
     type(className).method(methodName)
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    getJSONObject(J_RETURNS)
+    get(J_RETURNS)
         .fixTypeGeneric(generic)
 }
 

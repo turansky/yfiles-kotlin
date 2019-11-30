@@ -15,7 +15,7 @@ private fun fixClass(source: Source) {
         setSingleTypeParameter(name = "out T", bound = "$ICLONEABLE<T>")
         get(J_METHODS)
             .firstWithName("clone")
-            .getJSONObject(J_RETURNS)
+            .get(J_RETURNS)
             .put(J_TYPE, "T")
     }
 }
@@ -44,7 +44,7 @@ private fun fixImplementedType(source: Source) {
             type.jsequence(J_METHODS)
                 .filter { it.getString(J_NAME) == "clone" }
                 .filterNot { it.has(J_PARAMETERS) }
-                .map { it.getJSONObject(J_RETURNS) }
+                .map { it[J_RETURNS] }
                 .forEach { it.put(J_TYPE, type.getString(J_ID)) }
         }
 }

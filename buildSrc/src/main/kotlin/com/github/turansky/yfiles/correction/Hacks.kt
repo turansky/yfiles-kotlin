@@ -141,7 +141,7 @@ private fun fixReturnType(source: Source) {
     source.type("SvgExport").apply {
         get(J_METHODS)
             .firstWithName("exportSvg")
-            .getJSONObject(J_RETURNS)
+            .get(J_RETURNS)
             .put(J_TYPE, JS_SVG_SVG_ELEMENT)
     }
 }

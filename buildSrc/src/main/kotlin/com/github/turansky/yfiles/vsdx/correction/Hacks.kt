@@ -134,7 +134,7 @@ private fun fixPackage(source: VsdxSource) {
         keySet().toSet().forEach { id ->
             val functionSignature = getJSONObject(id)
             if (functionSignature.has(J_RETURNS)) {
-                functionSignature.getJSONObject(J_RETURNS)
+                functionSignature[J_RETURNS]
                     .fixType()
             }
 
@@ -196,7 +196,7 @@ private fun fixTypes(source: VsdxSource) {
             (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS))
                 .flatMap {
                     it.optJsequence(J_PARAMETERS) + if (it.has(J_RETURNS)) {
-                        sequenceOf(it.getJSONObject(J_RETURNS))
+                        sequenceOf(it[J_RETURNS])
                     } else {
                         emptySequence()
                     }
@@ -318,7 +318,7 @@ private fun fixSummary(source: VsdxSource) {
         .filter { it.has(J_METHODS) }
         .jsequence(J_METHODS)
         .filter { it.has(J_RETURNS) }
-        .map { it.getJSONObject(J_RETURNS) }
+        .map { it[J_RETURNS] }
         .filter { it.has(J_DOC) }
         .forEach {
             val doc = it.getString(J_DOC)

@@ -237,7 +237,7 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
         .filter { it.has(J_RETURNS) }
         .forEach {
             val methodName = it.getString(J_NAME)
-            it.getJSONObject(J_RETURNS).apply {
+            it[J_RETURNS].apply {
                 when (getString(J_TYPE)) {
                     JS_NUMBER -> put(J_TYPE, getReturnType(className, methodName))
                     "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {

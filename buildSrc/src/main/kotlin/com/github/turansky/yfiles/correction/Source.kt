@@ -4,7 +4,7 @@ import org.json.JSONObject
 
 internal class Source(private val api: JSONObject) {
     val functionSignatures: JSONObject
-        get() = api.getJSONObject(J_FUNCTION_SIGNATURES)
+        get() = api[J_FUNCTION_SIGNATURES]
 
     private val types: List<JSONObject> = api
         .jsequence(J_NAMESPACES)

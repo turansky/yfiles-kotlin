@@ -55,7 +55,7 @@ private fun fixGraph(source: Source) {
         addKeyValueTypeParameters()
         firstParameter.put(J_TYPE, "DpKeyBase<K,V>")
 
-        getJSONObject(J_RETURNS)
+        get(J_RETURNS)
             .addGeneric("K,V")
     }
 
@@ -71,7 +71,7 @@ private fun fixGraph(source: Source) {
         .forEach {
             it.setSingleTypeParameter("V", JS_OBJECT)
 
-            it.getJSONObject(J_RETURNS)
+            it[J_RETURNS]
                 .addGeneric("V")
         }
 }
@@ -154,10 +154,10 @@ private fun JSONObject.getDefaultTypeParameters(): String {
     }
 
     val name = getString(J_NAME)
-    return getJSONObject(J_DP_DATA)
+    return get(J_DP_DATA)
         .run {
-            val keyType = getDefaultTypeParameter(name, getJSONObject(J_DOMAIN).getString(J_TYPE))
-            val valueType = getDefaultTypeParameter(name, getJSONObject(J_VALUES).getString(J_TYPE))
+            val keyType = getDefaultTypeParameter(name, get(J_DOMAIN).getString(J_TYPE))
+            val valueType = getDefaultTypeParameter(name, get(J_VALUES).getString(J_TYPE))
 
             "$keyType,$valueType"
         }
@@ -237,8 +237,8 @@ private fun JSONObject.getDataMapsTypeParameter(): String {
         return "*"
     }
 
-    val type = getJSONObject(J_DP_DATA)
-        .getJSONObject(J_VALUES)
+    val type = get(J_DP_DATA)
+        .get(J_VALUES)
         .getString(J_TYPE)
 
     return when (type) {
@@ -299,7 +299,7 @@ private fun fixMethodTypes(source: Source) {
                 val name = it.getString(J_NAME)
 
                 when (name) {
-                    "get" -> it.getJSONObject(J_RETURNS)
+                    "get" -> it[J_RETURNS]
                         .put(J_TYPE, valueTypeParameter)
 
                     "set" -> it.get(J_PARAMETERS)
@@ -331,7 +331,7 @@ private fun JSONObject.getTypeHolders() =
 
 private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
     if (has(J_RETURNS)) {
-        sequenceOf(getJSONObject(J_RETURNS))
+        sequenceOf(get(J_RETURNS))
     } else {
         emptySequence()
     }

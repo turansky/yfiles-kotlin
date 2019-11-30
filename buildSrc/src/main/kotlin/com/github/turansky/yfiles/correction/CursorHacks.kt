@@ -52,13 +52,13 @@ private fun fixCursorUtil(source: Source) {
             }
             .forEach {
                 it.jsequence(J_PARAMETERS)
-                    .plus(it.getJSONObject(J_RETURNS))
+                    .plus(it[J_RETURNS])
                     .filter { it.getString(J_TYPE) == CURSOR }
                     .forEach { it.put(J_TYPE, cursor("T")) }
             }
 
         staticMethod("toArray").apply {
-            sequenceOf(secondParameter, getJSONObject(J_RETURNS))
+            sequenceOf(secondParameter, get(J_RETURNS))
                 .forEach {
                     val type = it.getString(J_TYPE)
                         .replace("<$JS_ANY>", "<T>")
@@ -111,7 +111,7 @@ private fun fixReturnType(source: Source) {
 }
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    getJSONObject(J_RETURNS)
+    get(J_RETURNS)
         .fixTypeGeneric(generic)
 }
 

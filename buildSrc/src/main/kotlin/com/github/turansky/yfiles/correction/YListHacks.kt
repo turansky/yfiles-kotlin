@@ -50,7 +50,7 @@ private fun JSONObject.fixGeneric() {
 
 private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
     if (has(J_RETURNS)) {
-        sequenceOf(getJSONObject(J_RETURNS))
+        sequenceOf(get(J_RETURNS))
     } else {
         emptySequence()
     }
@@ -166,7 +166,7 @@ private fun fixReturnType(source: Source) {
 }
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    getJSONObject(J_RETURNS)
+    get(J_RETURNS)
         .fixTypeGeneric(generic)
 }
 

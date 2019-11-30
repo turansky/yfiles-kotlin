@@ -90,7 +90,7 @@ private fun fixClass(source: Source) {
 
         get(J_METHODS)
             .firstWithName("newInstance")
-            .getJSONObject(J_RETURNS)
+            .get(J_RETURNS)
             .put(J_TYPE, "T")
 
         get(J_STATIC_METHODS).apply {
@@ -133,7 +133,7 @@ private fun addClassGeneric(source: Source) {
 
             it.typeParameter.addGeneric("T")
 
-            it.getJSONObject(J_RETURNS)
+            it[J_RETURNS]
                 .put(J_TYPE, "T")
 
             it[J_MODIFIERS]
@@ -302,7 +302,7 @@ private fun addMapperMetadataGeneric(source: Source) {
             parameter("keyType").addGeneric("TKey")
             parameter("valueType").addGeneric("TValue")
 
-            getJSONObject(J_RETURNS)
+            get(J_RETURNS)
                 .addGeneric("TKey,TValue")
         }
 
@@ -319,7 +319,7 @@ private fun addMapperMetadataGeneric(source: Source) {
         methods.firstWithName("getMapperMetadata")
             .apply {
                 setTypeParameters("K", "V")
-                getJSONObject(J_RETURNS)
+                get(J_RETURNS)
                     .addGeneric("K,V")
             }
 

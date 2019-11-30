@@ -21,7 +21,7 @@ internal fun correctNumbers(source: JSONObject) {
         .forEach { it.correctMethodParameters() }
 
     (source
-        .getJSONObject(J_FUNCTION_SIGNATURES)
+        .get(J_FUNCTION_SIGNATURES)
         .getJSONObject("yfiles.view.AnimationCallback")
         .get(J_PARAMETERS)
         .single() as JSONObject)
@@ -208,7 +208,7 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
         .filter { it.has(J_RETURNS) }
         .forEach {
             val methodName = it.getString(J_NAME)
-            val returns = it.getJSONObject(J_RETURNS)
+            val returns = it[J_RETURNS]
 
             when (returns.getString(J_TYPE)) {
                 JS_NUMBER -> returns.put(J_TYPE, getReturnType(className, methodName))

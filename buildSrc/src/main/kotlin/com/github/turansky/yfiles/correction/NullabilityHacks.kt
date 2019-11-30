@@ -95,7 +95,7 @@ private fun fixPropertyNullability(source: Source) {
             return false
         }
 
-        val default = getJSONObject(J_DEFAULT)
+        val default = get(J_DEFAULT)
         return default.has(J_VALUE) && default.getString(J_VALUE) == "null"
     }
 
