@@ -101,7 +101,7 @@ private fun fixDataProvider(source: Source) {
 }
 
 private fun JSONObject.getDataProviderTypeParameters(): String {
-    val name = optString(NAME)
+    val name = opt(NAME)
     return if (!has(DP_DATA) && name == "subtreeShapeProvider" || name == "nodeShapeProvider") {
         "$NODE,yfiles.tree.SubtreeShape"
     } else {
@@ -142,7 +142,7 @@ private fun fixDataMap(source: Source) {
 }
 
 private fun JSONObject.getDataMapTypeParameters(): String =
-    if (!has(DP_DATA) && optString(NAME) == "connectorMap") {
+    if (!has(DP_DATA) && opt(NAME) == "connectorMap") {
         "$NODE,yfiles.tree.ParentConnectorDirection"
     } else {
         getDefaultTypeParameters()

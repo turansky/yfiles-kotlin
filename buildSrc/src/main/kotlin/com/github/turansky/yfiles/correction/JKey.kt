@@ -61,7 +61,7 @@ internal operator fun JSONObject.get(key: JObjectKey): JSONObject = getJSONObjec
 
 internal operator fun JSONObject.get(key: JStringKey): String = getString(key.name)
 
-internal fun JSONObject.optString(key: JStringKey): String? = optString(key.name)
+internal fun JSONObject.opt(key: JStringKey): String? = optString(key.name, null)
 
 internal fun JSONObject.remove(key: JKey): Any? = remove(key.name)
 
