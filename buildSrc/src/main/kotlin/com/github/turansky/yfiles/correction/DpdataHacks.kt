@@ -15,6 +15,7 @@ internal fun applyDpataHacks(source: Source) {
     fixWeightedLayerer(source)
 
     fixDataProviders(source)
+    fixMaps(source)
 }
 
 private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
@@ -213,6 +214,41 @@ private fun fixDataProviders(source: Source) {
             }
 
             it[RETURNS].addGeneric("$keyType,$valueType")
+        }
+}
+
+private fun fixMaps(source: Source) {
+    source.type("Maps")
+        .flatMap(STATIC_METHODS)
+        .forEach {
+            val returns = it[RETURNS]
+
+            val keyType = when (returns[TYPE]) {
+                IDATA_MAP -> "K"
+                INODE_MAP -> NODE
+                IEDGE_MAP -> EDGE
+                else -> return@forEach
+            }
+
+            val name = it[NAME]
+            val valueType = when {
+                "ForBoolean" in name -> JS_BOOLEAN
+                "ForInt" in name -> JS_INT
+                "ForNumber" in name -> JS_DOUBLE
+                else -> "V"
+            }
+
+            it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
+                if (keyType == "K") {
+                    add(typeParameter(keyType, JS_OBJECT))
+                }
+
+                if (valueType == "V") {
+                    add(typeParameter(valueType, JS_OBJECT))
+                }
+            }.toList()
+
+            it[RETURNS].addGeneric(if (keyType == "K") "$keyType,$valueType" else valueType)
         }
 }
 
