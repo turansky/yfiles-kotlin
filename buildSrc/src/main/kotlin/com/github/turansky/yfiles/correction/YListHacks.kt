@@ -27,13 +27,13 @@ private fun fixYList(source: Source) {
 private fun JSONObject.fixGeneric() {
     setSingleTypeParameter(bound = JS_ANY)
 
-    get(J_IMPLEMENTS).apply {
+    get(IMPLEMENTS).apply {
         put(0, getString(0).replace("<$JS_ANY>", "<T>"))
     }
 
-    (jsequence(J_CONSTRUCTORS) + jsequence(J_METHODS))
-        .flatMap { it.optJsequence(J_PARAMETERS) + it.returnsSequence() }
-        .plus(jsequence(J_PROPERTIES))
+    (jsequence(CONSTRUCTORS) + jsequence(METHODS))
+        .flatMap { it.optJsequence(PARAMETERS) + it.returnsSequence() }
+        .plus(jsequence(PROPERTIES))
         .forEach {
             val type = it[J_TYPE]
             val newType = when (type) {
@@ -49,8 +49,8 @@ private fun JSONObject.fixGeneric() {
 }
 
 private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(J_RETURNS)) {
-        sequenceOf(get(J_RETURNS))
+    if (has(RETURNS)) {
+        sequenceOf(get(RETURNS))
     } else {
         emptySequence()
     }
@@ -74,11 +74,11 @@ private fun fixMethodParameter(source: Source) {
         "IElementFactory",
         "DefaultElementFactory",
         "MultiPageLayout"
-    ).flatMap { it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
+    ).flatMap { it.optJsequence(METHODS) + it.optJsequence(STATIC_METHODS) }
         .forEach {
             val methodName = it[J_NAME]
 
-            it.optJsequence(J_PARAMETERS)
+            it.optJsequence(PARAMETERS)
                 .filter { it[J_TYPE] == YLIST }
                 .forEach {
                     val generic = getGeneric(methodName, it[J_NAME])
@@ -166,7 +166,7 @@ private fun fixReturnType(source: Source) {
 }
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    get(J_RETURNS)
+    get(RETURNS)
         .fixTypeGeneric(generic)
 }
 

@@ -20,7 +20,7 @@ private fun fixOptionality(source: Source) {
         "PortDecorator",
         "StripeLabelDecorator"
     ).forEach {
-        it.jsequence(J_CONSTRUCTORS)
+        it.jsequence(CONSTRUCTORS)
             .single()
             .firstParameter
             .changeOptionality(true)
@@ -32,20 +32,20 @@ private fun fixOptionality(source: Source) {
         "MultiPageLayout",
         "OrganicPartitionGridLayoutStage",
         "TreeComponentLayout"
-    ).jsequence(J_CONSTRUCTORS)
-        .filter { it.has(J_PARAMETERS) }
-        .filter { it[J_PARAMETERS].length() == 1 }
+    ).jsequence(CONSTRUCTORS)
+        .filter { it.has(PARAMETERS) }
+        .filter { it[PARAMETERS].length() == 1 }
         .map { it.firstParameter }
         .filter { "core" in it[J_NAME] }
         .forEach { it.changeOptionality(true) }
 }
 
 private fun mergeConstructors(type: JSONObject) {
-    if (!type.has(J_CONSTRUCTORS)) {
+    if (!type.has(CONSTRUCTORS)) {
         return
     }
 
-    val constructors = type[J_CONSTRUCTORS]
+    val constructors = type[CONSTRUCTORS]
     if (constructors.length() != 2) {
         return
     }
@@ -61,7 +61,7 @@ private fun mergeConstructors(type: JSONObject) {
 
     constructors.removeItem(firstConstructor)
     secondConstructor
-        .get(J_PARAMETERS)
+        .get(PARAMETERS)
         .let { it.getJSONObject(it.length() - 1) }
         .get(J_MODIFIERS)
         .put(OPTIONAL)
@@ -95,13 +95,13 @@ private fun mergeRequired(
 
 private val JSONObject.parametersCount: Int
     get() = when {
-        has(J_PARAMETERS) -> get(J_PARAMETERS).length()
+        has(PARAMETERS) -> get(PARAMETERS).length()
         else -> 0
     }
 
 private val JSONObject.parametersNames: List<String>
-    get() = if (has(J_PARAMETERS)) {
-        jsequence(J_PARAMETERS)
+    get() = if (has(PARAMETERS)) {
+        jsequence(PARAMETERS)
             .map { it[J_NAME] }
             .toList()
     } else {

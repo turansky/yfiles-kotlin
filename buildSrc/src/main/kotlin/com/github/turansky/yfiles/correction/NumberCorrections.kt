@@ -21,21 +21,21 @@ internal fun correctNumbers(source: JSONObject) {
         .forEach { it.correctMethodParameters() }
 
     (source
-        .get(J_FUNCTION_SIGNATURES)
+        .get(FUNCTION_SIGNATURES)
         .getJSONObject("yfiles.view.AnimationCallback")
-        .get(J_PARAMETERS)
+        .get(PARAMETERS)
         .single() as JSONObject)
         .set(J_TYPE, JS_DOUBLE)
 
 }
 
 private fun JSONObject.correctConstants() {
-    if (!has(J_CONSTANTS)) {
+    if (!has(CONSTANTS)) {
         return
     }
 
     val className = get(J_NAME)
-    jsequence(J_CONSTANTS)
+    jsequence(CONSTANTS)
         .filter { it[J_TYPE] != JS_NUMBER }
         .filter { JS_NUMBER in it[J_TYPE] }
         .forEach {
@@ -60,18 +60,18 @@ private fun JSONObject.correctConstants() {
 }
 
 private fun JSONObject.correctConstructors() {
-    if (!has(J_CONSTRUCTORS)) {
+    if (!has(CONSTRUCTORS)) {
         return
     }
 
     val className = get(J_NAME)
-    jsequence(J_CONSTRUCTORS)
-        .optionalArray(J_PARAMETERS)
+    jsequence(CONSTRUCTORS)
+        .optionalArray(PARAMETERS)
         .filter { it[J_TYPE] == JS_NUMBER }
         .forEach { it[J_TYPE] = getConstructorParameterType(className, it[J_NAME]) }
 
-    jsequence(J_CONSTRUCTORS)
-        .optionalArray(J_PARAMETERS)
+    jsequence(CONSTRUCTORS)
+        .optionalArray(PARAMETERS)
         .filter { it[J_TYPE] == "Array<$JS_NUMBER>" }
         .forEach {
             val genericType = when (val name = it[J_NAME]) {
@@ -121,8 +121,8 @@ private fun getConstructorParameterType(className: String, parameterName: String
 }
 
 private fun JSONObject.correctProperties() {
-    correctProperties(J_STATIC_PROPERTIES)
-    correctProperties(J_PROPERTIES)
+    correctProperties(STATIC_PROPERTIES)
+    correctProperties(PROPERTIES)
 }
 
 private fun JSONObject.correctProperties(key: JArrayKey) {
@@ -156,15 +156,15 @@ private fun getPropertyType(className: String, propertyName: String): String =
     }
 
 private fun JSONObject.correctPropertiesGeneric() {
-    if (!has(J_PROPERTIES)) {
+    if (!has(PROPERTIES)) {
         return
     }
 
-    jsequence(J_PROPERTIES)
+    jsequence(PROPERTIES)
         .filter { "$JS_NUMBER>" in it[J_TYPE] }
         .forEach { it[J_TYPE] = getPropertyGenericType(it[J_NAME], it[J_TYPE]) }
 
-    jsequence(J_PROPERTIES)
+    jsequence(PROPERTIES)
         .filter { it.has(J_SIGNATURE) }
         .forEach {
             val signature = it[J_SIGNATURE]
@@ -195,8 +195,8 @@ private fun getPropertyGenericType(propertyName: String, type: String): String {
 
 
 private fun JSONObject.correctMethods() {
-    correctMethods(J_STATIC_METHODS)
-    correctMethods(J_METHODS)
+    correctMethods(STATIC_METHODS)
+    correctMethods(METHODS)
 }
 
 private fun JSONObject.correctMethods(key: JArrayKey) {
@@ -206,10 +206,10 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
 
     val className = get(J_NAME)
     jsequence(key)
-        .filter { it.has(J_RETURNS) }
+        .filter { it.has(RETURNS) }
         .forEach {
             val methodName = it[J_NAME]
-            val returns = it[J_RETURNS]
+            val returns = it[RETURNS]
 
             when (returns[J_TYPE]) {
                 JS_NUMBER -> returns[J_TYPE] = getReturnType(className, methodName)
@@ -241,8 +241,8 @@ private fun getReturnType(className: String, methodName: String): String =
     }
 
 private fun JSONObject.correctMethodParameters() {
-    correctMethodParameters(J_STATIC_METHODS)
-    correctMethodParameters(J_METHODS)
+    correctMethodParameters(STATIC_METHODS)
+    correctMethodParameters(METHODS)
 }
 
 private fun JSONObject.correctMethodParameters(key: JArrayKey) {
@@ -252,10 +252,10 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
 
     val className = get(J_NAME)
     jsequence(key)
-        .filter { it.has(J_PARAMETERS) }
+        .filter { it.has(PARAMETERS) }
         .forEach { method ->
             val methodName = method[J_NAME]
-            method.jsequence(J_PARAMETERS)
+            method.jsequence(PARAMETERS)
                 .forEach {
                     val parameterName = it.get(J_NAME)
                     when (it.get(J_TYPE)) {
@@ -340,11 +340,11 @@ private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
         .filter { it[J_NAME] in INT_SIGNATURE_CLASSES }
         .flatMap { type ->
-            sequenceOf(J_CONSTRUCTORS, J_METHODS, J_STATIC_METHODS)
+            sequenceOf(CONSTRUCTORS, METHODS, STATIC_METHODS)
                 .filter { type.has(it) }
                 .flatMap { type.jsequence(it) }
         }
-        .optionalArray(J_PARAMETERS)
+        .optionalArray(PARAMETERS)
         .filter { it.has(J_SIGNATURE) }
         .forEach {
             val signature = it[J_SIGNATURE]

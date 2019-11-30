@@ -140,12 +140,12 @@ private fun getType(name: String): String? =
     }
 
 private fun JSONObject.correctProperties() {
-    if (!has(J_PROPERTIES)) {
+    if (!has(PROPERTIES)) {
         return
     }
 
     val className = get(J_NAME)
-    jsequence(J_PROPERTIES)
+    jsequence(PROPERTIES)
         .forEach {
             val propertyName = it[J_NAME]
             when (it[J_TYPE]) {
@@ -175,8 +175,8 @@ private fun getPropertyType(className: String, propertyName: String): String {
 }
 
 private fun JSONObject.correctMethodParameters() {
-    correctMethodParameters(J_STATIC_METHODS)
-    correctMethodParameters(J_METHODS)
+    correctMethodParameters(STATIC_METHODS)
+    correctMethodParameters(METHODS)
 }
 
 private fun JSONObject.correctMethodParameters(key: JArrayKey) {
@@ -186,10 +186,10 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
 
     val className = get(J_NAME)
     jsequence(key)
-        .filter { it.has(J_PARAMETERS) }
+        .filter { it.has(PARAMETERS) }
         .forEach { method ->
             val methodName = method[J_NAME]
-            method.jsequence(J_PARAMETERS)
+            method.jsequence(PARAMETERS)
                 .forEach {
                     val parameterName = it[J_NAME]
                     when (it[J_TYPE]) {
@@ -223,8 +223,8 @@ private fun getParameterType(
 }
 
 private fun JSONObject.correctMethods() {
-    correctMethods(J_STATIC_METHODS)
-    correctMethods(J_METHODS)
+    correctMethods(STATIC_METHODS)
+    correctMethods(METHODS)
 }
 
 private fun JSONObject.correctMethods(key: JArrayKey) {
@@ -234,10 +234,10 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
 
     val className = get(J_NAME)
     jsequence(key)
-        .filter { it.has(J_RETURNS) }
+        .filter { it.has(RETURNS) }
         .forEach {
             val methodName = it[J_NAME]
-            it[J_RETURNS].apply {
+            it[RETURNS].apply {
                 when (get(J_TYPE)) {
                     JS_NUMBER -> set(J_TYPE, getReturnType(className, methodName))
                     "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {

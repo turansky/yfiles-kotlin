@@ -108,20 +108,20 @@ private fun String.fixVsdxPackage(): String =
 private fun fixPackage(source: VsdxSource) {
     source.types()
         .forEach {
-            val id = it[J_ID]
-            it[J_ID] = "yfiles.$id"
+            val id = it[ID]
+            it[ID] = "yfiles.$id"
         }
 
     source.types()
-        .filter { it.has(J_EXTENDS) }
+        .filter { it.has(EXTENDS) }
         .forEach {
-            it[J_EXTENDS] = it[J_EXTENDS].fixVsdxPackage()
+            it[EXTENDS] = it[EXTENDS].fixVsdxPackage()
         }
 
     source.types()
-        .filter { it.has(J_IMPLEMENTS) }
+        .filter { it.has(IMPLEMENTS) }
         .forEach {
-            it[J_IMPLEMENTS] = it[J_IMPLEMENTS]
+            it[IMPLEMENTS] = it[IMPLEMENTS]
                 .asSequence()
                 .map { it as String }
                 .map { it.fixVsdxPackage() }
@@ -131,8 +131,8 @@ private fun fixPackage(source: VsdxSource) {
     source.functionSignatures.apply {
         keySet().toSet().forEach { id ->
             val functionSignature = getJSONObject(id)
-            if (functionSignature.has(J_RETURNS)) {
-                functionSignature[J_RETURNS]
+            if (functionSignature.has(RETURNS)) {
+                functionSignature[RETURNS]
                     .fixType()
             }
 
@@ -178,9 +178,9 @@ private fun getFixedType(type: String): String {
 
 private fun fixTypes(source: VsdxSource) {
     source.types()
-        .filter { it.has(J_IMPLEMENTS) }
+        .filter { it.has(IMPLEMENTS) }
         .forEach {
-            it[J_IMPLEMENTS] = it[J_IMPLEMENTS]
+            it[IMPLEMENTS] = it[IMPLEMENTS]
                 .asSequence()
                 .map { it as String }
                 .map { getFixedType(it) }
@@ -189,15 +189,15 @@ private fun fixTypes(source: VsdxSource) {
 
     source.types()
         .flatMap {
-            (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS))
+            (it.optJsequence(CONSTRUCTORS) + it.optJsequence(STATIC_METHODS) + it.optJsequence(METHODS))
                 .flatMap {
-                    it.optJsequence(J_PARAMETERS) + if (it.has(J_RETURNS)) {
-                        sequenceOf(it[J_RETURNS])
+                    it.optJsequence(PARAMETERS) + if (it.has(RETURNS)) {
+                        sequenceOf(it[RETURNS])
                     } else {
                         emptySequence()
                     }
                 }
-                .plus(it.optJsequence(J_PROPERTIES))
+                .plus(it.optJsequence(PROPERTIES))
         }
         .forEach { it.fixType() }
 
@@ -207,14 +207,14 @@ private fun fixTypes(source: VsdxSource) {
                 getJSONObject(it)
             }
         }
-        .filter { it.has(J_PARAMETERS) }
-        .jsequence(J_PARAMETERS)
+        .filter { it.has(PARAMETERS) }
+        .jsequence(PARAMETERS)
         .forEach { it.fixType() }
 }
 
 private fun fixOptionTypes(source: VsdxSource) {
     source.type("CachingMasterProvider")
-        .jsequence(J_CONSTRUCTORS)
+        .jsequence(CONSTRUCTORS)
         .single()
         .apply {
             parameter("optionsOrNodeStyleType").apply {
@@ -231,7 +231,7 @@ private fun fixOptionTypes(source: VsdxSource) {
         }
 
     source.type("CustomEdgeProvider")
-        .jsequence(J_CONSTRUCTORS)
+        .jsequence(CONSTRUCTORS)
         .single()
         .parameter("edgeStyleType")
         .addGeneric("yfiles.styles.IEdgeStyle")
@@ -264,7 +264,7 @@ private fun fixGeneric(source: VsdxSource) {
 
 private fun fixMethodModifier(source: VsdxSource) {
     source.types("IMasterProvider", "IShapeProcessingStep")
-        .jsequence(J_METHODS)
+        .jsequence(METHODS)
         .forEach { it[J_MODIFIERS].put(ABSTRACT) }
 }
 
@@ -292,8 +292,8 @@ private fun JSONObject.fixSummary() {
 
 private fun fixSummary(source: VsdxSource) {
     source.type("VsdxExport")
-        .jsequence(J_METHODS)
-        .jsequence(J_PARAMETERS)
+        .jsequence(METHODS)
+        .jsequence(PARAMETERS)
         .filter { it.has(J_SUMMARY) }
         .forEach {
             it[J_SUMMARY] = it[J_SUMMARY]
@@ -302,20 +302,20 @@ private fun fixSummary(source: VsdxSource) {
 
     source.types()
         .onEach { it.fixSummary() }
-        .onEach { it.optJsequence(J_PROPERTIES).forEach { it.fixSummary() } }
-        .flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_METHODS) }
+        .onEach { it.optJsequence(PROPERTIES).forEach { it.fixSummary() } }
+        .flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(STATIC_METHODS) + it.optJsequence(METHODS) }
         .onEach { it.fixSummary() }
-        .flatMap { it.optJsequence(J_PARAMETERS) }
+        .flatMap { it.optJsequence(PARAMETERS) }
         .forEach { it.fixSummary() }
 
     source.types()
-        .filter { it.has(J_METHODS) }
-        .jsequence(J_METHODS)
-        .filter { it.has(J_RETURNS) }
-        .map { it[J_RETURNS] }
-        .filter { it.has(J_DOC) }
+        .filter { it.has(METHODS) }
+        .jsequence(METHODS)
+        .filter { it.has(RETURNS) }
+        .map { it[RETURNS] }
+        .filter { it.has(DOC) }
         .forEach {
-            it[J_DOC] = it[J_DOC]
+            it[DOC] = it[DOC]
                 .replace("\r", " ")
         }
 }

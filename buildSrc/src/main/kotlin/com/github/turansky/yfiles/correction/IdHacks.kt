@@ -31,7 +31,7 @@ private val ID_DP_KEYS = setOf(
 
 internal fun applyIdHacks(source: Source) {
     source.types()
-        .flatMap { it.optJsequence(J_CONSTANTS) }
+        .flatMap { it.optJsequence(CONSTANTS) }
         .filter { it[J_TYPE] in ID_DP_KEYS }
         .filter { it[J_NAME].endsWith("_ID_DP_KEY") }
         .forEach {
@@ -61,8 +61,8 @@ internal fun applyIdHacks(source: Source) {
         }
 
     source.type("BusRouterBusDescriptor")
-        .jsequence(J_CONSTRUCTORS)
-        .jsequence(J_PARAMETERS)
+        .jsequence(CONSTRUCTORS)
+        .jsequence(PARAMETERS)
         .forEach {
             val name = it[J_NAME]
             if (name.endsWith("ID")) {
@@ -77,8 +77,8 @@ private fun looksLikeId(name: String): Boolean =
 private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .flatMap {
-            (it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS))
-                .filter { it.has(J_PARAMETERS) }
-                .jsequence(J_PARAMETERS)
-                .plus(it.optJsequence(J_PROPERTIES))
+            (it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS))
+                .filter { it.has(PARAMETERS) }
+                .jsequence(PARAMETERS)
+                .plus(it.optJsequence(PROPERTIES))
         }

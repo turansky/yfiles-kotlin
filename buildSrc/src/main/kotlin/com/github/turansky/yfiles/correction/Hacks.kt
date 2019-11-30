@@ -60,8 +60,8 @@ internal fun applyHacks(api: JSONObject) {
 
 private fun cleanYObject(source: Source) {
     source.type("YObject").apply {
-        strictRemove(J_STATIC_METHODS)
-        strictRemove(J_METHODS)
+        strictRemove(STATIC_METHODS)
+        strictRemove(METHODS)
     }
 }
 
@@ -75,7 +75,7 @@ private fun removeUnusedFunctionSignatures(source: Source) {
 
 private fun fixUnionMethods(source: Source) {
     val methods = source.type("GraphModelManager")
-        .get(J_METHODS)
+        .get(METHODS)
 
     val unionMethods = methods
         .asSequence()
@@ -100,7 +100,7 @@ private fun fixUnionMethods(source: Source) {
 
 private fun fixConstantGenerics(source: Source) {
     source.type("IListEnumerable")
-        .get(J_CONSTANTS)
+        .get(CONSTANTS)
         .firstWithName("EMPTY")
         .also {
             it[J_TYPE] = it[J_TYPE]
@@ -108,7 +108,7 @@ private fun fixConstantGenerics(source: Source) {
         }
 
     source.type("LabelLayoutKeys")
-        .jsequence(J_CONSTANTS)
+        .jsequence(CONSTANTS)
         .forEach {
             val type = it[J_TYPE]
             if (type.endsWith("<yfiles.layout.LabelLayoutData>")) {
@@ -124,7 +124,7 @@ private fun fixFunctionGenerics(source: Source) {
 
     source.type("List")
         .staticMethod("from")
-        .get(J_TYPE_PARAMETERS)
+        .get(TYPE_PARAMETERS)
         .put(jObject(J_NAME to "T"))
 
     source.type("IContextLookupChainLink")
@@ -137,9 +137,9 @@ private fun fixFunctionGenerics(source: Source) {
 
 private fun fixReturnType(source: Source) {
     source.type("SvgExport").apply {
-        get(J_METHODS)
+        get(METHODS)
             .firstWithName("exportSvg")
-            .get(J_RETURNS)
+            .get(RETURNS)
             .set(J_TYPE, JS_SVG_SVG_ELEMENT)
     }
 }
@@ -161,7 +161,7 @@ private fun fixPropertyNullability(source: Source) {
     }
 
     source.type("SvgVisualGroup")
-        .get(J_PROPERTIES)
+        .get(PROPERTIES)
         .firstWithName("children")
         .apply {
             require(get(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
@@ -171,8 +171,8 @@ private fun fixPropertyNullability(source: Source) {
 
 private fun fixConstructorParameterName(source: Source) {
     source.type("TimeSpan")
-        .jsequence(J_CONSTRUCTORS)
-        .jsequence(J_PARAMETERS)
+        .jsequence(CONSTRUCTORS)
+        .jsequence(PARAMETERS)
         .single { it[J_NAME] == "millis" }
         .set(J_NAME, "milliseconds")
 }
@@ -186,9 +186,9 @@ private fun fixMethodParameterName(source: Source) {
     }
 
     source.type("RankAssignmentAlgorithm")
-        .jsequence(J_STATIC_METHODS)
+        .jsequence(STATIC_METHODS)
         .filter { it[J_NAME] == "simplex" }
-        .jsequence(J_PARAMETERS)
+        .jsequence(PARAMETERS)
         .single { it[J_NAME] == "_root" }
         .set(J_NAME, "root")
 }
@@ -209,10 +209,10 @@ private fun fixMethodParameterNullability(source: Source) {
         }
 
     source.types()
-        .optionalArray(J_METHODS)
+        .optionalArray(METHODS)
         .filter { it[J_NAME] in BROKEN_NULLABILITY_METHODS }
-        .filter { it[J_PARAMETERS].length() == 1 }
-        .map { it[J_PARAMETERS].single() }
+        .filter { it[PARAMETERS].length() == 1 }
+        .map { it[PARAMETERS].single() }
         .map { it as JSONObject }
         .onEach { require(it[J_TYPE] == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
@@ -227,7 +227,7 @@ private fun fixMethodParameterNullability(source: Source) {
         "FocusIndicatorManager",
         "HighlightIndicatorManager",
         "SelectionIndicatorManager"
-    ).flatMap { it.jsequence(J_METHODS) }
+    ).flatMap { it.jsequence(METHODS) }
         .filter { it[J_NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
@@ -249,7 +249,7 @@ private fun fixMethodNullability(source: Source) {
     STATIC_METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .jsequence(J_STATIC_METHODS)
+                .jsequence(STATIC_METHODS)
                 .filter { it[J_NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
@@ -257,7 +257,7 @@ private fun fixMethodNullability(source: Source) {
     METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .jsequence(J_METHODS)
+                .jsequence(METHODS)
                 .filter { it[J_NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
@@ -283,7 +283,7 @@ private fun removeDuplicatedProperties(source: Source) {
         .forEach { declaration ->
             val properties = source
                 .type(declaration.className)
-                .get(J_PROPERTIES)
+                .get(PROPERTIES)
 
             val property = properties
                 .firstWithName(declaration.propertyName)
@@ -297,7 +297,7 @@ private fun removeDuplicatedMethods(source: Source) {
         .forEach { declaration ->
             val methods = source
                 .type(declaration.className)
-                .get(J_METHODS)
+                .get(METHODS)
 
             val method = methods
                 .firstWithName(declaration.methodName)
@@ -308,9 +308,9 @@ private fun removeDuplicatedMethods(source: Source) {
 
 private fun removeSystemMethods(source: Source) {
     source.types()
-        .filter { it.has(J_METHODS) }
+        .filter { it.has(METHODS) }
         .forEach {
-            val methods = it[J_METHODS]
+            val methods = it[METHODS]
             val systemMetods = methods.asSequence()
                 .map { it as JSONObject }
                 .filter { it[J_NAME] in SYSTEM_FUNCTIONS }
@@ -323,19 +323,19 @@ private fun removeSystemMethods(source: Source) {
 }
 
 private fun removeArtifitialParameters(source: Source) {
-    sequenceOf(J_CONSTRUCTORS, J_METHODS)
+    sequenceOf(CONSTRUCTORS, METHODS)
         .flatMap { parameter ->
             source.types()
                 .filter { it.has(parameter) }
                 .jsequence(parameter)
         }
-        .filter { it.has(J_PARAMETERS) }
+        .filter { it.has(PARAMETERS) }
         .forEach {
-            val artifitialParameters = it.jsequence(J_PARAMETERS)
+            val artifitialParameters = it.jsequence(PARAMETERS)
                 .filter { it[J_MODIFIERS].contains(ARTIFICIAL) }
                 .toList()
 
-            val parameters = it[J_PARAMETERS]
+            val parameters = it[PARAMETERS]
             artifitialParameters.forEach {
                 parameters.removeItem(it)
             }
@@ -351,15 +351,15 @@ private val FUNC_RUDIMENT = ",number,yfiles.collections.IEnumerable<T>"
 private val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
 
 private fun removeThisParameters(source: Source) {
-    sequenceOf(J_CONSTRUCTORS, J_STATIC_METHODS, J_METHODS)
+    sequenceOf(CONSTRUCTORS, STATIC_METHODS, METHODS)
         .flatMap { parameter ->
             THIS_TYPES.asSequence()
                 .map { source.type(it) }
                 .filter { it.has(parameter) }
                 .jsequence(parameter)
         }
-        .filter { it.has(J_PARAMETERS) }
-        .map { it[J_PARAMETERS] }
+        .filter { it.has(PARAMETERS) }
+        .map { it[PARAMETERS] }
         .filter { it.length() > 0 }
         .onEach {
             if ((it.last() as JSONObject)[J_NAME] == "thisArg") {
@@ -386,30 +386,30 @@ private fun removeThisParameters(source: Source) {
 
 private fun fieldToProperties(source: Source) {
     source.types()
-        .filter { it.has(J_FIELDS) }
+        .filter { it.has(FIELDS) }
         .forEach { type ->
-            val fields = type[J_FIELDS].apply {
+            val fields = type[FIELDS].apply {
                 asSequence()
                     .map { it as JSONObject }
                     .map { it[J_MODIFIERS] }
                     .forEach { it.put(if (FINAL in it) RO else FINAL) }
             }
 
-            if (type.has(J_PROPERTIES)) {
-                val properties = type[J_PROPERTIES]
+            if (type.has(PROPERTIES)) {
+                val properties = type[PROPERTIES]
                 fields.forEach { properties.put(it) }
             } else {
-                type[J_PROPERTIES] = fields
+                type[PROPERTIES] = fields
             }
-            type.strictRemove(J_FIELDS)
+            type.strictRemove(FIELDS)
         }
 }
 
 private fun JSONObject.addMethod(
     methodData: MethodData
 ) {
-    if (!has(J_METHODS)) {
-        set(J_METHODS, emptyList<Any>())
+    if (!has(METHODS)) {
+        set(METHODS, emptyList<Any>())
     }
 
     val result = methodData.result
@@ -418,7 +418,7 @@ private fun JSONObject.addMethod(
         modifiers += result.modifiers
     }
 
-    get(J_METHODS)
+    get(METHODS)
         .put(
             mutableMapOf(
                 J_NAME to methodData.methodName,
@@ -428,7 +428,7 @@ private fun JSONObject.addMethod(
                     val parameters = methodData.parameters
                     if (parameters.isNotEmpty()) {
                         it.put(
-                            J_PARAMETERS,
+                            PARAMETERS,
                             parameters.map {
                                 mapOf(
                                     J_NAME to it.name,
@@ -442,7 +442,7 @@ private fun JSONObject.addMethod(
                 .also {
                     if (result != null) {
                         it.put(
-                            J_RETURNS, mapOf(
+                            RETURNS, mapOf(
                                 J_TYPE to result.type
                             )
                         )
@@ -457,9 +457,9 @@ private fun fixMethodGenericBounds(source: Source) {
         "getViewItem"
     )
     source.type("IFoldingView")
-        .jsequence(J_METHODS)
+        .jsequence(METHODS)
         .filter { it[J_NAME] in methodNames }
-        .map { it[J_TYPE_PARAMETERS] }
+        .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
-        .forEach { it[J_BOUNDS] = arrayOf(IMODEL_ITEM) }
+        .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
 }

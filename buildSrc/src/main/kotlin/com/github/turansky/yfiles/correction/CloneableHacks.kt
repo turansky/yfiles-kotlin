@@ -13,24 +13,24 @@ internal fun applyCloneableHacks(source: Source) {
 private fun fixClass(source: Source) {
     source.type("ICloneable").apply {
         setSingleTypeParameter(name = "out T", bound = "$ICLONEABLE<T>")
-        get(J_METHODS)
+        get(METHODS)
             .firstWithName("clone")
-            .get(J_RETURNS)
+            .get(RETURNS)
             .set(J_TYPE, "T")
     }
 }
 
 private fun fixImplementedType(source: Source) {
     source.types()
-        .filter { it.has(J_IMPLEMENTS) }
+        .filter { it.has(IMPLEMENTS) }
         .forEach { type ->
-            type[J_IMPLEMENTS].apply {
+            type[IMPLEMENTS].apply {
                 val index = indexOf(ICLONEABLE)
                 if (index != -1) {
                     if (type.hasCloneableSuperType(source)) {
                         remove(index)
                     } else {
-                        val typeId = type[J_ID]
+                        val typeId = type[ID]
                         put(index, "$ICLONEABLE<$typeId>")
                     }
                 }
@@ -38,33 +38,33 @@ private fun fixImplementedType(source: Source) {
         }
 
     source.types()
-        .filter { it.has(J_METHODS) }
-        .filterNot { it[J_ID] == ICLONEABLE }
+        .filter { it.has(METHODS) }
+        .filterNot { it[ID] == ICLONEABLE }
         .forEach { type ->
-            type.jsequence(J_METHODS)
+            type.jsequence(METHODS)
                 .filter { it[J_NAME] == "clone" }
-                .filterNot { it.has(J_PARAMETERS) }
-                .map { it[J_RETURNS] }
-                .forEach { it[J_TYPE] = type[J_ID] }
+                .filterNot { it.has(PARAMETERS) }
+                .map { it[RETURNS] }
+                .forEach { it[J_TYPE] = type[ID] }
         }
 }
 
 private fun JSONObject.hasCloneableSuperType(source: Source): Boolean {
-    if (get(J_ID) == "yfiles.tree.DefaultNodePlacer") {
+    if (get(ID) == "yfiles.tree.DefaultNodePlacer") {
         return true
     }
 
-    if (!has(J_IMPLEMENTS)) {
+    if (!has(IMPLEMENTS)) {
         return false
     }
 
-    return get(J_IMPLEMENTS)
+    return get(IMPLEMENTS)
         .asSequence()
         .map { it as String }
         .map { it.toClassName() }
         .map { source.type(it) }
-        .filter { it.has(J_IMPLEMENTS) }
-        .map { it[J_IMPLEMENTS] }
+        .filter { it.has(IMPLEMENTS) }
+        .map { it[IMPLEMENTS] }
         .flatMap { it.asSequence() }
         .map { it as String }
         .any { it.startsWith(ICLONEABLE) }

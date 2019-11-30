@@ -21,9 +21,9 @@ internal fun applyComparableHacks(source: Source) {
         "YPoint"
     )
         .forEach {
-            val id = it[J_ID]
+            val id = it[ID]
 
-            val implements = it[J_IMPLEMENTS]
+            val implements = it[IMPLEMENTS]
             implements.put(
                 implements.indexOf(ICOMPARABLE),
                 "$ICOMPARABLE<$id>"
@@ -37,14 +37,14 @@ internal fun applyComparableHacks(source: Source) {
         "DefaultOutEdgeComparer",
         "NodeOrderComparer",
         "NodeWeightComparer"
-    ).jsequence(J_METHODS)
+    ).jsequence(METHODS)
         .filter { it[J_NAME] == "compare" }
-        .jsequence(J_PARAMETERS)
+        .jsequence(PARAMETERS)
         .forEach { it.changeNullability(false) }
 }
 
 private fun JSONObject.configureCompareTo(type: String) {
-    jsequence(J_METHODS)
+    jsequence(METHODS)
         .filter { it[J_NAME] == "compareTo" }
         .singleOrNull()
         ?.apply {

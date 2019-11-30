@@ -44,7 +44,7 @@ private fun fixClass(source: Source) {
     for ((className, generic) in DP_KEY_GENERIC_MAP) {
         if (className != DP_KEY_BASE) {
             source.type(className)
-                .updateDpKeyGeneric(J_EXTENDS, generic)
+                .updateDpKeyGeneric(EXTENDS, generic)
         }
     }
 

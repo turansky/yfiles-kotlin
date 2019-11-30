@@ -25,8 +25,8 @@ internal fun applyCollectionHacks(source: Source) {
     }.forEach { it.fixTypeGeneric("yfiles.layout.PortCandidate") }
 
     source.type("PartitionGrid")
-        .jsequence(J_METHODS)
-        .single { it[J_ID] == "PartitionGrid-method-createCellSpanId(yfiles.collections.ICollection,yfiles.collections.ICollection)" }
+        .jsequence(METHODS)
+        .single { it[ID] == "PartitionGrid-method-createCellSpanId(yfiles.collections.ICollection,yfiles.collections.ICollection)" }
         .apply {
             firstParameter.fixTypeGeneric("yfiles.layout.RowDescriptor")
             secondParameter.fixTypeGeneric("yfiles.layout.ColumnDescriptor")

@@ -4,10 +4,10 @@ import org.json.JSONObject
 
 internal fun applyEventHacks(source: Source) {
     source.types()
-        .flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) }
+        .flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS) }
         .plus(source.functionSignatures.run { keySet().map { getJSONObject(it) } })
-        .filter { it.has(J_PARAMETERS) }
-        .jsequence(J_PARAMETERS)
+        .filter { it.has(PARAMETERS) }
+        .jsequence(PARAMETERS)
         .forEach {
             val name = it.getNewName()
                 ?: return@forEach

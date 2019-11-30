@@ -24,7 +24,7 @@ private fun fixCursor(source: Source) {
         "IPointCursor" to YPOINT
     ).forEach { (className, generic) ->
         source.type(className)
-            .get(J_IMPLEMENTS).apply {
+            .get(IMPLEMENTS).apply {
                 put(0, getString(0) + "<$generic>")
             }
     }
@@ -38,7 +38,7 @@ private fun JSONObject.fixGeneric() {
 
 private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
-        jsequence(J_STATIC_METHODS)
+        jsequence(STATIC_METHODS)
             .onEach {
                 val name = it[J_NAME]
                 val bound = when (name) {
@@ -50,14 +50,14 @@ private fun fixCursorUtil(source: Source) {
                 it.setSingleTypeParameter(bound = bound)
             }
             .forEach {
-                it.jsequence(J_PARAMETERS)
-                    .plus(it[J_RETURNS])
+                it.jsequence(PARAMETERS)
+                    .plus(it[RETURNS])
                     .filter { it[J_TYPE] == CURSOR }
                     .forEach { it[J_TYPE] = cursor("T") }
             }
 
         staticMethod("toArray").apply {
-            sequenceOf(secondParameter, get(J_RETURNS))
+            sequenceOf(secondParameter, get(RETURNS))
                 .forEach {
                     it[J_TYPE] = it[J_TYPE]
                         .replace("<$JS_ANY>", "<T>")
@@ -80,8 +80,8 @@ private fun fixMethodParameter(source: Source) {
         "Graph",
         "LayoutGraph",
         "DefaultLayoutGraph"
-    ).jsequence(J_CONSTRUCTORS)
-        .flatMap { it.optJsequence(J_PARAMETERS) }
+    ).jsequence(CONSTRUCTORS)
+        .flatMap { it.optJsequence(PARAMETERS) }
         .filter { it[J_NAME] in nodeParameterNames }
         .forEach { it.fixTypeGeneric(NODE) }
 
@@ -108,7 +108,7 @@ private fun fixReturnType(source: Source) {
 }
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    get(J_RETURNS)
+    get(RETURNS)
         .fixTypeGeneric(generic)
 }
 

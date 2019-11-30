@@ -49,13 +49,13 @@ private val DATA_MAP_TYPE_MAP = mapOf(
 
 private fun fixGraph(source: Source) {
     val methods = source.type("Graph")
-        .get(J_METHODS)
+        .get(METHODS)
 
     methods.firstWithName("getDataProvider").apply {
         addKeyValueTypeParameters()
         firstParameter[J_TYPE] = "DpKeyBase<K,V>"
 
-        get(J_RETURNS)
+        get(RETURNS)
             .addGeneric("K,V")
     }
 
@@ -71,7 +71,7 @@ private fun fixGraph(source: Source) {
         .forEach {
             it.setSingleTypeParameter("V", JS_OBJECT)
 
-            it[J_RETURNS]
+            it[RETURNS]
                 .addGeneric("V")
         }
 }
@@ -89,13 +89,13 @@ private fun fixDataProvider(source: Source) {
         .addKeyValueTypeParameters()
 
     source.type("MapperDataProviderAdapter")
-        .get(J_TYPE_PARAMETERS)
+        .get(TYPE_PARAMETERS)
         .getJSONObject(1)
-        .set(J_BOUNDS, arrayOf(JS_OBJECT))
+        .set(BOUNDS, arrayOf(JS_OBJECT))
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
-            .get(J_IMPLEMENTS)
+            .get(IMPLEMENTS)
             .apply { put(indexOf(IDATA_PROVIDER), "$IDATA_PROVIDER<$typeParameters>") }
     }
 }
@@ -120,7 +120,7 @@ private fun fixDataAcceptor(source: Source) {
 
     for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
         source.type(className)
-            .get(J_IMPLEMENTS)
+            .get(IMPLEMENTS)
             .apply { put(indexOf(IDATA_ACCEPTOR), "$IDATA_ACCEPTOR<$typeParameters>") }
     }
 }
@@ -136,7 +136,7 @@ private fun fixDataMap(source: Source) {
 
     for ((className, typeParameters) in DATA_MAP_TYPE_MAP) {
         source.type(className)
-            .get(J_IMPLEMENTS)
+            .get(IMPLEMENTS)
             .apply { put(indexOf(IDATA_MAP), "$IDATA_MAP<$typeParameters>") }
     }
 }
@@ -224,7 +224,7 @@ private fun fixDataMaps(source: Source) {
         }
 
     source.type("Graph")
-        .jsequence(J_PROPERTIES)
+        .jsequence(PROPERTIES)
         .forEach { property ->
             val type = property[J_TYPE]
             MAP_INTERFACES.find { it in type }
@@ -288,23 +288,23 @@ private fun fixMethodTypes(source: Source) {
 
         "MapperDataProviderAdapter"
     ).forEach {
-        val typeParameters = it[J_TYPE_PARAMETERS]
+        val typeParameters = it[TYPE_PARAMETERS]
         val keyTypeParameter = typeParameters.getJSONObject(0)[J_NAME]
         val valueTypeParameter = typeParameters.getJSONObject(1)[J_NAME]
 
-        it.jsequence(J_METHODS)
+        it.jsequence(METHODS)
             .forEach {
                 val name = it[J_NAME]
 
                 when (name) {
-                    "get" -> it[J_RETURNS][J_TYPE] = valueTypeParameter
+                    "get" -> it[RETURNS][J_TYPE] = valueTypeParameter
 
-                    "set" -> it.get(J_PARAMETERS)
+                    "set" -> it.get(PARAMETERS)
                         .firstWithName("value")
                         .set(J_TYPE, valueTypeParameter)
                 }
 
-                it.jsequence(J_PARAMETERS)
+                it.jsequence(PARAMETERS)
                     .filter { it[J_NAME] == "dataHolder" }
                     .forEach { it[J_TYPE] = keyTypeParameter }
             }
@@ -313,7 +313,7 @@ private fun fixMethodTypes(source: Source) {
 
 private fun JSONObject.addKeyValueTypeParameters() {
     set(
-        J_TYPE_PARAMETERS,
+        TYPE_PARAMETERS,
         jArray(
             typeParameter("K", JS_OBJECT),
             typeParameter("V", JS_OBJECT)
@@ -322,13 +322,13 @@ private fun JSONObject.addKeyValueTypeParameters() {
 }
 
 private fun JSONObject.getTypeHolders() =
-    (optJsequence(J_CONSTRUCTORS) + optJsequence(J_STATIC_METHODS) + optJsequence(J_METHODS))
-        .flatMap { it.optJsequence(J_PARAMETERS) + it.returnsSequence() }
-        .plus(optJsequence(J_PROPERTIES))
+    (optJsequence(CONSTRUCTORS) + optJsequence(STATIC_METHODS) + optJsequence(METHODS))
+        .flatMap { it.optJsequence(PARAMETERS) + it.returnsSequence() }
+        .plus(optJsequence(PROPERTIES))
 
 private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(J_RETURNS)) {
-        sequenceOf(get(J_RETURNS))
+    if (has(RETURNS)) {
+        sequenceOf(get(RETURNS))
     } else {
         emptySequence()
     }

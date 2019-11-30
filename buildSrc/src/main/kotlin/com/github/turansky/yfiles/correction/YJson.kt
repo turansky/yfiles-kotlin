@@ -8,12 +8,12 @@ import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
 internal fun JSONObject.staticMethod(name: String): JSONObject =
-    get(J_STATIC_METHODS)
+    get(STATIC_METHODS)
         .firstWithName(name)
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
-    (optionalArray(J_METHODS) + optionalArray(J_STATIC_METHODS))
-        .optionalArray(J_PARAMETERS)
+    (optionalArray(METHODS) + optionalArray(STATIC_METHODS))
+        .optionalArray(PARAMETERS)
 
 internal fun JSONObject.methodParameters(
     methodName: String,
@@ -30,10 +30,10 @@ internal fun JSONObject.methodParameters(
     parameterName: String,
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
-    val result = get(J_METHODS)
+    val result = get(METHODS)
         .objects { it[J_NAME] == methodName }
         .flatMap {
-            it[J_PARAMETERS]
+            it[PARAMETERS]
                 .objects { it[J_NAME] == parameterName }
                 .filter(parameterFilter)
         }
@@ -45,18 +45,18 @@ internal fun JSONObject.methodParameters(
 }
 
 internal fun JSONObject.method(methodName: String) =
-    get(J_METHODS)
+    get(METHODS)
         .firstWithName(methodName)
 
 internal fun JSONObject.property(name: String): JSONObject =
-    get(J_PROPERTIES)
+    get(PROPERTIES)
         .firstWithName(name)
 
 internal fun JSONObject.addProperty(
     propertyName: String,
     type: String
 ) {
-    get(J_PROPERTIES)
+    get(PROPERTIES)
         .put(
             mapOf(
                 J_NAME to propertyName,
@@ -90,7 +90,7 @@ internal fun JSONObject.setSingleTypeParameter(
     bound: String? = null
 ) {
     set(
-        J_TYPE_PARAMETERS,
+        TYPE_PARAMETERS,
         jArray(
             typeParameter(name, bound)
         )
@@ -101,12 +101,12 @@ internal fun JSONObject.addFirstTypeParameter(
     name: String,
     bound: String? = null
 ) {
-    val parameters = get(J_TYPE_PARAMETERS)
+    val parameters = get(TYPE_PARAMETERS)
         .toMutableList()
 
     parameters.add(0, typeParameter(name, bound))
 
-    set(J_TYPE_PARAMETERS, parameters.toList())
+    set(TYPE_PARAMETERS, parameters.toList())
 }
 
 internal fun JSONObject.setTypeParameters(
@@ -114,7 +114,7 @@ internal fun JSONObject.setTypeParameters(
     name2: String
 ) {
     set(
-        J_TYPE_PARAMETERS,
+        TYPE_PARAMETERS,
         jArray(
             typeParameter(name1),
             typeParameter(name2)
@@ -128,7 +128,7 @@ internal fun typeParameter(
 ): JSONObject =
     jObject(J_NAME to name).apply {
         if (bound != null) {
-            set(J_BOUNDS, arrayOf(bound))
+            set(BOUNDS, arrayOf(bound))
         }
     }
 
@@ -161,21 +161,21 @@ internal fun Sequence<JSONObject>.optionalArray(key: JArrayKey): Sequence<JSONOb
 internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
-        return jsequence(J_PARAMETERS)
+        return jsequence(PARAMETERS)
             .first { it[J_NAME] in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
-    return jsequence(J_PARAMETERS)
+    return jsequence(PARAMETERS)
         .first { it[J_NAME] == name }
 }
 
 internal val JSONObject.firstParameter: JSONObject
-    get() = get(J_PARAMETERS)
+    get() = get(PARAMETERS)
         .get(0) as JSONObject
 
 internal val JSONObject.secondParameter: JSONObject
-    get() = get(J_PARAMETERS)
+    get() = get(PARAMETERS)
         .get(1) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {
@@ -184,6 +184,6 @@ internal fun JSONObject.addGeneric(generic: String) {
 }
 
 internal fun JSONObject.addExtendsGeneric(generic: String) {
-    val type = get(J_EXTENDS)
-    set(J_EXTENDS, "$type<$generic>")
+    val type = get(EXTENDS)
+    set(EXTENDS, "$type<$generic>")
 }

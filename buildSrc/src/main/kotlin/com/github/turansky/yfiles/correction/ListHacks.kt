@@ -32,7 +32,7 @@ private fun fixProperty(source: Source) {
         Triple("RotatableNodePlacerBase", "createdChildren", NODE)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .get(J_PROPERTIES)
+            .get(PROPERTIES)
             .firstWithName(propertyName)
             .fixTypeGeneric(generic)
     }
@@ -57,8 +57,8 @@ private fun fixMethodParameter(source: Source) {
         "SegmentInfo",
 
         "RootNodeAlignment"
-    ).flatMap { it.optJsequence(J_CONSTRUCTORS) + it.optJsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) }
-        .flatMap { it.optJsequence(J_PARAMETERS) }
+    ).flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS) + it.optJsequence(STATIC_METHODS) }
+        .flatMap { it.optJsequence(PARAMETERS) }
         .filter { it[J_TYPE] in DEFAULT_LISTS }
         .forEach {
             val generic = when (it[J_NAME]) {
@@ -86,7 +86,7 @@ private fun fixReturnType(source: Source) {
         "IObstaclePartition",
         "DynamicObstacleDecomposition",
         "GraphPartition"
-    ).jsequence(J_METHODS)
+    ).jsequence(METHODS)
         .forEach {
             val generic = when (it[J_NAME]) {
                 "getCells",
@@ -112,7 +112,7 @@ private fun Source.method(className: String, methodName: String) =
     type(className).method(methodName)
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    get(J_RETURNS)
+    get(RETURNS)
         .fixTypeGeneric(generic)
 }
 

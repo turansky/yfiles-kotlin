@@ -28,16 +28,16 @@ private fun fixComparerInheritors(source: Source) {
     ).forEach { (className, generic) ->
         source.type(className)
             .apply {
-                get(J_IMPLEMENTS).apply {
+                get(IMPLEMENTS).apply {
                     require(length() == 1)
                     require(get(0) in DEFAULT_COMPARERS)
 
                     put(0, comparer(generic))
                 }
 
-                get(J_METHODS)
+                get(METHODS)
                     .firstWithName("compare")
-                    .jsequence(J_PARAMETERS)
+                    .jsequence(PARAMETERS)
                     .forEach { it[J_TYPE] = generic }
             }
     }
@@ -45,7 +45,7 @@ private fun fixComparerInheritors(source: Source) {
 
 private fun fixComparerUtilMethods(source: Source) {
     val staticMethods = source.type("Comparers")
-        .get(J_STATIC_METHODS)
+        .get(STATIC_METHODS)
 
     sequenceOf(
         "createIntDataComparer" to GRAPH_OBJECT,
@@ -75,11 +75,11 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "MultiComponentLayerer",
 
         "SwimlaneDescriptor"
-    ).flatMap { it.jsequence(J_METHODS) + it.optJsequence(J_STATIC_METHODS) + it.optJsequence(J_CONSTRUCTORS) }
+    ).flatMap { it.jsequence(METHODS) + it.optJsequence(STATIC_METHODS) + it.optJsequence(CONSTRUCTORS) }
         .forEach {
             val methodName = it[J_NAME]
 
-            it.optJsequence(J_PARAMETERS)
+            it.optJsequence(PARAMETERS)
                 .filter { it[J_TYPE] in DEFAULT_COMPARERS }
                 .forEach {
                     val generic = getGeneric(methodName, it[J_NAME])
@@ -128,7 +128,7 @@ private fun fixComparerAsProperty(source: Source) {
         Triple("SwimlaneDescriptor", "comparer", SWIMLANE_DESCRIPTOR)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .get(J_PROPERTIES)
+            .get(PROPERTIES)
             .firstWithName(propertyName)
             .fixTypeGeneric("in $generic")
     }
@@ -137,7 +137,7 @@ private fun fixComparerAsProperty(source: Source) {
         "TreeLayout",
         "SeriesParallelLayout"
     ).forEach {
-        it[J_CONSTANTS]
+        it[CONSTANTS]
             .firstWithName("OUT_EDGE_COMPARER_DP_KEY")
             .apply {
                 require(get(J_TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
@@ -190,7 +190,7 @@ private fun Source.method(className: String, methodName: String) =
     type(className).method(methodName)
 
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    get(J_RETURNS)
+    get(RETURNS)
         .fixTypeGeneric(generic)
 }
 
