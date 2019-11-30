@@ -49,6 +49,7 @@ internal fun applyHacks(api: JSONObject) {
     applyComparableHacks(source)
     applyComparerHacks(source)
     applyCursorHacks(source)
+    applyDpataHacks(source)
     applyDataHacks(source)
     applyDpKeyHacks(source)
     applyListHacks(source)

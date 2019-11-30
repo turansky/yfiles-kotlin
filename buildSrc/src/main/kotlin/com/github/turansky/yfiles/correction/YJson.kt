@@ -122,6 +122,19 @@ internal fun JSONObject.setTypeParameters(
     )
 }
 
+internal fun JSONObject.setKeyValueTypeParameters(
+    keyName: String = "K",
+    valueName: String = "V"
+) {
+    set(
+        TYPE_PARAMETERS,
+        jArray(
+            typeParameter(keyName, JS_OBJECT),
+            typeParameter(valueName, JS_OBJECT)
+        )
+    )
+}
+
 internal fun typeParameter(
     name: String,
     bound: String? = null

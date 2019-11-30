@@ -2,14 +2,9 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.firstWithName
-import com.github.turansky.yfiles.json.jArray
 import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
-    fixGraph(source)
-    fixLayoutGraphAdapter(source)
-    fixTreeLayout(source)
-
     fixDataProvider(source)
     fixDataAcceptor(source)
     fixDataMap(source)
@@ -17,8 +12,6 @@ internal fun applyDataHacks(source: Source) {
 
     fixMethodTypes(source)
 }
-
-private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
 
 private val IDATA_PROVIDER = "yfiles.algorithms.IDataProvider"
 private val IDATA_ACCEPTOR = "yfiles.algorithms.IDataAcceptor"
@@ -51,75 +44,9 @@ private val DATA_MAP_TYPE_MAP = mapOf(
     "DataMapAdapter" to "K,V"
 )
 
-private fun fixGraph(source: Source) {
-    val methods = source.type("Graph")
-        .get(METHODS)
-
-    methods.firstWithName("getDataProvider").apply {
-        addKeyValueTypeParameters()
-        firstParameter[TYPE] = GENERIC_DP_KEY
-
-        get(RETURNS)
-            .addGeneric("K,V")
-    }
-
-    methods.firstWithName("addDataProvider").apply {
-        addKeyValueTypeParameters()
-        firstParameter[TYPE] = GENERIC_DP_KEY
-
-        secondParameter.addGeneric("K,V")
-    }
-
-    sequenceOf("createEdgeMap", "createNodeMap")
-        .map { methods.firstWithName(it) }
-        .forEach {
-            it.setSingleTypeParameter("V", JS_OBJECT)
-
-            it[RETURNS]
-                .addGeneric("V")
-        }
-}
-
-private fun fixLayoutGraphAdapter(source: Source) {
-    val methods = source.type("LayoutGraphAdapter")
-        .get(METHODS)
-
-    methods.firstWithName("getDataProvider").apply {
-        addKeyValueTypeParameters()
-        firstParameter[TYPE] = GENERIC_DP_KEY
-
-        get(RETURNS)
-            .addGeneric("K,V")
-    }
-
-    methods.firstWithName("addDataProvider").apply {
-        get(PARAMETERS)
-            .firstWithName("dataKey")
-            .set(TYPE, GENERIC_DP_KEY)
-
-        get(RETURNS)
-            .addGeneric("K,V")
-    }
-}
-
-private fun fixTreeLayout(source: Source) {
-    val properties = source.type("TreeLayout")
-        .get(PROPERTIES)
-
-    sequenceOf(
-        "sourceGroupDataAcceptor" to YID,
-        "sourcePortConstraintDataAcceptor" to "yfiles.layout.PortConstraint",
-        "targetGroupDataAcceptor" to YID,
-        "targetPortConstraintDataAcceptor" to "yfiles.layout.PortConstraint"
-    ).forEach { (propertyName, valueType) ->
-        properties.firstWithName(propertyName)
-            .addGeneric("$EDGE,$valueType")
-    }
-}
-
 private fun fixDataProvider(source: Source) {
     source.type(IDATA_PROVIDER.substringAfterLast("."))
-        .addKeyValueTypeParameters("in K", "out V")
+        .setKeyValueTypeParameters("in K", "out V")
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -127,10 +54,10 @@ private fun fixDataProvider(source: Source) {
         .forEach { it[TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
 
     source.type("DataProviderBase")
-        .addKeyValueTypeParameters("in K", "out V")
+        .setKeyValueTypeParameters("in K", "out V")
 
     source.type("MapperDataProviderAdapter")
-        .addKeyValueTypeParameters("in TKey", "out TValue")
+        .setKeyValueTypeParameters("in TKey", "out TValue")
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
@@ -150,7 +77,7 @@ private fun JSONObject.getDataProviderTypeParameters(): String {
 
 private fun fixDataAcceptor(source: Source) {
     source.type(IDATA_ACCEPTOR.substringAfterLast("."))
-        .addKeyValueTypeParameters("in K", "in V")
+        .setKeyValueTypeParameters("in K", "in V")
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -166,7 +93,7 @@ private fun fixDataAcceptor(source: Source) {
 
 private fun fixDataMap(source: Source) {
     source.type(IDATA_MAP.substringAfterLast("."))
-        .addKeyValueTypeParameters("in K", "V")
+        .setKeyValueTypeParameters("in K", "V")
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -354,19 +281,6 @@ private fun JSONObject.getTypeParameterName(index: Int): String =
         .getJSONObject(index)[NAME]
         .removePrefix("in ")
         .removePrefix("out ")
-
-private fun JSONObject.addKeyValueTypeParameters(
-    keyName: String = "K",
-    valueName: String = "V"
-) {
-    set(
-        TYPE_PARAMETERS,
-        jArray(
-            typeParameter(keyName, JS_OBJECT),
-            typeParameter(valueName, JS_OBJECT)
-        )
-    )
-}
 
 private fun JSONObject.getTypeHolders() =
     (optJsequence(CONSTRUCTORS) + optJsequence(STATIC_METHODS) + optJsequence(METHODS))
