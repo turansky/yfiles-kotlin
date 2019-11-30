@@ -8,6 +8,7 @@ import org.json.JSONObject
 internal fun applyDataHacks(source: Source) {
     fixGraph(source)
     fixLayoutGraphAdapter(source)
+    fixTreeLayout(source)
 
     fixDataProvider(source)
     fixDataAcceptor(source)
@@ -98,6 +99,21 @@ private fun fixLayoutGraphAdapter(source: Source) {
 
         get(RETURNS)
             .addGeneric("K,V")
+    }
+}
+
+private fun fixTreeLayout(source: Source) {
+    val properties = source.type("TreeLayout")
+        .get(PROPERTIES)
+
+    sequenceOf(
+        "sourceGroupDataAcceptor" to YID,
+        "sourcePortConstraintDataAcceptor" to "yfiles.layout.PortConstraint",
+        "targetGroupDataAcceptor" to YID,
+        "targetPortConstraintDataAcceptor" to "yfiles.layout.PortConstraint"
+    ).forEach { (propertyName, valueType) ->
+        properties.firstWithName(propertyName)
+            .addGeneric("$EDGE,$valueType")
     }
 }
 
