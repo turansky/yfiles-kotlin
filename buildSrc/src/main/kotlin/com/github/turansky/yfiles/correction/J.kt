@@ -7,50 +7,50 @@ internal sealed class JKey(val name: String) {
     override fun toString(): String = name
 }
 
-internal class JArrayKey(name: String) : JKey(name)
-internal class JObjectKey(name: String) : JKey(name)
+internal sealed class JArrayKey(name: String) : JKey(name)
+internal sealed class JObjectKey(name: String) : JKey(name)
 
-internal class JStringKey(name: String) : JKey(name)
+internal sealed class JStringKey(name: String) : JKey(name)
 
-internal val J_NAMESPACES = JArrayKey("namespaces")
-internal val J_TYPES = JArrayKey("types")
+internal object J_NAMESPACES : JArrayKey("namespaces")
+internal object J_TYPES : JArrayKey("types")
 
-internal val J_FUNCTION_SIGNATURES = JObjectKey("functionSignatures")
+internal object J_FUNCTION_SIGNATURES : JObjectKey("functionSignatures")
 
-internal val J_ID = JStringKey("id")
-internal val J_TYPE_PARAMETERS = JArrayKey("typeparameters")
-internal val J_BOUNDS = JArrayKey("bounds")
+internal object J_ID : JStringKey("id")
+internal object J_TYPE_PARAMETERS : JArrayKey("typeparameters")
+internal object J_BOUNDS : JArrayKey("bounds")
 
-internal val J_EXTENDS = JStringKey("extends")
-internal val J_IMPLEMENTS = JArrayKey("implements")
+internal object J_EXTENDS : JStringKey("extends")
+internal object J_IMPLEMENTS : JArrayKey("implements")
 
-internal val J_CONSTRUCTORS = JArrayKey("constructors")
+internal object J_CONSTRUCTORS : JArrayKey("constructors")
 
-internal val J_CONSTANTS = JArrayKey("constants")
+internal object J_CONSTANTS : JArrayKey("constants")
 
-internal val J_STATIC_PROPERTIES = JArrayKey("staticProperties")
-internal val J_PROPERTIES = JArrayKey("properties")
-internal val J_FIELDS = JArrayKey("fields")
+internal object J_STATIC_PROPERTIES : JArrayKey("staticProperties")
+internal object J_PROPERTIES : JArrayKey("properties")
+internal object J_FIELDS : JArrayKey("fields")
 
-internal val J_STATIC_METHODS = JArrayKey("staticMethods")
-internal val J_METHODS = JArrayKey("methods")
+internal object J_STATIC_METHODS : JArrayKey("staticMethods")
+internal object J_METHODS : JArrayKey("methods")
 
-internal val J_PARAMETERS = JArrayKey("parameters")
-internal val J_RETURNS = JObjectKey("returns")
-internal val J_DOC = JStringKey("doc")
+internal object J_PARAMETERS : JArrayKey("parameters")
+internal object J_RETURNS : JObjectKey("returns")
+internal object J_DOC : JStringKey("doc")
 
-internal val J_NAME = JStringKey("name")
-internal val J_TYPE = JStringKey("type")
-internal val J_SIGNATURE = JStringKey("signature")
-internal val J_MODIFIERS = JArrayKey("modifiers")
-internal val J_SUMMARY = JStringKey("summary")
+internal object J_NAME : JStringKey("name")
+internal object J_TYPE : JStringKey("type")
+internal object J_SIGNATURE : JStringKey("signature")
+internal object J_MODIFIERS : JArrayKey("modifiers")
+internal object J_SUMMARY : JStringKey("summary")
 
-internal val J_DEFAULT = JObjectKey("y.default")
-internal val J_VALUE = JStringKey("value")
+internal object J_DEFAULT : JObjectKey("y.default")
+internal object J_VALUE : JStringKey("value")
 
-internal val J_DP_DATA = JObjectKey("dpdata")
-internal val J_DOMAIN = JObjectKey("domain")
-internal val J_VALUES = JObjectKey("values")
+internal object J_DP_DATA : JObjectKey("dpdata")
+internal object J_DOMAIN : JObjectKey("domain")
+internal object J_VALUES : JObjectKey("values")
 
 internal fun JSONObject.has(key: JKey) = has(key.name)
 
