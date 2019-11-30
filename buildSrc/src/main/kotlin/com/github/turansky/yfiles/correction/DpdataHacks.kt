@@ -88,6 +88,14 @@ private fun fixTreeLayout(source: Source) {
         .get(PARAMETERS)
         .get("dummyDp")
         .addGeneric("$NODE,$JS_BOOLEAN")
+
+    source.type("LeftRightNodePlacer")
+        .get(STATIC_METHODS)
+        .get("createLeftRightDataProvider")
+        .also {
+            it.firstParameter.addGeneric("$NODE,yfiles.tree.INodePlacer")
+            it[RETURNS].addGeneric("$NODE,$JS_BOOLEAN")
+        }
 }
 
 private fun fixGraphPartitionManager(source: Source) {
