@@ -74,6 +74,13 @@ private fun fixTreeLayout(source: Source) {
         properties[propertyName]
             .addGeneric("$EDGE,$valueType")
     }
+
+    source.type("TreeComponentLayout")
+        .get(METHODS)
+        .get("applyLayoutUsingDummies")
+        .get(PARAMETERS)
+        .get("dummyDp")
+        .addGeneric("$NODE,$JS_BOOLEAN")
 }
 
 private fun fixGraphPartitionManager(source: Source) {
