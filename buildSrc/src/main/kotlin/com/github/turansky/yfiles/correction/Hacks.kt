@@ -80,7 +80,7 @@ private fun fixUnionMethods(source: Source) {
     val unionMethods = methods
         .asSequence()
         .map { it as JSONObject }
-        .filter { it[J_NAME] == "getCanvasObjectGroup" }
+        .filter { it[NAME] == "getCanvasObjectGroup" }
         .toList()
 
     unionMethods
@@ -91,8 +91,8 @@ private fun fixUnionMethods(source: Source) {
     unionMethods.first()
         .firstParameter
         .apply {
-            set(J_NAME, "item")
-            set(J_TYPE, IMODEL_ITEM)
+            set(NAME, "item")
+            set(TYPE, IMODEL_ITEM)
         }
 
     // TODO: remove documentation
@@ -103,16 +103,16 @@ private fun fixConstantGenerics(source: Source) {
         .get(CONSTANTS)
         .firstWithName("EMPTY")
         .also {
-            it[J_TYPE] = it[J_TYPE]
+            it[TYPE] = it[TYPE]
                 .replace("<T>", "<$JS_OBJECT>")
         }
 
     source.type("LabelLayoutKeys")
         .jsequence(CONSTANTS)
         .forEach {
-            val type = it[J_TYPE]
+            val type = it[TYPE]
             if (type.endsWith("<yfiles.layout.LabelLayoutData>")) {
-                it[J_TYPE] = type.replace("<yfiles.layout.LabelLayoutData>", "<Array<yfiles.layout.LabelLayoutData>>")
+                it[TYPE] = type.replace("<yfiles.layout.LabelLayoutData>", "<Array<yfiles.layout.LabelLayoutData>>")
             }
         }
 }
@@ -125,7 +125,7 @@ private fun fixFunctionGenerics(source: Source) {
     source.type("List")
         .staticMethod("from")
         .get(TYPE_PARAMETERS)
-        .put(jObject(J_NAME to "T"))
+        .put(jObject(NAME to "T"))
 
     source.type("IContextLookupChainLink")
         .staticMethod("addingLookupChainLink")
@@ -140,7 +140,7 @@ private fun fixReturnType(source: Source) {
         get(METHODS)
             .firstWithName("exportSvg")
             .get(RETURNS)
-            .set(J_TYPE, JS_SVG_SVG_ELEMENT)
+            .set(TYPE, JS_SVG_SVG_ELEMENT)
     }
 }
 
@@ -148,7 +148,7 @@ private fun fixPropertyType(source: Source) {
     source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")
-                .set(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
+                .set(TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
         }
 }
 
@@ -164,8 +164,8 @@ private fun fixPropertyNullability(source: Source) {
         .get(PROPERTIES)
         .firstWithName("children")
         .apply {
-            require(get(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
-            set(J_TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
+            require(get(TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
+            set(TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
         }
 }
 
@@ -173,24 +173,24 @@ private fun fixConstructorParameterName(source: Source) {
     source.type("TimeSpan")
         .jsequence(CONSTRUCTORS)
         .jsequence(PARAMETERS)
-        .single { it[J_NAME] == "millis" }
-        .set(J_NAME, "milliseconds")
+        .single { it[NAME] == "millis" }
+        .set(NAME, "milliseconds")
 }
 
 private fun fixMethodParameterName(source: Source) {
     PARAMETERS_CORRECTION.forEach { data, fixedName ->
         source.type(data.className)
-            .methodParameters(data.methodName, data.parameterName, { it[J_NAME] != fixedName })
+            .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
             .first()
-            .set(J_NAME, fixedName)
+            .set(NAME, fixedName)
     }
 
     source.type("RankAssignmentAlgorithm")
         .jsequence(STATIC_METHODS)
-        .filter { it[J_NAME] == "simplex" }
+        .filter { it[NAME] == "simplex" }
         .jsequence(PARAMETERS)
-        .single { it[J_NAME] == "_root" }
-        .set(J_NAME, "root")
+        .single { it[NAME] == "_root" }
+        .set(NAME, "root")
 }
 
 private fun fixMethodParameterNullability(source: Source) {
@@ -210,16 +210,16 @@ private fun fixMethodParameterNullability(source: Source) {
 
     source.types()
         .optionalArray(METHODS)
-        .filter { it[J_NAME] in BROKEN_NULLABILITY_METHODS }
+        .filter { it[NAME] in BROKEN_NULLABILITY_METHODS }
         .filter { it[PARAMETERS].length() == 1 }
         .map { it[PARAMETERS].single() }
         .map { it as JSONObject }
-        .onEach { require(it[J_TYPE] == "yfiles.layout.LayoutGraph") }
+        .onEach { require(it[TYPE] == "yfiles.layout.LayoutGraph") }
         .forEach { it.changeNullability(false) }
 
     source.types()
         .flatMap { it.allMethodParameters() }
-        .filter { it[J_NAME] == "dataHolder" }
+        .filter { it[NAME] == "dataHolder" }
         .forEach { it.changeNullability(false) }
 
     source.types(
@@ -228,7 +228,7 @@ private fun fixMethodParameterNullability(source: Source) {
         "HighlightIndicatorManager",
         "SelectionIndicatorManager"
     ).flatMap { it.jsequence(METHODS) }
-        .filter { it[J_NAME] in MODEL_MANAGER_ITEM_METHODS }
+        .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
 }
@@ -237,12 +237,12 @@ private fun fixMethodParameterType(source: Source) {
     source.type("IContextLookupChainLink")
         .staticMethod("addingLookupChainLink")
         .parameter("instance")
-        .set(J_TYPE, "TResult")
+        .set(TYPE, "TResult")
 
     source.type("SvgExport")
         .staticMethod("exportSvgString")
         .parameter("svg")
-        .set(J_TYPE, JS_SVG_ELEMENT)
+        .set(TYPE, JS_SVG_ELEMENT)
 }
 
 private fun fixMethodNullability(source: Source) {
@@ -250,7 +250,7 @@ private fun fixMethodNullability(source: Source) {
         .forEach { (className, methodName), nullable ->
             source.type(className)
                 .jsequence(STATIC_METHODS)
-                .filter { it[J_NAME] == methodName }
+                .filter { it[NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
 
@@ -258,7 +258,7 @@ private fun fixMethodNullability(source: Source) {
         .forEach { (className, methodName), nullable ->
             source.type(className)
                 .jsequence(METHODS)
-                .filter { it[J_NAME] == methodName }
+                .filter { it[NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
 }
@@ -313,7 +313,7 @@ private fun removeSystemMethods(source: Source) {
             val methods = it[METHODS]
             val systemMetods = methods.asSequence()
                 .map { it as JSONObject }
-                .filter { it[J_NAME] in SYSTEM_FUNCTIONS }
+                .filter { it[NAME] in SYSTEM_FUNCTIONS }
                 .toList()
 
             systemMetods.forEach {
@@ -332,7 +332,7 @@ private fun removeArtifitialParameters(source: Source) {
         .filter { it.has(PARAMETERS) }
         .forEach {
             val artifitialParameters = it.jsequence(PARAMETERS)
-                .filter { it[J_MODIFIERS].contains(ARTIFICIAL) }
+                .filter { it[MODIFIERS].contains(ARTIFICIAL) }
                 .toList()
 
             val parameters = it[PARAMETERS]
@@ -362,24 +362,24 @@ private fun removeThisParameters(source: Source) {
         .map { it[PARAMETERS] }
         .filter { it.length() > 0 }
         .onEach {
-            if ((it.last() as JSONObject)[J_NAME] == "thisArg") {
+            if ((it.last() as JSONObject)[NAME] == "thisArg") {
                 it.strictRemove(it.length() - 1)
             }
         }
         .flatMap { it.asSequence() }
         .map { it as JSONObject }
-        .filter { it.has(J_SIGNATURE) }
+        .filter { it.has(SIGNATURE) }
         .forEach {
-            val signature = it[J_SIGNATURE]
+            val signature = it[SIGNATURE]
             if (FUNC_RUDIMENT in signature) {
-                it[J_SIGNATURE] = signature
+                it[SIGNATURE] = signature
                     .replace(FUNC_RUDIMENT, "")
                     .replace("Action3<T>", "Action1<T>")
                     .replace("Func4<T,boolean>", "Predicate<T>")
                     .replace("Func4<", "Func2<")
                     .replace("Func5<", "Func3<")
             } else if (FROM_FUNC_RUDIMENT in signature) {
-                it[J_SIGNATURE] = signature.replace(FROM_FUNC_RUDIMENT, "Func2<TSource,T>")
+                it[SIGNATURE] = signature.replace(FROM_FUNC_RUDIMENT, "Func2<TSource,T>")
             }
         }
 }
@@ -391,7 +391,7 @@ private fun fieldToProperties(source: Source) {
             val fields = type[FIELDS].apply {
                 asSequence()
                     .map { it as JSONObject }
-                    .map { it[J_MODIFIERS] }
+                    .map { it[MODIFIERS] }
                     .forEach { it.put(if (FINAL in it) RO else FINAL) }
             }
 
@@ -421,8 +421,8 @@ private fun JSONObject.addMethod(
     get(METHODS)
         .put(
             mutableMapOf(
-                J_NAME to methodData.methodName,
-                J_MODIFIERS to modifiers
+                NAME to methodData.methodName,
+                MODIFIERS to modifiers
             )
                 .also {
                     val parameters = methodData.parameters
@@ -431,9 +431,9 @@ private fun JSONObject.addMethod(
                             PARAMETERS,
                             parameters.map {
                                 mapOf(
-                                    J_NAME to it.name,
-                                    J_TYPE to it.type,
-                                    J_MODIFIERS to it.modifiers
+                                    NAME to it.name,
+                                    TYPE to it.type,
+                                    MODIFIERS to it.modifiers
                                 )
                             }
                         )
@@ -443,7 +443,7 @@ private fun JSONObject.addMethod(
                     if (result != null) {
                         it.put(
                             RETURNS, mapOf(
-                                J_TYPE to result.type
+                                TYPE to result.type
                             )
                         )
                     }
@@ -458,7 +458,7 @@ private fun fixMethodGenericBounds(source: Source) {
     )
     source.type("IFoldingView")
         .jsequence(METHODS)
-        .filter { it[J_NAME] in methodNames }
+        .filter { it[NAME] in methodNames }
         .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }

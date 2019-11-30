@@ -143,16 +143,16 @@ private fun fixPackage(source: VsdxSource) {
 }
 
 private fun JSONObject.fixType() {
-    if (has(J_SIGNATURE)) {
-        val signature = getFixedType(get(J_SIGNATURE))
+    if (has(SIGNATURE)) {
+        val signature = getFixedType(get(SIGNATURE))
             .fixVsdxPackage()
 
-        set(J_SIGNATURE, signature)
+        set(SIGNATURE, signature)
     } else {
-        val type = getFixedType(get(J_TYPE))
+        val type = getFixedType(get(TYPE))
             .fixVsdxPackage()
 
-        set(J_TYPE, type)
+        set(TYPE, type)
     }
 }
 
@@ -218,8 +218,8 @@ private fun fixOptionTypes(source: VsdxSource) {
         .single()
         .apply {
             parameter("optionsOrNodeStyleType").apply {
-                set(J_NAME, "nodeStyleType")
-                set(J_TYPE, "$YCLASS<yfiles.styles.INodeStyle>")
+                set(NAME, "nodeStyleType")
+                set(TYPE, "$YCLASS<yfiles.styles.INodeStyle>")
             }
 
             parameter("edgeStyleType")
@@ -254,7 +254,7 @@ private fun fixGeneric(source: VsdxSource) {
         staticMethod("fetch")
             .apply {
                 setSingleTypeParameter("TValue")
-                firstParameter[J_NAME] = "o"
+                firstParameter[NAME] = "o"
             }
 
         staticMethod("formula")
@@ -265,18 +265,18 @@ private fun fixGeneric(source: VsdxSource) {
 private fun fixMethodModifier(source: VsdxSource) {
     source.types("IMasterProvider", "IShapeProcessingStep")
         .jsequence(METHODS)
-        .forEach { it[J_MODIFIERS].put(ABSTRACT) }
+        .forEach { it[MODIFIERS].put(ABSTRACT) }
 }
 
 private val YFILES_API_REGEX = Regex("<a href=\"https://docs.yworks.com/yfileshtml/#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
 private val VSDX_API_REGEX = Regex("<a href=\"#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
 
 private fun JSONObject.fixSummary() {
-    if (!has(J_SUMMARY)) {
+    if (!has(SUMMARY)) {
         return
     }
 
-    val summary = get(J_SUMMARY)
+    val summary = get(SUMMARY)
         .replace(YFILES_API_REGEX) {
             val type = YFILES_TYPE_MAP.getValue(it.groupValues.get(1))
             "[$type]"
@@ -287,16 +287,16 @@ private fun JSONObject.fixSummary() {
         .replace("</p>", "")
         .replace("<p>", "\n\n")
 
-    set(J_SUMMARY, summary)
+    set(SUMMARY, summary)
 }
 
 private fun fixSummary(source: VsdxSource) {
     source.type("VsdxExport")
         .jsequence(METHODS)
         .jsequence(PARAMETERS)
-        .filter { it.has(J_SUMMARY) }
+        .filter { it.has(SUMMARY) }
         .forEach {
-            it[J_SUMMARY] = it[J_SUMMARY]
+            it[SUMMARY] = it[SUMMARY]
                 .replace("""data-member="createDefault()"""", """data-member="createDefault"""")
         }
 

@@ -31,10 +31,10 @@ internal fun JSONObject.methodParameters(
     parameterFilter: (JSONObject) -> Boolean
 ): Iterable<JSONObject> {
     val result = get(METHODS)
-        .objects { it[J_NAME] == methodName }
+        .objects { it[NAME] == methodName }
         .flatMap {
             it[PARAMETERS]
-                .objects { it[J_NAME] == parameterName }
+                .objects { it[NAME] == parameterName }
                 .filter(parameterFilter)
         }
 
@@ -59,9 +59,9 @@ internal fun JSONObject.addProperty(
     get(PROPERTIES)
         .put(
             mapOf(
-                J_NAME to propertyName,
-                J_MODIFIERS to listOf(PUBLIC, FINAL, RO),
-                J_TYPE to type
+                NAME to propertyName,
+                MODIFIERS to listOf(PUBLIC, FINAL, RO),
+                TYPE to type
             )
         )
 }
@@ -73,7 +73,7 @@ internal fun JSONObject.changeOptionality(optional: Boolean) =
     changeModifier(OPTIONAL, optional)
 
 private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
-    val modifiers = get(J_MODIFIERS)
+    val modifiers = get(MODIFIERS)
     val index = modifiers.indexOf(modifier)
 
     require((index == -1) == value)
@@ -126,7 +126,7 @@ internal fun typeParameter(
     name: String,
     bound: String? = null
 ): JSONObject =
-    jObject(J_NAME to name).apply {
+    jObject(NAME to name).apply {
         if (bound != null) {
             set(BOUNDS, arrayOf(bound))
         }
@@ -162,12 +162,12 @@ internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
         return jsequence(PARAMETERS)
-            .first { it[J_NAME] in typeNames }
+            .first { it[NAME] in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
     return jsequence(PARAMETERS)
-        .first { it[J_NAME] == name }
+        .first { it[NAME] == name }
 }
 
 internal val JSONObject.firstParameter: JSONObject
@@ -179,8 +179,8 @@ internal val JSONObject.secondParameter: JSONObject
         .get(1) as JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {
-    val type = get(J_TYPE)
-    set(J_TYPE, "$type<$generic>")
+    val type = get(TYPE)
+    set(TYPE, "$type<$generic>")
 }
 
 internal fun JSONObject.addExtendsGeneric(generic: String) {

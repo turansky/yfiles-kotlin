@@ -12,14 +12,14 @@ internal fun applyEventHacks(source: Source) {
             val name = it.getNewName()
                 ?: return@forEach
 
-            it[J_NAME] = name
+            it[NAME] = name
         }
 }
 
 fun JSONObject.getNewName(): String? =
-    when (get(J_NAME)) {
+    when (get(NAME)) {
         "evt" -> "event"
-        "args" -> if (get(J_TYPE).endsWith("Args")) {
+        "args" -> if (get(TYPE).endsWith("Args")) {
             "event"
         } else {
             null

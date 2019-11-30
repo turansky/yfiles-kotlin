@@ -38,7 +38,7 @@ private fun fixClass(source: Source) {
             "other",
             { true }
         ).single()
-            .updateDpKeyGeneric(J_TYPE, DP_KEY_BASE_KEY)
+            .updateDpKeyGeneric(TYPE, DP_KEY_BASE_KEY)
     }
 
     for ((className, generic) in DP_KEY_GENERIC_MAP) {
@@ -50,7 +50,7 @@ private fun fixClass(source: Source) {
 
     source.type("DpKeyItemCollection")
         .property("dpKey")
-        .updateDpKeyGeneric(J_TYPE, "*")
+        .updateDpKeyGeneric(TYPE, "*")
 }
 
 private fun JSONObject.updateDpKeyGeneric(

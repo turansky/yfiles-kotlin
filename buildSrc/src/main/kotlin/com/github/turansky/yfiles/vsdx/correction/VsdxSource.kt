@@ -25,9 +25,9 @@ internal class VsdxSource(private val api: JSONObject) {
             .map { type(it) }
 
     private val JSONObject.uid: String
-        get() = if (has(J_ES6_NAME)) {
-            get(J_ES6_NAME)
+        get() = if (has(ES6_NAME)) {
+            get(ES6_NAME)
         } else {
-            get(J_NAME)
+            get(NAME)
         }
 }

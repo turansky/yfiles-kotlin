@@ -38,19 +38,19 @@ internal fun applyComparableHacks(source: Source) {
         "NodeOrderComparer",
         "NodeWeightComparer"
     ).jsequence(METHODS)
-        .filter { it[J_NAME] == "compare" }
+        .filter { it[NAME] == "compare" }
         .jsequence(PARAMETERS)
         .forEach { it.changeNullability(false) }
 }
 
 private fun JSONObject.configureCompareTo(type: String) {
     jsequence(METHODS)
-        .filter { it[J_NAME] == "compareTo" }
+        .filter { it[NAME] == "compareTo" }
         .singleOrNull()
         ?.apply {
             firstParameter.apply {
-                set(J_NAME, "other")
-                set(J_TYPE, type)
+                set(NAME, "other")
+                set(TYPE, type)
                 changeNullability(false)
             }
         }

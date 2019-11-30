@@ -53,7 +53,7 @@ private fun fixGraph(source: Source) {
 
     methods.firstWithName("getDataProvider").apply {
         addKeyValueTypeParameters()
-        firstParameter[J_TYPE] = "DpKeyBase<K,V>"
+        firstParameter[TYPE] = "DpKeyBase<K,V>"
 
         get(RETURNS)
             .addGeneric("K,V")
@@ -61,7 +61,7 @@ private fun fixGraph(source: Source) {
 
     methods.firstWithName("addDataProvider").apply {
         addKeyValueTypeParameters()
-        firstParameter[J_TYPE] = "DpKeyBase<K,V>"
+        firstParameter[TYPE] = "DpKeyBase<K,V>"
 
         secondParameter.addGeneric("K,V")
     }
@@ -82,8 +82,8 @@ private fun fixDataProvider(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it[J_TYPE] == IDATA_PROVIDER }
-        .forEach { it[J_TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
+        .filter { it[TYPE] == IDATA_PROVIDER }
+        .forEach { it[TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
 
     source.type("DataProviderBase")
         .addKeyValueTypeParameters()
@@ -101,8 +101,8 @@ private fun fixDataProvider(source: Source) {
 }
 
 private fun JSONObject.getDataProviderTypeParameters(): String {
-    val name = optString(J_NAME)
-    return if (!has(J_DP_DATA) && name == "subtreeShapeProvider" || name == "nodeShapeProvider") {
+    val name = optString(NAME)
+    return if (!has(DP_DATA) && name == "subtreeShapeProvider" || name == "nodeShapeProvider") {
         "$NODE,yfiles.tree.SubtreeShape"
     } else {
         getDefaultTypeParameters()
@@ -115,8 +115,8 @@ private fun fixDataAcceptor(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it[J_TYPE] == IDATA_ACCEPTOR }
-        .forEach { it[J_TYPE] = "$IDATA_ACCEPTOR<${it.getDefaultTypeParameters()}>" }
+        .filter { it[TYPE] == IDATA_ACCEPTOR }
+        .forEach { it[TYPE] = "$IDATA_ACCEPTOR<${it.getDefaultTypeParameters()}>" }
 
     for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
         source.type(className)
@@ -131,8 +131,8 @@ private fun fixDataMap(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it[J_TYPE] == IDATA_MAP }
-        .forEach { it[J_TYPE] = "$IDATA_MAP<${it.getDataMapTypeParameters()}>" }
+        .filter { it[TYPE] == IDATA_MAP }
+        .forEach { it[TYPE] = "$IDATA_MAP<${it.getDataMapTypeParameters()}>" }
 
     for ((className, typeParameters) in DATA_MAP_TYPE_MAP) {
         source.type(className)
@@ -142,22 +142,22 @@ private fun fixDataMap(source: Source) {
 }
 
 private fun JSONObject.getDataMapTypeParameters(): String =
-    if (!has(J_DP_DATA) && optString(J_NAME) == "connectorMap") {
+    if (!has(DP_DATA) && optString(NAME) == "connectorMap") {
         "$NODE,yfiles.tree.ParentConnectorDirection"
     } else {
         getDefaultTypeParameters()
     }
 
 private fun JSONObject.getDefaultTypeParameters(): String {
-    if (!has(J_DP_DATA)) {
+    if (!has(DP_DATA)) {
         return "*,*"
     }
 
-    val name = get(J_NAME)
-    return get(J_DP_DATA)
+    val name = get(NAME)
+    return get(DP_DATA)
         .run {
-            val keyType = getDefaultTypeParameter(name, get(J_DOMAIN)[J_TYPE])
-            val valueType = getDefaultTypeParameter(name, get(J_VALUES)[J_TYPE])
+            val keyType = getDefaultTypeParameter(name, get(DOMAIN)[TYPE])
+            val valueType = getDefaultTypeParameter(name, get(VALUES)[TYPE])
 
             "$keyType,$valueType"
         }
@@ -217,31 +217,31 @@ private fun fixDataMaps(source: Source) {
 
     source.types()
         .flatMap { it.getTypeHolders() }
-        .filter { it[J_TYPE] in MAP_INTERFACES }
+        .filter { it[TYPE] in MAP_INTERFACES }
         .forEach {
             val typeParameter = it.getDataMapsTypeParameter()
-            it[J_TYPE] = it[J_TYPE] + "<$typeParameter>"
+            it[TYPE] = it[TYPE] + "<$typeParameter>"
         }
 
     source.type("Graph")
         .jsequence(PROPERTIES)
         .forEach { property ->
-            val type = property[J_TYPE]
+            val type = property[TYPE]
             MAP_INTERFACES.find { it in type }
-                ?.also { property[J_TYPE] = type.replace(it, "$it<*>") }
+                ?.also { property[TYPE] = type.replace(it, "$it<*>") }
         }
 }
 
 private fun JSONObject.getDataMapsTypeParameter(): String {
-    if (!has(J_DP_DATA)) {
+    if (!has(DP_DATA)) {
         return "*"
     }
 
-    val type = get(J_DP_DATA)[J_VALUES][J_TYPE]
+    val type = get(DP_DATA)[VALUES][TYPE]
 
     return when (type) {
-        JS_NUMBER -> getDataMapsNumberTypeParameter(get(J_NAME))
-        JS_OBJECT -> when (get(J_NAME)) {
+        JS_NUMBER -> getDataMapsNumberTypeParameter(get(NAME))
+        JS_OBJECT -> when (get(NAME)) {
             "partitionIDMap" -> YID
             else -> type
         }
@@ -289,24 +289,24 @@ private fun fixMethodTypes(source: Source) {
         "MapperDataProviderAdapter"
     ).forEach {
         val typeParameters = it[TYPE_PARAMETERS]
-        val keyTypeParameter = typeParameters.getJSONObject(0)[J_NAME]
-        val valueTypeParameter = typeParameters.getJSONObject(1)[J_NAME]
+        val keyTypeParameter = typeParameters.getJSONObject(0)[NAME]
+        val valueTypeParameter = typeParameters.getJSONObject(1)[NAME]
 
         it.jsequence(METHODS)
             .forEach {
-                val name = it[J_NAME]
+                val name = it[NAME]
 
                 when (name) {
-                    "get" -> it[RETURNS][J_TYPE] = valueTypeParameter
+                    "get" -> it[RETURNS][TYPE] = valueTypeParameter
 
                     "set" -> it.get(PARAMETERS)
                         .firstWithName("value")
-                        .set(J_TYPE, valueTypeParameter)
+                        .set(TYPE, valueTypeParameter)
                 }
 
                 it.jsequence(PARAMETERS)
-                    .filter { it[J_NAME] == "dataHolder" }
-                    .forEach { it[J_TYPE] = keyTypeParameter }
+                    .filter { it[NAME] == "dataHolder" }
+                    .forEach { it[TYPE] = keyTypeParameter }
             }
     }
 }

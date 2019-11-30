@@ -36,7 +36,7 @@ private fun fixOptionality(source: Source) {
         .filter { it.has(PARAMETERS) }
         .filter { it[PARAMETERS].length() == 1 }
         .map { it.firstParameter }
-        .filter { "core" in it[J_NAME] }
+        .filter { "core" in it[NAME] }
         .forEach { it.changeOptionality(true) }
 }
 
@@ -63,7 +63,7 @@ private fun mergeConstructors(type: JSONObject) {
     secondConstructor
         .get(PARAMETERS)
         .let { it.getJSONObject(it.length() - 1) }
-        .get(J_MODIFIERS)
+        .get(MODIFIERS)
         .put(OPTIONAL)
 }
 
@@ -102,7 +102,7 @@ private val JSONObject.parametersCount: Int
 private val JSONObject.parametersNames: List<String>
     get() = if (has(PARAMETERS)) {
         jsequence(PARAMETERS)
-            .map { it[J_NAME] }
+            .map { it[NAME] }
             .toList()
     } else {
         emptyList()

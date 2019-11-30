@@ -32,13 +32,13 @@ private val ID_DP_KEYS = setOf(
 internal fun applyIdHacks(source: Source) {
     source.types()
         .flatMap { it.optJsequence(CONSTANTS) }
-        .filter { it[J_TYPE] in ID_DP_KEYS }
-        .filter { it[J_NAME].endsWith("_ID_DP_KEY") }
+        .filter { it[TYPE] in ID_DP_KEYS }
+        .filter { it[NAME].endsWith("_ID_DP_KEY") }
         .forEach {
-            val newType = it[J_TYPE]
+            val newType = it[TYPE]
                 .replace("<$JS_ANY>", "<$YID>")
 
-            it[J_TYPE] = newType
+            it[TYPE] = newType
         }
 
     val likeObjectTypes = setOf(
@@ -47,26 +47,26 @@ internal fun applyIdHacks(source: Source) {
     )
 
     typedItems(source)
-        .filter { looksLikeId(it[J_NAME]) }
-        .filter { it[J_TYPE] in likeObjectTypes }
-        .forEach { it[J_TYPE] = YID }
+        .filter { looksLikeId(it[NAME]) }
+        .filter { it[TYPE] in likeObjectTypes }
+        .forEach { it[TYPE] = YID }
 
     typedItems(source)
-        .filter { it[J_NAME].endsWith("Ids") }
+        .filter { it[NAME].endsWith("Ids") }
         .forEach {
-            val newType = it[J_TYPE]
+            val newType = it[TYPE]
                 .replace(",$JS_ANY>", ",$YID>")
 
-            it[J_TYPE] = newType
+            it[TYPE] = newType
         }
 
     source.type("BusRouterBusDescriptor")
         .jsequence(CONSTRUCTORS)
         .jsequence(PARAMETERS)
         .forEach {
-            val name = it[J_NAME]
+            val name = it[NAME]
             if (name.endsWith("ID")) {
-                it[J_NAME] = name.replace("ID", "Id")
+                it[NAME] = name.replace("ID", "Id")
             }
         }
 }

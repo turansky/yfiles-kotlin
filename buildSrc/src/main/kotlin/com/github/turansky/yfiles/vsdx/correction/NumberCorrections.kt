@@ -144,15 +144,15 @@ private fun JSONObject.correctProperties() {
         return
     }
 
-    val className = get(J_NAME)
+    val className = get(NAME)
     jsequence(PROPERTIES)
         .forEach {
-            val propertyName = it[J_NAME]
-            when (it[J_TYPE]) {
-                JS_NUMBER -> it[J_TYPE] = getPropertyType(className, propertyName)
+            val propertyName = it[NAME]
+            when (it[TYPE]) {
+                JS_NUMBER -> it[TYPE] = getPropertyType(className, propertyName)
                 "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                     val generic = getPropertyType(className, propertyName)
-                    it[J_TYPE] = "yfiles.vsdx.Value<$generic>"
+                    it[TYPE] = "yfiles.vsdx.Value<$generic>"
                 }
             }
         }
@@ -184,19 +184,19 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
         return
     }
 
-    val className = get(J_NAME)
+    val className = get(NAME)
     jsequence(key)
         .filter { it.has(PARAMETERS) }
         .forEach { method ->
-            val methodName = method[J_NAME]
+            val methodName = method[NAME]
             method.jsequence(PARAMETERS)
                 .forEach {
-                    val parameterName = it[J_NAME]
-                    when (it[J_TYPE]) {
-                        JS_NUMBER -> it[J_TYPE] = getParameterType(className, methodName, parameterName)
+                    val parameterName = it[NAME]
+                    when (it[TYPE]) {
+                        JS_NUMBER -> it[TYPE] = getParameterType(className, methodName, parameterName)
                         "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                             val generic = getParameterType(className, methodName, parameterName)
-                            it[J_TYPE] = "Value<$generic>"
+                            it[TYPE] = "Value<$generic>"
                         }
                     }
                 }
@@ -232,17 +232,17 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
         return
     }
 
-    val className = get(J_NAME)
+    val className = get(NAME)
     jsequence(key)
         .filter { it.has(RETURNS) }
         .forEach {
-            val methodName = it[J_NAME]
+            val methodName = it[NAME]
             it[RETURNS].apply {
-                when (get(J_TYPE)) {
-                    JS_NUMBER -> set(J_TYPE, getReturnType(className, methodName))
+                when (get(TYPE)) {
+                    JS_NUMBER -> set(TYPE, getReturnType(className, methodName))
                     "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                         val generic = getReturnType(className, methodName)
-                        set(J_TYPE, "Value<$generic>")
+                        set(TYPE, "Value<$generic>")
                     }
                 }
             }

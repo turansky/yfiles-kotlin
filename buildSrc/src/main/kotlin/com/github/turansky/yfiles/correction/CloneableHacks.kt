@@ -16,7 +16,7 @@ private fun fixClass(source: Source) {
         get(METHODS)
             .firstWithName("clone")
             .get(RETURNS)
-            .set(J_TYPE, "T")
+            .set(TYPE, "T")
     }
 }
 
@@ -42,10 +42,10 @@ private fun fixImplementedType(source: Source) {
         .filterNot { it[ID] == ICLONEABLE }
         .forEach { type ->
             type.jsequence(METHODS)
-                .filter { it[J_NAME] == "clone" }
+                .filter { it[NAME] == "clone" }
                 .filterNot { it.has(PARAMETERS) }
                 .map { it[RETURNS] }
-                .forEach { it[J_TYPE] = type[ID] }
+                .forEach { it[TYPE] = type[ID] }
         }
 }
 

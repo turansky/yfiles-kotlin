@@ -33,14 +33,14 @@ private fun fixCursor(source: Source) {
 private fun JSONObject.fixGeneric() {
     setSingleTypeParameter("out T", JS_ANY)
 
-    property("current")[J_TYPE] = "T"
+    property("current")[TYPE] = "T"
 }
 
 private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
         jsequence(STATIC_METHODS)
             .onEach {
-                val name = it[J_NAME]
+                val name = it[NAME]
                 val bound = when (name) {
                     "createNodeCursor" -> NODE
                     "createEdgeCursor" -> EDGE
@@ -52,19 +52,19 @@ private fun fixCursorUtil(source: Source) {
             .forEach {
                 it.jsequence(PARAMETERS)
                     .plus(it[RETURNS])
-                    .filter { it[J_TYPE] == CURSOR }
-                    .forEach { it[J_TYPE] = cursor("T") }
+                    .filter { it[TYPE] == CURSOR }
+                    .forEach { it[TYPE] = cursor("T") }
             }
 
         staticMethod("toArray").apply {
             sequenceOf(secondParameter, get(RETURNS))
                 .forEach {
-                    it[J_TYPE] = it[J_TYPE]
+                    it[TYPE] = it[TYPE]
                         .replace("<$JS_ANY>", "<T>")
                         .replace("<$JS_OBJECT>", "<T>")
                 }
 
-            secondParameter[J_MODIFIERS]
+            secondParameter[MODIFIERS]
                 .put(OPTIONAL)
         }
     }
@@ -82,7 +82,7 @@ private fun fixMethodParameter(source: Source) {
         "DefaultLayoutGraph"
     ).jsequence(CONSTRUCTORS)
         .flatMap { it.optJsequence(PARAMETERS) }
-        .filter { it[J_NAME] in nodeParameterNames }
+        .filter { it[NAME] in nodeParameterNames }
         .forEach { it.fixTypeGeneric(NODE) }
 
     source.types(
@@ -113,7 +113,7 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(get(J_TYPE) == CURSOR)
+    require(get(TYPE) == CURSOR)
 
-    set(J_TYPE, cursor(generic))
+    set(TYPE, cursor(generic))
 }
