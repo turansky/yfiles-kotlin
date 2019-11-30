@@ -10,6 +10,7 @@ internal fun applyDpataHacks(source: Source) {
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
     fixHierarchicLayoutCore(source)
+    fixTriangulator(source)
     fixYGraphAdapter(source)
     fixWeightedLayerer(source)
 
@@ -109,6 +110,19 @@ private fun fixHierarchicLayoutCore(source: Source) {
         methods[methodName][RETURNS]
             .addGeneric(typeParameters)
     }
+}
+
+private fun fixTriangulator(source: Source) {
+    source.type("TriangulationAlgorithm")
+        .flatMap(STATIC_METHODS)
+        .flatMap(PARAMETERS)
+        .forEach {
+            when (it[NAME]) {
+                "pointData" -> it.addGeneric("$NODE,$YPOINT")
+                "revMap", "reverseEdgeMap" -> it.addGeneric(EDGE)
+                "resultMap" -> it.addGeneric(YPOINT)
+            }
+        }
 }
 
 private fun fixYGraphAdapter(source: Source) {
