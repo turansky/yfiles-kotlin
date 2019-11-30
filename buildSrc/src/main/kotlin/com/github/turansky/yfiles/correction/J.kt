@@ -1,41 +1,81 @@
 package com.github.turansky.yfiles.correction
 
-val J_NAMESPACES = "namespaces"
-val J_TYPES = "types"
+import org.json.JSONArray
+import org.json.JSONObject
 
-val J_FUNCTION_SIGNATURES = "functionSignatures"
+internal sealed class JKey(val name: String) {
+    override fun toString(): String = name
+}
 
-val J_ID = "id"
-val J_TYPE_PARAMETERS = "typeparameters"
-val J_BOUNDS = "bounds"
+internal class JArrayKey(name: String) : JKey(name)
+internal class JObjectKey(name: String) : JKey(name)
 
-val J_EXTENDS = "extends"
-val J_IMPLEMENTS = "implements"
+internal class JStringKey(name: String) : JKey(name)
 
-val J_CONSTRUCTORS = "constructors"
+internal val J_NAMESPACES = JArrayKey("namespaces")
+internal val J_TYPES = JArrayKey("types")
 
-val J_CONSTANTS = "constants"
+internal val J_FUNCTION_SIGNATURES = JObjectKey("functionSignatures")
 
-val J_STATIC_PROPERTIES = "staticProperties"
-val J_PROPERTIES = "properties"
-val J_FIELDS = "fields"
+internal val J_ID = JStringKey("id")
+internal val J_TYPE_PARAMETERS = JArrayKey("typeparameters")
+internal val J_BOUNDS = JArrayKey("bounds")
 
-val J_STATIC_METHODS = "staticMethods"
-val J_METHODS = "methods"
+internal val J_EXTENDS = JStringKey("extends")
+internal val J_IMPLEMENTS = JArrayKey("implements")
 
-val J_PARAMETERS = "parameters"
-val J_RETURNS = "returns"
-val J_DOC = "doc"
+internal val J_CONSTRUCTORS = JArrayKey("constructors")
 
-val J_NAME = "name"
-val J_TYPE = "type"
-val J_SIGNATURE = "signature"
-val J_MODIFIERS = "modifiers"
-val J_SUMMARY = "summary"
+internal val J_CONSTANTS = JArrayKey("constants")
 
-val J_DEFAULT = "y.default"
-val J_VALUE = "value"
+internal val J_STATIC_PROPERTIES = JArrayKey("staticProperties")
+internal val J_PROPERTIES = JArrayKey("properties")
+internal val J_FIELDS = JArrayKey("fields")
 
-val J_DP_DATA = "dpdata"
-val J_DOMAIN = "domain"
-val J_VALUES = "values"
+internal val J_STATIC_METHODS = JArrayKey("staticMethods")
+internal val J_METHODS = JArrayKey("methods")
+
+internal val J_PARAMETERS = JArrayKey("parameters")
+internal val J_RETURNS = JObjectKey("returns")
+internal val J_DOC = JStringKey("doc")
+
+internal val J_NAME = JStringKey("name")
+internal val J_TYPE = JStringKey("type")
+internal val J_SIGNATURE = JStringKey("signature")
+internal val J_MODIFIERS = JArrayKey("modifiers")
+internal val J_SUMMARY = JStringKey("summary")
+
+internal val J_DEFAULT = JObjectKey("y.default")
+internal val J_VALUE = JStringKey("value")
+
+internal val J_DP_DATA = JObjectKey("dpdata")
+internal val J_DOMAIN = JObjectKey("domain")
+internal val J_VALUES = JObjectKey("values")
+
+internal fun JSONObject.has(key: JKey) = has(key.name)
+
+internal fun JSONObject.getJSONArray(key: JArrayKey): JSONArray = getJSONArray(key.name)
+
+internal fun JSONObject.getJSONObject(key: JObjectKey): JSONObject = getJSONObject(key.name)
+
+internal fun JSONObject.getString(key: JStringKey): String = getString(key.name)
+
+internal fun JSONObject.optString(key: JStringKey): String? = optString(key.name)
+
+internal fun JSONObject.remove(key: JKey): Any? = remove(key.name)
+
+internal fun JSONObject.put(key: JStringKey, value: String) {
+    put(key.name, value)
+}
+
+internal fun JSONObject.put(key: JArrayKey, value: Array<*>) {
+    put(key.name, value)
+}
+
+internal fun JSONObject.put(key: JArrayKey, value: List<*>) {
+    put(key.name, value)
+}
+
+internal fun JSONObject.put(key: JArrayKey, value: JSONArray) {
+    put(key.name, value)
+}

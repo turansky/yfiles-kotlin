@@ -212,7 +212,7 @@ private fun fixMethodParameterNullability(source: Source) {
 
     source.types()
         .optionalArray(J_METHODS)
-        .filter { it.get(J_NAME) in BROKEN_NULLABILITY_METHODS }
+        .filter { it.getString(J_NAME) in BROKEN_NULLABILITY_METHODS }
         .filter { it.getJSONArray(J_PARAMETERS).length() == 1 }
         .map { it.getJSONArray(J_PARAMETERS).single() }
         .map { it as JSONObject }
@@ -221,7 +221,7 @@ private fun fixMethodParameterNullability(source: Source) {
 
     source.types()
         .flatMap { it.allMethodParameters() }
-        .filter { it.get(J_NAME) == "dataHolder" }
+        .filter { it.getString(J_NAME) == "dataHolder" }
         .forEach { it.changeNullability(false) }
 
     source.types(

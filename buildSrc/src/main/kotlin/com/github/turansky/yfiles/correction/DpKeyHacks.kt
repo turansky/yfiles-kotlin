@@ -54,7 +54,7 @@ private fun fixClass(source: Source) {
 }
 
 private fun JSONObject.updateDpKeyGeneric(
-    field: String,
+    field: JStringKey,
     generic: String
 ) {
     val value = getString(field)

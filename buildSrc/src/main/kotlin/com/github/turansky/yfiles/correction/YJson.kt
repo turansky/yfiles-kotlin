@@ -132,31 +132,31 @@ internal fun typeParameter(
         }
     }
 
-internal fun JSONObject.jsequence(name: String): Sequence<JSONObject> =
-    getJSONArray(name)
+internal fun JSONObject.jsequence(key: JArrayKey): Sequence<JSONObject> =
+    getJSONArray(key.name)
         .asSequence()
         .map { it as JSONObject }
 
-internal fun JSONObject.optJsequence(name: String): Sequence<JSONObject> =
-    if (has(name)) {
-        jsequence(name)
+internal fun JSONObject.optJsequence(key: JArrayKey): Sequence<JSONObject> =
+    if (has(key)) {
+        jsequence(key)
     } else {
         emptySequence()
     }
 
-internal fun Sequence<JSONObject>.jsequence(name: String): Sequence<JSONObject> =
-    flatMap { it.jsequence(name) }
+internal fun Sequence<JSONObject>.jsequence(key: JArrayKey): Sequence<JSONObject> =
+    flatMap { it.jsequence(key) }
 
-internal fun JSONObject.optionalArray(name: String): Sequence<JSONObject> =
-    if (has(name)) {
-        jsequence(name)
+internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
+    if (has(key)) {
+        jsequence(key)
     } else {
         emptySequence()
     }
 
-internal fun Sequence<JSONObject>.optionalArray(name: String): Sequence<JSONObject> =
-    filter { it.has(name) }
-        .jsequence(name)
+internal fun Sequence<JSONObject>.optionalArray(key: JArrayKey): Sequence<JSONObject> =
+    filter { it.has(key) }
+        .jsequence(key)
 
 internal val JSONObject.typeParameter: JSONObject
     get() {

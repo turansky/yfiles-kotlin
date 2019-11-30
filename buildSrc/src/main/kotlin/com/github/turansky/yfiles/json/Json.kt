@@ -1,6 +1,9 @@
 package com.github.turansky.yfiles.json
 
+import com.github.turansky.yfiles.correction.JKey
 import com.github.turansky.yfiles.correction.J_NAME
+import com.github.turansky.yfiles.correction.getString
+import com.github.turansky.yfiles.correction.remove
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -9,8 +12,10 @@ internal fun jArray(vararg items: JSONObject): JSONArray {
     return JSONArray(items.toList())
 }
 
-internal fun jObject(vararg items: Pair<String, Any>): JSONObject {
-    return JSONObject(mapOf(*items))
+internal fun jObject(vararg items: Pair<JKey, Any>): JSONObject {
+    return JSONObject(
+        items.associate { (key, value) -> key.name to value }
+    )
 }
 
 internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
@@ -29,8 +34,12 @@ internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSO
         .filter(predicate)
 }
 
-internal fun JSONObject.strictRemove(key: String) {
+internal fun JSONObject.strictRemove(key: JKey) {
     requireNotNull(remove(key))
+}
+
+internal fun JSONObject.strictRemove(name: String) {
+    requireNotNull(remove(name))
 }
 
 internal fun JSONArray.strictRemove(index: Int) {

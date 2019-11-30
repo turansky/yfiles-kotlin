@@ -124,7 +124,7 @@ private fun JSONObject.correctProperties() {
     correctProperties(J_PROPERTIES)
 }
 
-private fun JSONObject.correctProperties(key: String) {
+private fun JSONObject.correctProperties(key: JArrayKey) {
     if (!has(key)) {
         return
     }
@@ -198,7 +198,7 @@ private fun JSONObject.correctMethods() {
     correctMethods(J_METHODS)
 }
 
-private fun JSONObject.correctMethods(key: String) {
+private fun JSONObject.correctMethods(key: JArrayKey) {
     if (!has(key)) {
         return
     }
@@ -244,7 +244,7 @@ private fun JSONObject.correctMethodParameters() {
     correctMethodParameters(J_METHODS)
 }
 
-private fun JSONObject.correctMethodParameters(key: String) {
+private fun JSONObject.correctMethodParameters(key: JArrayKey) {
     if (!has(key)) {
         return
     }
@@ -344,11 +344,11 @@ private fun correctEnumerable(types: List<JSONObject>) {
                 .flatMap { type.jsequence(it) }
         }
         .optionalArray(J_PARAMETERS)
-        .filter { it.has("signature") }
+        .filter { it.has(J_SIGNATURE) }
         .forEach {
-            val signature = it.getString("signature")
+            val signature = it.getString(J_SIGNATURE)
             if (",$JS_NUMBER" in signature) {
-                it.put("signature", signature.replace(",$JS_NUMBER", ",$JS_INT"))
+                it.put(J_SIGNATURE, signature.replace(",$JS_NUMBER", ",$JS_INT"))
             }
         }
 }

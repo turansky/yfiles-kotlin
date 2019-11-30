@@ -179,7 +179,7 @@ private fun JSONObject.correctMethodParameters() {
     correctMethodParameters(J_METHODS)
 }
 
-private fun JSONObject.correctMethodParameters(key: String) {
+private fun JSONObject.correctMethodParameters(key: JArrayKey) {
     if (!has(key)) {
         return
     }
@@ -227,7 +227,7 @@ private fun JSONObject.correctMethods() {
     correctMethods(J_METHODS)
 }
 
-private fun JSONObject.correctMethods(key: String) {
+private fun JSONObject.correctMethods(key: JArrayKey) {
     if (!has(key)) {
         return
     }
