@@ -325,11 +325,7 @@ private fun removeSystemMethods(source: Source) {
 
 private fun removeArtifitialParameters(source: Source) {
     sequenceOf(CONSTRUCTORS, METHODS)
-        .flatMap { parameter ->
-            source.types()
-                .filter { it.has(parameter) }
-                .jsequence(parameter)
-        }
+        .flatMap { parameter -> source.types().optFlatMap(parameter) }
         .filter { it.has(PARAMETERS) }
         .forEach {
             val artifitialParameters = it.jsequence(PARAMETERS)
@@ -356,8 +352,7 @@ private fun removeThisParameters(source: Source) {
         .flatMap { parameter ->
             THIS_TYPES.asSequence()
                 .map { source.type(it) }
-                .filter { it.has(parameter) }
-                .jsequence(parameter)
+                .optFlatMap(parameter)
         }
         .filter { it.has(PARAMETERS) }
         .map { it[PARAMETERS] }

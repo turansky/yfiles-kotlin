@@ -78,7 +78,6 @@ private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .flatMap {
             (it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS))
-                .filter { it.has(PARAMETERS) }
-                .jsequence(PARAMETERS)
+                .optFlatMap(PARAMETERS)
                 .plus(it.optJsequence(PROPERTIES))
         }

@@ -207,8 +207,7 @@ private fun fixTypes(source: VsdxSource) {
                 getJSONObject(it)
             }
         }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .forEach { it.fixType() }
 }
 
@@ -309,8 +308,7 @@ private fun fixSummary(source: VsdxSource) {
         .forEach { it.fixSummary() }
 
     source.types()
-        .filter { it.has(METHODS) }
-        .jsequence(METHODS)
+        .optFlatMap(METHODS)
         .filter { it.has(RETURNS) }
         .map { it[RETURNS] }
         .filter { it.has(DOC) }

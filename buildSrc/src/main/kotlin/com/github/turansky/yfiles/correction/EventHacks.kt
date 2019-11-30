@@ -6,8 +6,7 @@ internal fun applyEventHacks(source: Source) {
     source.types()
         .flatMap { it.optJsequence(CONSTRUCTORS) + it.optJsequence(METHODS) }
         .plus(source.functionSignatures.run { keySet().map { getJSONObject(it) } })
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .forEach {
             val name = it.getNewName()
                 ?: return@forEach

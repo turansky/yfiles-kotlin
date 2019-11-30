@@ -424,8 +424,7 @@ private fun addTypeParameterBounds(source: Source) {
         .filter { it.has(CONSTRUCTORS) }
         .forEach {
             val boundMap = it.jsequence(CONSTRUCTORS)
-                .filter { it.has(PARAMETERS) }
-                .jsequence(PARAMETERS)
+                .optFlatMap(PARAMETERS)
                 .mapNotNull { it.classBoundPair }
                 .toMap()
 

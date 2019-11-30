@@ -45,8 +45,7 @@ private fun fixConstructorNullability(source: Source) {
         "AspectRatioComponentLayerer",
         "ConstraintIncrementalLayerer"
     ).flatMap { it.jsequence(CONSTRUCTORS) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
@@ -198,8 +197,7 @@ private fun fixCollectionsNullability(source: Source) {
         "CreationProperties",
         "ResultItemMapping"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .filterNot { it[NAME] in excludedParameters }
         .forEach { it.changeNullability(false) }
@@ -231,8 +229,7 @@ private fun fixGraphNullability(source: Source) {
         "GroupingSupport"
     ).flatMap { it.jsequence(METHODS) }
         .filter { it[NAME] in INCLUDED_METHODS }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -253,8 +250,7 @@ private fun fixGraphmlNullability(source: Source) {
         "GraphMLIOHandler"
     ).flatMap { it.jsequence(METHODS) }
         .filterNot { it[NAME] in EXCLUDED_METHODS }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filter { it[NAME] in INCLUDED_PARAMETERS }
         .filter { it[TYPE] == JS_OBJECT }
         .forEach { it.changeNullability(false) }
@@ -380,8 +376,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         "YPoint",
         "YRectangle"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
@@ -512,8 +507,7 @@ private fun fixLayoutNullability(source: Source) {
         "SimpleProfitModel",
         "ExtendedLabelCandidateProfitModel"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -547,8 +541,7 @@ private fun fixCommonLayoutNullability(source: Source) {
         "ISeriesParallelLayoutPortAssignment",
         "DefaultSeriesParallelLayoutPortAssignment"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -589,8 +582,7 @@ private fun fixStageNullability(source: Source) {
         "IPartitionInterEdgeRouter",
         "IPartitionPlacer"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -620,8 +612,7 @@ private fun fixMultipageNullability(source: Source) {
 
         "ILayoutCallback"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -708,8 +699,7 @@ private fun fixHierarchicNullability(source: Source) {
 
         "SelfLoopCalculator"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[NAME] in excludedParameters }
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -790,8 +780,7 @@ private fun fixRouterNullability(source: Source) {
         "OrthogonalPatternEdgeRouter",
         "ParallelEdgeRouter"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
@@ -852,8 +841,7 @@ private fun fixTreeNullability(source: Source) {
         "TreeComponentLayout",
         "TreeReductionStage"
     ).flatMap { getAffectedMethods(it) }
-        .filter { it.has(PARAMETERS) }
-        .jsequence(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
