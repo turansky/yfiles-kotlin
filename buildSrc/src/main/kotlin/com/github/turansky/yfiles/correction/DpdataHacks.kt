@@ -10,6 +10,7 @@ internal fun applyDpataHacks(source: Source) {
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
     fixHierarchicLayoutCore(source)
+    fixWeightedLayerer(source)
 
     fixDataProviders(source)
 }
@@ -107,6 +108,10 @@ private fun fixHierarchicLayoutCore(source: Source) {
         methods[methodName][RETURNS]
             .addGeneric(typeParameters)
     }
+}
+
+private fun fixWeightedLayerer(source: Source) {
+    source.type("WeightedLayerer")[PROPERTIES]["weight"].addGeneric("$EDGE,$JS_INT")
 }
 
 private fun fixDataProviders(source: Source) {
