@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
+import org.json.JSONObject
 
 internal fun applyDpataHacks(source: Source) {
     fixGraph(source)
@@ -9,6 +10,8 @@ internal fun applyDpataHacks(source: Source) {
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
     fixHierarchicLayoutCore(source)
+
+    fixDataProviders(source)
 }
 
 private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
@@ -104,4 +107,38 @@ private fun fixHierarchicLayoutCore(source: Source) {
         methods[methodName][RETURNS]
             .addGeneric(typeParameters)
     }
+}
+
+private fun fixDataProviders(source: Source) {
+    source.type("DataProviders")
+        .jsequence(STATIC_METHODS)
+        .forEach {
+            val name = it[NAME]
+
+            val keyType = when {
+                name == "createConstantDataProvider" || name == "createNegatedDataProvider" -> "K"
+                "NodeDataProvider" in name -> NODE
+                else -> EDGE
+            }
+
+            val valueType = when {
+                name == "createNegatedDataProvider" -> JS_BOOLEAN
+                "ForBoolean" in name -> JS_BOOLEAN
+                "ForInt" in name -> JS_INT
+                "ForNumber" in name -> JS_DOUBLE
+                else -> "V"
+            }
+
+            it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
+                if (keyType == "K") {
+                    add(typeParameter(keyType, JS_OBJECT))
+                }
+
+                if (valueType == "V") {
+                    add(typeParameter(valueType, JS_OBJECT))
+                }
+            }.toList()
+
+            it[RETURNS].addGeneric("$keyType,$valueType")
+        }
 }
