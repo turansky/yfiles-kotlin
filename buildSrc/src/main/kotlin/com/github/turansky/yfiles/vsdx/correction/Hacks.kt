@@ -213,7 +213,7 @@ private fun fixTypes(source: VsdxSource) {
 
 private fun fixOptionTypes(source: VsdxSource) {
     source.type("CachingMasterProvider")
-        .jsequence(CONSTRUCTORS)
+        .flatMap(CONSTRUCTORS)
         .single()
         .apply {
             parameter("optionsOrNodeStyleType").apply {
@@ -230,7 +230,7 @@ private fun fixOptionTypes(source: VsdxSource) {
         }
 
     source.type("CustomEdgeProvider")
-        .jsequence(CONSTRUCTORS)
+        .flatMap(CONSTRUCTORS)
         .single()
         .parameter("edgeStyleType")
         .addGeneric("yfiles.styles.IEdgeStyle")
@@ -291,7 +291,7 @@ private fun JSONObject.fixSummary() {
 
 private fun fixSummary(source: VsdxSource) {
     source.type("VsdxExport")
-        .jsequence(METHODS)
+        .flatMap(METHODS)
         .jsequence(PARAMETERS)
         .filter { it.has(SUMMARY) }
         .forEach {

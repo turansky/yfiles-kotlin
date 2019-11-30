@@ -186,7 +186,7 @@ private fun fixDataMaps(source: Source) {
         }
 
     source.type("Graph")
-        .jsequence(PROPERTIES)
+        .flatMap(PROPERTIES)
         .forEach { property ->
             val type = property[TYPE]
             MAP_INTERFACES.find { it in type }
@@ -254,7 +254,7 @@ private fun fixMethodTypes(source: Source) {
         val keyTypeParameter = it.getTypeParameterName(0)
         val valueTypeParameter = it.getTypeParameterName(1)
 
-        it.jsequence(METHODS)
+        it.flatMap(METHODS)
             .forEach {
                 val name = it[NAME]
 
@@ -265,7 +265,7 @@ private fun fixMethodTypes(source: Source) {
                         .set(TYPE, valueTypeParameter)
                 }
 
-                it.jsequence(PARAMETERS)
+                it.flatMap(PARAMETERS)
                     .filter { it[NAME] == "dataHolder" }
                     .forEach { it[TYPE] = keyTypeParameter }
             }

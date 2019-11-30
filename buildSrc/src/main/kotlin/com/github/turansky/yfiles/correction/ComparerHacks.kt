@@ -37,7 +37,7 @@ private fun fixComparerInheritors(source: Source) {
 
                 get(METHODS)
                     .get("compare")
-                    .jsequence(PARAMETERS)
+                    .flatMap(PARAMETERS)
                     .forEach { it[TYPE] = generic }
             }
     }
@@ -75,7 +75,7 @@ private fun fixComparerAsMethodParameter(source: Source) {
         "MultiComponentLayerer",
 
         "SwimlaneDescriptor"
-    ).flatMap { it.jsequence(METHODS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(CONSTRUCTORS) }
+    ).flatMap { it.flatMap(METHODS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(CONSTRUCTORS) }
         .forEach {
             val methodName = it[NAME]
 

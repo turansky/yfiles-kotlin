@@ -145,7 +145,7 @@ private fun JSONObject.correctProperties() {
     }
 
     val className = get(NAME)
-    jsequence(PROPERTIES)
+    flatMap(PROPERTIES)
         .forEach {
             val propertyName = it[NAME]
             when (it[TYPE]) {
@@ -185,11 +185,11 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
     }
 
     val className = get(NAME)
-    jsequence(key)
+    flatMap(key)
         .filter { it.has(PARAMETERS) }
         .forEach { method ->
             val methodName = method[NAME]
-            method.jsequence(PARAMETERS)
+            method.flatMap(PARAMETERS)
                 .forEach {
                     val parameterName = it[NAME]
                     when (it[TYPE]) {
@@ -233,7 +233,7 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
     }
 
     val className = get(NAME)
-    jsequence(key)
+    flatMap(key)
         .filter { it.has(RETURNS) }
         .forEach {
             val methodName = it[NAME]

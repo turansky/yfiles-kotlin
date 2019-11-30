@@ -20,7 +20,7 @@ internal fun generateIncrementalHint(sourceDir: File) {
 
 internal fun applyIncrementalHintHacks(source: Source) {
     source.type("IIncrementalHintsFactory")
-        .jsequence(METHODS)
+        .flatMap(METHODS)
         .forEach { it[RETURNS][TYPE] = INCREMENTAL_HINT }
 
     source.type("IncrementalHintItemMapping").also {

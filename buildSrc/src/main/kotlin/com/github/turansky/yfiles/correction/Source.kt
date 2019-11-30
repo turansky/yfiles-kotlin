@@ -7,7 +7,7 @@ internal class Source(private val api: JSONObject) {
         get() = api[FUNCTION_SIGNATURES]
 
     private val types: List<JSONObject> = api
-        .jsequence(NAMESPACES)
+        .flatMap(NAMESPACES)
         .optFlatMap(NAMESPACES)
         .jsequence(TYPES)
         .toList()

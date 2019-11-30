@@ -111,7 +111,7 @@ private fun fixHierarchicLayoutCore(source: Source) {
 
 private fun fixDataProviders(source: Source) {
     source.type("DataProviders")
-        .jsequence(STATIC_METHODS)
+        .flatMap(STATIC_METHODS)
         .forEach {
             val name = it[NAME]
 

@@ -31,9 +31,9 @@ private fun JSONObject.fixGeneric() {
         put(0, getString(0).replace("<$JS_ANY>", "<T>"))
     }
 
-    (jsequence(CONSTRUCTORS) + jsequence(METHODS))
+    (flatMap(CONSTRUCTORS) + flatMap(METHODS))
         .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
-        .plus(jsequence(PROPERTIES))
+        .plus(flatMap(PROPERTIES))
         .forEach {
             val type = it[TYPE]
             val newType = when (type) {

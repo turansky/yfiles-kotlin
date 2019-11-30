@@ -142,20 +142,20 @@ internal fun typeParameter(
         }
     }
 
-internal fun JSONObject.jsequence(key: JArrayKey): Sequence<JSONObject> =
+internal fun JSONObject.flatMap(key: JArrayKey): Sequence<JSONObject> =
     getJSONArray(key.name)
         .asSequence()
         .map { it as JSONObject }
 
 internal fun JSONObject.optFlatMap(key: JArrayKey): Sequence<JSONObject> =
     if (has(key)) {
-        jsequence(key)
+        flatMap(key)
     } else {
         emptySequence()
     }
 
 internal fun Sequence<JSONObject>.jsequence(key: JArrayKey): Sequence<JSONObject> =
-    flatMap { it.jsequence(key) }
+    flatMap { it.flatMap(key) }
 
 internal fun Sequence<JSONObject>.optFlatMap(key: JArrayKey): Sequence<JSONObject> =
     filter { it.has(key) }
@@ -163,7 +163,7 @@ internal fun Sequence<JSONObject>.optFlatMap(key: JArrayKey): Sequence<JSONObjec
 
 internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
     if (has(key)) {
-        jsequence(key)
+        flatMap(key)
     } else {
         emptySequence()
     }
@@ -171,12 +171,12 @@ internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
 internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
-        return jsequence(PARAMETERS)
+        return flatMap(PARAMETERS)
             .first { it[NAME] in typeNames }
     }
 
 internal fun JSONObject.parameter(name: String): JSONObject {
-    return jsequence(PARAMETERS)
+    return flatMap(PARAMETERS)
         .first { it[NAME] == name }
 }
 

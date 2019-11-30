@@ -38,7 +38,7 @@ private fun JSONObject.fixGeneric() {
 
 private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
-        jsequence(STATIC_METHODS)
+        flatMap(STATIC_METHODS)
             .onEach {
                 val name = it[NAME]
                 val bound = when (name) {
@@ -50,7 +50,7 @@ private fun fixCursorUtil(source: Source) {
                 it.setSingleTypeParameter(bound = bound)
             }
             .forEach {
-                it.jsequence(PARAMETERS)
+                it.flatMap(PARAMETERS)
                     .plus(it[RETURNS])
                     .filter { it[TYPE] == CURSOR }
                     .forEach { it[TYPE] = cursor("T") }

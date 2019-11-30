@@ -44,7 +44,7 @@ internal fun applyComparableHacks(source: Source) {
 }
 
 private fun JSONObject.configureCompareTo(type: String) {
-    jsequence(METHODS)
+    flatMap(METHODS)
         .filter { it[NAME] == "compareTo" }
         .singleOrNull()
         ?.apply {

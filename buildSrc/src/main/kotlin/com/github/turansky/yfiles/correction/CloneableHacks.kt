@@ -41,7 +41,7 @@ private fun fixImplementedType(source: Source) {
         .filter { it.has(METHODS) }
         .filterNot { it[ID] == ICLONEABLE }
         .forEach { type ->
-            type.jsequence(METHODS)
+            type.flatMap(METHODS)
                 .filter { it[NAME] == "clone" }
                 .filterNot { it.has(PARAMETERS) }
                 .map { it[RETURNS] }

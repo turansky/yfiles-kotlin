@@ -61,7 +61,7 @@ internal fun applyIdHacks(source: Source) {
         }
 
     source.type("BusRouterBusDescriptor")
-        .jsequence(CONSTRUCTORS)
+        .flatMap(CONSTRUCTORS)
         .jsequence(PARAMETERS)
         .forEach {
             val name = it[NAME]

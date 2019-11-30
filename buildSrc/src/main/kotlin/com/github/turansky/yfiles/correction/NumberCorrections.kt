@@ -35,7 +35,7 @@ private fun JSONObject.correctConstants() {
     }
 
     val className = get(NAME)
-    jsequence(CONSTANTS)
+    flatMap(CONSTANTS)
         .filter { it[TYPE] != JS_NUMBER }
         .filter { JS_NUMBER in it[TYPE] }
         .forEach {
@@ -65,12 +65,12 @@ private fun JSONObject.correctConstructors() {
     }
 
     val className = get(NAME)
-    jsequence(CONSTRUCTORS)
+    flatMap(CONSTRUCTORS)
         .optFlatMap(PARAMETERS)
         .filter { it[TYPE] == JS_NUMBER }
         .forEach { it[TYPE] = getConstructorParameterType(className, it[NAME]) }
 
-    jsequence(CONSTRUCTORS)
+    flatMap(CONSTRUCTORS)
         .optFlatMap(PARAMETERS)
         .filter { it[TYPE] == "Array<$JS_NUMBER>" }
         .forEach {
@@ -131,7 +131,7 @@ private fun JSONObject.correctProperties(key: JArrayKey) {
     }
 
     val className = get(NAME)
-    jsequence(key)
+    flatMap(key)
         .filter { it[TYPE] == JS_NUMBER }
         .forEach { it[TYPE] = getPropertyType(className, it[NAME]) }
 }
@@ -160,11 +160,11 @@ private fun JSONObject.correctPropertiesGeneric() {
         return
     }
 
-    jsequence(PROPERTIES)
+    flatMap(PROPERTIES)
         .filter { "$JS_NUMBER>" in it[TYPE] }
         .forEach { it[TYPE] = getPropertyGenericType(it[NAME], it[TYPE]) }
 
-    jsequence(PROPERTIES)
+    flatMap(PROPERTIES)
         .filter { it.has(SIGNATURE) }
         .forEach {
             val signature = it[SIGNATURE]
@@ -205,7 +205,7 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
     }
 
     val className = get(NAME)
-    jsequence(key)
+    flatMap(key)
         .filter { it.has(RETURNS) }
         .forEach {
             val methodName = it[NAME]
@@ -251,11 +251,11 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
     }
 
     val className = get(NAME)
-    jsequence(key)
+    flatMap(key)
         .filter { it.has(PARAMETERS) }
         .forEach { method ->
             val methodName = method[NAME]
-            method.jsequence(PARAMETERS)
+            method.flatMap(PARAMETERS)
                 .forEach {
                     val parameterName = it.get(NAME)
                     when (it.get(TYPE)) {
@@ -342,7 +342,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
         .flatMap { type ->
             sequenceOf(CONSTRUCTORS, METHODS, STATIC_METHODS)
                 .filter { type.has(it) }
-                .flatMap { type.jsequence(it) }
+                .flatMap { type.flatMap(it) }
         }
         .optFlatMap(PARAMETERS)
         .filter { it.has(SIGNATURE) }

@@ -283,12 +283,12 @@ private fun addMapperMetadataGeneric(source: Source) {
 
     type.setTypeParameters("TKey", "TValue")
 
-    type.jsequence(CONSTRUCTORS)
+    type.flatMap(CONSTRUCTORS)
         .jsequence(PARAMETERS)
         .filter { it[NAME] == "metadata" }
         .forEach { it.addGeneric("TKey,TValue") }
 
-    type.jsequence(PROPERTIES)
+    type.flatMap(PROPERTIES)
         .forEach {
             when (it[NAME]) {
                 "keyType" -> it.addGeneric("TKey")
@@ -382,18 +382,18 @@ private fun addClassBounds(source: Source) {
         "HighlightIndicatorManager",
 
         "ItemSelectionChangedEventArgs"
-    ).map { it.jsequence(TYPE_PARAMETERS).single() }
+    ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
 
     source.type("ResultItemMapping")
-        .jsequence(TYPE_PARAMETERS)
+        .flatMap(TYPE_PARAMETERS)
         .first()
         .set(BOUNDS, arrayOf(IMODEL_ITEM))
 
     source.type("GraphModelManager")
-        .jsequence(METHODS)
+        .flatMap(METHODS)
         .first { it[NAME] == "createHitTester" }
-        .jsequence(TYPE_PARAMETERS)
+        .flatMap(TYPE_PARAMETERS)
         .single()
         .set(BOUNDS, arrayOf(IMODEL_ITEM))
 
@@ -407,7 +407,7 @@ private fun addClassBounds(source: Source) {
         "ItemCopiedEventArgs",
 
         "Future"
-    ).map { it.jsequence(TYPE_PARAMETERS).single() }
+    ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types(
@@ -423,13 +423,13 @@ private fun addTypeParameterBounds(source: Source) {
         .filter { it.has(TYPE_PARAMETERS) }
         .filter { it.has(CONSTRUCTORS) }
         .forEach {
-            val boundMap = it.jsequence(CONSTRUCTORS)
+            val boundMap = it.flatMap(CONSTRUCTORS)
                 .optFlatMap(PARAMETERS)
                 .mapNotNull { it.classBoundPair }
                 .toMap()
 
             if (boundMap.isNotEmpty()) {
-                it.jsequence(TYPE_PARAMETERS)
+                it.flatMap(TYPE_PARAMETERS)
                     .filter { !it.has(BOUNDS) }
                     .forEach {
                         val bound = boundMap[it[NAME]]
@@ -444,12 +444,12 @@ private fun addTypeParameterBounds(source: Source) {
         .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .filter { it.has(TYPE_PARAMETERS) }
         .forEach {
-            val boundMap = it.jsequence(PARAMETERS)
+            val boundMap = it.flatMap(PARAMETERS)
                 .mapNotNull { it.classBoundPair }
                 .toMap()
 
             if (boundMap.isNotEmpty()) {
-                it.jsequence(TYPE_PARAMETERS)
+                it.flatMap(TYPE_PARAMETERS)
                     .filter { !it.has(BOUNDS) }
                     .forEach {
                         val name = it[NAME]
@@ -510,13 +510,13 @@ private fun addMapClassBounds(source: Source) {
 
         "IMapper",
         "Mapper"
-    ).map { it.jsequence(TYPE_PARAMETERS).first() }
+    ).map { it.flatMap(TYPE_PARAMETERS).first() }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types()
         .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .filter { it.has(TYPE_PARAMETERS) }
-        .map { it.jsequence(TYPE_PARAMETERS).first() }
+        .map { it.flatMap(TYPE_PARAMETERS).first() }
         .filterNot { it.has(BOUNDS) }
         .filter { it[NAME] == "K" }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }

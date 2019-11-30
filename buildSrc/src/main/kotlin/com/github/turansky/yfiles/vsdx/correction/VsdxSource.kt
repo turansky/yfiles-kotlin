@@ -8,7 +8,7 @@ internal class VsdxSource(private val api: JSONObject) {
         get() = api[FUNCTION_SIGNATURES]
 
     private val types: List<JSONObject> = api
-        .jsequence(NAMESPACES)
+        .flatMap(NAMESPACES)
         .jsequence(TYPES)
         .toList()
 

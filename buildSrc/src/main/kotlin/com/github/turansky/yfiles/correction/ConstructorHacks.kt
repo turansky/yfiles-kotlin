@@ -20,7 +20,7 @@ private fun fixOptionality(source: Source) {
         "PortDecorator",
         "StripeLabelDecorator"
     ).forEach {
-        it.jsequence(CONSTRUCTORS)
+        it.flatMap(CONSTRUCTORS)
             .single()
             .firstParameter
             .changeOptionality(true)
@@ -101,7 +101,7 @@ private val JSONObject.parametersCount: Int
 
 private val JSONObject.parametersNames: List<String>
     get() = if (has(PARAMETERS)) {
-        jsequence(PARAMETERS)
+        flatMap(PARAMETERS)
             .map { it[NAME] }
             .toList()
     } else {

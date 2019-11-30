@@ -112,7 +112,7 @@ private fun fixConstantGenerics(source: Source) {
         }
 
     source.type("LabelLayoutKeys")
-        .jsequence(CONSTANTS)
+        .flatMap(CONSTANTS)
         .forEach {
             val type = it[TYPE]
             if (type.endsWith("<yfiles.layout.LabelLayoutData>")) {
@@ -175,7 +175,7 @@ private fun fixPropertyNullability(source: Source) {
 
 private fun fixConstructorParameterName(source: Source) {
     source.type("TimeSpan")
-        .jsequence(CONSTRUCTORS)
+        .flatMap(CONSTRUCTORS)
         .jsequence(PARAMETERS)
         .single { it[NAME] == "millis" }
         .set(NAME, "milliseconds")
@@ -190,7 +190,7 @@ private fun fixMethodParameterName(source: Source) {
     }
 
     source.type("RankAssignmentAlgorithm")
-        .jsequence(STATIC_METHODS)
+        .flatMap(STATIC_METHODS)
         .filter { it[NAME] == "simplex" }
         .jsequence(PARAMETERS)
         .single { it[NAME] == "_root" }
@@ -231,7 +231,7 @@ private fun fixMethodParameterNullability(source: Source) {
         "FocusIndicatorManager",
         "HighlightIndicatorManager",
         "SelectionIndicatorManager"
-    ).flatMap { it.jsequence(METHODS) }
+    ).flatMap { it.flatMap(METHODS) }
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
@@ -253,7 +253,7 @@ private fun fixMethodNullability(source: Source) {
     STATIC_METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .jsequence(STATIC_METHODS)
+                .flatMap(STATIC_METHODS)
                 .filter { it[NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
@@ -261,7 +261,7 @@ private fun fixMethodNullability(source: Source) {
     METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .jsequence(METHODS)
+                .flatMap(METHODS)
                 .filter { it[NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
@@ -325,7 +325,7 @@ private fun removeArtifitialParameters(source: Source) {
         .flatMap { parameter -> source.types().optFlatMap(parameter) }
         .filter { it.has(PARAMETERS) }
         .forEach {
-            val artifitialParameters = it.jsequence(PARAMETERS)
+            val artifitialParameters = it.flatMap(PARAMETERS)
                 .filter { it[MODIFIERS].contains(ARTIFICIAL) }
                 .toList()
 
@@ -450,7 +450,7 @@ private fun fixMethodGenericBounds(source: Source) {
         "getViewItem"
     )
     source.type("IFoldingView")
-        .jsequence(METHODS)
+        .flatMap(METHODS)
         .filter { it[NAME] in methodNames }
         .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
