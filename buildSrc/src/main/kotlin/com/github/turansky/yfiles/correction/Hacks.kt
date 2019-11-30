@@ -210,7 +210,7 @@ private fun fixMethodParameterNullability(source: Source) {
         }
 
     source.types()
-        .optionalArray(METHODS)
+        .optFlatMap(METHODS)
         .filter { it[NAME] in BROKEN_NULLABILITY_METHODS }
         .filter { it[PARAMETERS].length() == 1 }
         .map { it[PARAMETERS].single() }

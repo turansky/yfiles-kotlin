@@ -66,12 +66,12 @@ private fun JSONObject.correctConstructors() {
 
     val className = get(NAME)
     jsequence(CONSTRUCTORS)
-        .optionalArray(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filter { it[TYPE] == JS_NUMBER }
         .forEach { it[TYPE] = getConstructorParameterType(className, it[NAME]) }
 
     jsequence(CONSTRUCTORS)
-        .optionalArray(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filter { it[TYPE] == "Array<$JS_NUMBER>" }
         .forEach {
             val genericType = when (val name = it[NAME]) {
@@ -344,7 +344,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
                 .filter { type.has(it) }
                 .flatMap { type.jsequence(it) }
         }
-        .optionalArray(PARAMETERS)
+        .optFlatMap(PARAMETERS)
         .filter { it.has(SIGNATURE) }
         .forEach {
             val signature = it[SIGNATURE]

@@ -25,7 +25,7 @@ private val EXCLUDED_TYPES = setOf(
 internal fun excludeUnusedTypes(api: JSONObject) {
     api
         .jsequence(NAMESPACES)
-        .optionalArray(NAMESPACES)
+        .optFlatMap(NAMESPACES)
         .forEach {
             val types = it[TYPES]
 

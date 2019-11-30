@@ -13,7 +13,7 @@ internal fun JSONObject.staticMethod(name: String): JSONObject =
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
     (optionalArray(METHODS) + optionalArray(STATIC_METHODS))
-        .optionalArray(PARAMETERS)
+        .optFlatMap(PARAMETERS)
 
 internal fun JSONObject.methodParameters(
     methodName: String,
@@ -161,13 +161,8 @@ internal fun Sequence<JSONObject>.jsequence(key: JArrayKey): Sequence<JSONObject
     flatMap { it.jsequence(key) }
 
 internal fun Sequence<JSONObject>.optFlatMap(key: JArrayKey): Sequence<JSONObject> =
-    flatMap {
-        if (it.has(key)) {
-            it.jsequence(key)
-        } else {
-            emptySequence()
-        }
-    }
+    filter { it.has(key) }
+        .jsequence(key)
 
 internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
     if (has(key)) {
@@ -175,10 +170,6 @@ internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
     } else {
         emptySequence()
     }
-
-internal fun Sequence<JSONObject>.optionalArray(key: JArrayKey): Sequence<JSONObject> =
-    filter { it.has(key) }
-        .jsequence(key)
 
 internal val JSONObject.typeParameter: JSONObject
     get() {

@@ -237,7 +237,7 @@ private fun addConstructorClassGeneric(source: Source) {
         .forEach { type ->
             val typeName = type[NAME]
             type.optionalArray(CONSTRUCTORS)
-                .optionalArray(PARAMETERS)
+                .optFlatMap(PARAMETERS)
                 .filter { it[TYPE] == YCLASS }
                 .forEach {
                     val name = it[NAME]
