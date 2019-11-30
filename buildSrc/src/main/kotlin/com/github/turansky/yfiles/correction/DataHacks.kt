@@ -78,7 +78,7 @@ private fun fixGraph(source: Source) {
 
 private fun fixDataProvider(source: Source) {
     source.type(IDATA_PROVIDER.substringAfterLast("."))
-        .addKeyValueTypeParameters()
+        .addKeyValueTypeParameters("in K", "out V")
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -86,12 +86,10 @@ private fun fixDataProvider(source: Source) {
         .forEach { it[TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
 
     source.type("DataProviderBase")
-        .addKeyValueTypeParameters()
+        .addKeyValueTypeParameters("in K", "out V")
 
     source.type("MapperDataProviderAdapter")
-        .get(TYPE_PARAMETERS)
-        .getJSONObject(1)
-        .set(BOUNDS, arrayOf(JS_OBJECT))
+        .addKeyValueTypeParameters("in TKey", "out TValue")
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
@@ -111,7 +109,7 @@ private fun JSONObject.getDataProviderTypeParameters(): String {
 
 private fun fixDataAcceptor(source: Source) {
     source.type(IDATA_ACCEPTOR.substringAfterLast("."))
-        .addKeyValueTypeParameters()
+        .addKeyValueTypeParameters("in K", "in V")
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -127,7 +125,7 @@ private fun fixDataAcceptor(source: Source) {
 
 private fun fixDataMap(source: Source) {
     source.type(IDATA_MAP.substringAfterLast("."))
-        .addKeyValueTypeParameters()
+        .addKeyValueTypeParameters("in K", "V")
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -288,9 +286,8 @@ private fun fixMethodTypes(source: Source) {
 
         "MapperDataProviderAdapter"
     ).forEach {
-        val typeParameters = it[TYPE_PARAMETERS]
-        val keyTypeParameter = typeParameters.getJSONObject(0)[NAME]
-        val valueTypeParameter = typeParameters.getJSONObject(1)[NAME]
+        val keyTypeParameter = it.getTypeParameterName(0)
+        val valueTypeParameter = it.getTypeParameterName(1)
 
         it.jsequence(METHODS)
             .forEach {
@@ -311,12 +308,21 @@ private fun fixMethodTypes(source: Source) {
     }
 }
 
-private fun JSONObject.addKeyValueTypeParameters() {
+private fun JSONObject.getTypeParameterName(index: Int): String =
+    get(TYPE_PARAMETERS)
+        .getJSONObject(index)[NAME]
+        .removePrefix("in ")
+        .removePrefix("out ")
+
+private fun JSONObject.addKeyValueTypeParameters(
+    keyName: String = "K",
+    valueName: String = "V"
+) {
     set(
         TYPE_PARAMETERS,
         jArray(
-            typeParameter("K", JS_OBJECT),
-            typeParameter("V", JS_OBJECT)
+            typeParameter(keyName, JS_OBJECT),
+            typeParameter(valueName, JS_OBJECT)
         )
     )
 }
