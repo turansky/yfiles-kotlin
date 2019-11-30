@@ -29,7 +29,7 @@ internal fun parseType(type: String): String {
         return it
     }
 
-    if (!type.contains(GENERIC_START)) {
+    if (GENERIC_START !in type) {
         return fixPackage(type)
     }
 
@@ -42,7 +42,7 @@ internal fun parseType(type: String): String {
 
 // TODO: optimize calculation
 private fun parseGenericParameters(parameters: String): List<String> {
-    if (!parameters.contains(GENERIC_START)) {
+    if (GENERIC_START !in parameters) {
         return parameters
             .split(",")
             .map { parseType(it) }

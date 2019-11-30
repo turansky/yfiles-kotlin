@@ -36,7 +36,7 @@ private fun fixOptionality(source: Source) {
         .filter { it.has(J_PARAMETERS) }
         .filter { it[J_PARAMETERS].length() == 1 }
         .map { it.firstParameter }
-        .filter { it[J_NAME].contains("core") }
+        .filter { "core" in it[J_NAME] }
         .forEach { it.changeOptionality(true) }
 }
 

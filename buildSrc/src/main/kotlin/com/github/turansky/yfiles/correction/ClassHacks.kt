@@ -467,7 +467,7 @@ private fun addTypeParameterBounds(source: Source) {
         "IMapperRegistry",
         "MapperRegistry"
     ).jsequence(J_METHODS)
-        .filter { it[J_NAME].contains("Metadata") }
+        .filter { "Metadata" in it[J_NAME] }
         .jsequence(J_TYPE_PARAMETERS)
         .forEach {
             it.put(J_BOUNDS, arrayOf(JS_OBJECT))
@@ -479,7 +479,7 @@ private val JSONObject.classBoundPair: Pair<String, String>?
         val type = get(J_TYPE)
         if (type.startsWith("$YCLASS<")) {
             val generic = between(type, "$YCLASS<", ">")
-            if (generic.contains(".")) {
+            if ("." in generic) {
                 return null
             }
 
@@ -493,9 +493,9 @@ private val JSONObject.classBoundPair: Pair<String, String>?
             return generic to bound
         }
 
-        if (type.contains("DpKey<")) {
+        if ("DpKey<" in type) {
             val generic = between(type, "DpKey<", ">")
-            if (generic.contains(".")) {
+            if ("." in generic) {
                 return null
             }
 
