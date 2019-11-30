@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.json.firstWithName
 import java.io.File
 
-private val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
+internal val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
 
 internal fun generateIncrementalHint(sourceDir: File) {
     sourceDir.resolve("yfiles/hierarchic/IncrementalHint.kt")

@@ -90,7 +90,7 @@ private fun fixHierarchicLayoutCore(source: Source) {
 
     sequenceOf(
         "getEdgeLayoutDescriptors" to "$EDGE,yfiles.hierarchic.EdgeLayoutDescriptor",
-        "getIncrementalHints" to "$GRAPH_OBJECT,yfiles.hierarchic.IncrementalHint",
+        "getIncrementalHints" to "$GRAPH_OBJECT,$INCREMENTAL_HINT",
         "getNodeLayoutDescriptors" to "$NODE,yfiles.hierarchic.NodeLayoutDescriptor",
         "getSwimLaneDescriptors" to "$NODE,$SWIMLANE_DESCRIPTOR"
     ).forEach { (methodName, typeParameters) ->

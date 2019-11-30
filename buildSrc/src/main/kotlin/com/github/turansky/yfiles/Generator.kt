@@ -45,6 +45,7 @@ fun generateKotlinDeclarations(
     generateInterfaceMarker(sourceDir)
     generateClassUtils(moduleName, sourceDir)
     generateIncrementalHint(sourceDir)
+    generateBipartitionMark(sourceDir)
 }
 
 fun generateVsdxKotlinDeclarations(

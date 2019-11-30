@@ -205,6 +205,7 @@ private fun JSONObject.getDataMapsTypeParameter(): String {
         JS_NUMBER -> getDataMapsNumberTypeParameter(get(NAME))
         JS_OBJECT -> when (get(NAME)) {
             "partitionIDMap" -> YID
+            "markMap" -> BIPARTITION_MARK
             else -> type
         }
         else -> type
