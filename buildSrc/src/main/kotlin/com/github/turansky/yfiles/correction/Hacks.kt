@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeItem
 import com.github.turansky.yfiles.json.strictRemove
@@ -105,7 +105,7 @@ private fun fixUnionMethods(source: Source) {
 private fun fixConstantGenerics(source: Source) {
     source.type("IListEnumerable")
         .get(CONSTANTS)
-        .firstWithName("EMPTY")
+        .get("EMPTY")
         .also {
             it[TYPE] = it[TYPE]
                 .replace("<T>", "<$JS_OBJECT>")
@@ -142,7 +142,7 @@ private fun fixFunctionGenerics(source: Source) {
 private fun fixReturnType(source: Source) {
     source.type("SvgExport").apply {
         get(METHODS)
-            .firstWithName("exportSvg")
+            .get("exportSvg")
             .get(RETURNS)
             .set(TYPE, JS_SVG_SVG_ELEMENT)
     }
@@ -166,7 +166,7 @@ private fun fixPropertyNullability(source: Source) {
 
     source.type("SvgVisualGroup")
         .get(PROPERTIES)
-        .firstWithName("children")
+        .get("children")
         .apply {
             require(get(TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
             set(TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
@@ -289,10 +289,7 @@ private fun removeDuplicatedProperties(source: Source) {
                 .type(declaration.className)
                 .get(PROPERTIES)
 
-            val property = properties
-                .firstWithName(declaration.propertyName)
-
-            properties.removeItem(property)
+            properties.removeItem(properties[declaration.propertyName])
         }
 }
 
@@ -303,10 +300,7 @@ private fun removeDuplicatedMethods(source: Source) {
                 .type(declaration.className)
                 .get(METHODS)
 
-            val method = methods
-                .firstWithName(declaration.methodName)
-
-            methods.removeItem(method)
+            methods.removeItem(methods[declaration.methodName])
         }
 }
 

@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyDataHacks(source: Source) {
@@ -261,8 +261,7 @@ private fun fixMethodTypes(source: Source) {
                 when (name) {
                     "get" -> it[RETURNS][TYPE] = valueTypeParameter
 
-                    "set" -> it.get(PARAMETERS)
-                        .firstWithName("value")
+                    "set" -> it[PARAMETERS]["value"]
                         .set(TYPE, valueTypeParameter)
                 }
 

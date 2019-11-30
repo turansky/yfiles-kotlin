@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.ICLONEABLE
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyCloneableHacks(source: Source) {
@@ -14,7 +14,7 @@ private fun fixClass(source: Source) {
     source.type("ICloneable").apply {
         setSingleTypeParameter(name = "out T", bound = "$ICLONEABLE<T>")
         get(METHODS)
-            .firstWithName("clone")
+            .get("clone")
             .get(RETURNS)
             .set(TYPE, "T")
     }

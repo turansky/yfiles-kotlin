@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 private val DEFAULT_COMPARERS = setOf(
@@ -36,7 +36,7 @@ private fun fixComparerInheritors(source: Source) {
                 }
 
                 get(METHODS)
-                    .firstWithName("compare")
+                    .get("compare")
                     .jsequence(PARAMETERS)
                     .forEach { it[TYPE] = generic }
             }
@@ -56,7 +56,7 @@ private fun fixComparerUtilMethods(source: Source) {
         "createNumberDataSourceComparer" to EDGE,
         "createNumberDataTargetComparer" to EDGE
     ).forEach { (methodName, generic) ->
-        staticMethods.firstWithName(methodName)
+        staticMethods[methodName]
             .fixReturnTypeGeneric(generic)
     }
 }
@@ -129,7 +129,7 @@ private fun fixComparerAsProperty(source: Source) {
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
             .get(PROPERTIES)
-            .firstWithName(propertyName)
+            .get(propertyName)
             .fixTypeGeneric("in $generic")
     }
 
@@ -137,13 +137,11 @@ private fun fixComparerAsProperty(source: Source) {
         "TreeLayout",
         "SeriesParallelLayout"
     ).forEach {
-        it[CONSTANTS]
-            .firstWithName("OUT_EDGE_COMPARER_DP_KEY")
-            .apply {
-                require(get(TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
+        it[CONSTANTS]["OUT_EDGE_COMPARER_DP_KEY"].apply {
+            require(get(TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
 
-                set(TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
-            }
+            set(TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
+        }
     }
 }
 

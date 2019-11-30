@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 
 internal fun applyDpataHacks(source: Source) {
     fixGraph(source)
@@ -16,7 +16,7 @@ private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
 private fun fixGraph(source: Source) {
     val methods = source.type("Graph")[METHODS]
 
-    methods.firstWithName("getDataProvider").apply {
+    methods["getDataProvider"].apply {
         setKeyValueTypeParameters()
         firstParameter[TYPE] = GENERIC_DP_KEY
 
@@ -24,7 +24,7 @@ private fun fixGraph(source: Source) {
             .addGeneric("K,V")
     }
 
-    methods.firstWithName("addDataProvider").apply {
+    methods["addDataProvider"].apply {
         setKeyValueTypeParameters()
         firstParameter[TYPE] = GENERIC_DP_KEY
 
@@ -32,7 +32,7 @@ private fun fixGraph(source: Source) {
     }
 
     sequenceOf("createEdgeMap", "createNodeMap")
-        .map { methods.firstWithName(it) }
+        .map { methods[it] }
         .forEach {
             it.setSingleTypeParameter("V", JS_OBJECT)
 
@@ -44,7 +44,7 @@ private fun fixGraph(source: Source) {
 private fun fixLayoutGraphAdapter(source: Source) {
     val methods = source.type("LayoutGraphAdapter")[METHODS]
 
-    methods.firstWithName("getDataProvider").apply {
+    methods["getDataProvider"].apply {
         setKeyValueTypeParameters()
         firstParameter[TYPE] = GENERIC_DP_KEY
 
@@ -52,9 +52,9 @@ private fun fixLayoutGraphAdapter(source: Source) {
             .addGeneric("K,V")
     }
 
-    methods.firstWithName("addDataProvider").apply {
+    methods["addDataProvider"].apply {
         get(PARAMETERS)
-            .firstWithName("dataKey")
+            .get("dataKey")
             .set(TYPE, GENERIC_DP_KEY)
 
         get(RETURNS)
@@ -71,7 +71,7 @@ private fun fixTreeLayout(source: Source) {
         "targetGroupDataAcceptor" to YID,
         "targetPortConstraintDataAcceptor" to "yfiles.layout.PortConstraint"
     ).forEach { (propertyName, valueType) ->
-        properties.firstWithName(propertyName)
+        properties[propertyName]
             .addGeneric("$EDGE,$valueType")
     }
 }
@@ -94,8 +94,7 @@ private fun fixHierarchicLayoutCore(source: Source) {
         "getNodeLayoutDescriptors" to "$NODE,yfiles.hierarchic.NodeLayoutDescriptor",
         "getSwimLaneDescriptors" to "$NODE,$SWIMLANE_DESCRIPTOR"
     ).forEach { (methodName, typeParameters) ->
-        methods.firstWithName(methodName)
-            .get(RETURNS)
+        methods[methodName][RETURNS]
             .addGeneric(typeParameters)
     }
 }

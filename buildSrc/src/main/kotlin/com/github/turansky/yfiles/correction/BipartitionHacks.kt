@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import java.io.File
 
 internal val BIPARTITION_MARK = "yfiles.algorithms.BipartitionMark"
@@ -20,5 +20,5 @@ internal fun generateBipartitionMark(sourceDir: File) {
 internal fun applyBipartitionHacks(source: Source) {
     val constants = source.type("BipartitionAlgorithm")[CONSTANTS]
     sequenceOf("RED", "BLUE")
-        .forEach { constants.firstWithName(it)[TYPE] = BIPARTITION_MARK }
+        .forEach { constants[it][TYPE] = BIPARTITION_MARK }
 }

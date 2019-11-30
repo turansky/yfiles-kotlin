@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 import java.io.File
 
@@ -89,7 +89,7 @@ private fun fixClass(source: Source) {
         setSingleTypeParameter(bound = JS_OBJECT)
 
         get(METHODS)
-            .firstWithName("newInstance")
+            .get("newInstance")
             .get(RETURNS)
             .set(TYPE, "T")
 
@@ -307,7 +307,7 @@ private fun addMapperMetadataGeneric(source: Source) {
 
     source.type("MapperOutputHandler")
         .get(PROPERTIES)
-        .firstWithName("mapperMetadata")
+        .get("mapperMetadata")
         .addGeneric("TKey,TData")
 
     source.types(
@@ -315,14 +315,14 @@ private fun addMapperMetadataGeneric(source: Source) {
         "MapperRegistry"
     ).forEach {
         val methods = it[METHODS]
-        methods.firstWithName("getMapperMetadata")
+        methods["getMapperMetadata"]
             .apply {
                 setTypeParameters("K", "V")
                 get(RETURNS)
                     .addGeneric("K,V")
             }
 
-        methods.firstWithName("setMapperMetadata")
+        methods["setMapperMetadata"]
             .apply {
                 setTypeParameters("K", "V")
                 parameter("metadata")

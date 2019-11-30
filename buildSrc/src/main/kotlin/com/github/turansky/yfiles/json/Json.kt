@@ -25,7 +25,7 @@ internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
         .first()
 }
 
-internal fun JSONArray.firstWithName(name: String): JSONObject =
+internal operator fun JSONArray.get(name: String): JSONObject =
     first { it[NAME] == name }
 
 internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSONObject> {

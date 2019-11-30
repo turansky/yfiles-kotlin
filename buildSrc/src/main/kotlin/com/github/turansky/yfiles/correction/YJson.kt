@@ -1,15 +1,14 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.firstWithName
+import com.github.turansky.yfiles.json.get
 import com.github.turansky.yfiles.json.jArray
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
 internal fun JSONObject.staticMethod(name: String): JSONObject =
-    get(STATIC_METHODS)
-        .firstWithName(name)
+    get(STATIC_METHODS)[name]
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
     (optionalArray(METHODS) + optionalArray(STATIC_METHODS))
@@ -45,12 +44,10 @@ internal fun JSONObject.methodParameters(
 }
 
 internal fun JSONObject.method(methodName: String) =
-    get(METHODS)
-        .firstWithName(methodName)
+    get(METHODS)[methodName]
 
 internal fun JSONObject.property(name: String): JSONObject =
-    get(PROPERTIES)
-        .firstWithName(name)
+    get(PROPERTIES)[name]
 
 internal fun JSONObject.addProperty(
     propertyName: String,
