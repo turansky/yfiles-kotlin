@@ -233,8 +233,8 @@ private fun fixMaps(source: Source) {
             val name = it[NAME]
             val valueType = when {
                 "ForBoolean" in name -> JS_BOOLEAN
-                "ForInt" in name -> JS_INT
-                "ForNumber" in name -> JS_DOUBLE
+                "ForInt" in name || "IntMap" in name -> JS_INT
+                "ForNumber" in name || "DoubleMap" in name -> JS_DOUBLE
                 else -> "V"
             }
 
@@ -251,10 +251,11 @@ private fun fixMaps(source: Source) {
             val typeParameters = "$keyType,$valueType"
             it.optFlatMap(PARAMETERS)
                 .forEach {
-                    if (it[NAME] == "map") {
-                        it[TYPE] = it[TYPE].replace("$JS_OBJECT,$JS_OBJECT", typeParameters)
-                    } else {
-                        when (it[TYPE]) {
+                    when (it[NAME]) {
+                        "map" -> it[TYPE] = it[TYPE].replace("$JS_OBJECT,$JS_OBJECT", typeParameters)
+                        "defaultValue" -> if (it[TYPE] == JS_OBJECT) it[TYPE] = "V"
+                        "data", "objectData" -> it[TYPE] = it[TYPE].replace("<$JS_OBJECT>", "<V>")
+                        else -> when (it[TYPE]) {
                             IDATA_PROVIDER,
                             IDATA_ACCEPTOR,
                             IDATA_MAP -> it.addGeneric(typeParameters)
