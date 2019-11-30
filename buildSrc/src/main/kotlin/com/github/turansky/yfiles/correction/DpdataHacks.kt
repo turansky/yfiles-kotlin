@@ -248,7 +248,21 @@ private fun fixMaps(source: Source) {
                 }
             }.toList()
 
-            it[RETURNS].addGeneric(if (keyType == "K") "$keyType,$valueType" else valueType)
+            val typeParameters = "$keyType,$valueType"
+            it.optFlatMap(PARAMETERS)
+                .forEach {
+                    if (it[NAME] == "map") {
+                        it[TYPE] = it[TYPE].replace("$JS_OBJECT,$JS_OBJECT", typeParameters)
+                    } else {
+                        when (it[TYPE]) {
+                            IDATA_PROVIDER,
+                            IDATA_ACCEPTOR,
+                            IDATA_MAP -> it.addGeneric(typeParameters)
+                        }
+                    }
+                }
+
+            it[RETURNS].addGeneric(if (keyType == "K") typeParameters else valueType)
         }
 }
 
