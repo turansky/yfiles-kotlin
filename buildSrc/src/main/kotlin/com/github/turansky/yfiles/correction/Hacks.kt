@@ -55,6 +55,7 @@ internal fun applyHacks(api: JSONObject) {
     applyListHacks(source)
     applyYListHacks(source)
     applyEventHacks(source)
+    applyIncrementalHintHacks(source)
 
     fixConstructors(source)
 }

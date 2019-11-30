@@ -44,6 +44,7 @@ fun generateKotlinDeclarations(
     generateIdUtils(sourceDir)
     generateInterfaceMarker(sourceDir)
     generateClassUtils(moduleName, sourceDir)
+    generateIncrementalHint(sourceDir)
 }
 
 fun generateVsdxKotlinDeclarations(
