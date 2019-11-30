@@ -139,6 +139,15 @@ private fun fixDataProviders(source: Source) {
                 }
             }.toList()
 
+            it.flatMap(PARAMETERS)
+                .forEach {
+                    when (it[NAME]) {
+                        "data",
+                        "objectData" -> it[TYPE] = it[TYPE].replace(JS_OBJECT, valueType)
+                        "nodeData" -> it.addGeneric("$NODE,$valueType")
+                    }
+                }
+
             it[RETURNS].addGeneric("$keyType,$valueType")
         }
 }
