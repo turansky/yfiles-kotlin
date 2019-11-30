@@ -38,7 +38,7 @@ private fun fixComparerInheritors(source: Source) {
                 get(J_METHODS)
                     .firstWithName("compare")
                     .jsequence(J_PARAMETERS)
-                    .forEach { it.put(J_TYPE, generic) }
+                    .forEach { it[J_TYPE] = generic }
             }
     }
 }
@@ -142,7 +142,7 @@ private fun fixComparerAsProperty(source: Source) {
             .apply {
                 require(get(J_TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
 
-                put(J_TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
+                set(J_TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
             }
     }
 }
@@ -197,5 +197,5 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 private fun JSONObject.fixTypeGeneric(generic: String) {
     require(get(J_TYPE) in DEFAULT_COMPARERS)
 
-    put(J_TYPE, comparer(generic))
+    set(J_TYPE, comparer(generic))
 }

@@ -38,7 +38,7 @@ internal fun applyIdHacks(source: Source) {
             val newType = it[J_TYPE]
                 .replace("<$JS_ANY>", "<$YID>")
 
-            it.put(J_TYPE, newType)
+            it[J_TYPE] = newType
         }
 
     val likeObjectTypes = setOf(
@@ -49,7 +49,7 @@ internal fun applyIdHacks(source: Source) {
     typedItems(source)
         .filter { looksLikeId(it[J_NAME]) }
         .filter { it[J_TYPE] in likeObjectTypes }
-        .forEach { it.put(J_TYPE, YID) }
+        .forEach { it[J_TYPE] = YID }
 
     typedItems(source)
         .filter { it[J_NAME].endsWith("Ids") }
@@ -57,7 +57,7 @@ internal fun applyIdHacks(source: Source) {
             val newType = it[J_TYPE]
                 .replace(",$JS_ANY>", ",$YID>")
 
-            it.put(J_TYPE, newType)
+            it[J_TYPE] = newType
         }
 
     source.type("BusRouterBusDescriptor")
@@ -66,7 +66,7 @@ internal fun applyIdHacks(source: Source) {
         .forEach {
             val name = it[J_NAME]
             if (name.endsWith("ID")) {
-                it.put(J_NAME, name.replace("ID", "Id"))
+                it[J_NAME] = name.replace("ID", "Id")
             }
         }
 }

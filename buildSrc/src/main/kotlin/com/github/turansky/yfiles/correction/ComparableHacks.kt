@@ -49,8 +49,8 @@ private fun JSONObject.configureCompareTo(type: String) {
         .singleOrNull()
         ?.apply {
             firstParameter.apply {
-                put(J_NAME, "other")
-                put(J_TYPE, type)
+                set(J_NAME, "other")
+                set(J_TYPE, type)
                 changeNullability(false)
             }
         }

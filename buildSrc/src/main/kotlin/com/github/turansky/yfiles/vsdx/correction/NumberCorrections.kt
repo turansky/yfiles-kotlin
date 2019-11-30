@@ -149,10 +149,10 @@ private fun JSONObject.correctProperties() {
         .forEach {
             val propertyName = it[J_NAME]
             when (it[J_TYPE]) {
-                JS_NUMBER -> it.put(J_TYPE, getPropertyType(className, propertyName))
+                JS_NUMBER -> it[J_TYPE] = getPropertyType(className, propertyName)
                 "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                     val generic = getPropertyType(className, propertyName)
-                    it.put(J_TYPE, "yfiles.vsdx.Value<$generic>")
+                    it[J_TYPE] = "yfiles.vsdx.Value<$generic>"
                 }
             }
         }
@@ -193,10 +193,10 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
                 .forEach {
                     val parameterName = it[J_NAME]
                     when (it[J_TYPE]) {
-                        JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
+                        JS_NUMBER -> it[J_TYPE] = getParameterType(className, methodName, parameterName)
                         "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                             val generic = getParameterType(className, methodName, parameterName)
-                            it.put(J_TYPE, "Value<$generic>")
+                            it[J_TYPE] = "Value<$generic>"
                         }
                     }
                 }
@@ -239,10 +239,10 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
             val methodName = it[J_NAME]
             it[J_RETURNS].apply {
                 when (get(J_TYPE)) {
-                    JS_NUMBER -> put(J_TYPE, getReturnType(className, methodName))
+                    JS_NUMBER -> set(J_TYPE, getReturnType(className, methodName))
                     "Value<$JS_NUMBER>", "yfiles.vsdx.Value<$JS_NUMBER>" -> {
                         val generic = getReturnType(className, methodName)
-                        put(J_TYPE, "Value<$generic>")
+                        set(J_TYPE, "Value<$generic>")
                     }
                 }
             }

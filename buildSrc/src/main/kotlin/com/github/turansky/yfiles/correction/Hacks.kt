@@ -91,8 +91,8 @@ private fun fixUnionMethods(source: Source) {
     unionMethods.first()
         .firstParameter
         .apply {
-            put(J_NAME, "item")
-            put(J_TYPE, IMODEL_ITEM)
+            set(J_NAME, "item")
+            set(J_TYPE, IMODEL_ITEM)
         }
 
     // TODO: remove documentation
@@ -103,9 +103,8 @@ private fun fixConstantGenerics(source: Source) {
         .get(J_CONSTANTS)
         .firstWithName("EMPTY")
         .also {
-            val type = it[J_TYPE]
+            it[J_TYPE] = it[J_TYPE]
                 .replace("<T>", "<$JS_OBJECT>")
-            it.put(J_TYPE, type)
         }
 
     source.type("LabelLayoutKeys")
@@ -113,8 +112,7 @@ private fun fixConstantGenerics(source: Source) {
         .forEach {
             val type = it[J_TYPE]
             if (type.endsWith("<yfiles.layout.LabelLayoutData>")) {
-                val newType = type.replace("<yfiles.layout.LabelLayoutData>", "<Array<yfiles.layout.LabelLayoutData>>")
-                it.put(J_TYPE, newType)
+                it[J_TYPE] = type.replace("<yfiles.layout.LabelLayoutData>", "<Array<yfiles.layout.LabelLayoutData>>")
             }
         }
 }
@@ -142,7 +140,7 @@ private fun fixReturnType(source: Source) {
         get(J_METHODS)
             .firstWithName("exportSvg")
             .get(J_RETURNS)
-            .put(J_TYPE, JS_SVG_SVG_ELEMENT)
+            .set(J_TYPE, JS_SVG_SVG_ELEMENT)
     }
 }
 
@@ -150,7 +148,7 @@ private fun fixPropertyType(source: Source) {
     source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")
-                .put(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
+                .set(J_TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
         }
 }
 
@@ -167,7 +165,7 @@ private fun fixPropertyNullability(source: Source) {
         .firstWithName("children")
         .apply {
             require(get(J_TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
-            put(J_TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
+            set(J_TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
         }
 }
 
@@ -176,7 +174,7 @@ private fun fixConstructorParameterName(source: Source) {
         .jsequence(J_CONSTRUCTORS)
         .jsequence(J_PARAMETERS)
         .single { it[J_NAME] == "millis" }
-        .put(J_NAME, "milliseconds")
+        .set(J_NAME, "milliseconds")
 }
 
 private fun fixMethodParameterName(source: Source) {
@@ -184,7 +182,7 @@ private fun fixMethodParameterName(source: Source) {
         source.type(data.className)
             .methodParameters(data.methodName, data.parameterName, { it[J_NAME] != fixedName })
             .first()
-            .put(J_NAME, fixedName)
+            .set(J_NAME, fixedName)
     }
 
     source.type("RankAssignmentAlgorithm")
@@ -192,7 +190,7 @@ private fun fixMethodParameterName(source: Source) {
         .filter { it[J_NAME] == "simplex" }
         .jsequence(J_PARAMETERS)
         .single { it[J_NAME] == "_root" }
-        .put(J_NAME, "root")
+        .set(J_NAME, "root")
 }
 
 private fun fixMethodParameterNullability(source: Source) {
@@ -239,12 +237,12 @@ private fun fixMethodParameterType(source: Source) {
     source.type("IContextLookupChainLink")
         .staticMethod("addingLookupChainLink")
         .parameter("instance")
-        .put(J_TYPE, "TResult")
+        .set(J_TYPE, "TResult")
 
     source.type("SvgExport")
         .staticMethod("exportSvgString")
         .parameter("svg")
-        .put(J_TYPE, JS_SVG_ELEMENT)
+        .set(J_TYPE, JS_SVG_ELEMENT)
 }
 
 private fun fixMethodNullability(source: Source) {
@@ -372,18 +370,16 @@ private fun removeThisParameters(source: Source) {
         .map { it as JSONObject }
         .filter { it.has(J_SIGNATURE) }
         .forEach {
-            var signature = it[J_SIGNATURE]
-            if (signature.contains(FUNC_RUDIMENT)) {
-                signature = signature
+            val signature = it[J_SIGNATURE]
+            if (FUNC_RUDIMENT in signature) {
+                it[J_SIGNATURE] = signature
                     .replace(FUNC_RUDIMENT, "")
                     .replace("Action3<T>", "Action1<T>")
                     .replace("Func4<T,boolean>", "Predicate<T>")
                     .replace("Func4<", "Func2<")
                     .replace("Func5<", "Func3<")
-
-                it.put(J_SIGNATURE, signature)
             } else if (FROM_FUNC_RUDIMENT in signature) {
-                it.put(J_SIGNATURE, signature.replace(FROM_FUNC_RUDIMENT, "Func2<TSource,T>"))
+                it[J_SIGNATURE] = signature.replace(FROM_FUNC_RUDIMENT, "Func2<TSource,T>")
             }
         }
 }

@@ -91,7 +91,7 @@ private fun fixClass(source: Source) {
         get(J_METHODS)
             .firstWithName("newInstance")
             .get(J_RETURNS)
-            .put(J_TYPE, "T")
+            .set(J_TYPE, "T")
 
         get(J_STATIC_METHODS).apply {
             removeAll { true }
@@ -133,8 +133,7 @@ private fun addClassGeneric(source: Source) {
 
             it.typeParameter.addGeneric("T")
 
-            it[J_RETURNS]
-                .put(J_TYPE, "T")
+            it[J_RETURNS][J_TYPE] = "T"
 
             it[J_MODIFIERS]
                 .put(CANBENULL)
@@ -274,7 +273,7 @@ private fun addMethodClassGeneric(source: Source) {
         .staticMethod("createSingleLookup")
         .apply {
             setSingleTypeParameter()
-            firstParameter.put(J_TYPE, "T")
+            firstParameter[J_TYPE] = "T"
             secondParameter.addGeneric("T")
         }
 }

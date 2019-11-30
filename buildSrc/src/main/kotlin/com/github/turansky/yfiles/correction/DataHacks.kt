@@ -53,7 +53,7 @@ private fun fixGraph(source: Source) {
 
     methods.firstWithName("getDataProvider").apply {
         addKeyValueTypeParameters()
-        firstParameter.put(J_TYPE, "DpKeyBase<K,V>")
+        firstParameter[J_TYPE] = "DpKeyBase<K,V>"
 
         get(J_RETURNS)
             .addGeneric("K,V")
@@ -61,7 +61,7 @@ private fun fixGraph(source: Source) {
 
     methods.firstWithName("addDataProvider").apply {
         addKeyValueTypeParameters()
-        firstParameter.put(J_TYPE, "DpKeyBase<K,V>")
+        firstParameter[J_TYPE] = "DpKeyBase<K,V>"
 
         secondParameter.addGeneric("K,V")
     }
@@ -83,7 +83,7 @@ private fun fixDataProvider(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it[J_TYPE] == IDATA_PROVIDER }
-        .forEach { it.put(J_TYPE, "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>") }
+        .forEach { it[J_TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
 
     source.type("DataProviderBase")
         .addKeyValueTypeParameters()
@@ -116,7 +116,7 @@ private fun fixDataAcceptor(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it[J_TYPE] == IDATA_ACCEPTOR }
-        .forEach { it.put(J_TYPE, "$IDATA_ACCEPTOR<${it.getDefaultTypeParameters()}>") }
+        .forEach { it[J_TYPE] = "$IDATA_ACCEPTOR<${it.getDefaultTypeParameters()}>" }
 
     for ((className, typeParameters) in DATA_ACCEPTOR_TYPE_MAP) {
         source.type(className)
@@ -132,7 +132,7 @@ private fun fixDataMap(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it[J_TYPE] == IDATA_MAP }
-        .forEach { it.put(J_TYPE, "$IDATA_MAP<${it.getDataMapTypeParameters()}>") }
+        .forEach { it[J_TYPE] = "$IDATA_MAP<${it.getDataMapTypeParameters()}>" }
 
     for ((className, typeParameters) in DATA_MAP_TYPE_MAP) {
         source.type(className)
@@ -220,7 +220,7 @@ private fun fixDataMaps(source: Source) {
         .filter { it[J_TYPE] in MAP_INTERFACES }
         .forEach {
             val typeParameter = it.getDataMapsTypeParameter()
-            it.put(J_TYPE, it[J_TYPE] + "<$typeParameter>")
+            it[J_TYPE] = it[J_TYPE] + "<$typeParameter>"
         }
 
     source.type("Graph")
@@ -228,7 +228,7 @@ private fun fixDataMaps(source: Source) {
         .forEach { property ->
             val type = property[J_TYPE]
             MAP_INTERFACES.find { it in type }
-                ?.also { property.put(J_TYPE, type.replace(it, "$it<*>")) }
+                ?.also { property[J_TYPE] = type.replace(it, "$it<*>") }
         }
 }
 
@@ -297,17 +297,16 @@ private fun fixMethodTypes(source: Source) {
                 val name = it[J_NAME]
 
                 when (name) {
-                    "get" -> it[J_RETURNS]
-                        .put(J_TYPE, valueTypeParameter)
+                    "get" -> it[J_RETURNS][J_TYPE] = valueTypeParameter
 
                     "set" -> it.get(J_PARAMETERS)
                         .firstWithName("value")
-                        .put(J_TYPE, valueTypeParameter)
+                        .set(J_TYPE, valueTypeParameter)
                 }
 
                 it.jsequence(J_PARAMETERS)
                     .filter { it[J_NAME] == "dataHolder" }
-                    .forEach { it.put(J_TYPE, keyTypeParameter) }
+                    .forEach { it[J_TYPE] = keyTypeParameter }
             }
     }
 }

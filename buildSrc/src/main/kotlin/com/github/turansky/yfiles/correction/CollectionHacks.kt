@@ -36,5 +36,5 @@ internal fun applyCollectionHacks(source: Source) {
 private fun JSONObject.fixTypeGeneric(generic: String) {
     require(get(J_TYPE) in DEFAULT_COLLECTIONS)
 
-    put(J_TYPE, collection(generic))
+    set(J_TYPE, collection(generic))
 }

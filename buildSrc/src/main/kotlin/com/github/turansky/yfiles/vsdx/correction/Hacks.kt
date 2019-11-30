@@ -109,13 +109,13 @@ private fun fixPackage(source: VsdxSource) {
     source.types()
         .forEach {
             val id = it[J_ID]
-            it.put(J_ID, "yfiles.$id")
+            it[J_ID] = "yfiles.$id"
         }
 
     source.types()
         .filter { it.has(J_EXTENDS) }
         .forEach {
-            it.put(J_EXTENDS, it[J_EXTENDS].fixVsdxPackage())
+            it[J_EXTENDS] = it[J_EXTENDS].fixVsdxPackage()
         }
 
     source.types()
@@ -149,12 +149,12 @@ private fun JSONObject.fixType() {
         val signature = getFixedType(get(J_SIGNATURE))
             .fixVsdxPackage()
 
-        put(J_SIGNATURE, signature)
+        set(J_SIGNATURE, signature)
     } else {
         val type = getFixedType(get(J_TYPE))
             .fixVsdxPackage()
 
-        put(J_TYPE, type)
+        set(J_TYPE, type)
     }
 }
 
@@ -222,8 +222,8 @@ private fun fixOptionTypes(source: VsdxSource) {
         .single()
         .apply {
             parameter("optionsOrNodeStyleType").apply {
-                put(J_NAME, "nodeStyleType")
-                put(J_TYPE, "$YCLASS<yfiles.styles.INodeStyle>")
+                set(J_NAME, "nodeStyleType")
+                set(J_TYPE, "$YCLASS<yfiles.styles.INodeStyle>")
             }
 
             parameter("edgeStyleType")
@@ -258,7 +258,7 @@ private fun fixGeneric(source: VsdxSource) {
         staticMethod("fetch")
             .apply {
                 setSingleTypeParameter("TValue")
-                firstParameter.put(J_NAME, "o")
+                firstParameter[J_NAME] = "o"
             }
 
         staticMethod("formula")
@@ -291,7 +291,7 @@ private fun JSONObject.fixSummary() {
         .replace("</p>", "")
         .replace("<p>", "\n\n")
 
-    put(J_SUMMARY, summary)
+    set(J_SUMMARY, summary)
 }
 
 private fun fixSummary(source: VsdxSource) {
@@ -300,10 +300,8 @@ private fun fixSummary(source: VsdxSource) {
         .jsequence(J_PARAMETERS)
         .filter { it.has(J_SUMMARY) }
         .forEach {
-            val summary = it[J_SUMMARY]
+            it[J_SUMMARY] = it[J_SUMMARY]
                 .replace("""data-member="createDefault()"""", """data-member="createDefault"""")
-
-            it.put(J_SUMMARY, summary)
         }
 
     source.types()
@@ -321,9 +319,7 @@ private fun fixSummary(source: VsdxSource) {
         .map { it[J_RETURNS] }
         .filter { it.has(J_DOC) }
         .forEach {
-            val doc = it[J_DOC]
+            it[J_DOC] = it[J_DOC]
                 .replace("\r", " ")
-
-            it.put(J_DOC, doc)
         }
 }

@@ -16,7 +16,7 @@ private fun fixClass(source: Source) {
         get(J_METHODS)
             .firstWithName("clone")
             .get(J_RETURNS)
-            .put(J_TYPE, "T")
+            .set(J_TYPE, "T")
     }
 }
 
@@ -45,7 +45,7 @@ private fun fixImplementedType(source: Source) {
                 .filter { it[J_NAME] == "clone" }
                 .filterNot { it.has(J_PARAMETERS) }
                 .map { it[J_RETURNS] }
-                .forEach { it.put(J_TYPE, type[J_ID]) }
+                .forEach { it[J_TYPE] = type[J_ID] }
         }
 }
 

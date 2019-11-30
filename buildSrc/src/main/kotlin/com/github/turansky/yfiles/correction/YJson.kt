@@ -180,10 +180,10 @@ internal val JSONObject.secondParameter: JSONObject
 
 internal fun JSONObject.addGeneric(generic: String) {
     val type = get(J_TYPE)
-    put(J_TYPE, "$type<$generic>")
+    set(J_TYPE, "$type<$generic>")
 }
 
 internal fun JSONObject.addExtendsGeneric(generic: String) {
     val type = get(J_EXTENDS)
-    put(J_EXTENDS, "$type<$generic>")
+    set(J_EXTENDS, "$type<$generic>")
 }

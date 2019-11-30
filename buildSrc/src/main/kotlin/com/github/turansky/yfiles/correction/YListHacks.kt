@@ -44,7 +44,7 @@ private fun JSONObject.fixGeneric() {
                     .replace("<$JS_ANY>", "<T>")
                     .replace("<$JS_OBJECT>", "<T>")
             }
-            it.put(J_TYPE, newType)
+            it[J_TYPE] = newType
         }
 }
 
@@ -173,5 +173,5 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 private fun JSONObject.fixTypeGeneric(generic: String) {
     require(get(J_TYPE) == YLIST)
 
-    put(J_TYPE, ylist(generic))
+    set(J_TYPE, ylist(generic))
 }

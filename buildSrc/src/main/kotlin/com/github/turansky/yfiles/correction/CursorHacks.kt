@@ -33,8 +33,7 @@ private fun fixCursor(source: Source) {
 private fun JSONObject.fixGeneric() {
     setSingleTypeParameter("out T", JS_ANY)
 
-    property("current")
-        .put(J_TYPE, "T")
+    property("current")[J_TYPE] = "T"
 }
 
 private fun fixCursorUtil(source: Source) {
@@ -54,17 +53,15 @@ private fun fixCursorUtil(source: Source) {
                 it.jsequence(J_PARAMETERS)
                     .plus(it[J_RETURNS])
                     .filter { it[J_TYPE] == CURSOR }
-                    .forEach { it.put(J_TYPE, cursor("T")) }
+                    .forEach { it[J_TYPE] = cursor("T") }
             }
 
         staticMethod("toArray").apply {
             sequenceOf(secondParameter, get(J_RETURNS))
                 .forEach {
-                    val type = it[J_TYPE]
+                    it[J_TYPE] = it[J_TYPE]
                         .replace("<$JS_ANY>", "<T>")
                         .replace("<$JS_OBJECT>", "<T>")
-
-                    it.put(J_TYPE, type)
                 }
 
             secondParameter[J_MODIFIERS]
@@ -118,5 +115,5 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 private fun JSONObject.fixTypeGeneric(generic: String) {
     require(get(J_TYPE) == CURSOR)
 
-    put(J_TYPE, cursor(generic))
+    set(J_TYPE, cursor(generic))
 }

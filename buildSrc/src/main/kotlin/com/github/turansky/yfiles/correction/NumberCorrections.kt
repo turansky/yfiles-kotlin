@@ -25,7 +25,7 @@ internal fun correctNumbers(source: JSONObject) {
         .getJSONObject("yfiles.view.AnimationCallback")
         .get(J_PARAMETERS)
         .single() as JSONObject)
-        .put(J_TYPE, JS_DOUBLE)
+        .set(J_TYPE, JS_DOUBLE)
 
 }
 
@@ -41,7 +41,8 @@ private fun JSONObject.correctConstants() {
         .forEach {
             if (it.has(J_SIGNATURE)) {
                 check(className == "HierarchicalClustering")
-                it.put(J_SIGNATURE, it.getString("signature").replace(",$JS_NUMBER>", ",$JS_DOUBLE>"))
+                it[J_SIGNATURE] = it[J_SIGNATURE]
+                    .replace(",$JS_NUMBER>", ",$JS_DOUBLE>")
                 return@forEach
             }
 
@@ -54,7 +55,7 @@ private fun JSONObject.correctConstants() {
             } else {
                 JS_DOUBLE
             }
-            it.put(J_TYPE, type.replace("<$JS_NUMBER>", "<$generic>"))
+            it[J_TYPE] = type.replace("<$JS_NUMBER>", "<$generic>")
         }
 }
 
@@ -67,7 +68,7 @@ private fun JSONObject.correctConstructors() {
     jsequence(J_CONSTRUCTORS)
         .optionalArray(J_PARAMETERS)
         .filter { it[J_TYPE] == JS_NUMBER }
-        .forEach { it.put(J_TYPE, getConstructorParameterType(className, it[J_NAME])) }
+        .forEach { it[J_TYPE] = getConstructorParameterType(className, it[J_NAME]) }
 
     jsequence(J_CONSTRUCTORS)
         .optionalArray(J_PARAMETERS)
@@ -79,7 +80,7 @@ private fun JSONObject.correctConstructors() {
                 else -> throw IllegalStateException("Unexpected constructor parameter $name")
             }
 
-            it.put(J_TYPE, "Array<$genericType>")
+            it[J_TYPE] = "Array<$genericType>"
         }
 }
 
@@ -132,7 +133,7 @@ private fun JSONObject.correctProperties(key: JArrayKey) {
     val className = get(J_NAME)
     jsequence(key)
         .filter { it[J_TYPE] == JS_NUMBER }
-        .forEach { it.put(J_TYPE, getPropertyType(className, it[J_NAME])) }
+        .forEach { it[J_TYPE] = getPropertyType(className, it[J_NAME]) }
 }
 
 private fun getPropertyType(className: String, propertyName: String): String =
@@ -161,7 +162,7 @@ private fun JSONObject.correctPropertiesGeneric() {
 
     jsequence(J_PROPERTIES)
         .filter { "$JS_NUMBER>" in it[J_TYPE] }
-        .forEach { it.put(J_TYPE, getPropertyGenericType(it[J_NAME], it[J_TYPE])) }
+        .forEach { it[J_TYPE] = getPropertyGenericType(it[J_NAME], it[J_TYPE]) }
 
     jsequence(J_PROPERTIES)
         .filter { it.has(J_SIGNATURE) }
@@ -211,11 +212,11 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
             val returns = it[J_RETURNS]
 
             when (returns[J_TYPE]) {
-                JS_NUMBER -> returns.put(J_TYPE, getReturnType(className, methodName))
-                "Array<$JS_NUMBER>" -> returns.put(J_TYPE, "Array<$JS_DOUBLE>")
+                JS_NUMBER -> returns[J_TYPE] = getReturnType(className, methodName)
+                "Array<$JS_NUMBER>" -> returns[J_TYPE] = "Array<$JS_DOUBLE>"
                 "yfiles.collections.IEnumerable<$JS_NUMBER>" -> {
                     check(methodName == "ofRange")
-                    returns.put(J_TYPE, "yfiles.collections.IEnumerable<$JS_INT>")
+                    returns[J_TYPE] = "yfiles.collections.IEnumerable<$JS_INT>"
                 }
             }
         }
@@ -258,14 +259,14 @@ private fun JSONObject.correctMethodParameters(key: JArrayKey) {
                 .forEach {
                     val parameterName = it.get(J_NAME)
                     when (it.get(J_TYPE)) {
-                        JS_NUMBER -> it.put(J_TYPE, getParameterType(className, methodName, parameterName))
+                        JS_NUMBER -> it[J_TYPE] = getParameterType(className, methodName, parameterName)
                         "Array<$JS_NUMBER>" -> {
                             val generic = getGenericParameterType(className, methodName, parameterName)
-                            it.put(J_TYPE, "Array<$generic>")
+                            it[J_TYPE] = "Array<$generic>"
                         }
                         "Array<Array<$JS_NUMBER>>" -> {
                             check(parameterName == "dist")
-                            it.put(J_TYPE, "Array<Array<$JS_INT>>")
+                            it[J_TYPE] = "Array<Array<$JS_INT>>"
                         }
                     }
                 }
@@ -348,7 +349,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
         .forEach {
             val signature = it[J_SIGNATURE]
             if (",$JS_NUMBER" in signature) {
-                it.put(J_SIGNATURE, signature.replace(",$JS_NUMBER", ",$JS_INT"))
+                it[J_SIGNATURE] = signature.replace(",$JS_NUMBER", ",$JS_INT")
             }
         }
 }

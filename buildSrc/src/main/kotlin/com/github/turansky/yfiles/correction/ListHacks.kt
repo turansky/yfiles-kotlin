@@ -119,5 +119,5 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 private fun JSONObject.fixTypeGeneric(generic: String) {
     require(get(J_TYPE) in DEFAULT_LISTS)
 
-    put(J_TYPE, list(generic))
+    set(J_TYPE, list(generic))
 }

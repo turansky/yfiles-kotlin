@@ -65,7 +65,7 @@ internal fun JSONObject.optString(key: JStringKey): String? = optString(key.name
 
 internal fun JSONObject.remove(key: JKey): Any? = remove(key.name)
 
-internal fun JSONObject.put(key: JStringKey, value: String) {
+internal operator fun JSONObject.set(key: JStringKey, value: String) {
     put(key.name, value)
 }
 

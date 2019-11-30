@@ -12,7 +12,7 @@ internal fun applyEventHacks(source: Source) {
             val name = it.getNewName()
                 ?: return@forEach
 
-            it.put(J_NAME, name)
+            it[J_NAME] = name
         }
 }
 
