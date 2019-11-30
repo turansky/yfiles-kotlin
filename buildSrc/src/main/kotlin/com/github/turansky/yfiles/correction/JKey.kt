@@ -40,6 +40,7 @@ internal object J_RETURNS : JObjectKey("returns")
 internal object J_DOC : JStringKey("doc")
 
 internal object J_NAME : JStringKey("name")
+internal object J_ES6_NAME : JStringKey("es6name")
 internal object J_TYPE : JStringKey("type")
 internal object J_SIGNATURE : JStringKey("signature")
 internal object J_MODIFIERS : JArrayKey("modifiers")

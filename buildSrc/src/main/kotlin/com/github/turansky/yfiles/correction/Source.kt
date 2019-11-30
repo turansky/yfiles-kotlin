@@ -31,8 +31,8 @@ internal class Source(private val api: JSONObject) {
             .filter { it.getString(J_NAME) in methodNames }
 
     private val JSONObject.uid: String
-        get() = if (has("es6name")) {
-            getString("es6name")
+        get() = if (has(J_ES6_NAME)) {
+            getString(J_ES6_NAME)
         } else {
             getString(J_NAME)
         }
