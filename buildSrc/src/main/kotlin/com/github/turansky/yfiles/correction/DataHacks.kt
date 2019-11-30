@@ -14,8 +14,8 @@ internal fun applyDataHacks(source: Source) {
 }
 
 private val MAP_INTERFACES = setOf(
-    "yfiles.algorithms.IEdgeMap",
-    "yfiles.algorithms.INodeMap"
+    IEDGE_MAP,
+    INODE_MAP
 )
 
 private val DATA_PROVIDER_TYPE_MAP = mapOf(
