@@ -8,13 +8,13 @@ internal fun applyDpataHacks(source: Source) {
     fixLayoutGraphAdapter(source)
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
+    fixHierarchicLayoutCore(source)
 }
 
 private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
 
 private fun fixGraph(source: Source) {
-    val methods = source.type("Graph")
-        .get(METHODS)
+    val methods = source.type("Graph")[METHODS]
 
     methods.firstWithName("getDataProvider").apply {
         setKeyValueTypeParameters()
@@ -42,8 +42,7 @@ private fun fixGraph(source: Source) {
 }
 
 private fun fixLayoutGraphAdapter(source: Source) {
-    val methods = source.type("LayoutGraphAdapter")
-        .get(METHODS)
+    val methods = source.type("LayoutGraphAdapter")[METHODS]
 
     methods.firstWithName("getDataProvider").apply {
         setKeyValueTypeParameters()
@@ -64,8 +63,7 @@ private fun fixLayoutGraphAdapter(source: Source) {
 }
 
 private fun fixTreeLayout(source: Source) {
-    val properties = source.type("TreeLayout")
-        .get(PROPERTIES)
+    val properties = source.type("TreeLayout")[PROPERTIES]
 
     sequenceOf(
         "sourceGroupDataAcceptor" to YID,
@@ -85,4 +83,19 @@ private fun fixGraphPartitionManager(source: Source) {
         .filter { it[NAME] == "partitionId" }
         .filter { it[TYPE] == IDATA_PROVIDER }
         .forEach { it.addGeneric("$GRAPH_OBJECT,$YID") }
+}
+
+private fun fixHierarchicLayoutCore(source: Source) {
+    val methods = source.type("HierarchicLayoutCore")[METHODS]
+
+    sequenceOf(
+        "getEdgeLayoutDescriptors" to "$EDGE,yfiles.hierarchic.EdgeLayoutDescriptor",
+        "getIncrementalHints" to "$GRAPH_OBJECT,*",
+        "getNodeLayoutDescriptors" to "$NODE,yfiles.hierarchic.NodeLayoutDescriptor",
+        "getSwimLaneDescriptors" to "$NODE,$SWIMLANE_DESCRIPTOR"
+    ).forEach { (methodName, typeParameters) ->
+        methods.firstWithName(methodName)
+            .get(RETURNS)
+            .addGeneric(typeParameters)
+    }
 }
