@@ -38,7 +38,7 @@ private fun JSONObject.fixGeneric() {
             val type = it[TYPE]
             val newType = when (type) {
                 JS_ANY, JS_OBJECT -> "T"
-                CURSOR -> "$CURSOR<T>"
+                ICURSOR -> "$ICURSOR<T>"
 
                 else -> type
                     .replace("<$JS_ANY>", "<T>")

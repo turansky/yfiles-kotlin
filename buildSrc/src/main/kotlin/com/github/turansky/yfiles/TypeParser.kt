@@ -65,14 +65,14 @@ private fun parseGenericParameters(parameters: String): List<String> {
 
 internal fun String.asReadOnly(): String =
     replace("Array<", "Array<out ")
-        .replace("$COLLECTION<", "$COLLECTION<out ")
-        .replace("$LIST<", "$LIST<out ")
+        .replace("$ICOLLECTION<", "$ICOLLECTION<out ")
+        .replace("$ILIST<", "$ILIST<out ")
 
 internal fun String.inMode(readOnly: Boolean): String =
     if (readOnly) {
         asReadOnly()
     } else {
         replace("Array<", "Array<in ")
-            .replace("$COLLECTION<", "$COLLECTION<in ")
-            .replace("$LIST<", "$LIST<in ")
+            .replace("$ICOLLECTION<", "$ICOLLECTION<in ")
+            .replace("$ILIST<", "$ILIST<in ")
     }

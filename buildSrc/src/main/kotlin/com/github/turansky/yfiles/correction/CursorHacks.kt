@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.*
 import org.json.JSONObject
 
 private fun cursor(generic: String): String =
-    "$CURSOR<$generic>"
+    "$ICURSOR<$generic>"
 
 internal fun applyCursorHacks(source: Source) {
     fixCursor(source)
@@ -52,7 +52,7 @@ private fun fixCursorUtil(source: Source) {
             .forEach {
                 it.flatMap(PARAMETERS)
                     .plus(it[RETURNS])
-                    .filter { it[TYPE] == CURSOR }
+                    .filter { it[TYPE] == ICURSOR }
                     .forEach { it[TYPE] = cursor("T") }
             }
 
@@ -113,7 +113,7 @@ private fun JSONObject.fixReturnTypeGeneric(generic: String) {
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {
-    require(get(TYPE) == CURSOR)
+    require(get(TYPE) == ICURSOR)
 
     set(TYPE, cursor(generic))
 }

@@ -1,12 +1,12 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.COLLECTION
+import com.github.turansky.yfiles.ICOLLECTION
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
 
 private fun collection(generic: String): String =
-    "$COLLECTION<$generic>"
+    "$ICOLLECTION<$generic>"
 
 private val DEFAULT_COLLECTIONS = setOf(
     collection(JS_ANY),
