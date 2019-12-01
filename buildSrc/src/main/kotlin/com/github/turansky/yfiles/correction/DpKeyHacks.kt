@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.GRAPH_OBJECT
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.NODE
+import com.github.turansky.yfiles.*
 import org.json.JSONObject
 
 internal fun applyDpKeyHacks(source: Source) {
@@ -25,8 +22,8 @@ private val DP_KEY_GENERIC_MAP = mapOf(
     "GraphObjectDpKey" to GRAPH_OBJECT,
 
     "ILabelLayoutDpKey" to "yfiles.layout.ILabelLayout",
-    "IEdgeLabelLayoutDpKey" to "yfiles.layout.IEdgeLabelLayout",
-    "INodeLabelLayoutDpKey" to "yfiles.layout.INodeLabelLayout"
+    "IEdgeLabelLayoutDpKey" to IEDGE_LABEL_LAYOUT,
+    "INodeLabelLayoutDpKey" to INODE_LABEL_LAYOUT
 )
 
 private fun fixClass(source: Source) {

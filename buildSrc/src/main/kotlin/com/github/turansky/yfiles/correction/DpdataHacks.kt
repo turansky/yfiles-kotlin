@@ -56,14 +56,14 @@ private fun fixGraph(source: Source) {
 private fun fixDefaultLayoutGraph(source: Source) {
     val properties = source.type("DefaultLayoutGraph")[PROPERTIES]
 
-    properties["nodeLabelMap"].addGeneric("Array<yfiles.layout.INodeLabelLayout>")
-    properties["edgeLabelMap"].addGeneric("Array<yfiles.layout.IEdgeLabelLayout>")
+    properties["nodeLabelMap"].addGeneric("Array<$INODE_LABEL_LAYOUT>")
+    properties["edgeLabelMap"].addGeneric("Array<$IEDGE_LABEL_LAYOUT>")
 
     properties["nodeLabelFeatureMap"]
-        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.INodeLabelLayout,$NODE") }
+        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$INODE_LABEL_LAYOUT,$NODE") }
 
     properties["edgeLabelFeatureMap"]
-        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.IEdgeLabelLayout,$EDGE") }
+        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$IEDGE_LABEL_LAYOUT,$EDGE") }
 }
 
 private fun fixDfs(source: Source) {

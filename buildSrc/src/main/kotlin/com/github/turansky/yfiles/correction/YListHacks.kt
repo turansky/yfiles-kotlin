@@ -107,8 +107,8 @@ private fun getGeneric(
 
     return when (parameterName) {
         "path", "points" -> YPOINT
-        "nodeLabels" -> "yfiles.layout.INodeLabelLayout"
-        "edgeLabels" -> "yfiles.layout.IEdgeLabelLayout"
+        "nodeLabels" -> INODE_LABEL_LAYOUT
+        "edgeLabels" -> IEDGE_LABEL_LAYOUT
         "selfLoops" -> EDGE
 
         "edgeIds", "originalEdgeIds" -> YID

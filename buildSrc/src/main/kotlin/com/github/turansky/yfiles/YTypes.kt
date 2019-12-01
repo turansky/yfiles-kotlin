@@ -23,6 +23,9 @@ val LIST = "yfiles.collections.IList"
 val SEGMENT_INFO = "yfiles.router.SegmentInfo"
 val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
 
+val INODE_LABEL_LAYOUT = "yfiles.layout.INodeLabelLayout"
+val IEDGE_LABEL_LAYOUT = "yfiles.layout.IEdgeLabelLayout"
+
 val NODE_LABEL_CANDIDATE = "yfiles.layout.NodeLabelCandidate"
 val EDGE_LABEL_CANDIDATE = "yfiles.layout.EdgeLabelCandidate"
 
