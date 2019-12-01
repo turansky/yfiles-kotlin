@@ -35,5 +35,5 @@ val IDATA_MAP = "yfiles.algorithms.IDataMap"
 val IEDGE_MAP = "yfiles.algorithms.IEdgeMap"
 val INODE_MAP = "yfiles.algorithms.INodeMap"
 
-val BIPARTITION_MARK = "*" // "yfiles.algorithms.BipartitionMark"
+val BIPARTITION_MARK = "yfiles.algorithms.BipartitionMark"
 val DFS_STATE = "yfiles.algorithms.DfsState"

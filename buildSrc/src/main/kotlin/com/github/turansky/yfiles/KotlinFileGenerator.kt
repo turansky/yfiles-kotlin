@@ -2,6 +2,11 @@ package com.github.turansky.yfiles
 
 import java.io.File
 
+private val ENUM_COMPANION_MAP = mapOf(
+    "BipartitionAlgorithm" to "BipartitionMark",
+    "DfsAlgorithm" to "DfsState"
+)
+
 internal class KotlinFileGenerator(
     moduleName: String,
     private val types: Iterable<Type>,
@@ -84,11 +89,17 @@ internal class KotlinFileGenerator(
         val data = es6GeneratorData(declaration)
         open val useJsName = false
 
+        protected val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
+
         private val properties: List<Property>
             get() = declaration.properties
 
         private val staticConstants: List<Constant>
-            get() = declaration.constants
+            get() = if (enumCompanionName == null) {
+                declaration.constants
+            } else {
+                emptyList()
+            }
 
         private val staticProperties: List<Property>
             get() = declaration.staticProperties
@@ -252,7 +263,8 @@ internal class KotlinFileGenerator(
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
-                    "}"
+                    "}" +
+                    enumCompanionContent()
         }
 
         private fun primitiveContent(): String {
@@ -269,7 +281,7 @@ internal class KotlinFileGenerator(
                     """
                         |external object $classDeclaration {
                         |$code
-                        |}
+                        |} ${enumCompanionContent()}
                     """.trimMargin()
         }
 
@@ -300,6 +312,19 @@ internal class KotlinFileGenerator(
             } else {
                 null
             }
+        }
+
+        private fun enumCompanionContent(): String {
+            val name = enumCompanionName
+                ?: return ""
+
+            return """
+                |
+                |@JsName("${data.jsName}")
+                |external enum class $name {
+                |${declaration.constants.toContent()}
+                |}
+            """.trimMargin()
         }
     }
 
@@ -354,15 +379,10 @@ internal class KotlinFileGenerator(
 
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
-            val values = declaration.constants
-                .asSequence()
-                .map { it.toEnumValue() }
-                .joinToString(separator = ",\n\n", postfix = ";\n")
-
             return documentation +
                     externalAnnotation +
                     "external enum class ${data.name} {\n" +
-                    values + "\n" +
+                    declaration.constants.toContent() + "\n" +
                     super.content() + "\n" +
                     "}"
         }
@@ -371,3 +391,8 @@ internal class KotlinFileGenerator(
             typealiasDeclaration()
     }
 }
+
+private fun List<Constant>.toContent(): String =
+    asSequence()
+        .map { it.toEnumValue() }
+        .joinToString(separator = ",\n\n", postfix = ";\n")
