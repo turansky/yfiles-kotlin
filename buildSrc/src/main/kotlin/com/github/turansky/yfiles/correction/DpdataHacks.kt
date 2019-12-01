@@ -147,6 +147,9 @@ private fun fixHierarchic(source: Source) {
 
     source.type("WeightedLayerer")[PROPERTIES]["weight"]
         .addGeneric("$EDGE,$JS_INT")
+
+    source.type("SimplexNodePlacer")[METHODS]["assignNodesToSublayer"]
+        .get(PARAMETERS)["lowerSublayer"].addGeneric("yfiles.hierarchic.ILayer")
 }
 
 private fun fixTriangulator(source: Source) {
