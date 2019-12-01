@@ -57,7 +57,6 @@ internal fun applyHacks(api: JSONObject) {
     applyEventHacks(source)
 
     applyIncrementalHintHacks(source)
-    applyBipartitionHacks(source)
 
     fixConstructors(source)
 }
