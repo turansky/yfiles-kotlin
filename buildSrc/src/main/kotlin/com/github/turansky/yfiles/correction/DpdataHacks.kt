@@ -16,6 +16,7 @@ internal fun applyDpataHacks(source: Source) {
     fixDataProviders(source)
     fixMaps(source)
     fixLists(source)
+    fixComparers(source)
 }
 
 private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
@@ -290,6 +291,49 @@ private fun fixLists(source: Source) {
             .filter { it[NAME] == "predicate" }
             .forEach { it.addGeneric("$keyType,$JS_BOOLEAN") }
     }
+}
+
+private fun fixComparers(source: Source) {
+    source.type("Comparers")
+        .flatMap(STATIC_METHODS)
+        .filter { it.has(PARAMETERS) }
+        .filter { it.firstParameter[TYPE] == IDATA_PROVIDER }
+        .forEach {
+            val name = it[NAME]
+
+            val keyType = if ("Source" in name || "Target" in name) {
+                NODE
+            } else {
+                "K"
+            }
+
+            val valueType = when {
+                "IntData" in name -> JS_INT
+                "NumberData" in name -> JS_DOUBLE
+                else -> "V"
+            }
+
+            val valueBound = if (name == "createComparableDataComparer") {
+                "yfiles.lang.IComparable<V>"
+            } else {
+                JS_OBJECT
+            }
+
+            it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
+                if (keyType == "K") {
+                    add(typeParameter(keyType, JS_OBJECT))
+                }
+
+                if (valueType == "V") {
+                    add(typeParameter(valueType, valueBound))
+                }
+            }.toList()
+
+            it.firstParameter.addGeneric("$keyType,$valueType")
+            it[RETURNS].also {
+                it[TYPE] = it[TYPE].substringBefore("<") + "<$valueType>"
+            }
+        }
 }
 
 private fun JSONObject.strictBound(name: String) {
