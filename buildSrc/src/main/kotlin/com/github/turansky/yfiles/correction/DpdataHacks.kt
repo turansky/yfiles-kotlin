@@ -6,6 +6,8 @@ import org.json.JSONObject
 
 internal fun applyDpataHacks(source: Source) {
     fixGraph(source)
+    fixDefaultLayoutGraph(source)
+    fixDfs(source)
     fixLayoutGraphAdapter(source)
     fixTreeLayout(source)
     fixGraphPartitionManager(source)
@@ -47,6 +49,18 @@ private fun fixGraph(source: Source) {
             it[RETURNS]
                 .addGeneric("V")
         }
+}
+
+private fun fixDefaultLayoutGraph(source: Source) {
+    val properties = source.type("DefaultLayoutGraph")[PROPERTIES]
+
+    properties["nodeLabelMap"].addGeneric("Array<yfiles.layout.INodeLabelLayout>")
+    properties["edgeLabelMap"].addGeneric("Array<yfiles.layout.IEdgeLabelLayout>")
+}
+
+private fun fixDfs(source: Source) {
+    source.type("DfsAlgorithm")[PROPERTIES]["stateMap"]
+        .addGeneric(DFS_STATE)
 }
 
 private fun fixLayoutGraphAdapter(source: Source) {
