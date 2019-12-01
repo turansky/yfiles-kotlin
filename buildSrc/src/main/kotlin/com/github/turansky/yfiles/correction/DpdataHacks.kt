@@ -15,6 +15,7 @@ internal fun applyDpataHacks(source: Source) {
 
     fixDataProviders(source)
     fixMaps(source)
+    fixLists(source)
 }
 
 private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
@@ -275,6 +276,20 @@ private fun fixMaps(source: Source) {
 
             it[RETURNS].addGeneric(if (keyType == "K") typeParameters else valueType)
         }
+}
+
+private fun fixLists(source: Source) {
+    sequenceOf(
+        "YList" to "T",
+        "YNodeList" to NODE,
+        "EdgeList" to EDGE
+    ).forEach { (className, keyType) ->
+        source.type(className)
+            .flatMap(CONSTRUCTORS)
+            .optFlatMap(PARAMETERS)
+            .filter { it[NAME] == "predicate" }
+            .forEach { it.addGeneric("$keyType,$JS_BOOLEAN") }
+    }
 }
 
 private fun JSONObject.strictBound(name: String) {
