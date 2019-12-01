@@ -14,6 +14,7 @@ internal fun applyDpataHacks(source: Source) {
     fixHierarchic(source)
     fixTriangulator(source)
     fixYGraphAdapter(source)
+    fixMISLabelingBase(source)
 
     fixDataProviders(source)
     fixMaps(source)
@@ -203,6 +204,19 @@ private fun fixYGraphAdapter(source: Source) {
             .onEach { it.strictBound("T") }
             .map { it.firstParameter }
             .forEach { it.addGeneric("T") }
+    }
+}
+
+private fun fixMISLabelingBase(source: Source) {
+    source.type("MISLabelingBase").also {
+        it[PROPERTIES]["nodesToBoxes"].addGeneric("yfiles.layout.LabelCandidate")
+        it[PROPERTIES]["nodesToID"].addGeneric(YID)
+
+        it[PROPERTIES]["boxesToNodes"]
+            .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$NODE,yfiles.layout.LabelCandidate") }
+
+        it[METHODS]["assignProfit"][RETURNS]
+            .addGeneric(JS_DOUBLE)
     }
 }
 
