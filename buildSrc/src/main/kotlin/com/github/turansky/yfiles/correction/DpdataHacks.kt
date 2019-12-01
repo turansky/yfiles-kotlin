@@ -56,6 +56,12 @@ private fun fixDefaultLayoutGraph(source: Source) {
 
     properties["nodeLabelMap"].addGeneric("Array<yfiles.layout.INodeLabelLayout>")
     properties["edgeLabelMap"].addGeneric("Array<yfiles.layout.IEdgeLabelLayout>")
+
+    properties["nodeLabelFeatureMap"]
+        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.INodeLabelLayout,$NODE") }
+
+    properties["edgeLabelFeatureMap"]
+        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.IEdgeLabelLayout,$EDGE") }
 }
 
 private fun fixDfs(source: Source) {

@@ -180,10 +180,7 @@ private fun fixDataMaps(source: Source) {
     source.types()
         .flatMap { it.getTypeHolders() }
         .filter { it[TYPE] in MAP_INTERFACES }
-        .forEach {
-            val typeParameter = it.getDataMapsTypeParameter()
-            it[TYPE] = it[TYPE] + "<$typeParameter>"
-        }
+        .forEach { it.addGeneric(it.getDataMapsTypeParameter()) }
 
     source.type("Graph")
         .flatMap(PROPERTIES)
