@@ -15,6 +15,7 @@ internal fun applyDpataHacks(source: Source) {
     fixTriangulator(source)
     fixYGraphAdapter(source)
     fixMISLabelingBase(source)
+    fixParallelEdgeRouter(source)
 
     fixDataProviders(source)
     fixMaps(source)
@@ -218,6 +219,10 @@ private fun fixMISLabelingBase(source: Source) {
         it[METHODS]["assignProfit"][RETURNS]
             .addGeneric(JS_DOUBLE)
     }
+}
+
+private fun fixParallelEdgeRouter(source: Source) {
+    source.type("ParallelEdgeRouter")[PROPERTIES]["parallelEdges"].addGeneric(EDGE)
 }
 
 private fun fixDataProviders(source: Source) {
