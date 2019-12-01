@@ -281,7 +281,7 @@ internal class KotlinFileGenerator(
                     """
                         |external object $classDeclaration {
                         |$code
-                        |} ${enumCompanionContent()}
+                        |}${enumCompanionContent()}
                     """.trimMargin()
         }
 

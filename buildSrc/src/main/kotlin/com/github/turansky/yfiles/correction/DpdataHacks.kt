@@ -213,7 +213,7 @@ private fun fixMISLabelingBase(source: Source) {
         it[PROPERTIES]["nodesToID"].addGeneric(YID)
 
         it[PROPERTIES]["boxesToNodes"]
-            .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$NODE,yfiles.layout.LabelCandidate") }
+            .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
 
         it[METHODS]["assignProfit"][RETURNS]
             .addGeneric(JS_DOUBLE)
