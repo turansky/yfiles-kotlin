@@ -1,5 +1,5 @@
 group = "com.github.turansky.yfiles"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.3.61"
@@ -17,9 +17,9 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2019.2.4"
+    version = "2019.3"
 
-    setPlugins("org.jetbrains.kotlin:1.3.61-release-IJ2019.2-1")
+    setPlugins("org.jetbrains.kotlin:1.3.61-release-IJ2019.3-1")
 }
 
 tasks {
