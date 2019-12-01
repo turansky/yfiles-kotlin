@@ -301,11 +301,8 @@ private fun fixComparers(source: Source) {
         .forEach {
             val name = it[NAME]
 
-            val keyType = if ("Source" in name || "Target" in name) {
-                NODE
-            } else {
-                "K"
-            }
+            val nodeProxy = "Source" in name || "Target" in name
+            val keyType = if (nodeProxy) EDGE else "K"
 
             val valueType = when {
                 "IntData" in name -> JS_INT
@@ -329,9 +326,10 @@ private fun fixComparers(source: Source) {
                 }
             }.toList()
 
-            it.firstParameter.addGeneric("$keyType,$valueType")
+            val parameterKeyType = if (nodeProxy) NODE else keyType
+            it.firstParameter.addGeneric("$parameterKeyType,$valueType")
             it[RETURNS].also {
-                it[TYPE] = it[TYPE].substringBefore("<") + "<$valueType>"
+                it[TYPE] = it[TYPE].substringBefore("<") + "<$keyType>"
             }
         }
 }
