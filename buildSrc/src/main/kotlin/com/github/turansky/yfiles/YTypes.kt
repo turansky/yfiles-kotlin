@@ -7,6 +7,7 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
+val ILABEL_MODEL_PARAMETER = "yfiles.graph.ILabelModelParameter"
 
 val ICURSOR = "yfiles.algorithms.ICursor"
 val YLIST = "yfiles.algorithms.YList"
