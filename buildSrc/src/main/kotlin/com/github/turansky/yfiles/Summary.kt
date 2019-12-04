@@ -35,6 +35,7 @@ private fun String.fixApiLinks(): String {
         .replace(">evt<", ">event<")
         .replace(">evt.", ">event.")
         .replace("&apos;", "'")
+        .replace("&quot;", "\"")
         .also { check("<api-link" !in it) }
 }
 
