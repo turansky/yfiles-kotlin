@@ -34,6 +34,7 @@ private fun String.fixApiLinks(): String {
         .replace("more NaN values", "more `NaN` values")
         .replace(">evt<", ">event<")
         .replace(">evt.", ">event.")
+        .replace("&apos;", "'")
         .also { check("<api-link" !in it) }
 }
 
