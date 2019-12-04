@@ -118,7 +118,8 @@ internal val INT_PROPERTIES = setOf(
     "maximumFlow",
 
     // static
-    "cr570845"
+    "cr570845",
+    "wk203237"
 )
 
 internal val INT_METHOD_PARAMETERS = setOf(
