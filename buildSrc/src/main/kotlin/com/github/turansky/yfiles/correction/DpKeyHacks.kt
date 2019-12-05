@@ -5,6 +5,7 @@ import org.json.JSONObject
 
 internal fun applyDpKeyHacks(source: Source) {
     fixClass(source)
+    fixProperties(source)
 }
 
 private val DP_KEY_BASE = "DpKeyBase"
@@ -48,6 +49,37 @@ private fun fixClass(source: Source) {
     source.type("DpKeyItemCollection")
         .property("dpKey")
         .updateDpKeyGeneric(TYPE, "*")
+}
+
+fun nodeDpKey(typeParameter: String): String = "yfiles.algorithms.NodeDpKey<$typeParameter>"
+fun edgeDpKey(typeParameter: String): String = "yfiles.algorithms.EdgeDpKey<$typeParameter>"
+fun labelDpKey(typeParameter: String): String = "yfiles.algorithms.ILabelLayoutDpKey<$typeParameter>"
+
+private fun fixProperties(source: Source) {
+    val typeMap = mapOf(
+        "affectedNodesDpKey" to nodeDpKey(JS_BOOLEAN),
+        "splitNodesDpKey" to nodeDpKey(JS_BOOLEAN),
+
+        "centerNodesDpKey" to nodeDpKey(JS_BOOLEAN),
+        "minimumNodeSizeDpKey" to nodeDpKey("yfiles.algorithms.YDimension"),
+        "groupNodeInsetsDpKey" to nodeDpKey("yfiles.algorithms.Insets"),
+
+        "affectedEdgesDpKey" to edgeDpKey(JS_BOOLEAN),
+        "interEdgesDpKey" to edgeDpKey(JS_BOOLEAN),
+        "nonSeriesParallelEdgesDpKey" to edgeDpKey(JS_BOOLEAN),
+        "nonSeriesParallelEdgeLabelSelectionKey" to edgeDpKey(JS_BOOLEAN),
+        "nonTreeEdgeSelectionKey" to edgeDpKey(JS_BOOLEAN),
+
+        "affectedLabelsDpKey" to labelDpKey(JS_BOOLEAN),
+        "nonTreeEdgeLabelSelectionKey" to labelDpKey(JS_BOOLEAN)
+    )
+
+    val types = typeMap.keys
+    source.types()
+        .optFlatMap(PROPERTIES)
+        .filter { it[NAME] in types }
+        .filter { it[TYPE] == JS_ANY }
+        .forEach { it[TYPE] = typeMap.getValue(it[NAME]) }
 }
 
 private fun JSONObject.updateDpKeyGeneric(
