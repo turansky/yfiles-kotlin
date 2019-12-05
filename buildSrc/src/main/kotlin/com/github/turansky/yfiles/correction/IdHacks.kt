@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.YID
+import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 import java.io.File
 
@@ -59,6 +60,18 @@ internal fun applyIdHacks(source: Source) {
 
             it[TYPE] = newType
         }
+
+    source.type("IEdgeData")[PROPERTIES].also { properties ->
+        sequenceOf(
+            "group",
+
+            "sourceGroup",
+            "targetGroup",
+
+            "sourcePortGroup",
+            "targetPortGroup"
+        ).forEach { properties[it][TYPE] = YID }
+    }
 
     source.type("BusRouterBusDescriptor")
         .flatMap(CONSTRUCTORS)
