@@ -42,3 +42,5 @@ val INODE_MAP = "yfiles.algorithms.INodeMap"
 val PARTITION_CELL_KEY = "yfiles.router.PartitionCellKey"
 val BIPARTITION_MARK = "yfiles.algorithms.BipartitionMark"
 val DFS_STATE = "yfiles.algorithms.DfsState"
+
+val IVISUAL_TEMPLATE = "yfiles.view.IVisualTemplate"

@@ -44,6 +44,7 @@ fun generateKotlinDeclarations(
     generateIdUtils(sourceDir)
     generateBindingUtils(sourceDir)
     generateTagUtils(sourceDir)
+    generateResourceUtils(sourceDir)
 
     generateInterfaceMarker(sourceDir)
     generateClassUtils(moduleName, sourceDir)
