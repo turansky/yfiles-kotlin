@@ -42,6 +42,8 @@ fun generateKotlinDeclarations(
     fileGenerator.generate(sourceDir)
 
     generateIdUtils(sourceDir)
+    generateBindingUtils(sourceDir)
+
     generateInterfaceMarker(sourceDir)
     generateClassUtils(moduleName, sourceDir)
     generateIncrementalHint(sourceDir)
