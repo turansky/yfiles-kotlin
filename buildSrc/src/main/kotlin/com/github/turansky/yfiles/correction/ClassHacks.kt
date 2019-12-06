@@ -520,4 +520,13 @@ private fun addMapClassBounds(source: Source) {
         .filterNot { it.has(BOUNDS) }
         .filter { it[NAME] == "K" }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
+
+    source.types(
+        "IMapperRegistry",
+        "MapperRegistry"
+    ).flatMap(METHODS)
+        .filter { it[NAME] == "getMapper" }
+        .flatMap(TYPE_PARAMETERS)
+        .filter { it[NAME] == "V" }
+        .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 }

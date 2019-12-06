@@ -6,6 +6,7 @@ import org.json.JSONObject
 internal fun applyDpKeyHacks(source: Source) {
     fixClass(source)
     fixProperties(source)
+    fixMethodParameters(source)
 }
 
 private val DP_KEY_BASE = "DpKeyBase"
@@ -51,6 +52,7 @@ private fun fixClass(source: Source) {
         .updateDpKeyGeneric(TYPE, "*")
 }
 
+fun dpKeyBase(typeParameter: String): String = "yfiles.algorithms.DpKeyBase<*,$typeParameter>"
 fun nodeDpKey(typeParameter: String): String = "yfiles.algorithms.NodeDpKey<$typeParameter>"
 fun edgeDpKey(typeParameter: String): String = "yfiles.algorithms.EdgeDpKey<$typeParameter>"
 fun labelDpKey(typeParameter: String): String = "yfiles.algorithms.ILabelLayoutDpKey<$typeParameter>"
@@ -80,6 +82,17 @@ private fun fixProperties(source: Source) {
         .filter { it[NAME] in types }
         .filter { it[TYPE] == JS_ANY }
         .forEach { it[TYPE] = typeMap.getValue(it[NAME]) }
+}
+
+private fun fixMethodParameters(source: Source) {
+    source.types("IMapperRegistry", "MapperRegistry")
+        .flatMap(METHODS)
+        .forEach { method ->
+            method.flatMap(PARAMETERS)
+                .filter { it[NAME] == "tag" }
+                .filter { it[TYPE] == JS_OBJECT }
+                .forEach { it[TYPE] = dpKeyBase(if (method.has(TYPE_PARAMETERS)) "V" else "*") }
+        }
 }
 
 private fun JSONObject.updateDpKeyGeneric(
