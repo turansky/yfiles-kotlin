@@ -61,6 +61,8 @@ internal fun applyHacks(api: JSONObject) {
     applyLabelModelParameterHacks(source)
     applyIncrementalHintHacks(source)
 
+    applyTagHacks(source)
+
     fixConstructors(source)
 }
 
