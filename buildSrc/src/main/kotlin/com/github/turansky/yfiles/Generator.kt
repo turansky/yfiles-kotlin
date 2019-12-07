@@ -46,6 +46,7 @@ fun generateKotlinDeclarations(
     generateTagUtils(sourceDir)
     generateStyleTagUtils(sourceDir)
     generateResourceUtils(sourceDir)
+    generateSerializationUtils(sourceDir)
     generateConvertersUtils(sourceDir)
     generateEventDispatcherUtils(sourceDir)
 
