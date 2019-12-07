@@ -82,6 +82,13 @@ internal fun applyIdHacks(source: Source) {
                 it[NAME] = name.replace("ID", "Id")
             }
         }
+
+    source.type("ChannelRoutingTool")
+        .flatMap(METHODS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME] == "key" }
+        .filter { it[TYPE] in likeObjectTypes }
+        .forEach { it[TYPE] = YID }
 }
 
 private fun looksLikeId(name: String): Boolean =
