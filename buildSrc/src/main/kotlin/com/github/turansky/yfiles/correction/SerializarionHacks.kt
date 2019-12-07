@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.JS_STRING
+import com.github.turansky.yfiles.*
 import java.io.File
 
 private const val SERIALIZATION_PROPERTY_KEY = "yfiles.graphml.SerializationPropertyKey"
@@ -43,4 +42,34 @@ internal fun applySerializationHacks(source: Source) {
                 }
             }
         }
+
+    val typeMap = mapOf(
+        "BASE_URI" to JS_STRING,
+        "CACHE_EXTERNAL_REFERENCES" to JS_BOOLEAN,
+        "CURRENT_KEY_SCOPE" to "yfiles.graphml.KeyScope",
+        "DISABLE_GEOMETRY" to GRAPH_ITEM_TYPES,
+        "DISABLE_GRAPH_SETTINGS" to JS_BOOLEAN,
+        "DISABLE_ITEMS" to GRAPH_ITEM_TYPES,
+        "DISABLE_STRIPE_LABELS" to STRIPE_TYPES,
+        "DISABLE_STRIPE_STYLES" to STRIPE_TYPES,
+        "DISABLE_STRIPE_USER_TAGS" to STRIPE_TYPES,
+        "DISABLE_STYLES" to GRAPH_ITEM_TYPES,
+        "DISABLE_USER_TAGS" to GRAPH_ITEM_TYPES,
+        "IGNORE_PROPERTY_CASE" to JS_BOOLEAN,
+        "IGNORE_XAML_DESERIALIZATION_ERRORS" to JS_BOOLEAN,
+        "INDENT_OUTPUT" to JS_BOOLEAN,
+        "PARSE_LABEL_SIZE" to JS_BOOLEAN,
+        "REPRESENTED_EDGE" to IEDGE,
+        "REWRITE_RELATIVE_RESOURCE_URIS" to JS_BOOLEAN,
+        "UNDEFINED_HANDLING" to "yfiles.graphml.UndefinedHandling",
+        "WRITE_EDGE_STYLE_DEFAULT" to JS_BOOLEAN,
+        "WRITE_LABEL_SIZE_PREDICATE" to JS_BOOLEAN, // TODO: check required
+        "WRITE_NODE_STYLE_DEFAULT" to JS_BOOLEAN,
+        "WRITE_PORT_STYLE_DEFAULT" to JS_BOOLEAN,
+        "WRITE_STRIPE_DEFAULTS" to JS_BOOLEAN
+    )
+
+    source.type("SerializationProperties")
+        .flatMap(CONSTANTS)
+        .forEach { it[TYPE] = propertyKey(typeMap.getValue(it[NAME])) }
 }

@@ -8,6 +8,10 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
+val IEDGE = "yfiles.graph.IEdge"
+
+val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
+val STRIPE_TYPES = "yfiles.graph.StripeTypes"
 val ILABEL_MODEL_PARAMETER = "yfiles.graph.ILabelModelParameter"
 
 val ICURSOR = "yfiles.algorithms.ICursor"

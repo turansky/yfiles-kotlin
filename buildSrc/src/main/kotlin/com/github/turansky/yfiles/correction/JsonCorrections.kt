@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.CANBENULL
-import com.github.turansky.yfiles.JS_BOOLEAN
-import com.github.turansky.yfiles.JS_NUMBER
-import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.*
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "system.Action3",
@@ -541,7 +538,7 @@ internal val MISSED_METHODS = listOf(
         methodName = "getHandle",
         parameters = listOf(
             MethodParameterData("context", "IInputModeContext"),
-            MethodParameterData("edge", "yfiles.graph.IEdge"),
+            MethodParameterData("edge", IEDGE),
             MethodParameterData("sourceHandle", JS_BOOLEAN)
         ),
         result = ResultData("IHandle", true)
@@ -551,7 +548,7 @@ internal val MISSED_METHODS = listOf(
         className = "Arrow",
         methodName = "getBoundsProvider",
         parameters = listOf(
-            MethodParameterData("edge", "yfiles.graph.IEdge"),
+            MethodParameterData("edge", IEDGE),
             MethodParameterData("atSource", JS_BOOLEAN),
             MethodParameterData("anchor", "yfiles.geometry.Point"),
             MethodParameterData("direction", "yfiles.geometry.Point")
@@ -562,7 +559,7 @@ internal val MISSED_METHODS = listOf(
         className = "Arrow",
         methodName = "getVisualCreator",
         parameters = listOf(
-            MethodParameterData("edge", "yfiles.graph.IEdge"),
+            MethodParameterData("edge", IEDGE),
             MethodParameterData("atSource", JS_BOOLEAN),
             MethodParameterData("anchor", "yfiles.geometry.Point"),
             MethodParameterData("direction", "yfiles.geometry.Point")
