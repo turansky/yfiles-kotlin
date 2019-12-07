@@ -1,8 +1,12 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.IEVENT_DISPATCHER
+import com.github.turansky.yfiles.JS_ANY
+import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
 import java.io.File
+
+private const val SENDER = "sender"
 
 internal fun generateEventDispatcherUtils(sourceDir: File) {
     sourceDir.resolve("yfiles/lang/IEventDispatcher.kt")
@@ -27,6 +31,27 @@ internal fun applyEventDispatcherHacks(source: Source) {
                 it[IMPLEMENTS] = arrayOf(IEVENT_DISPATCHER)
             }
         }
+
+    val likeObjectTypes = setOf(
+        JS_OBJECT,
+        JS_ANY
+    )
+
+    source.types()
+        .optFlatMap(METHODS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME] == SENDER }
+        .filter { it[TYPE] in likeObjectTypes }
+        .forEach { it[TYPE] = IEVENT_DISPATCHER }
+
+    source.functionSignatures.apply {
+        keys().asSequence()
+            .map { getJSONObject(it) }
+            .optFlatMap(PARAMETERS)
+            .filter { it[NAME] == SENDER }
+            .filter { it[TYPE] in likeObjectTypes }
+            .forEach { it[TYPE] = IEVENT_DISPATCHER }
+    }
 }
 
 private fun JSONObject.hasParentDispatcher(
