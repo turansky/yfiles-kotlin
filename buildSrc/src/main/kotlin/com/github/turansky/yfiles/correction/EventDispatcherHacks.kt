@@ -20,7 +20,7 @@ internal fun generateEventDispatcherUtils(sourceDir: File) {
 
 internal fun applyEventDispatcherHacks(source: Source) {
     source.types()
-        .filter { it.has(EVENTS) }
+        .filter { it.has(EVENTS) || it[NAME] == "ItemModelManager" }
         .filterNot { it.hasParentDispatcher(source) }
         .forEach {
             if (it.has(IMPLEMENTS)) {
