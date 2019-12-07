@@ -6,8 +6,6 @@ import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
 import java.io.File
 
-private const val SENDER = "sender"
-
 internal fun generateEventDispatcherUtils(sourceDir: File) {
     sourceDir.resolve("yfiles/lang/IEventDispatcher.kt")
         .writeText(
@@ -32,6 +30,11 @@ internal fun applyEventDispatcherHacks(source: Source) {
             }
         }
 
+    val parameterNames = setOf(
+        "sender",
+        "source"
+    )
+
     val likeObjectTypes = setOf(
         JS_OBJECT,
         JS_ANY
@@ -40,15 +43,21 @@ internal fun applyEventDispatcherHacks(source: Source) {
     source.types()
         .optFlatMap(METHODS)
         .optFlatMap(PARAMETERS)
-        .filter { it[NAME] == SENDER }
+        .filter { it[NAME] in parameterNames }
         .filter { it[TYPE] in likeObjectTypes }
         .forEach { it[TYPE] = IEVENT_DISPATCHER }
 
+    val ignoredFunctionSignatures = setOf(
+        "CanExecuteCommandHandler",
+        "ExecuteCommandHandler"
+    )
+
     source.functionSignatures.apply {
         keys().asSequence()
+            .filterNot { it in ignoredFunctionSignatures }
             .map { getJSONObject(it) }
             .optFlatMap(PARAMETERS)
-            .filter { it[NAME] == SENDER }
+            .filter { it[NAME] in parameterNames }
             .filter { it[TYPE] in likeObjectTypes }
             .forEach { it[TYPE] = IEVENT_DISPATCHER }
     }
