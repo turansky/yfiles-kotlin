@@ -59,6 +59,8 @@ internal fun JSONObject.has(key: JKey) = has(key.name)
 
 internal operator fun JSONObject.get(key: JArrayKey): JSONArray = getJSONArray(key.name)
 
+internal fun JSONObject.opt(key: JArrayKey): JSONArray? = optJSONArray(key.name)
+
 internal operator fun JSONObject.get(key: JObjectKey): JSONObject = getJSONObject(key.name)
 
 internal operator fun JSONObject.get(key: JStringKey): String = getString(key.name)
