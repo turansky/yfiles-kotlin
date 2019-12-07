@@ -33,6 +33,7 @@ internal class ClassRegistry(
         return sequenceOf(instance.extendedType())
             .filterNotNull()
             .plus(instance.implementedTypes())
+            .filterNot { it == IEVENT_DISPATCHER }
             .map { it.substringBefore("<") }
             .toList()
     }

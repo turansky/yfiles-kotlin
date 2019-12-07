@@ -35,6 +35,8 @@ internal object FIELDS : JArrayKey("fields")
 internal object STATIC_METHODS : JArrayKey("staticMethods")
 internal object METHODS : JArrayKey("methods")
 
+internal object EVENTS : JArrayKey("events")
+
 internal object PARAMETERS : JArrayKey("parameters")
 internal object RETURNS : JObjectKey("returns")
 internal object DOC : JStringKey("doc")
