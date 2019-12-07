@@ -18,6 +18,8 @@ val NODE = "yfiles.algorithms.Node"
 val EDGE = "yfiles.algorithms.Edge"
 val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
+val DP_KEY_BASE = "yfiles.algorithms.DpKeyBase"
+
 val ICOLLECTION = "yfiles.collections.ICollection"
 val ILIST = "yfiles.collections.IList"
 

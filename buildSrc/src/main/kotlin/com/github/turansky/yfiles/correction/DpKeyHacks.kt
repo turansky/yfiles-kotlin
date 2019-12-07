@@ -10,13 +10,13 @@ internal fun applyDpKeyHacks(source: Source) {
     fixMethodParameters(source)
 }
 
-private val DP_KEY_BASE = "DpKeyBase"
+private val DP_KEY_BASE_CLASS = "DpKeyBase"
 private val DP_KEY_BASE_KEY = "TKey"
 
-private val DP_KEY_BASE_DECLARATION = "yfiles.algorithms.DpKeyBase<"
+private val DP_KEY_BASE_DECLARATION = "$DP_KEY_BASE<"
 
 private val DP_KEY_GENERIC_MAP = mapOf(
-    DP_KEY_BASE to DP_KEY_BASE_KEY,
+    DP_KEY_BASE_CLASS to DP_KEY_BASE_KEY,
 
     "GraphDpKey" to "yfiles.algorithms.Graph",
 
@@ -30,7 +30,7 @@ private val DP_KEY_GENERIC_MAP = mapOf(
 )
 
 private fun fixClass(source: Source) {
-    source.type(DP_KEY_BASE).apply {
+    source.type(DP_KEY_BASE_CLASS).apply {
         addFirstTypeParameter(DP_KEY_BASE_KEY, JS_OBJECT)
 
         methodParameters(
@@ -42,7 +42,7 @@ private fun fixClass(source: Source) {
     }
 
     for ((className, generic) in DP_KEY_GENERIC_MAP) {
-        if (className != DP_KEY_BASE) {
+        if (className != DP_KEY_BASE_CLASS) {
             source.type(className)
                 .updateDpKeyGeneric(EXTENDS, generic)
         }
@@ -64,7 +64,11 @@ private fun fixProperties(source: Source) {
         "splitNodesDpKey" to nodeDpKey(JS_BOOLEAN),
 
         "centerNodesDpKey" to nodeDpKey(JS_BOOLEAN),
+
+        "minSizeDataProviderKey" to nodeDpKey("yfiles.algorithms.YDimension"),
         "minimumNodeSizeDpKey" to nodeDpKey("yfiles.algorithms.YDimension"),
+
+        "groupNodeInsetsDPKey" to nodeDpKey("yfiles.algorithms.Insets"),
         "groupNodeInsetsDpKey" to nodeDpKey("yfiles.algorithms.Insets"),
 
         "affectedEdgesDpKey" to edgeDpKey(JS_BOOLEAN),

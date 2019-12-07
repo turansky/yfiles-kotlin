@@ -23,7 +23,7 @@ internal fun applyDpataHacks(source: Source) {
     fixComparers(source)
 }
 
-private val GENERIC_DP_KEY = "yfiles.algorithms.DpKeyBase<K,V>"
+private val GENERIC_DP_KEY = "$DP_KEY_BASE<K,V>"
 
 private fun fixGraph(source: Source) {
     val methods = source.type("Graph")[METHODS]
@@ -42,6 +42,8 @@ private fun fixGraph(source: Source) {
 
         secondParameter.addGeneric("K,V")
     }
+
+    methods["removeDataProvider"].firstParameter[TYPE] = "$DP_KEY_BASE<*,*>"
 
     sequenceOf("createEdgeMap", "createNodeMap")
         .map { methods[it] }
