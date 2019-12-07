@@ -62,6 +62,7 @@ internal fun applyHacks(api: JSONObject) {
     applyIncrementalHintHacks(source)
 
     applyTagHacks(source)
+    applyStyleTagHacks(source)
     applyResourceHacks(source)
 
     fixConstructors(source)
