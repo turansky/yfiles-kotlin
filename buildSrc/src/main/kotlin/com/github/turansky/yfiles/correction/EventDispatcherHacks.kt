@@ -47,14 +47,8 @@ internal fun applyEventDispatcherHacks(source: Source) {
         .filter { it[TYPE] in likeObjectTypes }
         .forEach { it[TYPE] = IEVENT_DISPATCHER }
 
-    val ignoredFunctionSignatures = setOf(
-        "CanExecuteCommandHandler",
-        "ExecuteCommandHandler"
-    )
-
     source.functionSignatures.apply {
         keys().asSequence()
-            .filterNot { it in ignoredFunctionSignatures }
             .map { getJSONObject(it) }
             .optFlatMap(PARAMETERS)
             .filter { it[NAME] in parameterNames }
