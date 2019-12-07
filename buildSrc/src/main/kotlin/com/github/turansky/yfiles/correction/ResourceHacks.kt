@@ -18,7 +18,8 @@ internal fun generateResourceUtils(sourceDir: File) {
             """
                 |package yfiles.view
                 |
-                |external interface ResourceKey<T:Any>
+                |@JsName("String")
+                |external class ResourceKey<T : Any> internal constructor()
                 |
                 |external interface ResourceMap {
                 |    operator fun <T: Any> set(
