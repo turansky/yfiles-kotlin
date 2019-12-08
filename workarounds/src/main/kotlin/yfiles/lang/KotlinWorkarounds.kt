@@ -2,6 +2,10 @@
 
 package yfiles.lang
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class ConfigurableProperties
+
 // TODO: remove after fix - https://youtrack.jetbrains.com/issue/KT-34770
 internal object KotlinWorkarounds {
     const val KT_34770 = "KT-34770"
