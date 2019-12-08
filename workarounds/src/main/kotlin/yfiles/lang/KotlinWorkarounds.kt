@@ -34,7 +34,6 @@ internal object KotlinWorkarounds {
     }
 }
 
-@JsName("Object")
 internal external object Object {
     var defineProperty: (obj: Any, prop: String, descriptor: ObjectPropertyDescriptor) -> Unit
 }
