@@ -1,3 +1,5 @@
+include("workarounds")
+
 include("libraries:yfiles-kotlin")
 include("libraries:vsdx-kotlin")
 
