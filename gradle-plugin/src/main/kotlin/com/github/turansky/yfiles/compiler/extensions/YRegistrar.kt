@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.compiler.extensions
 
 import com.github.turansky.yfiles.compiler.backend.ir.IrLoweringExtension
 import com.github.turansky.yfiles.compiler.backend.js.JsExtension
+import com.github.turansky.yfiles.compiler.backend.js.JsWorkaroundExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -15,5 +16,6 @@ class YRegistrar : ComponentRegistrar {
     ) {
         IrGenerationExtension.registerExtension(project, IrLoweringExtension())
         JsSyntheticTranslateExtension.registerExtension(project, JsExtension())
+        JsSyntheticTranslateExtension.registerExtension(project, JsWorkaroundExtension())
     }
 }
