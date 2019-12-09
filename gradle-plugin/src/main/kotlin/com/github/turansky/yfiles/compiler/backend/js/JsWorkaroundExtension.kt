@@ -4,12 +4,11 @@ import com.github.turansky.yfiles.compiler.backend.common.LANG_PACKAGE
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.CLASS
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
-import org.jetbrains.kotlin.js.backend.ast.JsExpression
-import org.jetbrains.kotlin.js.backend.ast.JsInvocation
-import org.jetbrains.kotlin.js.backend.ast.JsStringLiteral
+import org.jetbrains.kotlin.js.backend.ast.*
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.declaration.DeclarationBodyVisitor
 import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
+import org.jetbrains.kotlin.js.translate.utils.addFunctionButNotExport
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.psi.KtPureClassOrObject
@@ -60,5 +59,25 @@ private fun TranslationContext.fixProperties(
         toValueReference(applyWorkaround),
         toValueReference(descriptor),
         JsStringLiteral(KT_34770)
-    )
+    ).let { wrap(it, descriptor) }
+}
+
+// TODO: remove after ticket fix
+//  https://youtrack.jetbrains.com/issue/KT-34735
+private fun TranslationContext.wrap(
+    expression: JsExpression,
+    descriptor: ClassDescriptor
+): JsExpression {
+    val name = descriptor.name.identifier
+    return addFunctionButNotExport(
+        JsName(generateName("applyWorkaround", "KT_34770", name)),
+        JsFunction(
+            scope(),
+            JsBlock(
+                expression.makeStmt(),
+                JsReturn(JsBooleanLiteral(true))
+            ),
+            "$name 'KT-34770' fix method"
+        )
+    ).let { JsInvocation(it.makeRef()) }
 }
