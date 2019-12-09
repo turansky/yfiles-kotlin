@@ -63,7 +63,7 @@ internal fun applySerializationHacks(source: Source) {
         "REWRITE_RELATIVE_RESOURCE_URIS" to JS_BOOLEAN,
         "UNDEFINED_HANDLING" to "yfiles.graphml.UndefinedHandling",
         "WRITE_EDGE_STYLE_DEFAULT" to JS_BOOLEAN,
-        "WRITE_LABEL_SIZE_PREDICATE" to JS_BOOLEAN, // TODO: check required
+        "WRITE_LABEL_SIZE_PREDICATE" to "yfiles.lang.Predicate<yfiles.graph.ILabel>",
         "WRITE_NODE_STYLE_DEFAULT" to JS_BOOLEAN,
         "WRITE_PORT_STYLE_DEFAULT" to JS_BOOLEAN,
         "WRITE_STRIPE_DEFAULTS" to JS_BOOLEAN
