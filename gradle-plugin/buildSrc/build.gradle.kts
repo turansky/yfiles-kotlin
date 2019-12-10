@@ -6,13 +6,7 @@ repositories {
     jcenter()
 }
 
-kotlin {
-    sourceSets {
-        main {
-            dependencies {
-                implementation(kotlin("stdlib"))
-                implementation("nu.studer:java-ordered-properties:1.0.2")
-            }
-        }
-    }
+dependencies {
+    implementation(kotlin("stdlib"))
+    implementation("nu.studer:java-ordered-properties:1.0.2")
 }

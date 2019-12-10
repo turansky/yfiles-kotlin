@@ -15,14 +15,10 @@ kotlin {
     target {
         nodejs()
     }
+}
 
-    sourceSets {
-        main {
-            dependencies {
-                implementation(kotlin("stdlib-js"))
-            }
-        }
-    }
+dependencies {
+    implementation(kotlin("stdlib-js"))
 }
 
 val kotlinSourceDir: File

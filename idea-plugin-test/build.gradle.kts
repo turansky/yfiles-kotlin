@@ -13,15 +13,11 @@ kotlin {
     target {
         nodejs()
     }
+}
 
-    sourceSets {
-        main {
-            dependencies {
-                implementation(kotlin("stdlib-js"))
-                implementation("com.yworks.yfiles:yfiles-kotlin:22.0.3-SNAPSHOT")
-            }
-        }
-    }
+dependencies {
+    implementation(kotlin("stdlib-js"))
+    implementation("com.yworks.yfiles:yfiles-kotlin:22.0.3-SNAPSHOT")
 }
 
 tasks {

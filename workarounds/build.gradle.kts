@@ -6,12 +6,8 @@ kotlin {
     target {
         browser()
     }
+}
 
-    sourceSets {
-        main {
-            dependencies {
-                implementation(kotlin("stdlib-js"))
-            }
-        }
-    }
+dependencies {
+    implementation(kotlin("stdlib-js"))
 }
