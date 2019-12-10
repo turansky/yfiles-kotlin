@@ -3,6 +3,7 @@
 
     <id>com.github.turansky.yfiles</id>
 
+    <!-- language=HTML -->
     <description><![CDATA[
 yFiles class framework helper
 <h3>About yFiles</h3>
@@ -13,6 +14,7 @@ yFiles class framework helper
 <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">Gradle plugin</a><br>
 ]]></description>
 
+    <!-- language=HTML -->
     <change-notes><![CDATA[
 Initial release of the plugin
 <br>
