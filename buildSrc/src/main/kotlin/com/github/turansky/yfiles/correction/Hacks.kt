@@ -119,15 +119,6 @@ private fun fixConstantGenerics(source: Source) {
             it[TYPE] = it[TYPE]
                 .replace("<T>", "<$JS_OBJECT>")
         }
-
-    source.type("LabelLayoutKeys")
-        .flatMap(CONSTANTS)
-        .forEach {
-            val type = it[TYPE]
-            if (type.endsWith("<yfiles.layout.LabelLayoutData>")) {
-                it[TYPE] = type.replace("<yfiles.layout.LabelLayoutData>", "<Array<yfiles.layout.LabelLayoutData>>")
-            }
-        }
 }
 
 private fun fixFunctionGenerics(source: Source) {
