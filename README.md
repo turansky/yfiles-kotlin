@@ -124,7 +124,7 @@ Fast navigation to online documentation supported for:
   
 _Example:_
 
-![Example](assets/online-documentation.png)
+<img src="assets/online-documentation.png" width="556" height="396"/>
 
 #### Related issues
 * [`KT-32815`](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
