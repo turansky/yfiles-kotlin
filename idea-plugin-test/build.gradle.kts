@@ -18,7 +18,7 @@ kotlin {
         main {
             dependencies {
                 implementation(kotlin("stdlib-js"))
-                implementation("com.yworks.yfiles:yfiles-kotlin:22.0.2-SNAPSHOT")
+                implementation("com.yworks.yfiles:yfiles-kotlin:22.0.3-SNAPSHOT")
             }
         }
     }
