@@ -9,13 +9,11 @@ annotation class ConfigurableProperties
 // TODO: remove after fix - https://youtrack.jetbrains.com/issue/KT-34770
 @Deprecated(message = "For code generation only", level = DeprecationLevel.HIDDEN)
 object KotlinWorkarounds {
-    private const val KT_34770 = "KT-34770"
-
     fun apply(
         jsClass: JsClass<*>,
         workaroundName: String
     ) {
-        if (workaroundName != KT_34770) {
+        if (workaroundName != "KT-34770") {
             return
         }
 
