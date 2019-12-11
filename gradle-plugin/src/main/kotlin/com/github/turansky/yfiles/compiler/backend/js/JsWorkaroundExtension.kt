@@ -37,9 +37,10 @@ class JsWorkaroundExtension : JsSyntheticTranslateExtension {
             !descriptor.annotations.hasAnnotation(CONFIGURABLE_PROPERTIES) -> return
         }
 
+        val name = descriptor.name.identifier
         context.apply {
             declareConstantValue(
-                suggestedName = generateName("kt34770", "applied"),
+                suggestedName = generateName("KT_34770", name, "applied"),
                 value = fixProperties(descriptor)
             ).also { addDeclarationStatement(it.makeStmt()) }
         }
