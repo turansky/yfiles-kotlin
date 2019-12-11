@@ -18,8 +18,14 @@ object KotlinWorkarounds {
         }
 
         val globalObject = window.unsafeCast<Scope>().Object!!
+        val functionNames = globalObject.getOwnPropertyNames(globalObject)
+            .filter { jsTypeOf(globalObject[it]) == "function" }
 
         val localObject: Object = js("{}")
+        for (name in functionNames) {
+            localObject[name] = globalObject[name]
+        }
+
         localObject.defineProperty = { obj, prop, descriptor ->
             descriptor.configurable = true
 
@@ -35,9 +41,19 @@ private external interface Scope {
 }
 
 private external interface Object {
+    fun getOwnPropertyNames(o: Any): Array<String>
+
     var defineProperty: (obj: Any, prop: String, descriptor: ObjectPropertyDescriptor) -> Unit
 }
 
 private external interface ObjectPropertyDescriptor {
     var configurable: Boolean?
+}
+
+private inline operator fun Object.get(propName: String): Any? {
+    return asDynamic()[propName]
+}
+
+private inline operator fun Object.set(propName: String, value: Any?) {
+    asDynamic()[propName] = value
 }
