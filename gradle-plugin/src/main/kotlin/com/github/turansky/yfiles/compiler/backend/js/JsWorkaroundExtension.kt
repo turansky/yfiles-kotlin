@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 private val KOTLIN_WORKAROUNDS = ClassId(LANG_PACKAGE, identifier("KotlinWorkarounds"))
 private val APPLY = identifier("apply")
 
-private const val KT_34770 = "KT-34770"
+val CONTEXT = "context"
 
 // TODO: remove after fix - https://youtrack.jetbrains.com/issue/KT-34770
 class JsWorkaroundExtension : JsSyntheticTranslateExtension {
@@ -37,10 +37,9 @@ class JsWorkaroundExtension : JsSyntheticTranslateExtension {
             !descriptor.annotations.hasAnnotation(CONFIGURABLE_PROPERTIES) -> return
         }
 
-        val classId = descriptor.name.identifier
         context.apply {
             declareConstantValue(
-                suggestedName = generateName(classId, "propertiesConfigured"),
+                suggestedName = generateName("kt34770", "applied"),
                 value = fixProperties(descriptor)
             ).also { addDeclarationStatement(it.makeStmt()) }
         }
@@ -50,34 +49,26 @@ class JsWorkaroundExtension : JsSyntheticTranslateExtension {
 private fun TranslationContext.fixProperties(
     descriptor: ClassDescriptor
 ): JsExpression {
+    val name = descriptor.name.identifier
+
     val applyWorkaround = currentModule
         .findClassAcrossModuleDependencies(KOTLIN_WORKAROUNDS)!!
         .unsubstitutedMemberScope
         .let { getFunctionByName(it, APPLY) }
 
-    return JsInvocation(
-        toValueReference(applyWorkaround),
-        toValueReference(descriptor),
-        JsStringLiteral(KT_34770)
-    ).let { wrap(it, descriptor) }
-}
-
-// TODO: remove after ticket fix
-//  https://youtrack.jetbrains.com/issue/KT-34735
-private fun TranslationContext.wrap(
-    expression: JsExpression,
-    descriptor: ClassDescriptor
-): JsExpression {
-    val name = descriptor.name.identifier
+    val context = JsParameter(JsName(CONTEXT))
     return addFunctionButNotExport(
         JsName(generateName("applyWorkaround", "KT_34770", name)),
         JsFunction(
             scope(),
             JsBlock(
-                expression.makeStmt(),
+                JsInvocation(
+                    toValueReference(applyWorkaround),
+                    JsNameRef(CONTEXT)
+                ).makeStmt(),
                 JsReturn(JsBooleanLiteral(true))
             ),
             "$name 'KT-34770' fix method"
-        )
-    ).let { JsInvocation(it.makeRef()) }
+        ).apply { parameters.add(context) }
+    ).let { JsInvocation(it.makeRef(), JsThisRef()) }
 }
