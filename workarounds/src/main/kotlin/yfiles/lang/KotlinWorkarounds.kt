@@ -2,8 +2,6 @@
 
 package yfiles.lang
 
-import kotlin.browser.window
-
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
 annotation class ConfigurableProperties
@@ -17,19 +15,17 @@ object KotlinWorkarounds {
             return
         }
 
-        val globalObject = window.unsafeCast<Scope>().Object!!
-        val functionNames = globalObject.getOwnPropertyNames(globalObject)
-            .filter { jsTypeOf(globalObject[it]) == "function" }
+        val localObject: LikeObject = js("{}")
 
-        val localObject: Object = js("{}")
-        for (name in functionNames) {
-            localObject[name] = globalObject[name]
-        }
+        Object.getOwnPropertyNames(Object)
+            .filter { jsTypeOf(Object[it]) == "function" }
+            .forEach { localObject[it] = Object[it] }
 
+        val globalDefineProperty = Object::defineProperty
         localObject.defineProperty = { obj, prop, descriptor ->
             descriptor.configurable = true
 
-            globalObject.defineProperty(obj, prop, descriptor)
+            globalDefineProperty(obj, prop, descriptor)
         }
 
         localScope.Object = localObject
@@ -37,13 +33,17 @@ object KotlinWorkarounds {
 }
 
 private external interface Scope {
-    var Object: Object?
+    var Object: LikeObject?
 }
 
-private external interface Object {
+private external interface LikeObject {
+    var defineProperty: (obj: Any, prop: String, descriptor: ObjectPropertyDescriptor) -> Unit
+}
+
+private external object Object {
     fun getOwnPropertyNames(o: Any): Array<String>
 
-    var defineProperty: (obj: Any, prop: String, descriptor: ObjectPropertyDescriptor) -> Unit
+    fun defineProperty(obj: Any, prop: String, descriptor: ObjectPropertyDescriptor)
 }
 
 private external interface ObjectPropertyDescriptor {
@@ -54,6 +54,6 @@ private inline operator fun Object.get(propName: String): Any? {
     return asDynamic()[propName]
 }
 
-private inline operator fun Object.set(propName: String, value: Any?) {
+private inline operator fun LikeObject.set(propName: String, value: Any?) {
     asDynamic()[propName] = value
 }
