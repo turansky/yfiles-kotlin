@@ -1,3 +1,5 @@
+rootProject.name = "yfiles-kotlin"
+
 include("libraries:yfiles-kotlin")
 include("libraries:vsdx-kotlin")
 
