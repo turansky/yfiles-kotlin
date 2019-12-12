@@ -56,6 +56,7 @@ private fun TranslationContext.fixProperties(
         .findClassAcrossModuleDependencies(KOTLIN_WORKAROUNDS)!!
         .unsubstitutedMemberScope
         .let { getFunctionByName(it, APPLY) }
+        .let { getFunctionObject(it) }
 
     val context = JsParameter(JsName(CONTEXT))
     return addFunctionButNotExport(
@@ -63,10 +64,7 @@ private fun TranslationContext.fixProperties(
         JsFunction(
             scope(),
             JsBlock(
-                JsInvocation(
-                    toValueReference(applyWorkaround),
-                    JsNameRef(CONTEXT)
-                ).makeStmt(),
+                JsInvocation(applyWorkaround, JsNameRef(CONTEXT)).makeStmt(),
                 JsReturn(JsBooleanLiteral(true))
             ),
             "$name 'KT-34770' fix method"
