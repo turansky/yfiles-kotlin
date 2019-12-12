@@ -44,13 +44,6 @@ tasks {
         overwrite(true)
     }
 
-    val copyWorkarounds by registering(Copy::class) {
-        from("../../workarounds/src/main/kotlin")
-        into(kotlinSourceDir)
-
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-
     val generateDeclarations by registering {
         doLast {
             val sourceDir = kotlinSourceDir
@@ -60,7 +53,6 @@ tasks {
         }
 
         dependsOn(downloadApiDescriptor)
-        finalizedBy(copyWorkarounds)
     }
 
     compileKotlinJs {
