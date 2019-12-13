@@ -1,7 +1,7 @@
 <idea-plugin url="https://github.com/turansky/yfiles-kotlin">
-    <name>yFiles</name>
-
     <id>com.github.turansky.yfiles</id>
+    <name>yFiles</name>
+    <vendor url="https://github.com/turansky">Victor Turansky</vendor>
 
     <!-- language=HTML -->
     <description><![CDATA[
@@ -20,8 +20,6 @@ Initial release of the plugin
 <br>
 <a href="https://github.com/turansky/yfiles-kotlin">More information</a>
 ]]></change-notes>
-
-    <vendor url="https://github.com/turansky">Victor Turansky</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 </idea-plugin>
