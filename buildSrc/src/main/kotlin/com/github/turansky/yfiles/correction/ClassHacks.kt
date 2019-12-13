@@ -38,10 +38,10 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |inline fun <T: Any> TypeMetadata<T>.isInstance(o:Any):Boolean = 
                 |    asDynamic().isInstance(o)
                 |
-                |inline infix fun <T : Any> Any.yIs(clazz: InterfaceMetadata<T>): Boolean =
+                |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
                 |    clazz.isInstance(this)
                 |
-                |inline infix fun <T : Any> Any?.yIs(clazz: InterfaceMetadata<T>): Boolean =
+                |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
                 |    this != null && this yIs clazz
                 |
                 |inline infix fun <T : Any> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
