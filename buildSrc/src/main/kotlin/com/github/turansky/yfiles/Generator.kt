@@ -50,7 +50,6 @@ fun generateKotlinDeclarations(
     generateConvertersUtils(sourceDir)
     generateEventDispatcherUtils(sourceDir)
 
-    generateInterfaceMarker(sourceDir)
     generateClassUtils(moduleName, sourceDir)
     generateIncrementalHint(sourceDir)
     generatePartitionCellUtils(sourceDir)
@@ -76,6 +75,5 @@ fun generateVsdxKotlinDeclarations(
     val fileGenerator = KotlinFileGenerator("yfiles/vsdx", types, functionSignatures.values)
     fileGenerator.generate(sourceDir)
 
-    generateInterfaceMarker(sourceDir)
     createVsdxDataClasses(sourceDir)
 }
