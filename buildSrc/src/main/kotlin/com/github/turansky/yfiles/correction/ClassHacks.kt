@@ -103,7 +103,7 @@ private fun fixClass(source: Source) {
                     PARAMETERS to listOf(
                         mapOf(
                             NAME to "type",
-                            TYPE to "$JS_CLASS<out $YOBJECT_CLASS_ALIAS>"
+                            TYPE to "$JS_CLASS<out $YOBJECT>"
                         ),
                         mapOf(
                             NAME to "name",

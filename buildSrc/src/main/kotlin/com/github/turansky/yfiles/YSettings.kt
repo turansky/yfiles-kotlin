@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles
 
-val YOBJECT_CLASS_ALIAS = "yfiles.lang.YObject"
+val YOBJECT = "yfiles.lang.YObject"
 
 private val YOBJECT_CLASS = "yfiles.lang.Object"
 

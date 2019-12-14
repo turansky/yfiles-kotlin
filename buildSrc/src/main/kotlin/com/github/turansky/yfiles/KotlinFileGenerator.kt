@@ -177,10 +177,10 @@ internal class KotlinFileGenerator(
             var parentTypes = parentTypes()
             when {
                 parentTypes.isEmpty() ->
-                    parentTypes = listOf(YOBJECT_CLASS_ALIAS)
+                    parentTypes = listOf(YOBJECT)
 
                 parentTypes.singleOrNull() == IEVENT_DISPATCHER ->
-                    parentTypes = listOf(YOBJECT_CLASS_ALIAS, IEVENT_DISPATCHER)
+                    parentTypes = listOf(YOBJECT, IEVENT_DISPATCHER)
             }
             return ": " + parentTypes.byComma()
         }
