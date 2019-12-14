@@ -2,7 +2,7 @@ import yfiles.lang.ClassMetadata
 import yfiles.lang.YObject
 import kotlin.browser.window
 
-class CustomObject : YObject() {
+class CustomObject : YObject {
     fun hallo() {
         window.alert("Hallo from CustomObject!")
     }
@@ -10,7 +10,7 @@ class CustomObject : YObject() {
     companion object : ClassMetadata<CustomObject>
 }
 
-class OtherCustomObject : YObject() {
+class OtherCustomObject : YObject {
     fun hallo() {
         window.alert("Hallo from OtherCustomObject!")
     }
