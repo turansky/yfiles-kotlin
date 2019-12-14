@@ -23,7 +23,7 @@ private val FIX_TYPE = identifier("fixType")
 private infix fun JsExpression.assignTo(value: JsExpression): JsStatement =
     jsAssignment(this, value).makeStmt()
 
-internal fun TranslationContext.fixType(
+private fun TranslationContext.fixType(
     descriptor: ClassDescriptor
 ): JsStatement {
     val yclassCompanion = currentModule.findClassAcrossModuleDependencies(YCLASS_ID)!!
@@ -77,17 +77,19 @@ internal fun constructorSuperCall(parentClass: JsExpression): JsStatement =
 
 internal fun TranslationContext.configurePrototype(
     descriptor: ClassDescriptor,
-    baseClass: JsExpression
+    baseClass: JsExpression,
+    fixType: Boolean = false
 ) {
     declareConstantValue(
         suggestedName = generateName(descriptor, "prototypeConfigured"),
-        value = configurePrototypeMethod(descriptor, baseClass)
+        value = configurePrototypeMethod(descriptor, baseClass, fixType)
     ).also { addDeclarationStatement(it.makeStmt()) }
 }
 
 private fun TranslationContext.configurePrototypeMethod(
     descriptor: ClassDescriptor,
-    baseClass: JsExpression
+    baseClass: JsExpression,
+    fixType: Boolean
 ): JsExpression {
     val classId = descriptor.name.identifier
     val classRef = toValueReference(descriptor)
@@ -97,7 +99,11 @@ private fun TranslationContext.configurePrototypeMethod(
         classPrototype assignTo JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass)),
         JsNameRef(CONSTRUCTOR_NAME, classPrototype) assignTo classRef,
         JsReturn(JsBooleanLiteral(true))
-    )
+    ).also {
+        if (fixType) {
+            it.add(2, fixType(descriptor))
+        }
+    }.toList()
 
     return addFunctionButNotExport(
         JsName(generateName("configure", classId, "prototype")),

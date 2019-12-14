@@ -77,9 +77,9 @@ private fun TranslationContext.generateCustomYObject(
         return
     }
 
-    translator.addInitializerStatement(constructorSuperCall(toValueReference(yobject)))
-
-    addDeclarationStatement(fixType(descriptor))
+    val baseClass = toValueReference(yobject)
+    translator.addInitializerStatement(constructorSuperCall(baseClass))
+    configurePrototype(descriptor, baseClass, true)
 }
 
 private fun TranslationContext.generateBaseClass(
@@ -108,7 +108,6 @@ private fun TranslationContext.generateBaseClass(
             )
 
             translator.addInitializerStatement(constructorSuperCall(baseClass))
-
             configurePrototype(descriptor, baseClass)
         }
     }
