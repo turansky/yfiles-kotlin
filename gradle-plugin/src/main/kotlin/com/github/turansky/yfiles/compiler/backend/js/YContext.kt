@@ -57,6 +57,16 @@ internal fun TranslationContext.jsFunction(
         description
     )
 
+internal fun TranslationContext.jsFunction(
+    description: String,
+    statements: List<JsStatement>
+): JsFunction =
+    JsFunction(
+        scope(),
+        JsBlock(statements),
+        description
+    )
+
 internal fun TranslationContext.declareConstantValue(
     suggestedName: String,
     value: JsExpression
