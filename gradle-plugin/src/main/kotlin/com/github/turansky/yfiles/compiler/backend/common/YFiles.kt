@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
 internal val YFILES_PACKAGE = FqName("yfiles")
@@ -15,21 +14,28 @@ internal val YCLASS_NAME = identifier("Class")
 internal val BASE_CLASS_NAME = identifier("BaseClass")
 
 private val CLASS_METADATA = LANG_PACKAGE.child(identifier("ClassMetadata"))
-private val YFILES_INTERFACE = LANG_PACKAGE.child(identifier("Interface"))
 
 internal fun ClassDescriptor.isYFilesInterface(): Boolean =
-    isExternal && annotations.hasAnnotation(YFILES_INTERFACE)
+    isExternal && implementsYObject
 
-internal val ClassDescriptor.extendsYObject: Boolean
+internal val ClassDescriptor.implementsYObjectDirectly: Boolean
+    get() = getSuperInterfaces()
+        .filter { isExternal }
+        .any { it.fqNameSafe == YOBJECT }
+
+private val ClassDescriptor.implementsYObject: Boolean
     get() {
-        val superClass = getSuperClassNotAny()
-            ?: return false
+        if (implementsYObjectDirectly) {
+            return true
+        }
 
-        return superClass.fqNameSafe == YOBJECT
+        return getSuperInterfaces()
+            .any { it.implementsYObject }
     }
 
 internal val ClassDescriptor.implementsYFilesInterface: Boolean
-    get() = getSuperInterfaces().any { it.isYFilesInterface() }
+    get() = getSuperInterfaces()
+        .any { it.isYFilesInterface() }
 
 internal fun ClassDescriptor.asClassMetadata(): ClassDescriptor? =
     getSuperInterfaces().firstOrNull { it.fqNameSafe == CLASS_METADATA }

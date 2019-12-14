@@ -1,8 +1,8 @@
 package com.github.turansky.yfiles.compiler.backend.js
 
 import com.github.turansky.yfiles.compiler.backend.common.asClassMetadata
-import com.github.turansky.yfiles.compiler.backend.common.extendsYObject
 import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface
+import com.github.turansky.yfiles.compiler.backend.common.implementsYObjectDirectly
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import com.github.turansky.yfiles.compiler.diagnostic.*
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -61,7 +61,7 @@ private fun TranslationContext.generateClass(
     translator: DeclarationBodyVisitor
 ) {
     when {
-        descriptor.extendsYObject ->
+        descriptor.implementsYObjectDirectly ->
             generateCustomYObject(declaration, descriptor)
         descriptor.implementsYFilesInterface ->
             generateBaseClass(declaration, descriptor, translator)
@@ -72,7 +72,7 @@ private fun TranslationContext.generateCustomYObject(
     declaration: KtPureClassOrObject,
     descriptor: ClassDescriptor
 ) {
-    if (descriptor.getSuperInterfaces().isNotEmpty()) {
+    if (descriptor.getSuperInterfaces().size != 1) {
         reportError(declaration, YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         return
     }
@@ -122,7 +122,7 @@ private fun TranslationContext.enrichCompanionObject(
     val descriptor = companionDescriptor.containingDeclaration as? ClassDescriptor
         ?: return
 
-    if (!descriptor.extendsYObject && !descriptor.implementsYFilesInterface) {
+    if (!descriptor.implementsYObjectDirectly) {
         return
     }
 
