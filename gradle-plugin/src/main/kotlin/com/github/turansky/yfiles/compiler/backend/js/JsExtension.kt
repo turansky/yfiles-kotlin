@@ -106,7 +106,7 @@ private fun TranslationContext.generateBaseClass(
                 value = baseClass(interfaces, baseClassName)
             )
 
-            translator.addInitializerStatement(baseSuperCall(baseClass))
+            translator.addInitializerStatement(constructorSuperCall(baseClass))
 
             declareConstantValue(
                 suggestedName = generateName(classId, "prototypeConfigured"),

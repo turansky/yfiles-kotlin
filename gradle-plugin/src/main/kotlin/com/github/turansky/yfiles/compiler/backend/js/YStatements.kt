@@ -69,9 +69,9 @@ private fun TranslationContext.wrapBaseClass(
         )
     ).let { JsInvocation(it.makeRef()) }
 
-internal fun baseSuperCall(baseClass: JsExpression): JsStatement =
+internal fun constructorSuperCall(parentClass: JsExpression): JsStatement =
     JsInvocation(
-        JsNameRef(CALL_FUNCTION, baseClass),
+        JsNameRef(CALL_FUNCTION, parentClass),
         JsThisRef()
     ).makeStmt()
 
