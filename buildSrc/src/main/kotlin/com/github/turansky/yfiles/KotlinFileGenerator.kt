@@ -170,9 +170,17 @@ internal class KotlinFileGenerator(
         }
 
         protected fun parentString(): String {
-            val parentTypes = parentTypes()
-            if (parentTypes.isEmpty()) {
+            if (data.isYObject) {
                 return ""
+            }
+
+            var parentTypes = parentTypes()
+            when {
+                parentTypes.isEmpty() ->
+                    parentTypes = listOf(YOBJECT_CLASS_ALIAS)
+
+                parentTypes.singleOrNull() == IEVENT_DISPATCHER ->
+                    parentTypes = listOf(YOBJECT_CLASS_ALIAS, IEVENT_DISPATCHER)
             }
             return ": " + parentTypes.byComma()
         }
@@ -224,10 +232,8 @@ internal class KotlinFileGenerator(
         }
 
         override fun parentTypes(): List<String> {
-            val extendedType = declaration.extendedType()
-                ?: YOBJECT_CLASS_ALIAS
-
-            return sequenceOf(extendedType)
+            return sequenceOf(declaration.extendedType())
+                .filterNotNull()
                 .plus(super.parentTypes())
                 .toList()
         }
@@ -345,13 +351,9 @@ internal class KotlinFileGenerator(
                 .replace("IEnumerable<", "IEnumerable<out ")
                 .replace("IListEnumerable<", "IListEnumerable<out ")
 
-            val parentTypes = parentString()
-                .takeIf { it.isNotEmpty() || data.isYObject }
-                ?: ": $YOBJECT_CLASS_ALIAS"
-
             return documentation +
                     externalAnnotation +
-                    "external interface $interfaceDeclaration $parentTypes {\n" +
+                    "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
                     "}"
