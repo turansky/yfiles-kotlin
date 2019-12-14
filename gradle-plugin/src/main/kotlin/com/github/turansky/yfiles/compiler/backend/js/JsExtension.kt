@@ -109,7 +109,7 @@ private fun TranslationContext.generateBaseClass(
 
             translator.addInitializerStatement(constructorSuperCall(baseClass))
 
-            configurePrototype(descriptor, configurePrototypeMethod(descriptor, baseClass))
+            configurePrototype(descriptor, baseClass)
         }
     }
 }

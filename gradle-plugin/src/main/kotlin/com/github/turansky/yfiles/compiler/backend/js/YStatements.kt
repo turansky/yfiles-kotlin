@@ -77,15 +77,15 @@ internal fun constructorSuperCall(parentClass: JsExpression): JsStatement =
 
 internal fun TranslationContext.configurePrototype(
     descriptor: ClassDescriptor,
-    configureMethod: JsExpression
+    baseClass: JsExpression
 ) {
     declareConstantValue(
         suggestedName = generateName(descriptor, "prototypeConfigured"),
-        value = configureMethod
+        value = configurePrototypeMethod(descriptor, baseClass)
     ).also { addDeclarationStatement(it.makeStmt()) }
 }
 
-internal fun TranslationContext.configurePrototypeMethod(
+private fun TranslationContext.configurePrototypeMethod(
     descriptor: ClassDescriptor,
     baseClass: JsExpression
 ): JsExpression {
