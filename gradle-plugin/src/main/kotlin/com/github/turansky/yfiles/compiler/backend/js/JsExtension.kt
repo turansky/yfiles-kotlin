@@ -103,8 +103,7 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
 
         else -> {
-            val classId = descriptor.name.identifier
-            val baseClassName = generateName(classId, "BaseClass")
+            val baseClassName = generateName(descriptor, "BaseClass")
             val baseClass = declareConstantValue(
                 suggestedName = baseClassName,
                 value = baseClass(interfaces, baseClassName)
@@ -113,7 +112,7 @@ private fun TranslationContext.generateBaseClass(
             translator.addInitializerStatement(constructorSuperCall(baseClass))
 
             declareConstantValue(
-                suggestedName = generateName(classId, "prototypeConfigured"),
+                suggestedName = generateName(descriptor, "prototypeConfigured"),
                 value = configurePrototype(descriptor, baseClass)
             ).also { addDeclarationStatement(it.makeStmt()) }
         }
