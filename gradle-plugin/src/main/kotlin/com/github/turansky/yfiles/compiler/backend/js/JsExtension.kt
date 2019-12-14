@@ -62,7 +62,7 @@ private fun TranslationContext.generateClass(
 ) {
     when {
         descriptor.implementsYObjectDirectly ->
-            generateCustomYObject(declaration, descriptor)
+            generateCustomYObject(declaration, descriptor, translator)
         descriptor.implementsYFilesInterface ->
             generateBaseClass(declaration, descriptor, translator)
     }
@@ -70,12 +70,16 @@ private fun TranslationContext.generateClass(
 
 private fun TranslationContext.generateCustomYObject(
     declaration: KtPureClassOrObject,
-    descriptor: ClassDescriptor
+    descriptor: ClassDescriptor,
+    translator: DeclarationBodyVisitor
 ) {
-    if (descriptor.getSuperInterfaces().size != 1) {
+    val yobject = descriptor.getSuperInterfaces().singleOrNull()
+    if (yobject == null) {
         reportError(declaration, YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         return
     }
+
+    translator.addInitializerStatement(constructorSuperCall(toValueReference(yobject)))
 
     addDeclarationStatement(fixType(descriptor))
 }
