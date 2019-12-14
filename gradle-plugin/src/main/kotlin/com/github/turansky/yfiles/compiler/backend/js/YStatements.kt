@@ -60,12 +60,9 @@ private fun TranslationContext.wrapBaseClass(
 ): JsExpression =
     addFunctionButNotExport(
         JsName(generateName("create", name)),
-        JsFunction(
-            scope(),
-            JsBlock(
-                JsReturn(baseClass)
-            ),
-            "$name factory method"
+        jsFunction(
+            "$name factory method",
+            JsReturn(baseClass)
         )
     ).let { JsInvocation(it.makeRef()) }
 
@@ -94,20 +91,17 @@ internal fun TranslationContext.configurePrototypeMethod(
     val classPrototype = prototypeOf(classRef)
     return addFunctionButNotExport(
         JsName(generateName("configure", classId, "prototype")),
-        JsFunction(
-            scope(),
-            JsBlock(
-                jsAssignment(
-                    classPrototype,
-                    JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
-                ).makeStmt(),
-                jsAssignment(
-                    JsNameRef(CONSTRUCTOR_NAME, classPrototype),
-                    classRef
-                ).makeStmt(),
-                JsReturn(JsBooleanLiteral(true))
-            ),
-            "$classId prototype configuration"
+        jsFunction(
+            "$classId prototype configuration",
+            jsAssignment(
+                classPrototype,
+                JsInvocation(JS_OBJECT_CREATE_FUNCTION, prototypeOf(baseClass))
+            ).makeStmt(),
+            jsAssignment(
+                JsNameRef(CONSTRUCTOR_NAME, classPrototype),
+                classRef
+            ).makeStmt(),
+            JsReturn(JsBooleanLiteral(true))
         )
     ).let { JsInvocation(it.makeRef()) }
 }

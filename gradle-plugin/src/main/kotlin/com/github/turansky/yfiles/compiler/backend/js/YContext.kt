@@ -6,7 +6,10 @@ import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.diagnostics.SimpleDiagnostic
 import org.jetbrains.kotlin.diagnostics.reportFromPlugin
+import org.jetbrains.kotlin.js.backend.ast.JsBlock
 import org.jetbrains.kotlin.js.backend.ast.JsExpression
+import org.jetbrains.kotlin.js.backend.ast.JsFunction
+import org.jetbrains.kotlin.js.backend.ast.JsStatement
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.name.FqName
@@ -43,6 +46,16 @@ internal fun <T : KtElement> TranslationContext.reportError(
     bindingTrace()
         .reportFromPlugin(diagnostic, YMessagesExtension)
 }
+
+internal fun TranslationContext.jsFunction(
+    description: String,
+    vararg statements: JsStatement
+): JsFunction =
+    JsFunction(
+        scope(),
+        JsBlock(*statements),
+        description
+    )
 
 internal fun TranslationContext.declareConstantValue(
     suggestedName: String,

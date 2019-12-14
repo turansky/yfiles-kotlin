@@ -9,8 +9,6 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
-import org.jetbrains.kotlin.js.backend.ast.JsBlock
-import org.jetbrains.kotlin.js.backend.ast.JsFunction
 import org.jetbrains.kotlin.js.backend.ast.JsNameRef
 import org.jetbrains.kotlin.js.backend.ast.JsReturn
 import org.jetbrains.kotlin.js.translate.context.TranslationContext
@@ -135,12 +133,9 @@ private fun TranslationContext.enrichCompanionObject(
         defineProperty(
             receiver = prototypeOf(toValueReference(constructor)),
             name = YCLASS,
-            getter = JsFunction(
-                scope(),
-                JsBlock(
-                    JsReturn(JsNameRef(YCLASS, toValueReference(descriptor)))
-                ),
-                "\$class proxy for companion object"
+            getter = jsFunction(
+                "\$class proxy for companion object",
+                JsReturn(JsNameRef(YCLASS, toValueReference(descriptor)))
             )
         ).makeStmt()
     )
