@@ -111,10 +111,7 @@ private fun TranslationContext.generateBaseClass(
 
             translator.addInitializerStatement(constructorSuperCall(baseClass))
 
-            declareConstantValue(
-                suggestedName = generateName(descriptor, "prototypeConfigured"),
-                value = configurePrototype(descriptor, baseClass)
-            ).also { addDeclarationStatement(it.makeStmt()) }
+            configurePrototype(descriptor, configurePrototypeMethod(descriptor, baseClass))
         }
     }
 }
