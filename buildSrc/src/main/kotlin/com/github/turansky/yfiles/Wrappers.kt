@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.GROUP
+import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
@@ -48,8 +50,7 @@ internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
 private class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
         fun parseType(source: JSONObject): Type {
-            val group = source.getString("group")
-            return when (group) {
+            return when (val group = source[GROUP]) {
                 "class" -> Class(source)
                 "interface" -> Interface(source)
                 "enum" -> Enum(source)

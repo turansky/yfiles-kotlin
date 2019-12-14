@@ -73,6 +73,8 @@ internal fun applyHacks(api: JSONObject) {
 
 private fun cleanYObject(source: Source) {
     source.type("YObject").apply {
+        set(GROUP, "interface")
+
         strictRemove(STATIC_METHODS)
         strictRemove(METHODS)
     }

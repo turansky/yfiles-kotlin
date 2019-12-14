@@ -17,6 +17,7 @@ internal object TYPES : JArrayKey("types")
 
 internal object FUNCTION_SIGNATURES : JObjectKey("functionSignatures")
 
+internal object GROUP : JStringKey("group")
 internal object ID : JStringKey("id")
 internal object TYPE_PARAMETERS : JArrayKey("typeparameters")
 internal object BOUNDS : JArrayKey("bounds")

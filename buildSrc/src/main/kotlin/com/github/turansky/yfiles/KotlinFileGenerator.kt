@@ -187,7 +187,7 @@ internal class KotlinFileGenerator(
         }
 
         protected fun typealiasDeclaration(): String? =
-            if (data.name != data.jsName) {
+            if (data.name != data.jsName && !data.isYObject) {
                 val generics = declaration.generics.asAliasParameters()
                 "typealias ${data.jsName}$generics = ${data.name}$generics"
             } else {
@@ -213,7 +213,7 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
-        override val useJsName = data.primitive || data.isYObject
+        override val useJsName = data.primitive
 
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
@@ -224,10 +224,6 @@ internal class KotlinFileGenerator(
         }
 
         override fun parentTypes(): List<String> {
-            if (data.isYObject) {
-                return emptyList()
-            }
-
             val extendedType = declaration.extendedType()
                 ?: YOBJECT_CLASS_ALIAS
 
@@ -286,7 +282,7 @@ internal class KotlinFileGenerator(
         }
 
         override fun companionContent(): String? {
-            if (isObject() || data.primitive || data.isYObject) {
+            if (isObject() || data.primitive) {
                 return null
             }
 
@@ -329,6 +325,8 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
+        override val useJsName = data.isYObject
+
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
             return memberProperties.filter { it.abstract } +
                     memberFunctions.filter { it.abstract } +
@@ -347,9 +345,13 @@ internal class KotlinFileGenerator(
                 .replace("IEnumerable<", "IEnumerable<out ")
                 .replace("IListEnumerable<", "IListEnumerable<out ")
 
+            val parentTypes = parentString()
+                .takeIf { it.isNotEmpty() || data.isYObject }
+                ?: ": $YOBJECT_CLASS_ALIAS"
+
             return documentation +
                     externalAnnotation +
-                    "external interface $interfaceDeclaration ${parentString()} {\n" +
+                    "external interface $interfaceDeclaration $parentTypes {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
                     "}"
