@@ -1,4 +1,3 @@
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -13,7 +12,6 @@ class BaseClassTest {
         )
     }
 
-    @Ignore
     @Test
     fun superComboClassName() {
         val jsClass = SuperComboClass::class.js
