@@ -25,6 +25,7 @@ yFiles class framework helper
     </change-notes>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="kotlin"
