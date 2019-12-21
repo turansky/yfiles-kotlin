@@ -525,6 +525,12 @@ private class EnumConstant(
 
     override fun toEnumValue(): String =
         documentation + name
+
+    override fun compareTo(other: Declaration): Int =
+        when (other) {
+            is EnumConstant -> value - other.value
+            else -> super.compareTo(other)
+        }
 }
 
 internal class Property(
