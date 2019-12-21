@@ -119,26 +119,31 @@ private fun fixClass(source: Source) {
 }
 
 private fun fixEnum(source: Source) {
-    source.type("Enum").apply {
-        setSingleTypeParameter(bound = "$ENUM<T>")
+    val ENUM = "yfiles.lang.Enum"
 
-        val needGeneric = setOf(
-            YCLASS,
-            ENUM
-        )
+    source.type("Enum").apply {
+        set(ID, YENUM)
+        set(NAME, "YEnum")
+        set(ES6_NAME, "Enum")
+        set(GROUP, "interface")
+        setSingleTypeParameter(bound = "$YENUM<T>")
 
         flatMap(STATIC_METHODS)
-            .onEach { it.setSingleTypeParameter(bound = "$ENUM<T>") }
+            .onEach { it.setSingleTypeParameter(bound = "$YENUM<T>") }
             .onEach {
                 val returns = it[RETURNS]
                 when (returns[TYPE]) {
-                    ENUM -> returns.addGeneric("T")
-                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<$ENUM<T>>"
+                    ENUM -> returns[TYPE] = "$YENUM<T>"
+                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<$YENUM<T>>"
                 }
             }
             .flatMap(PARAMETERS)
-            .filter { it[TYPE] in needGeneric }
-            .forEach { it.addGeneric("T") }
+            .forEach {
+                when (it[TYPE]) {
+                    YCLASS -> it.addGeneric("T")
+                    ENUM -> it[TYPE] = "$YENUM<T>"
+                }
+            }
     }
 }
 

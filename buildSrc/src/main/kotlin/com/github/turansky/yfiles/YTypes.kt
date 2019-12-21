@@ -4,7 +4,7 @@ val YID = "yfiles.lang.Id"
 val IEVENT_DISPATCHER = "yfiles.lang.IEventDispatcher"
 
 val YCLASS = "yfiles.lang.Class"
-val ENUM = "yfiles.lang.Enum"
+val YENUM = "yfiles.lang.YEnum"
 
 val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
