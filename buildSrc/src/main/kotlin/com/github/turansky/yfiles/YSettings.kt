@@ -15,7 +15,10 @@ private val MARKER_CLASSES = setOf(
     "yfiles.lang.EventArgs",
     "yfiles.lang.Attribute",
     "yfiles.algorithms.GraphObject",
-    "yfiles.view.Visual"
+    "yfiles.view.Visual",
+
+    // TODO: remove
+    "yfiles.lang.Enum"
 )
 
 fun isYObjectClass(className: String): Boolean {

@@ -9,7 +9,6 @@ private val EXCLUDED_TYPES = setOf(
 
     "yfiles.lang.AttributeDefinition",
 
-    "yfiles.lang.Enum",
     "yfiles.lang.EnumDefinition",
 
     "yfiles.lang.Interface",

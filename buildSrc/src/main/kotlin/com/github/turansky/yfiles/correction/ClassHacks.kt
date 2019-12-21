@@ -71,6 +71,7 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
 
 internal fun applyClassHacks(source: Source) {
     fixClass(source)
+    fixEnum(source)
 
     addClassGeneric(source)
     addConstructorClassGeneric(source)
@@ -114,6 +115,30 @@ private fun fixClass(source: Source) {
                 )
             )
         }
+    }
+}
+
+private fun fixEnum(source: Source) {
+    source.type("Enum").apply {
+        setSingleTypeParameter(bound = "$ENUM<T>")
+
+        val needGeneric = setOf(
+            YCLASS,
+            ENUM
+        )
+
+        flatMap(STATIC_METHODS)
+            .onEach { it.setSingleTypeParameter(bound = "$ENUM<T>") }
+            .onEach {
+                val returns = it[RETURNS]
+                when (returns[TYPE]) {
+                    ENUM -> returns.addGeneric("T")
+                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<$ENUM<T>>"
+                }
+            }
+            .flatMap(PARAMETERS)
+            .filter { it[TYPE] in needGeneric }
+            .forEach { it.addGeneric("T") }
     }
 }
 
