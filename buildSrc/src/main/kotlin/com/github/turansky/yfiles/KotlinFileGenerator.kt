@@ -382,9 +382,10 @@ internal class KotlinFileGenerator(
 
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
         override fun content(): String {
+            val name = data.name
             return documentation +
                     externalAnnotation +
-                    "external enum class ${data.name} {\n" +
+                    "external enum class $name: $YENUM<$name> {\n" +
                     declaration.constants.toContent() + "\n" +
                     super.content() + "\n" +
                     "}"
