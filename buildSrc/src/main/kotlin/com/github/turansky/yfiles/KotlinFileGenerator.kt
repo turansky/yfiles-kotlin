@@ -195,7 +195,7 @@ internal class KotlinFileGenerator(
         }
 
         protected fun typealiasDeclaration(): String? =
-            if (data.name != data.jsName && !data.isYObject) {
+            if (data.name != data.jsName && !data.isYObject && !data.isYEnum) {
                 val generics = declaration.generics.asAliasParameters()
                 "typealias ${data.jsName}$generics = ${data.name}$generics"
             } else {

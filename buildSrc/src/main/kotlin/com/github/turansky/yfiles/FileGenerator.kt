@@ -26,6 +26,9 @@ internal class TypeGeneratorData(
     val isYObject: Boolean
         get() = isYObjectClass(fqn)
 
+    val isYEnum: Boolean
+        get() = fqn == YENUM
+
     val primitive: Boolean
         get() = isPrimitiveClass(fqn)
 
