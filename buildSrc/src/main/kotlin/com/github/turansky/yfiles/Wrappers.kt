@@ -150,7 +150,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     val es6name: String? by optString()
 
-    val constants: List<Constant> by declarationList { Constant(it, this) }
+    abstract val constants: List<Constant>
 
     val properties: List<Property> by declarationList { Property(it, this) }
     val staticProperties: List<Property> by declarationList { Property(it, this) }
@@ -193,6 +193,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 }
 
 internal sealed class ExtendedType(source: JSONObject) : Type(source) {
+    override val constants: List<Constant> by declarationList { TypeConstant(it, this) }
+
     val events: List<Event> by list { Event(it, this) }
 }
 
@@ -216,7 +218,10 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 }
 
 internal class Interface(source: JSONObject) : ExtendedType(source)
-internal class Enum(source: JSONObject) : Type(source)
+
+internal class Enum(source: JSONObject) : Type(source) {
+    override val constants: List<Constant> by declarationList { EnumConstant(it, this) }
+}
 
 private class TypeReference(override val source: JSONObject) : HasSource {
     private val type: String by TypeDelegate { parseType(it) }
@@ -469,10 +474,17 @@ internal class Constructor(
     }
 }
 
-internal class Constant(
+internal sealed class Constant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
+    abstract fun toEnumValue(): String
+}
+
+private class TypeConstant(
+    source: JSONObject,
+    parent: TypeDeclaration
+) : Constant(source, parent) {
     private val dpdata: DpData? by DpDataDelegate()
 
     private val documentation: String
@@ -481,12 +493,28 @@ internal class Constant(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String {
-        return documentation +
+    override fun toCode(): String =
+        documentation +
                 "val $name: $type"
-    }
 
-    fun toEnumValue(): String =
+    override fun toEnumValue(): String =
+        documentation + name
+}
+
+private class EnumConstant(
+    source: JSONObject,
+    parent: TypeDeclaration
+) : Constant(source, parent) {
+    private val documentation: String
+        get() = getDocumentation(
+            summary = summary,
+            seeAlso = seeAlso + seeAlsoDocs
+        )
+
+    override fun toCode(): String =
+        toEnumValue()
+
+    override fun toEnumValue(): String =
         documentation + name
 }
 
