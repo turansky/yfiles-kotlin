@@ -235,6 +235,12 @@ private class TypeReference(override val source: JSONObject) : HasSource {
     }
 }
 
+private class Value(private val value: Int) {
+    fun toDoc(): String {
+        return "Value - `$value`"
+    }
+}
+
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by optString()
     private val ref: TypeReference? by TypeReferenceDelegate()
@@ -505,9 +511,12 @@ private class EnumConstant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : Constant(source, parent) {
+    private val value: Int by int()
+
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            value = Value(value),
             seeAlso = seeAlso + seeAlsoDocs
         )
 
@@ -1192,6 +1201,7 @@ private fun getDocumentation(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    value: Value? = null,
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     relatedDemos: List<Demo>? = null,
@@ -1207,6 +1217,7 @@ private fun getDocumentation(
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
+        value = value,
         defaultValue = defaultValue,
         exceptions = exceptions,
         relatedDemos = relatedDemos,
@@ -1239,6 +1250,7 @@ private fun getDocumentationLines(
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
+    value: Value? = null,
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     relatedDemos: List<Demo>? = null,
@@ -1283,6 +1295,14 @@ private fun getDocumentationLines(
 
     returns?.doc?.let {
         lines.addAll(ret(it))
+    }
+
+    value?.let {
+        if (lines.isNotEmpty()) {
+            lines.add("")
+        }
+
+        lines.add(it.toDoc())
     }
 
     defaultValue?.let {
