@@ -167,6 +167,15 @@ internal class StringDelegate : JsonDelegate<String>() {
         value(source, key)
 }
 
+internal fun int(): JsonDelegate<Int> = IntDelegate()
+
+internal class IntDelegate : JsonDelegate<Int>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): Int = source.getInt(key)
+}
+
 internal fun boolean(): JsonDelegate<Boolean> = BooleanDelegate()
 
 private class BooleanDelegate : JsonDelegate<Boolean>() {
