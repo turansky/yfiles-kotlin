@@ -387,7 +387,8 @@ internal class KotlinFileGenerator(
                     externalAnnotation +
                     "external enum class $name: $YENUM<$name> {\n" +
                     declaration.constants.toContent() + "\n" +
-                    super.content() + "\n" +
+                    super.content() + "\n\n" +
+                    "companion object: $metadataClass<$name>\n" +
                     "}"
         }
 
