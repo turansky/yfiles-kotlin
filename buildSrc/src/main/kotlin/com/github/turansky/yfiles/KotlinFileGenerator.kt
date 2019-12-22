@@ -385,11 +385,14 @@ internal class KotlinFileGenerator(
             val name = data.name
             return documentation +
                     externalAnnotation +
-                    "external enum class $name: $YENUM<$name> {\n" +
-                    declaration.constants.toContent() + "\n" +
-                    super.content() + "\n\n" +
-                    "companion object: $metadataClass<$name>\n" +
-                    "}"
+                    """
+                        |external enum class $name: $YENUM<$name> {
+                        |${declaration.constants.toContent()}
+                        |${super.content()}
+                        |
+                        |companion object: $metadataClass<$name>
+                        |}
+                    """.trimMargin()
         }
 
         override fun companionContent(): String? =
