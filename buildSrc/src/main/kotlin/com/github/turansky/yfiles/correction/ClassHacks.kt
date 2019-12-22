@@ -28,14 +28,14 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
                 |
                 |external interface TypeMetadata<T: Any>
                 |
-                |external interface ClassMetadata<T: Any> : TypeMetadata<T>
-                |
-                |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
-                |
                 |inline val <T: Any> TypeMetadata<T>.yclass:Class<T>
                 |    get() = asDynamic()["\${'$'}class"]
                 |    
-                |inline fun <T: Any> TypeMetadata<T>.isInstance(o:Any):Boolean = 
+                |external interface ClassMetadata<T: Any> : TypeMetadata<T>
+                |
+                |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
+                |    
+                |inline fun <T: Any> InterfaceMetadata<T>.isInstance(o:Any):Boolean = 
                 |    asDynamic().isInstance(o)
                 |
                 |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
