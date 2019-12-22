@@ -391,18 +391,19 @@ private fun seeAlsoDocs(
     )
 }
 
-internal class Modifiers(flags: List<String>) {
-    val static = STATIC in flags
-    val final = FINAL in flags
-    val readOnly = RO in flags
-    val writeOnly = WO in flags
-    val abstract = ABSTRACT in flags
-    val protected = PROTECTED in flags
+internal class Modifiers(modifiers: List<String>) {
+    val flags = FLAGS in modifiers
+    val static = STATIC in modifiers
+    val final = FINAL in modifiers
+    val readOnly = RO in modifiers
+    val writeOnly = WO in modifiers
+    val abstract = ABSTRACT in modifiers
+    val protected = PROTECTED in modifiers
 
-    private val canbenull = CANBENULL in flags
+    private val canbenull = CANBENULL in modifiers
     val nullability = exp(canbenull, "?")
 
-    val hidden = HIDDEN in flags
+    val hidden = HIDDEN in modifiers
 }
 
 internal abstract class TypedDeclaration(

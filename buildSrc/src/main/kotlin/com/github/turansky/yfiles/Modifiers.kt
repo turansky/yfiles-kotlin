@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles
 
 internal val PUBLIC = "public"
+internal val FLAGS = "flags"
 
 internal val STATIC = "static"
 internal val FINAL = "final"
