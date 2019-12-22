@@ -388,9 +388,10 @@ internal class KotlinFileGenerator(
                     """
                         |external enum class $name: $YENUM<$name> {
                         |${declaration.constants.toContent()}
-                        |${super.content()}
                         |
-                        |companion object: $metadataClass<$name>
+                        |   companion object: $metadataClass<$name> {
+                        |   ${declaration.staticMethods.lines { it.toCode() }}
+                        |   }
                         |}
                     """.trimMargin()
         }
