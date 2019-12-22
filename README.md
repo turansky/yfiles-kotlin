@@ -98,7 +98,7 @@ val layout = HierarchicLayout {
 ## Flags
 Some yFiles enums are marked as `flags`. 
 `Flags` constants can be combined using `or` infix method:
-```
+```Kotlin
 import yfiles.graph.GraphItemTypes.*
 import yfiles.input.GraphViewerInputMode
 import yfiles.lang.or
