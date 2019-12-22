@@ -22,6 +22,14 @@ internal fun generateFlagsUtils(sourceDir: File) {
                 |        .or(other.unsafeCast<Int>())
                 |        .unsafeCast<T>()
                 |}
+                |
+                |operator fun <T> T.contains(other: T): Boolean
+                |        where T : Flags<T>,
+                |              T : YEnum<T> {
+                |    val t = unsafeCast<Int>()
+                |    val o = other.unsafeCast<Int>()
+                |    return (t and o) == o
+                |}
             """.trimMargin()
         )
 }
