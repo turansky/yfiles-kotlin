@@ -40,6 +40,7 @@
 
 #### Related issues
 * [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
+* [`No Xcode or CLT version detected!`](https://github.com/nodejs/node-gyp/issues/1927#issuecomment-544507444) - For `macOS Catalina`
 
 ## Class
 
