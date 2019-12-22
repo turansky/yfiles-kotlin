@@ -13,6 +13,14 @@ internal fun generateFlagsUtils(sourceDir: File) {
                 |external interface Flags<T>
                 |   where T : Flags<T>,
                 |         T : $YENUM<T>
+                |         
+                |inline infix fun <T> Flags<T>.or(other: Flags<T>): Flags<T>
+                |   where T : Flags<T>,
+                |         T : yfiles.lang.YEnum<T> {
+                |   return unsafeCast<Int>()
+                |       .or(other.unsafeCast<Int>())
+                |       .unsafeCast<T>()
+                |}
             """.trimMargin()
         )
 }
