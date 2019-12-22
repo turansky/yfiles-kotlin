@@ -51,6 +51,7 @@ fun generateKotlinDeclarations(
     generateEventDispatcherUtils(sourceDir)
 
     generateClassUtils(moduleName, sourceDir)
+    generateFlagsUtils(sourceDir)
     generateIncrementalHint(sourceDir)
     generatePartitionCellUtils(sourceDir)
 }
