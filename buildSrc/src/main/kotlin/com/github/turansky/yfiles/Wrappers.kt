@@ -220,6 +220,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 
 internal class Enum(source: JSONObject) : Type(source) {
+    val flags = modifiers.flags
     override val constants: List<Constant> by declarationList { EnumConstant(it, this) }
 }
 
