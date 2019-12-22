@@ -95,6 +95,19 @@ val layout = HierarchicLayout {
 #### Related issues
 * [`KT-31126`](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
+## Flags
+Some yFiles enums are marked as `flags`. 
+`Flags` constants can be combined using `or` infix method:
+```
+import yfiles.graph.GraphItemTypes.*
+import yfiles.input.GraphViewerInputMode
+import yfiles.lang.or
+
+val inputMode = GraphViewerInputMode {
+    clickableItems = NODE or EDGE or LABEL
+}
+```
+
 ## KDoc
 #### Supported blocks
 * Summary
