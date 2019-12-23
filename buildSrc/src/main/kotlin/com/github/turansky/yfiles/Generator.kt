@@ -17,7 +17,14 @@ private fun readJson(
         .run { JSONObject(this) }
         .apply(action)
         .run { toString() }
+        .run { fixSystemPackage() }
         .run { JSONObject(this) }
+
+private fun String.fixSystemPackage(): String =
+    replace("'yfiles.system.", "'yfiles.lang.")
+        .replace("\"yfiles.system.", "\"yfiles.lang.")
+        .replace("'system.", "'yfiles.lang.")
+        .replace("\"system.", "\"yfiles.lang.")
 
 fun generateKotlinDeclarations(
     apiFile: File,

@@ -30,7 +30,7 @@ internal fun parseType(type: String): String {
     }
 
     if (GENERIC_START !in type) {
-        return fixPackage(type)
+        return type
     }
 
     val mainType = parseType(till(type, GENERIC_START))

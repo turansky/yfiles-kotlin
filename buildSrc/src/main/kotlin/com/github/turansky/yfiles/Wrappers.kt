@@ -66,7 +66,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
 }
 
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
-    override val classId = fixPackage(fqn)
+    override val classId = fqn
 
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
@@ -146,7 +146,7 @@ internal interface TypeDeclaration : HasClassId {
 
 internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclaration {
     private val id: String by string()
-    final override val classId: ClassId = fixPackage(id)
+    final override val classId: ClassId = id
 
     val es6name: String? by optString()
 
