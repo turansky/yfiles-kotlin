@@ -97,16 +97,20 @@ val layout = HierarchicLayout {
 * [`KT-31126`](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
 ## Flags
-Some yFiles enums are marked as `flags`. 
-`Flags` constants can be combined using `or` infix method:
+Some yFiles enums are marked as `flags`.
+* Use `or` infix method to combine `flags`
+* Use `in` operator to check if `flags` are applied
 ```Kotlin
 import yfiles.graph.GraphItemTypes.*
 import yfiles.input.GraphViewerInputMode
+import yfiles.lang.contains
 import yfiles.lang.or
 
 val inputMode = GraphViewerInputMode {
     clickableItems = NODE or EDGE or LABEL
 }
+
+val nodesAreClickable = NODE in inputMode.clickableItems // true
 ```
 
 ## KDoc
