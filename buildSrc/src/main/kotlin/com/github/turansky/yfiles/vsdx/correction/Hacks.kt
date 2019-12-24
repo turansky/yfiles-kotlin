@@ -57,7 +57,10 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.view.Font",
     "yfiles.view.HorizontalTextAlignment",
     "yfiles.view.VerticalTextAlignment"
-).associate { it.substringAfterLast(".") to it }
+).associate {
+    val classId = if (it == YCLASS) "Class" else it.substringAfterLast(".")
+    classId to it
+}
 
 private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[LinearGradient,RadialGradient]" to "yfiles.view.LinearGradient",
