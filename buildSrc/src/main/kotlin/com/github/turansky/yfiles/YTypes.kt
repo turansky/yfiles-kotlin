@@ -3,7 +3,7 @@ package com.github.turansky.yfiles
 val YID = "yfiles.lang.Id"
 val IEVENT_DISPATCHER = "yfiles.lang.IEventDispatcher"
 
-val YCLASS = "yfiles.lang.Class"
+val YCLASS = "yfiles.lang.YClass"
 val YENUM = "yfiles.lang.YEnum"
 
 val ICOMPARABLE = "yfiles.lang.IComparable"

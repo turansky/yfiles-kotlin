@@ -3,11 +3,11 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.*
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
-    "system.Action3",
-    "system.Action4",
-    "system.Func1",
-    "system.Func4",
-    "system.Func5",
+    "yfiles.lang.Action3",
+    "yfiles.lang.Action4",
+    "yfiles.lang.Func1",
+    "yfiles.lang.Func4",
+    "yfiles.lang.Func5",
     "yfiles.input.KeyEventHandler"
 )
 

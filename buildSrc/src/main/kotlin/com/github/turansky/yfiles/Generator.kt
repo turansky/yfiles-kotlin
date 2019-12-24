@@ -15,16 +15,25 @@ private fun readJson(
     file.readText(DEFAULT_CHARSET)
         .run { substring(indexOf("{")) }
         .run { JSONObject(this) }
-        .apply(action)
         .run { toString() }
         .run { fixSystemPackage() }
+        .run { fixClassDeclaration() }
+        .run { JSONObject(this) }
+        .apply(action)
+        .run { toString() }
         .run { JSONObject(this) }
 
 private fun String.fixSystemPackage(): String =
-    replace("'yfiles.system.", "'yfiles.lang.")
-        .replace("\"yfiles.system.", "\"yfiles.lang.")
-        .replace("'system.", "'yfiles.lang.")
+    replace("\"yfiles.system.", "\"yfiles.lang.")
         .replace("\"system.", "\"yfiles.lang.")
+
+private fun String.fixClassDeclaration(): String =
+    apply { println("Test 2: " + contains(""""name":"Class"""")) }
+        .replace(""""id":"yfiles.lang.Class"""", """"id":"$YCLASS","es6name":"Class"""")
+        .replace(""""name":"Class"""", """"name":"YClass"""")
+        .replace(""""yfiles.lang.Class"""", """"$YCLASS"""")
+        .replace(""""Array<yfiles.lang.Class>"""", """"Array<$YCLASS>"""")
+        .replace(""""yfiles.collections.Map<yfiles.lang.Class,$JS_OBJECT>"""", """"yfiles.collections.Map<$YCLASS,$JS_OBJECT>"""")
 
 fun generateKotlinDeclarations(
     apiFile: File,
