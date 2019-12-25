@@ -28,8 +28,7 @@ private fun String.fixSystemPackage(): String =
         .replace("\"system.", "\"yfiles.lang.")
 
 private fun String.fixClassDeclaration(): String =
-    apply { println("Test 2: " + contains(""""name":"Class"""")) }
-        .replace(""""id":"yfiles.lang.Class"""", """"id":"$YCLASS","es6name":"Class"""")
+    replace(""""id":"yfiles.lang.Class"""", """"id":"$YCLASS","es6name":"Class"""")
         .replace(""""name":"Class"""", """"name":"YClass"""")
         .replace(""""yfiles.lang.Class"""", """"$YCLASS"""")
         .replace(""""Array<yfiles.lang.Class>"""", """"Array<$YCLASS>"""")
