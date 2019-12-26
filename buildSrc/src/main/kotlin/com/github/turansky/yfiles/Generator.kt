@@ -81,8 +81,6 @@ internal interface GeneratorContext {
         content: String
     )
 
-    fun resolve(relative: String): File
-
     fun clean()
 }
 
@@ -110,9 +108,6 @@ private class SimpleGeneratorContext(
             .resolve(fileName)
             .writeText(content)
     }
-
-    override fun resolve(relative: String): File =
-        sourceDir.resolve(relative)
 
     override fun clean() {
         sourceDir.mkdirs()
