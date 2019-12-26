@@ -7,6 +7,8 @@ import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
+internal val MODULE_NAME = "%module-name%"
+
 fun generateKotlinDeclarations(
     apiFile: File,
     sourceDir: File
@@ -25,9 +27,8 @@ fun generateKotlinDeclarations(
 
     ClassRegistry.instance = ClassRegistry(types)
 
-    val moduleName = "yfiles"
-    val context: GeneratorContext = SimpleGeneratorContext(sourceDir)
-    val fileGenerator = KotlinFileGenerator(moduleName, types, functionSignatures.values)
+    val context: GeneratorContext = SimpleGeneratorContext(sourceDir, "yfiles")
+    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(context)
 
     generateIdUtils(context)
@@ -39,7 +40,7 @@ fun generateKotlinDeclarations(
     generateConvertersUtils(context)
     generateEventDispatcherUtils(context)
 
-    generateClassUtils(moduleName, context)
+    generateClassUtils(context)
     generateFlagsUtils(context)
     generateIncrementalHint(context)
     generatePartitionCellUtils(context)
@@ -62,8 +63,8 @@ fun generateVsdxKotlinDeclarations(
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
-    val context: GeneratorContext = SimpleGeneratorContext(sourceDir)
-    val fileGenerator = KotlinFileGenerator("yfiles/vsdx", types, functionSignatures.values)
+    val context: GeneratorContext = SimpleGeneratorContext(sourceDir, "yfiles/vsdx")
+    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(context)
 
     createVsdxDataClasses(context)
@@ -85,7 +86,8 @@ internal interface GeneratorContext {
 }
 
 private class SimpleGeneratorContext(
-    private val sourceDir: File
+    private val sourceDir: File,
+    private val moduleName: String
 ) : GeneratorContext {
     override fun set(
         classId: String,
@@ -103,10 +105,12 @@ private class SimpleGeneratorContext(
         fileName: String,
         content: String
     ) {
+        val text = content.replace(MODULE_NAME, moduleName)
+
         sourceDir.resolve(dirPath)
             .also { it.mkdirs() }
             .resolve(fileName)
-            .writeText(content)
+            .writeText(text)
     }
 
     override fun clean() {

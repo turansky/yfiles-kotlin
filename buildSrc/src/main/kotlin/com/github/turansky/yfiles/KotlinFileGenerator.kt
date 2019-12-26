@@ -6,11 +6,10 @@ private val ENUM_COMPANION_MAP = mapOf(
 )
 
 internal class KotlinFileGenerator(
-    moduleName: String,
     private val types: Iterable<Type>,
     private val functionSignatures: Iterable<FunctionSignature>
 ) : FileGenerator {
-    private val moduleAnnotation = "@file:JsModule(\"$moduleName\")"
+    private val moduleAnnotation = "@file:JsModule(\"$MODULE_NAME\")"
 
     override fun generate(context: GeneratorContext) {
         context.clean()

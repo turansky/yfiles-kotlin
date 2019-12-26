@@ -4,11 +4,11 @@ import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
-internal fun generateClassUtils(moduleName: String, context: GeneratorContext) {
+internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.lang.BaseClass"] =
         """
-            |@file:JsModule("$moduleName") 
+            |@file:JsModule("$MODULE_NAME") 
             |package yfiles.lang
             |
             |$HIDDEN_METHOD_ANNOTATION
