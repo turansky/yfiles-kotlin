@@ -3,18 +3,15 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.*
 
 internal fun generatePartitionCellUtils(context: GeneratorContext) {
-    context.resolve("yfiles/router/PartitionCellKey.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.router
-                |
-                |external interface PartitionCellKey<T:Any>
-                |
-                |fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 
-                |    source.unsafeCast<PartitionCellKey<T>>()
-            """.trimMargin()
-        )
+    // language=kotlin
+    context["yfiles.router.PartitionCellKey"] = """
+            |package yfiles.router
+            |
+            |external interface PartitionCellKey<T:Any>
+            |
+            |fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 
+            |    source.unsafeCast<PartitionCellKey<T>>()
+        """.trimMargin()
 }
 
 private val KEY_TYPE_MAP = mapOf(

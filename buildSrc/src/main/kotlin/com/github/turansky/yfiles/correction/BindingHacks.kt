@@ -4,18 +4,16 @@ import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 
 internal fun generateBindingUtils(context: GeneratorContext) {
-    context.resolve("yfiles/binding/Binding.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.binding
-                |
-                |external interface Binding
-                |
-                |fun Binding(source:Any):Binding = 
-                |    source.unsafeCast<Binding>()
-            """.trimMargin()
-        )
+    // language=kotlin
+    context["yfiles.binding.Binding"] =
+        """
+            |package yfiles.binding
+            |
+            |external interface Binding
+            |
+            |fun Binding(source:Any):Binding = 
+            |    source.unsafeCast<Binding>()
+        """.trimMargin()
 }
 
 internal fun applyBindingHacks(source: Source) {

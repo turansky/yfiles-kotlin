@@ -12,23 +12,20 @@ private fun resourceKey(typeParameter: String) =
     "$RESOURCE_KEY<$typeParameter>"
 
 internal fun generateResourceUtils(context: GeneratorContext) {
-    context.resolve("yfiles/view/Resources.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.view
-                |
-                |@JsName("String")
-                |external class ResourceKey<T : Any> internal constructor()
-                |
-                |external interface ResourceMap {
-                |    operator fun <T: Any> set(
-                |       key: ResourceKey<T>, 
-                |       value: T
-                |    )
-                |} 
-            """.trimMargin()
-        )
+    // language=kotlin
+    context["yfiles.view.Resources"] = """
+            |package yfiles.view
+            |
+            |@JsName("String")
+            |external class ResourceKey<T : Any> internal constructor()
+            |
+            |external interface ResourceMap {
+            |    operator fun <T: Any> set(
+            |       key: ResourceKey<T>, 
+            |       value: T
+            |    )
+            |} 
+        """.trimMargin()
 }
 
 internal fun applyResourceHacks(source: Source) {

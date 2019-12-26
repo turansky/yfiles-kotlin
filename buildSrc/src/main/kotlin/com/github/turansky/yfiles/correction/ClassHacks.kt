@@ -5,67 +5,63 @@ import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun generateClassUtils(moduleName: String, context: GeneratorContext) {
-    context.resolve("yfiles/lang/BaseClass.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |@file:JsModule("$moduleName") 
-                |package yfiles.lang
-                |
-                |$HIDDEN_METHOD_ANNOTATION
-                |external fun BaseClass(vararg types: JsClass<*>):JsClass<out YObject>
-            """.trimMargin()
-        )
+    // language=kotlin
+    context["yfiles.lang.BaseClass"] =
+        """
+            |@file:JsModule("$moduleName") 
+            |package yfiles.lang
+            |
+            |$HIDDEN_METHOD_ANNOTATION
+            |external fun BaseClass(vararg types: JsClass<*>):JsClass<out YObject>
+        """.trimMargin()
 
-    context.resolve("yfiles/lang/ClassMetadata.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |@file:Suppress("NOTHING_TO_INLINE")
-                |
-                |package yfiles.lang
-                |
-                |external interface TypeMetadata<T: Any>
-                |
-                |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
-                |    get() = asDynamic()["\${'$'}class"]
-                |    
-                |external interface ClassMetadata<T: Any> : TypeMetadata<T>
-                |
-                |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
-                |    
-                |inline fun <T: Any> InterfaceMetadata<T>.isInstance(o:Any):Boolean = 
-                |    asDynamic().isInstance(o)
-                |
-                |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
-                |    clazz.isInstance(this)
-                |
-                |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
-                |    this != null && this yIs clazz
-                |
-                |inline infix fun <T : Any> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
-                |    if (this yIs clazz) {
-                |        unsafeCast<T>()
-                |    } else {
-                |        null
-                |    }
-                |
-                |inline infix fun <T : Any> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
-                |    this ?: return null
-                |
-                |    return this yOpt clazz
-                |}
-                |
-                |inline infix fun <T : Any> Any.yAs(clazz: InterfaceMetadata<T>): T {
-                |    require(this yIs clazz)
-                |
-                |    return unsafeCast<T>()
-                |}
-                |
-                |inline infix fun <T : Any> Any?.yAs(clazz: InterfaceMetadata<T>): T =
-                |    requireNotNull(this) yAs clazz
-            """.trimMargin()
-        )
+    // language=kotlin
+    context["yfiles.lang.ClassMetadata"] =
+        """
+            |@file:Suppress("NOTHING_TO_INLINE")
+            |
+            |package yfiles.lang
+            |
+            |external interface TypeMetadata<T: Any>
+            |
+            |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
+            |    get() = asDynamic()["\${'$'}class"]
+            |    
+            |external interface ClassMetadata<T: Any> : TypeMetadata<T>
+            |
+            |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
+            |    
+            |inline fun <T: Any> InterfaceMetadata<T>.isInstance(o:Any):Boolean = 
+            |    asDynamic().isInstance(o)
+            |
+            |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
+            |    clazz.isInstance(this)
+            |
+            |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
+            |    this != null && this yIs clazz
+            |
+            |inline infix fun <T : Any> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
+            |    if (this yIs clazz) {
+            |        unsafeCast<T>()
+            |    } else {
+            |        null
+            |    }
+            |
+            |inline infix fun <T : Any> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
+            |    this ?: return null
+            |
+            |    return this yOpt clazz
+            |}
+            |
+            |inline infix fun <T : Any> Any.yAs(clazz: InterfaceMetadata<T>): T {
+            |    require(this yIs clazz)
+            |
+            |    return unsafeCast<T>()
+            |}
+            |
+            |inline infix fun <T : Any> Any?.yAs(clazz: InterfaceMetadata<T>): T =
+            |    requireNotNull(this) yAs clazz
+        """.trimMargin()
 }
 
 internal fun applyClassHacks(source: Source) {

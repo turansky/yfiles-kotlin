@@ -8,18 +8,16 @@ import org.json.JSONObject
 private const val TAG = "yfiles.graph.Tag"
 
 internal fun generateTagUtils(context: GeneratorContext) {
-    context.resolve("yfiles/graph/Tag.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.graph
-                |
-                |external interface Tag
-                |
-                |fun Tag(source:Any):Tag = 
-                |    source.unsafeCast<Tag>()
-            """.trimMargin()
-        )
+    // language=kotlin
+    context[TAG] =
+        """
+            |package yfiles.graph
+            |
+            |external interface Tag
+            |
+            |fun Tag(source:Any):Tag = 
+            |    source.unsafeCast<Tag>()
+        """.trimMargin()
 }
 
 internal fun applyTagHacks(source: Source) {

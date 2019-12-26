@@ -71,6 +71,11 @@ fun generateVsdxKotlinDeclarations(
 
 internal interface GeneratorContext {
     operator fun set(
+        classId: String,
+        content: String
+    )
+
+    operator fun set(
         dirPath: String,
         fileName: String,
         content: String
@@ -84,6 +89,17 @@ internal interface GeneratorContext {
 private class SimpleGeneratorContext(
     private val sourceDir: File
 ) : GeneratorContext {
+    override fun set(
+        classId: String,
+        content: String
+    ) {
+        set(
+            dirPath = classId.substringBeforeLast(".").replace(".", "/"),
+            fileName = classId.substringAfterLast(".") + ".kt",
+            content = content
+        )
+    }
+
     override fun set(
         dirPath: String,
         fileName: String,

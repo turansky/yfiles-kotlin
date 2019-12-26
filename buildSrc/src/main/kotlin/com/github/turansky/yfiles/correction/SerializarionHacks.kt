@@ -8,16 +8,13 @@ private fun propertyKey(typeParameter: String) =
     "$SERIALIZATION_PROPERTY_KEY<$typeParameter>"
 
 internal fun generateSerializationUtils(context: GeneratorContext) {
-    context.resolve("yfiles/graphml/SerializationPropertyKey.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.graphml
-                |
-                |@JsName("String")
-                |external class SerializationPropertyKey<T : Any> internal constructor()
-            """.trimMargin()
-        )
+    // language=kotlin
+    context[SERIALIZATION_PROPERTY_KEY] = """
+            |package yfiles.graphml
+            |
+            |@JsName("String")
+            |external class SerializationPropertyKey<T : Any> internal constructor()
+        """.trimMargin()
 }
 
 internal fun applySerializationHacks(source: Source) {

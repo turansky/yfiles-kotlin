@@ -8,18 +8,15 @@ import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun generateIdUtils(context: GeneratorContext) {
-    context.resolve("yfiles/lang/Id.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.lang
-                |
-                |external interface Id
-                |
-                |fun Id(source:Any):Id = 
-                |    source.unsafeCast<Id>()
-            """.trimMargin()
-        )
+    // language=kotlin
+    context[YID] = """
+            |package yfiles.lang
+            |
+            |external interface Id
+            |
+            |fun Id(source:Any):Id = 
+            |    source.unsafeCast<Id>()
+        """.trimMargin()
 }
 
 private val ID_DP_KEYS = setOf(

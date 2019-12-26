@@ -7,15 +7,12 @@ import com.github.turansky.yfiles.json.get
 internal val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
 
 internal fun generateIncrementalHint(context: GeneratorContext) {
-    context.resolve("yfiles/hierarchic/IncrementalHint.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.hierarchic
-                |
-                |external interface IncrementalHint
-            """.trimMargin()
-        )
+    // language=kotlin
+    context[INCREMENTAL_HINT] = """
+            |package yfiles.hierarchic
+            |
+            |external interface IncrementalHint
+        """.trimMargin()
 }
 
 internal fun applyIncrementalHintHacks(source: Source) {

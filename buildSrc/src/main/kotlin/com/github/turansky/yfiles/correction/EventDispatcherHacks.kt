@@ -7,15 +7,13 @@ import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
 
 internal fun generateEventDispatcherUtils(context: GeneratorContext) {
-    context.resolve("yfiles/lang/IEventDispatcher.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.lang
-                |
-                |external interface IEventDispatcher
-            """.trimMargin()
-        )
+    // language=kotlin
+    context[IEVENT_DISPATCHER] =
+        """
+            |package yfiles.lang
+            |
+            |external interface IEventDispatcher
+        """.trimMargin()
 }
 
 internal fun applyEventDispatcherHacks(source: Source) {

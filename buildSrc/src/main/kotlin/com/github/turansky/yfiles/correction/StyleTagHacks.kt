@@ -7,18 +7,15 @@ import com.github.turansky.yfiles.JS_OBJECT
 private const val STYLE_TAG = "yfiles.styles.StyleTag"
 
 internal fun generateStyleTagUtils(context: GeneratorContext) {
-    context.resolve("yfiles/styles/StyleTag.kt")
-        .writeText(
-            // language=kotlin
-            """
-                |package yfiles.styles
-                |
-                |external interface StyleTag
-                |
-                |fun StyleTag(source:Any):StyleTag = 
-                |    source.unsafeCast<StyleTag>()
-            """.trimMargin()
-        )
+    // language=kotlin
+    context[STYLE_TAG] = """
+            |package yfiles.styles
+            |
+            |external interface StyleTag
+            |
+            |fun StyleTag(source:Any):StyleTag = 
+            |    source.unsafeCast<StyleTag>()
+        """.trimMargin()
 }
 
 internal fun applyStyleTagHacks(source: Source) {
