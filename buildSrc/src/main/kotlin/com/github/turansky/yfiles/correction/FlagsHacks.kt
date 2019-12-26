@@ -1,9 +1,9 @@
 package com.github.turansky.yfiles.correction
 
-import java.io.File
+import com.github.turansky.yfiles.GeneratorContext
 
-internal fun generateFlagsUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/lang/Flags.kt")
+internal fun generateFlagsUtils(context: GeneratorContext) {
+    context.resolve("yfiles/lang/Flags.kt")
         .writeText(
             // language=kotlin
             """

@@ -1,13 +1,13 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
-import java.io.File
 
 private const val STYLE_TAG = "yfiles.styles.StyleTag"
 
-internal fun generateStyleTagUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/styles/StyleTag.kt")
+internal fun generateStyleTagUtils(context: GeneratorContext) {
+    context.resolve("yfiles/styles/StyleTag.kt")
         .writeText(
             // language=kotlin
             """

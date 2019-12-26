@@ -1,10 +1,10 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
-import java.io.File
 
-internal fun generateBindingUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/binding/Binding.kt")
+internal fun generateBindingUtils(context: GeneratorContext) {
+    context.resolve("yfiles/binding/Binding.kt")
         .writeText(
             // language=kotlin
             """

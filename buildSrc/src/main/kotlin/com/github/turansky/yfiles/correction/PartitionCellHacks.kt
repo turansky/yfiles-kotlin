@@ -1,10 +1,9 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import java.io.File
 
-internal fun generatePartitionCellUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/router/PartitionCellKey.kt")
+internal fun generatePartitionCellUtils(context: GeneratorContext) {
+    context.resolve("yfiles/router/PartitionCellKey.kt")
         .writeText(
             // language=kotlin
             """

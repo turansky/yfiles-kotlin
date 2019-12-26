@@ -1,15 +1,14 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import java.io.File
 
 private const val SERIALIZATION_PROPERTY_KEY = "yfiles.graphml.SerializationPropertyKey"
 
 private fun propertyKey(typeParameter: String) =
     "$SERIALIZATION_PROPERTY_KEY<$typeParameter>"
 
-internal fun generateSerializationUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/graphml/SerializationPropertyKey.kt")
+internal fun generateSerializationUtils(context: GeneratorContext) {
+    context.resolve("yfiles/graphml/SerializationPropertyKey.kt")
         .writeText(
             // language=kotlin
             """

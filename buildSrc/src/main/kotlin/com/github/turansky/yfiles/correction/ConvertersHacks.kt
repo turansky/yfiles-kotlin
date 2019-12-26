@@ -1,13 +1,13 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
-import java.io.File
 
 private const val CONVERTERS = "yfiles.styles.Converters"
 
-internal fun generateConvertersUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/styles/Converters.kt")
+internal fun generateConvertersUtils(context: GeneratorContext) {
+    context.resolve("yfiles/styles/Converters.kt")
         .writeText(
             // language=kotlin
             """

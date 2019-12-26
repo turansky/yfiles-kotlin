@@ -3,10 +3,9 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
-import java.io.File
 
-internal fun generateClassUtils(moduleName: String, sourceDir: File) {
-    sourceDir.resolve("yfiles/lang/BaseClass.kt")
+internal fun generateClassUtils(moduleName: String, context: GeneratorContext) {
+    context.resolve("yfiles/lang/BaseClass.kt")
         .writeText(
             // language=kotlin
             """
@@ -18,7 +17,7 @@ internal fun generateClassUtils(moduleName: String, sourceDir: File) {
             """.trimMargin()
         )
 
-    sourceDir.resolve("yfiles/lang/ClassMetadata.kt")
+    context.resolve("yfiles/lang/ClassMetadata.kt")
         .writeText(
             // language=kotlin
             """

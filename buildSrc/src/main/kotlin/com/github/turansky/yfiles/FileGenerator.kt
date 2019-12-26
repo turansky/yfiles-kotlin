@@ -1,9 +1,7 @@
 package com.github.turansky.yfiles
 
-import java.io.File
-
 internal interface FileGenerator {
-    fun generate(directory: File)
+    fun generate(context: GeneratorContext)
 }
 
 internal open class GeneratorData(

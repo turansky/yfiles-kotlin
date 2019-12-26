@@ -1,13 +1,13 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.IEVENT_DISPATCHER
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
-import java.io.File
 
-internal fun generateEventDispatcherUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/lang/IEventDispatcher.kt")
+internal fun generateEventDispatcherUtils(context: GeneratorContext) {
+    context.resolve("yfiles/lang/IEventDispatcher.kt")
         .writeText(
             // language=kotlin
             """

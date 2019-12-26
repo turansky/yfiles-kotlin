@@ -1,14 +1,14 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.YID
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
-import java.io.File
 
-internal fun generateIdUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/lang/Id.kt")
+internal fun generateIdUtils(context: GeneratorContext) {
+    context.resolve("yfiles/lang/Id.kt")
         .writeText(
             // language=kotlin
             """

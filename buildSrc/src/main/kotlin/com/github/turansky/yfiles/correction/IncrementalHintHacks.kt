@@ -1,13 +1,13 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.json.get
-import java.io.File
 
 internal val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
 
-internal fun generateIncrementalHint(sourceDir: File) {
-    sourceDir.resolve("yfiles/hierarchic/IncrementalHint.kt")
+internal fun generateIncrementalHint(context: GeneratorContext) {
+    context.resolve("yfiles/hierarchic/IncrementalHint.kt")
         .writeText(
             // language=kotlin
             """

@@ -1,9 +1,9 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.IVISUAL_TEMPLATE
 import com.github.turansky.yfiles.JS_STRING
 import com.github.turansky.yfiles.json.get
-import java.io.File
 
 private const val RESOURCE_KEY = "yfiles.view.ResourceKey"
 private const val RESOURCE_MAP = "yfiles.view.ResourceMap"
@@ -11,8 +11,8 @@ private const val RESOURCE_MAP = "yfiles.view.ResourceMap"
 private fun resourceKey(typeParameter: String) =
     "$RESOURCE_KEY<$typeParameter>"
 
-internal fun generateResourceUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/view/Resources.kt")
+internal fun generateResourceUtils(context: GeneratorContext) {
+    context.resolve("yfiles/view/Resources.kt")
         .writeText(
             // language=kotlin
             """

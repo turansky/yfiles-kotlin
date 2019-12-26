@@ -1,7 +1,5 @@
 package com.github.turansky.yfiles
 
-import java.io.File
-
 private val ENUM_COMPANION_MAP = mapOf(
     "BipartitionAlgorithm" to "BipartitionMark",
     "DfsAlgorithm" to "DfsState"
@@ -14,9 +12,8 @@ internal class KotlinFileGenerator(
 ) : FileGenerator {
     private val moduleAnnotation = "@file:JsModule(\"$moduleName\")"
 
-    override fun generate(directory: File) {
-        directory.mkdirs()
-        directory.deleteRecursively()
+    override fun generate(context: GeneratorContext) {
+        context.clean()
 
         types.forEach {
             val generatedFile = when (it) {
@@ -25,34 +22,30 @@ internal class KotlinFileGenerator(
                 is Enum -> EnumFile(it)
             }
 
-            generate(directory, generatedFile)
+            generate(context, generatedFile)
         }
 
         functionSignatures
             .groupBy { it.classId.substringBeforeLast(".") }
-            .forEach { _, items -> generate(directory, items) }
+            .forEach { _, items -> generate(context, items) }
     }
 
     private fun generate(
-        directory: File,
+        context: GeneratorContext,
         generatedFile: GeneratedFile
     ) {
         val data = generatedFile.data
-        val dir = directory.resolve(data.path)
-        dir.mkdirs()
-
         val fileName = if (generatedFile.useJsName) {
             data.jsName
         } else {
             data.name
         }
 
-        val file = dir.resolve("$fileName.kt")
         val header = generatedFile.header
-
         val content = generatedFile.content()
             .clear(data)
-        file.writeText("$header\n$content")
+
+        context[data.path, "$fileName.kt"] = "$header\n$content"
 
         var companionContent = generatedFile.companionContent()
             ?: return
@@ -60,19 +53,15 @@ internal class KotlinFileGenerator(
         companionContent = "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
-        dir.resolve("$fileName.ext.kt")
-            .writeText(companionContent)
+        context[data.path, "$fileName.ext.kt"] = companionContent
     }
 
     private fun generate(
-        directory: File,
+        context: GeneratorContext,
         signatures: List<FunctionSignature>
     ) {
         val firstData = GeneratorData(signatures.first().classId)
-        val dir = directory.resolve(firstData.path)
-        dir.mkdirs()
 
-        val file = dir.resolve("Aliases.kt")
         val header = "package ${firstData.packageName}"
 
         val content = signatures
@@ -82,7 +71,7 @@ internal class KotlinFileGenerator(
             .joinToString("\n\n")
             .clear(firstData)
 
-        file.writeText("$header\n\n$content")
+        context[firstData.path, "Aliases.kt"] = "$header\n\n$content"
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {

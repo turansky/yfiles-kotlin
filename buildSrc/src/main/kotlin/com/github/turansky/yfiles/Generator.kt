@@ -26,22 +26,23 @@ fun generateKotlinDeclarations(
     ClassRegistry.instance = ClassRegistry(types)
 
     val moduleName = "yfiles"
+    val context: GeneratorContext = SimpleGeneratorContext(sourceDir)
     val fileGenerator = KotlinFileGenerator(moduleName, types, functionSignatures.values)
-    fileGenerator.generate(sourceDir)
+    fileGenerator.generate(context)
 
-    generateIdUtils(sourceDir)
-    generateBindingUtils(sourceDir)
-    generateTagUtils(sourceDir)
-    generateStyleTagUtils(sourceDir)
-    generateResourceUtils(sourceDir)
-    generateSerializationUtils(sourceDir)
-    generateConvertersUtils(sourceDir)
-    generateEventDispatcherUtils(sourceDir)
+    generateIdUtils(context)
+    generateBindingUtils(context)
+    generateTagUtils(context)
+    generateStyleTagUtils(context)
+    generateResourceUtils(context)
+    generateSerializationUtils(context)
+    generateConvertersUtils(context)
+    generateEventDispatcherUtils(context)
 
-    generateClassUtils(moduleName, sourceDir)
-    generateFlagsUtils(sourceDir)
-    generateIncrementalHint(sourceDir)
-    generatePartitionCellUtils(sourceDir)
+    generateClassUtils(moduleName, context)
+    generateFlagsUtils(context)
+    generateIncrementalHint(context)
+    generatePartitionCellUtils(context)
 }
 
 fun generateVsdxKotlinDeclarations(
@@ -61,8 +62,44 @@ fun generateVsdxKotlinDeclarations(
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
+    val context: GeneratorContext = SimpleGeneratorContext(sourceDir)
     val fileGenerator = KotlinFileGenerator("yfiles/vsdx", types, functionSignatures.values)
-    fileGenerator.generate(sourceDir)
+    fileGenerator.generate(context)
 
-    createVsdxDataClasses(sourceDir)
+    createVsdxDataClasses(context)
+}
+
+internal interface GeneratorContext {
+    operator fun set(
+        dirPath: String,
+        fileName: String,
+        content: String
+    )
+
+    fun resolve(relative: String): File
+
+    fun clean()
+}
+
+private class SimpleGeneratorContext(
+    private val sourceDir: File
+) : GeneratorContext {
+    override fun set(
+        dirPath: String,
+        fileName: String,
+        content: String
+    ) {
+        sourceDir.resolve(dirPath)
+            .also { it.mkdirs() }
+            .resolve(fileName)
+            .writeText(content)
+    }
+
+    override fun resolve(relative: String): File =
+        sourceDir.resolve(relative)
+
+    override fun clean() {
+        sourceDir.mkdirs()
+        sourceDir.deleteRecursively()
+    }
 }

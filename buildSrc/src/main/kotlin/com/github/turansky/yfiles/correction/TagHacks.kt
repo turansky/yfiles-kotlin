@@ -1,14 +1,14 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
-import java.io.File
 
 private const val TAG = "yfiles.graph.Tag"
 
-internal fun generateTagUtils(sourceDir: File) {
-    sourceDir.resolve("yfiles/graph/Tag.kt")
+internal fun generateTagUtils(context: GeneratorContext) {
+    context.resolve("yfiles/graph/Tag.kt")
         .writeText(
             // language=kotlin
             """

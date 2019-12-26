@@ -1,12 +1,12 @@
 package com.github.turansky.yfiles.vsdx.correction
 
-import java.io.File
+import com.github.turansky.yfiles.GeneratorContext
 
 internal const val MASTER_STATE = "MasterState"
 internal const val IMAGE_DATA = "ImageData"
 
-internal fun createVsdxDataClasses(sourceDir: File) {
-    sourceDir.resolve("yfiles/vsdx/$MASTER_STATE.kt")
+internal fun createVsdxDataClasses(context: GeneratorContext) {
+    context.resolve("yfiles/vsdx/$MASTER_STATE.kt")
         .writeText(
             // language=kotlin
             """
@@ -21,7 +21,7 @@ internal fun createVsdxDataClasses(sourceDir: File) {
             """.trimMargin()
         )
 
-    sourceDir.resolve("yfiles/vsdx/$IMAGE_DATA.kt")
+    context.resolve("yfiles/vsdx/$IMAGE_DATA.kt")
         .writeText(
             // language=kotlin
             """
