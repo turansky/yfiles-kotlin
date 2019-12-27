@@ -7,6 +7,8 @@ import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
+private val GENERATOR_COMMENT = "Automatically generated - do not modify!"
+
 internal val MODULE_NAME = "%module-name%"
 internal val DOC_BASE_URL = "%doc-base-url%"
 
@@ -113,9 +115,10 @@ private class SimpleGeneratorContext(
         fileName: String,
         content: String
     ) {
-        val text = content
-            .replace(MODULE_NAME, moduleName)
-            .replace(DOC_BASE_URL, docBaseUrl)
+        val text = "// $GENERATOR_COMMENT\n\n" +
+                content
+                    .replace(MODULE_NAME, moduleName)
+                    .replace(DOC_BASE_URL, docBaseUrl)
 
         sourceDir.resolve(dirPath)
             .also { it.mkdirs() }
