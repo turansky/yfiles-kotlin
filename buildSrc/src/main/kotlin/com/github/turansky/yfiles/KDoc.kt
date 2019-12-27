@@ -4,8 +4,6 @@ const val LIST_MARKER = "-"
 const val LINE_DELIMITER = "\n"
 const val MULTILINE_INDENT = "  "
 
-lateinit var docBaseUrl: String
-
 // TODO: use Markdown after fix
 //  https://youtrack.jetbrains.com/issue/KT-32640
 fun link(text: String, href: String): String =

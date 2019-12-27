@@ -359,7 +359,7 @@ private class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSour
     override fun toDoc(): String =
         link(
             text = name,
-            href = "$docBaseUrl/#/dguide/$section"
+            href = "$DOC_BASE_URL/#/dguide/$section"
         )
 }
 
@@ -369,7 +369,7 @@ private class SeeAlsoDoc(private val id: String) : SeeAlso() {
     override fun toDoc(): String =
         link(
             text = "Online Documentation",
-            href = "$docBaseUrl/#/api/$id"
+            href = "$DOC_BASE_URL/#/api/$id"
         )
 }
 

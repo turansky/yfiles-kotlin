@@ -8,6 +8,7 @@ import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
 internal val MODULE_NAME = "%module-name%"
+internal val DOC_BASE_URL = "%doc-base-url%"
 
 fun generateKotlinDeclarations(
     apiFile: File,
@@ -19,15 +20,18 @@ fun generateKotlinDeclarations(
         correctNumbers(this)
     }
 
-    docBaseUrl = "https://docs.yworks.com/yfileshtml"
-
     val apiRoot = ApiRoot(source)
     val types = apiRoot.types
     val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types)
 
-    val context: GeneratorContext = SimpleGeneratorContext(sourceDir, "yfiles")
+    val context: GeneratorContext = SimpleGeneratorContext(
+        sourceDir = sourceDir,
+        moduleName = "yfiles",
+        docBaseUrl = "https://docs.yworks.com/yfileshtml"
+    )
+
     val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(context)
 
@@ -55,15 +59,18 @@ fun generateVsdxKotlinDeclarations(
         correctVsdxNumbers(this)
     }
 
-    docBaseUrl = "https://docs.yworks.com/vsdx-html"
-
     val apiRoot = ApiRoot(source)
     val types = apiRoot.rootTypes
     val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
-    val context: GeneratorContext = SimpleGeneratorContext(sourceDir, "yfiles/vsdx")
+    val context: GeneratorContext = SimpleGeneratorContext(
+        sourceDir = sourceDir,
+        moduleName = "yfiles/vsdx",
+        docBaseUrl = "https://docs.yworks.com/vsdx-html"
+    )
+
     val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
     fileGenerator.generate(context)
 
@@ -87,7 +94,8 @@ internal interface GeneratorContext {
 
 private class SimpleGeneratorContext(
     private val sourceDir: File,
-    private val moduleName: String
+    private val moduleName: String,
+    private val docBaseUrl: String
 ) : GeneratorContext {
     override fun set(
         classId: String,
@@ -105,7 +113,9 @@ private class SimpleGeneratorContext(
         fileName: String,
         content: String
     ) {
-        val text = content.replace(MODULE_NAME, moduleName)
+        val text = content
+            .replace(MODULE_NAME, moduleName)
+            .replace(DOC_BASE_URL, docBaseUrl)
 
         sourceDir.resolve(dirPath)
             .also { it.mkdirs() }
