@@ -8,7 +8,7 @@ internal fun applyVisualTemplateHacks(source: Source) {
 
 private fun fixClass(source: Source) {
     source.type("IVisualTemplate").apply {
-        setSingleTypeParameter()
+        setSingleTypeParameter("in T")
 
         flatMap(METHODS)
             .map { it[PARAMETERS]["dataObject"] }
