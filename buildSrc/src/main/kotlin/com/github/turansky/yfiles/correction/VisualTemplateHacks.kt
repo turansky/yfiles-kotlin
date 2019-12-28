@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.IVISUAL_TEMPLATE
+import com.github.turansky.yfiles.JS_VOID
 import com.github.turansky.yfiles.json.get
 
 internal fun applyVisualTemplateHacks(source: Source) {
@@ -29,7 +30,10 @@ internal fun applyVisualTemplateHacks(source: Source) {
 
 internal fun getVisualTemplateParameter(className: String): String =
     when (className) {
-        "HandleInputMode" -> "IHandle"
+        "DefaultPortCandidateDescriptor" -> TAG
         "DefaultStripeInputVisualizationHelper" -> "IStripe"
+        "HandleInputMode" -> "IHandle"
+        "MarqueeSelectionInputMode",
+        "OverviewInputMode" -> JS_VOID
         else -> "*"
     }
