@@ -11,6 +11,7 @@ val ICLONEABLE = "yfiles.lang.ICloneable"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
 val IEDGE = "yfiles.graph.IEdge"
+val IBEND = "yfiles.graph.IBend"
 
 val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
 val STRIPE_TYPES = "yfiles.graph.StripeTypes"

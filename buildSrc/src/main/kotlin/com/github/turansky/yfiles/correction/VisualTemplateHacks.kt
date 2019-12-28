@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.IBEND
 import com.github.turansky.yfiles.IVISUAL_TEMPLATE
 import com.github.turansky.yfiles.JS_VOID
 import com.github.turansky.yfiles.json.get
@@ -33,7 +34,14 @@ internal fun getVisualTemplateParameter(className: String): String =
         "DefaultPortCandidateDescriptor" -> TAG
         "DefaultStripeInputVisualizationHelper" -> "IStripe"
         "HandleInputMode" -> "IHandle"
+
+        "EdgeDecorationInstaller",
+        "EdgeFocusIndicatorInstaller",
+        "EdgeHighlightIndicatorInstaller",
+        "EdgeSelectionIndicatorInstaller" -> IBEND
+
         "MarqueeSelectionInputMode",
         "OverviewInputMode" -> JS_VOID
+
         else -> "*"
     }
