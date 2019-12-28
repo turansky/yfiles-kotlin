@@ -42,9 +42,9 @@ internal fun getVisualTemplateParameter(className: String): String =
 
         // TODO: check required
         "LabelPositionHandler",
-        "LassoSelectionInputMode",
-        "OrientedRectangleIndicatorInstaller" -> "*"
+        "LassoSelectionInputMode" -> "*"
 
+        "OrientedRectangleIndicatorInstaller",
         "RectangleIndicatorInstaller",
         "MarqueeSelectionInputMode",
         "OverviewInputMode" -> JS_VOID
