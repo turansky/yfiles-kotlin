@@ -32,16 +32,22 @@ internal fun applyVisualTemplateHacks(source: Source) {
 internal fun getVisualTemplateParameter(className: String): String =
     when (className) {
         "DefaultPortCandidateDescriptor" -> TAG
-        "DefaultStripeInputVisualizationHelper" -> "IStripe"
-        "HandleInputMode" -> "IHandle"
+        "DefaultStripeInputVisualizationHelper" -> "yfiles.graph.IStripe"
+        "HandleInputMode" -> "yfiles.input.IHandle"
 
         "EdgeDecorationInstaller",
         "EdgeFocusIndicatorInstaller",
         "EdgeHighlightIndicatorInstaller",
         "EdgeSelectionIndicatorInstaller" -> IBEND
 
+        // TODO: check required
+        "LabelPositionHandler",
+        "LassoSelectionInputMode",
+        "OrientedRectangleIndicatorInstaller",
+        "RectangleIndicatorInstaller" -> "*"
+
         "MarqueeSelectionInputMode",
         "OverviewInputMode" -> JS_VOID
 
-        else -> "*"
+        else -> throw IllegalArgumentException("Unable to calculate type parameter for class '$className'")
     }
