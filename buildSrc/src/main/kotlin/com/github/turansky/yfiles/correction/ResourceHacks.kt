@@ -54,6 +54,14 @@ internal fun applyResourceHacks(source: Source) {
         .filter { it[NAME] == "resourceKey" }
         .single { it[TYPE] == JS_STRING }
         .also { it[TYPE] = resourceKey("$IVISUAL_TEMPLATE<${getVisualTemplateParameter(RECTANGLE_INDICATOR_INSTALLER)}>") }
+
+    val ORIENTED_RECTANGLE_INDICATOR_INSTALLER = "OrientedRectangleIndicatorInstaller"
+    source.type(ORIENTED_RECTANGLE_INDICATOR_INSTALLER)
+        .flatMap(CONSTRUCTORS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME] == "templateKey" }
+        .single { it[TYPE] == JS_STRING }
+        .also { it[TYPE] = resourceKey("$IVISUAL_TEMPLATE<${getVisualTemplateParameter(ORIENTED_RECTANGLE_INDICATOR_INSTALLER)}>") }
 }
 
 private fun getType(
