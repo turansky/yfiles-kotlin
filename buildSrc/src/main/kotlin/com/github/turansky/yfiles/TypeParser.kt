@@ -25,6 +25,14 @@ internal fun parseType(type: String): String {
         return "$ICOMPARABLE<*>"
     }
 
+    if (type.startsWith("$IVISUAL_TEMPLATE<")) {
+        return type
+    }
+
+    if (type == IVISUAL_TEMPLATE) {
+        return "$IVISUAL_TEMPLATE<*>"
+    }
+
     getKotlinType(type)?.let {
         return it
     }
