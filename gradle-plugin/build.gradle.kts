@@ -3,10 +3,17 @@ plugins {
     id("com.gradle.plugin-publish") version "0.10.1"
 
     kotlin("jvm") version "1.3.61"
+    id("com.github.autostyle") version "3.0"
 }
 
 repositories {
     jcenter()
+}
+
+autostyle {
+    kotlin {
+        endWithNewline()
+    }
 }
 
 val kotlinSourceDir: File
