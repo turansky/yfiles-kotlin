@@ -31,7 +31,7 @@ internal fun applyVisualTemplateHacks(source: Source) {
 
 internal fun getVisualTemplateParameter(className: String): String =
     when (className) {
-        "DefaultPortCandidateDescriptor" -> TAG
+        "DefaultPortCandidateDescriptor" -> "$TAG?"
         "DefaultStripeInputVisualizationHelper" -> "yfiles.graph.IStripe"
         "HandleInputMode" -> "yfiles.input.IHandle"
 
