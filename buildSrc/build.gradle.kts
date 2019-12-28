@@ -1,5 +1,12 @@
 plugins {
     kotlin("jvm") version "1.3.61"
+    id("com.github.autostyle") version "3.0"
+}
+
+autostyle {
+    kotlin {
+        endWithNewline()
+    }
 }
 
 tasks {
