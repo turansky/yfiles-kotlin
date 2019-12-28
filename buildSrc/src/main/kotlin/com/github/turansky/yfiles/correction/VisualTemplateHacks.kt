@@ -41,13 +41,14 @@ internal fun getVisualTemplateParameter(className: String): String =
         "EdgeSelectionIndicatorInstaller" -> IBEND
 
         // TODO: check required
-        "LabelPositionHandler",
-        "LassoSelectionInputMode" -> "*"
+        "LabelPositionHandler" -> "*"
+
+        "LassoSelectionInputMode",
+        "MarqueeSelectionInputMode",
+        "OverviewInputMode",
 
         "OrientedRectangleIndicatorInstaller",
-        "RectangleIndicatorInstaller",
-        "MarqueeSelectionInputMode",
-        "OverviewInputMode" -> JS_VOID
+        "RectangleIndicatorInstaller" -> JS_VOID
 
         else -> throw IllegalArgumentException("Unable to calculate type parameter for class '$className'")
     }
