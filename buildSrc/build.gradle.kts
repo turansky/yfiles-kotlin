@@ -3,6 +3,10 @@ plugins {
     id("com.github.autostyle") version "3.0"
 }
 
+repositories {
+    jcenter()
+}
+
 autostyle {
     kotlin {
         endWithNewline()
@@ -16,10 +20,6 @@ tasks {
             allWarningsAsErrors = true
         }
     }
-}
-
-repositories {
-    jcenter()
 }
 
 dependencies {
