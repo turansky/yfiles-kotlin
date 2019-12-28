@@ -266,4 +266,3 @@ private fun getReturnType(
 
         else -> throw IllegalStateException("Unexpected $className.$methodName")
     }
-

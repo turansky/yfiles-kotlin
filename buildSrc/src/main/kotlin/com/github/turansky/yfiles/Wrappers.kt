@@ -1358,4 +1358,3 @@ private fun List<String>?.toNamedList(title: String): List<String> {
 
     return listOf("### $title") + map(::listItem)
 }
-
