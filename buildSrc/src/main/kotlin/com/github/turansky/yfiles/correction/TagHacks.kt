@@ -5,7 +5,7 @@ import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
 
-private const val TAG = "yfiles.graph.Tag"
+internal const val TAG = "yfiles.graph.Tag"
 
 internal fun generateTagUtils(context: GeneratorContext) {
     // language=kotlin

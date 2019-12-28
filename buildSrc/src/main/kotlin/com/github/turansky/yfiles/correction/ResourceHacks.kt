@@ -39,15 +39,21 @@ internal fun applyResourceHacks(source: Source) {
 
     source.type("CanvasComponent")[PROPERTIES]["resources"][TYPE] = RESOURCE_MAP
 
-    source.type("DefaultPortCandidateDescriptor")[METHODS]["setTemplate"]
-        .firstParameter[TYPE] = resourceKey(IVISUAL_TEMPLATE)
+    val DEFAULT_PORT_CANDIDATE_DESCRIPTOR = "DefaultPortCandidateDescriptor"
+    source.type(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)[METHODS]["setTemplate"].apply {
+        val typeParameter = getVisualTemplateParameter(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)
+        firstParameter[TYPE] = resourceKey("$IVISUAL_TEMPLATE<$typeParameter>")
+        secondParameter.addGeneric(typeParameter)
+    }
 
-    source.type("RectangleIndicatorInstaller")
+
+    val RECTANGLE_INDICATOR_INSTALLER = "RectangleIndicatorInstaller"
+    source.type(RECTANGLE_INDICATOR_INSTALLER)
         .flatMap(CONSTRUCTORS)
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] == "resourceKey" }
         .single { it[TYPE] == JS_STRING }
-        .also { it[TYPE] = resourceKey(IVISUAL_TEMPLATE) }
+        .also { it[TYPE] = resourceKey("$IVISUAL_TEMPLATE<${getVisualTemplateParameter(RECTANGLE_INDICATOR_INSTALLER)}>") }
 }
 
 private fun getType(
