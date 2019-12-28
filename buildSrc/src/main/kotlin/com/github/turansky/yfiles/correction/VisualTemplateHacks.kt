@@ -16,3 +16,10 @@ private fun fixClass(source: Source) {
             .forEach { it[TYPE] = "T" }
     }
 }
+
+internal fun getVisualTemplateParameter(className: String): String =
+    when (className) {
+        "HandleInputMode" -> "IHandle"
+        "DefaultStripeInputVisualizationHelper" -> "IStripe"
+        else -> "*"
+    }

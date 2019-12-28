@@ -29,11 +29,13 @@ internal fun generateResourceUtils(context: GeneratorContext) {
 }
 
 internal fun applyResourceHacks(source: Source) {
-    source.types()
-        .optFlatMap(CONSTANTS)
-        .filter { it[TYPE] == JS_STRING }
-        .filter { it[NAME].endsWith("_KEY") }
-        .forEach { it[TYPE] = getType(it[NAME]) }
+    source.types().forEach {
+        val className = it[NAME]
+        it.optFlatMap(CONSTANTS)
+            .filter { it[TYPE] == JS_STRING }
+            .filter { it[NAME].endsWith("_KEY") }
+            .forEach { it[TYPE] = getType(className, it[NAME]) }
+    }
 
     source.type("CanvasComponent")[PROPERTIES]["resources"][TYPE] = RESOURCE_MAP
 
@@ -48,12 +50,15 @@ internal fun applyResourceHacks(source: Source) {
         .also { it[TYPE] = resourceKey(IVISUAL_TEMPLATE) }
 }
 
-private fun getType(name: String): String {
+private fun getType(
+    className: String,
+    name: String
+): String {
     val typeParameter = when {
         name == "TEMPLATE_KEY" -> JS_STRING
         name.endsWith("_FILL_KEY") -> "yfiles.view.Fill"
         name.endsWith("STROKE_KEY") -> "yfiles.view.Stroke"
-        else -> IVISUAL_TEMPLATE
+        else -> "$IVISUAL_TEMPLATE<${getVisualTemplateParameter(className)}>"
     }
 
     return resourceKey(typeParameter)
