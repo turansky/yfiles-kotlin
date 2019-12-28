@@ -40,8 +40,7 @@ internal fun getVisualTemplateParameter(className: String): String =
         "EdgeHighlightIndicatorInstaller",
         "EdgeSelectionIndicatorInstaller" -> IBEND
 
-        // TODO: check required
-        "LabelPositionHandler" -> "*"
+        "LabelPositionHandler",
 
         "LassoSelectionInputMode",
         "MarqueeSelectionInputMode",
