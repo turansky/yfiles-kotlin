@@ -110,6 +110,9 @@ internal class KotlinFileGenerator(
         protected val memberFunctions: List<Method>
             get() = declaration.methods
 
+        protected val memberExtensionFunctions: List<Method>
+            get() = declaration.extensionMethods
+
         protected val memberEvents: List<Event>
             get() = if (declaration is ExtendedType) {
                 declaration.events
@@ -287,7 +290,10 @@ internal class KotlinFileGenerator(
                     className = declaration.name,
                     generics = declaration.generics,
                     final = declaration.final
-                )
+                ),
+                memberExtensionFunctions
+                    .takeIf { it.isNotEmpty() }
+                    ?.run { lines { it.toExtensionCode() } }
             )
 
             val events = memberEvents
@@ -349,6 +355,7 @@ internal class KotlinFileGenerator(
 
         private val defaultDeclarations = memberProperties.filter { !it.abstract } +
                 memberFunctions.filter { !it.abstract } +
+                memberExtensionFunctions +
                 memberEvents.filter { !it.overriden }
 
         override val metadataClass: String

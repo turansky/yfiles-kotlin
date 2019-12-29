@@ -156,6 +156,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val staticProperties: List<Property> by declarationList { Property(it, this) }
 
     val methods: List<Method> by declarationList { Method(it, this) }
+    val extensionMethods: List<Method> by lazy { methods.mapNotNull { it.toOperatorExtension() } }
     val staticMethods: List<Method> by declarationList { Method(it, this) }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -630,7 +631,8 @@ private val OPERATOR_MAP = mapOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: Type
+    private val parent: Type,
+    private val operatorName: String? = null
 ) : MethodBase(source, parent) {
     val abstract = modifiers.abstract
     private val static = modifiers.static
@@ -737,32 +739,25 @@ internal class Method(
         val operatorMode = OPERATOR_MAP[name] == parameters.size
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
-        return documentation +
-                toCode(name, operatorMode) +
-                toOperatorCode()
+        return documentation + toCode(name, operatorMode)
     }
 
-    private fun toOperatorCode(): String {
+    fun toOperatorExtension(): Method? {
         val operatorName = when {
+            protected -> return null
+            overridden -> return null
+
             name == "add" && parameters.size == 1 && returns != null -> "plus"
             name == "subtrack" && parameters.size == 1 && returns != null -> "minus"
             name == "multiply" && parameters.size == 1 && returns != null -> "times"
 
             name == "add" && parameters.size == 1 && returns == null -> "plusAssign"
             name == "remove" && parameters.size == 1 && returns == null -> "minusAssign"
-            else -> return ""
+
+            else -> return null
         }
 
-        val jsName = exp(
-            !overridden,
-            """@JsName("$name")"""
-        )
-
-        return """
-                |
-                |$jsName
-                |${toCode(operatorName, true)}
-               """.trimMargin()
+        return Method(source, parent, operatorName)
     }
 
     override fun toExtensionCode(): String {
@@ -785,8 +780,10 @@ internal class Method(
             "$name.apply(this, $callParameters)"
         }
 
+        val extensionName = operatorName ?: name
+        val operator = exp(operatorName != null, "operator")
         return documentation +
-                "inline fun $genericDeclaration ${parent.classDeclaration}.$name($extParameters)$returnSignature {\n" +
+                "inline $operator fun $genericDeclaration ${parent.classDeclaration}.$extensionName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
     }
