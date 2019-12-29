@@ -772,7 +772,7 @@ internal class Method(
         }
 
         val extensionName = operatorName ?: name
-        val operator = exp(operatorName != null, "operator")
+        val operator = exp(operatorName != null || isOperatorMode(), "operator")
         return documentation +
                 "inline $operator fun $genericDeclaration ${parent.classDeclaration}.$extensionName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
