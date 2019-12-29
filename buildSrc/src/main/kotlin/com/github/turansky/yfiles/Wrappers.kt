@@ -718,28 +718,19 @@ internal class Method(
         return ":" + type + modifiers.nullability
     }
 
-    private fun toCode(
-        methodName: String,
-        operatorMode: Boolean
-    ): String {
-        val operator = exp(operatorMode, " operator ")
-
-        val code = "${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
-        if (!hidden) {
-            return code
-        }
-
-        return """
-            |$HIDDEN_METHOD_ANNOTATION
-            |$code
-        """.trimMargin()
-    }
-
-    override fun toCode(): String {
-        val operatorMode = OPERATOR_MAP[name] == parameters.size
+    private fun isOperatorMode(): Boolean =
+        OPERATOR_MAP[name] == parameters.size
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
-        return documentation + toCode(name, operatorMode)
+    override fun toCode(): String {
+        val operator = exp(isOperatorMode(), "operator")
+
+        var code = "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
+        if (hidden) {
+            code = HIDDEN_METHOD_ANNOTATION + "\n" + code
+        }
+
+        return documentation + code
     }
 
     fun toOperatorExtension(): Method? {
