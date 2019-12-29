@@ -31,7 +31,7 @@ internal fun applyIdHacks(source: Source) {
     source.types()
         .flatMap { it.optFlatMap(CONSTANTS) }
         .filter { it[TYPE] in ID_DP_KEYS }
-        .filter { it[NAME].endsWith("_ID_DP_KEY") }
+        .filter { it[NAME].let { it.endsWith("_ID_DP_KEY") || it == "CUSTOM_GROUPS_DP_KEY" } }
         .forEach {
             val newType = it[TYPE]
                 .replace("<$JS_ANY>", "<$YID>")
@@ -50,7 +50,7 @@ internal fun applyIdHacks(source: Source) {
         .forEach { it[TYPE] = YID }
 
     typedItems(source)
-        .filter { it[NAME].endsWith("Ids") }
+        .filter { it[NAME].let { it.endsWith("Ids") || it == "customGroups" } }
         .forEach {
             val newType = it[TYPE]
                 .replace(",$JS_ANY>", ",$YID>")
