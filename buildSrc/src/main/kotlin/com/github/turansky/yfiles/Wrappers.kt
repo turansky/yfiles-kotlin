@@ -835,10 +835,8 @@ internal abstract class MethodBase(
 }
 
 internal class ParameterModifiers(flags: List<String>) {
-    val artificial = ARTIFICIAL in flags
     val vararg = VARARGS in flags
     val optional = OPTIONAL in flags
-    val conversion = CONVERSION in flags
 
     private val canbenull = CANBENULL in flags
     val nullability = exp(canbenull, "?")
