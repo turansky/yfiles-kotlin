@@ -42,6 +42,11 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
         .forEach { it.addGeneric("$TAG?") }
 
+    source.type("ItemModelManager").apply {
+        get(PROPERTIES)["descriptor"].addGeneric("T")
+        get(METHODS)["getDescriptor"][RETURNS].addGeneric("T")
+    }
+
     source.type("GraphModelManager").apply {
         flatMap(PROPERTIES)
             .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
