@@ -2,15 +2,13 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
+import org.json.JSONObject
 
 internal fun applyCanvasObjectDescriptorHacks(source: Source) {
     source.type("ICanvasObjectDescriptor").apply {
         setSingleTypeParameter("in T")
 
-        flatMap(METHODS)
-            .filterNot { it[NAME] == "isDirty" }
-            .map { it[PARAMETERS]["forUserObject"] }
-            .forEach { it[TYPE] = "T" }
+        fixUserObjectType("T")
 
         sequenceOf(
             "ALWAYS_DIRTY_INSTANCE" to IVISUAL_CREATOR,
@@ -22,6 +20,14 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         ).forEach { (name, typeParameter) ->
             get(CONSTANTS)[name].addGeneric(typeParameter)
         }
+    }
+
+    source.type("DefaultPortCandidateDescriptor").apply {
+        get(IMPLEMENTS).apply {
+            put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$TAG?>")
+        }
+
+        fixUserObjectType("$TAG?")
     }
 
     source.type("GraphModelManager").apply {
@@ -61,4 +67,11 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
                 it.firstParameter.addGeneric(typeParameter)
             }
     }
+}
+
+private fun JSONObject.fixUserObjectType(type: String) {
+    flatMap(METHODS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME] == "forUserObject" }
+        .forEach { it[TYPE] = type }
 }
