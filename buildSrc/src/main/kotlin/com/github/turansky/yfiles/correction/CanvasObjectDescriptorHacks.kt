@@ -30,6 +30,18 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         fixUserObjectType("$TAG?")
     }
 
+    source.type("CreateEdgeInputMode")
+        .flatMap(PROPERTIES)
+        .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
+        .forEach { it.addGeneric("$TAG?") }
+
+    source.type("PortRelocationHandle")
+        .flatMap(METHODS)
+        .filter { it.has(RETURNS) }
+        .map { it[RETURNS] }
+        .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
+        .forEach { it.addGeneric("$TAG?") }
+
     source.type("GraphModelManager").apply {
         flatMap(PROPERTIES)
             .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
