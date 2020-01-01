@@ -10,7 +10,10 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
+val INODE = "yfiles.graph.INode"
 val IEDGE = "yfiles.graph.IEdge"
+val IPORT = "yfiles.graph.IPort"
+val ILABEL = "yfiles.graph.ILabel"
 val IBEND = "yfiles.graph.IBend"
 
 val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"

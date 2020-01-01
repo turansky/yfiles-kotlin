@@ -692,8 +692,8 @@ internal class Method(
     private fun nullablePromiseResult(generic: String): Boolean =
         when (generic) {
             "String" -> name == "editLabelCore" || name == "edit"
-            "yfiles.graph.IEdge",
-            "yfiles.graph.ILabel",
+            IEDGE,
+            ILABEL,
             "yfiles.collections.IEnumerable<yfiles.graph.IModelItem>" -> true
             else -> false
         }

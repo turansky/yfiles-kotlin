@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.vsdx.correction
 
-import com.github.turansky.yfiles.ABSTRACT
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_STRING
-import com.github.turansky.yfiles.YCLASS
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
@@ -19,13 +16,13 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.geometry.Size",
 
     "yfiles.graph.IModelItem",
-    "yfiles.graph.INode",
-    "yfiles.graph.IEdge",
-    "yfiles.graph.ILabel",
-    "yfiles.graph.IPort",
+    INODE,
+    IEDGE,
+    ILABEL,
+    IPORT,
     "yfiles.graph.IGraph",
 
-    "yfiles.graph.ILabelModelParameter",
+    ILABEL_MODEL_PARAMETER,
     "yfiles.graph.InteriorStretchLabelModel",
 
     "yfiles.styles.INodeStyle",

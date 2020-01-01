@@ -14,7 +14,7 @@ internal fun getHandlerData(listenerType: String): HandlerData {
 
         "yfiles.graph.NodeLayoutChangedHandler" ->
             HandlerData(
-                handlerType = "(node: yfiles.graph.INode, oldLayout: yfiles.geometry.Rect) -> Unit",
+                handlerType = "(node: $INODE, oldLayout: yfiles.geometry.Rect) -> Unit",
                 listenerBody = "{ _, node, oldLayout -> handler(node, oldLayout) }"
             )
 

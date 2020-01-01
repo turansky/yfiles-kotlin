@@ -155,7 +155,7 @@ private fun fixPropertyType(source: Source) {
     source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")
-                .set(TYPE, "yfiles.layout.ItemMapping<yfiles.graph.INode,Comparator<yfiles.graph.IEdge>>")
+                .set(TYPE, "yfiles.layout.ItemMapping<$INODE,Comparator<$IEDGE>>")
         }
 }
 
