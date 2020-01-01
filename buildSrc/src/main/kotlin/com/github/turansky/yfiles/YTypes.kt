@@ -58,6 +58,8 @@ val PARTITION_CELL_KEY = "yfiles.router.PartitionCellKey"
 val BIPARTITION_MARK = "yfiles.algorithms.BipartitionMark"
 val DFS_STATE = "yfiles.algorithms.DfsState"
 
+val ICANVAS_OBJECT_DESCRIPTOR = "yfiles.view.ICanvasObjectDescriptor"
+
 val VISUAL = "yfiles.view.Visual"
 val IVISUAL_CREATOR = "yfiles.view.IVisualCreator"
 val IVISUAL_TEMPLATE = "yfiles.view.IVisualTemplate"
