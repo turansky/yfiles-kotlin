@@ -16,7 +16,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             "DYNAMIC_DIRTY_INSTANCE" to IVISUAL_CREATOR,
             "DYNAMIC_DIRTY_LOOKUP" to ILOOKUP,
             "VISUAL" to VISUAL,
-            "VOID" to JS_VOID
+            "VOID" to "$ANY?"
         ).forEach { (name, typeParameter) ->
             get(CONSTANTS)[name].addGeneric(typeParameter)
         }
