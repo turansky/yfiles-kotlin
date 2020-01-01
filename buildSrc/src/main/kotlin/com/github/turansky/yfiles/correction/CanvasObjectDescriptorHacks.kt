@@ -22,6 +22,9 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         }
     }
 
+    source.type("ICanvasObject")[PROPERTIES]["descriptor"].addGeneric("*")
+    source.type("ICanvasObjectGroup")[METHODS]["addChild"].secondParameter.addGeneric("*")
+
     source.type("DefaultPortCandidateDescriptor").apply {
         get(IMPLEMENTS).apply {
             put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$TAG?>")
@@ -35,12 +38,20 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
         .forEach { it.addGeneric("$TAG?") }
 
-    source.type("PortRelocationHandle")
+    source.types("PortRelocationHandle", "SnapContext")
         .flatMap(METHODS)
         .filter { it.has(RETURNS) }
         .map { it[RETURNS] }
         .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
         .forEach { it.addGeneric("$TAG?") }
+
+    // TODO: check required
+    source.type("LabelPositionHandler")
+        .flatMap(METHODS)
+        .filter { it.has(RETURNS) }
+        .map { it[RETURNS] }
+        .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
+        .forEach { it.addGeneric("*") }
 
     source.type("ItemModelManager").apply {
         get(PROPERTIES)["descriptor"].addGeneric("T")
