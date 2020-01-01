@@ -62,7 +62,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         flatMap(PROPERTIES)
             .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
             .forEach {
-                it[TYPE] = when (val name = it[NAME]) {
+                val typeParameter = when (val name = it[NAME]) {
                     "nodeDescriptor" -> INODE
                     "edgeDescriptor" -> IEDGE
                     "portDescriptor" -> IPORT
@@ -71,6 +71,8 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
                         ILABEL
                     }
                 }
+
+                it.addGeneric(typeParameter)
             }
 
         flatMap(CONSTANTS)
