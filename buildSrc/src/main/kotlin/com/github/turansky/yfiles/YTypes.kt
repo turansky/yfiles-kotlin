@@ -9,6 +9,8 @@ val YENUM = "yfiles.lang.YEnum"
 val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
 
+val ILOOKUP = "yfiles.graph.ILookup"
+
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
 val INODE = "yfiles.graph.INode"
 val IEDGE = "yfiles.graph.IEdge"
@@ -56,4 +58,6 @@ val PARTITION_CELL_KEY = "yfiles.router.PartitionCellKey"
 val BIPARTITION_MARK = "yfiles.algorithms.BipartitionMark"
 val DFS_STATE = "yfiles.algorithms.DfsState"
 
+val VISUAL = "yfiles.view.Visual"
+val IVISUAL_CREATOR = "yfiles.view.IVisualCreator"
 val IVISUAL_TEMPLATE = "yfiles.view.IVisualTemplate"
