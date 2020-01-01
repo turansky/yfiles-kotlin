@@ -23,7 +23,14 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
     }
 
     source.type("ICanvasObject")[PROPERTIES]["descriptor"].addGeneric("*")
-    source.type("ICanvasObjectGroup")[METHODS]["addChild"].secondParameter.addGeneric("*")
+
+    source.type("ICanvasObjectGroup")[METHODS]["addChild"].apply {
+        setSingleTypeParameter()
+
+        firstParameter[TYPE] = "T"
+        firstParameter.changeNullability(false)
+        secondParameter.addGeneric("T")
+    }
 
     source.type("DefaultPortCandidateDescriptor").apply {
         get(IMPLEMENTS).apply {
