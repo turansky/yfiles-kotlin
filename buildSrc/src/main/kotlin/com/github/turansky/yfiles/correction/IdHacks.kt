@@ -70,6 +70,9 @@ internal fun applyIdHacks(source: Source) {
         ).forEach { properties[it][TYPE] = YID }
     }
 
+    source.types("GraphClipboard", "IClipboardIdProvider")
+        .forEach { it[METHODS]["getId"][RETURNS][TYPE] = YID }
+
     source.type("BusRouterBusDescriptor")
         .flatMap(CONSTRUCTORS)
         .flatMap(PARAMETERS)
