@@ -10,6 +10,7 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
 
 val ILOOKUP = "yfiles.graph.ILookup"
+val LOOKUP_DECORATOR = "yfiles.graph.LookupDecorator"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
 val INODE = "yfiles.graph.INode"
