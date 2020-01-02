@@ -9,7 +9,9 @@ internal fun generateElementIdUtils(context: GeneratorContext) {
     context[ELEMENT_ID] = """
             |package yfiles.graphml
             |
-            |external interface ElementId
+            |@JsName("String")
+            |external class ElementId 
+            |internal constructor()
             |
             |fun ElementId(source:String):ElementId = 
             |    source.unsafeCast<ElementId>()

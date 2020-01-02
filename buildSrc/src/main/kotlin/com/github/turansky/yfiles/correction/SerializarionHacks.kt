@@ -13,7 +13,8 @@ internal fun generateSerializationUtils(context: GeneratorContext) {
             |package yfiles.graphml
             |
             |@JsName("String")
-            |external class SerializationPropertyKey<T : Any> internal constructor()
+            |external class SerializationPropertyKey<T : Any> 
+            |internal constructor()
         """.trimMargin()
 }
 
