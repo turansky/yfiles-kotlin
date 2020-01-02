@@ -30,6 +30,11 @@ internal fun applyTagHacks(source: Source) {
         .filter { looksLikeTag(it[NAME]) }
         .filter { it[TYPE] in likeObjectTypes }
         .forEach { it[TYPE] = TAG }
+
+    source.type("GraphCopier")
+        .flatMap(METHODS)
+        .filter { it[NAME].run { startsWith("copy") && endsWith("Tag") } }
+        .forEach { it[RETURNS][TYPE] = TAG }
 }
 
 private fun looksLikeTag(name: String): Boolean =
