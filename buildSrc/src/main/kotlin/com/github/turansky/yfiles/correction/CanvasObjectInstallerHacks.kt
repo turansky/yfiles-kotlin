@@ -60,10 +60,15 @@ internal fun applyCanvasObjectInstallerHacks(source: Source) {
         .forEach { it[RETURNS].addGeneric("T") }
 }
 
+private val ITEM_NAMES = setOf(
+    "item",
+    "userObject"
+)
+
 private fun JSONObject.fixUserObjectType(type: String) {
     optFlatMap(METHODS)
         .optFlatMap(PARAMETERS)
-        .filter { it[NAME] == "item" }
+        .filter { it[NAME] in ITEM_NAMES }
         .onEach { it.changeNullability(false) }
         .forEach { it[TYPE] = type }
 }
