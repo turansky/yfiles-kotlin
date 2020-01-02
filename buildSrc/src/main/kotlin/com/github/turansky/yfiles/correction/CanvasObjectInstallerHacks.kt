@@ -1,8 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ICANVAS_OBJECT_INSTALLER
-import com.github.turansky.yfiles.IMODEL_ITEM
-import com.github.turansky.yfiles.between
+import com.github.turansky.yfiles.*
 import org.json.JSONObject
 
 internal fun applyCanvasObjectInstallerHacks(source: Source) {
@@ -29,6 +27,30 @@ internal fun applyCanvasObjectInstallerHacks(source: Source) {
                 val typeParameter = between(this, "<", ",")
                 replace(">", "<$typeParameter>>")
             }
+        }
+
+    source.types()
+        .filter { it[ID].run { startsWith("yfiles.view.") && endsWith("Installer") } }
+        .filter { it[GROUP] == "class" }
+        .forEach {
+            val name = it[NAME]
+            val typeParameter = when {
+                name.startsWith("Node") -> INODE
+                name.startsWith("Edge") -> IEDGE
+                name.startsWith("Port") -> IPORT
+                name.startsWith("Label") -> ILABEL
+
+                else -> {
+                    it.setSingleTypeParameter(bound = IMODEL_ITEM)
+                    "T"
+                }
+            }
+
+            if (it.has(IMPLEMENTS)) {
+                it[IMPLEMENTS] = it[IMPLEMENTS].map { "$it<$typeParameter>" }
+            }
+
+            it.fixUserObjectType(typeParameter)
         }
 }
 
