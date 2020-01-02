@@ -42,7 +42,6 @@ fun generateKotlinDeclarations(
     generateTagUtils(context)
     generateStyleTagUtils(context)
     generateResourceUtils(context)
-    generateSerializationUtils(context)
     generateConvertersUtils(context)
     generateEventDispatcherUtils(context)
 
@@ -52,6 +51,8 @@ fun generateKotlinDeclarations(
     generatePartitionCellUtils(context)
 
     generateElementIdUtils(context)
+    generateCreationPropertyUtils(context)
+    generateSerializationUtils(context)
 }
 
 fun generateVsdxKotlinDeclarations(
