@@ -1,8 +1,9 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ELEMENT_ID
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_STRING
+
+private val ELEMENT_ID = "yfiles.graphml.ElementId"
 
 internal fun generateElementIdUtils(context: GeneratorContext) {
     // language=kotlin

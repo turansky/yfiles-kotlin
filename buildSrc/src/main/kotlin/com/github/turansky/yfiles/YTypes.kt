@@ -10,7 +10,6 @@ val ICOMPARABLE = "yfiles.lang.IComparable"
 val ICLONEABLE = "yfiles.lang.ICloneable"
 
 val ILOOKUP = "yfiles.graph.ILookup"
-val LOOKUP_DECORATOR = "yfiles.graph.LookupDecorator"
 
 val IMODEL_ITEM = "yfiles.graph.IModelItem"
 val INODE = "yfiles.graph.INode"
@@ -22,8 +21,6 @@ val IBEND = "yfiles.graph.IBend"
 val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
 val STRIPE_TYPES = "yfiles.graph.StripeTypes"
 val ILABEL_MODEL_PARAMETER = "yfiles.graph.ILabelModelParameter"
-
-val ELEMENT_ID = "yfiles.graphml.ElementId"
 
 val ICURSOR = "yfiles.algorithms.ICursor"
 val YLIST = "yfiles.algorithms.YList"
