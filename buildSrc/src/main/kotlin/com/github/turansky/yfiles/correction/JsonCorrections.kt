@@ -441,14 +441,14 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("label", "ILabel"),
             MethodParameterData("model", "ILabelModel")
         ),
-        result = ResultData("$IENUMERABLE<ILabelModelParameter>")
+        result = ResultData("$IENUMERABLE<$ILABEL_MODEL_PARAMETER>")
     ),
     MethodData(
         className = "EdgePathLabelModel",
         methodName = "getGeometry",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
-            MethodParameterData("layoutParameter", "ILabelModelParameter")
+            MethodParameterData("layoutParameter", ILABEL_MODEL_PARAMETER)
         ),
         result = ResultData("yfiles.geometry.IOrientedRectangle")
     ),
@@ -460,14 +460,14 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("label", "ILabel"),
             MethodParameterData("model", "ILabelModel")
         ),
-        result = ResultData("$IENUMERABLE<ILabelModelParameter>")
+        result = ResultData("$IENUMERABLE<$ILABEL_MODEL_PARAMETER>")
     ),
     MethodData(
         className = "EdgeSegmentLabelModel",
         methodName = "getGeometry",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
-            MethodParameterData("layoutParameter", "ILabelModelParameter")
+            MethodParameterData("layoutParameter", ILABEL_MODEL_PARAMETER)
         ),
         result = ResultData("yfiles.geometry.IOrientedRectangle")
     ),
@@ -488,7 +488,7 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("label", "ILabel"),
             MethodParameterData("model", "ILabelModel")
         ),
-        result = ResultData("$IENUMERABLE<ILabelModelParameter>")
+        result = ResultData("$IENUMERABLE<$ILABEL_MODEL_PARAMETER>")
     ),
     MethodData(
         className = "GenericLabelModel",
@@ -504,7 +504,7 @@ internal val MISSED_METHODS = listOf(
         methodName = "getGeometry",
         parameters = listOf(
             MethodParameterData("label", "ILabel"),
-            MethodParameterData("layoutParameter", "ILabelModelParameter")
+            MethodParameterData("layoutParameter", ILABEL_MODEL_PARAMETER)
         ),
         result = ResultData("yfiles.geometry.IOrientedRectangle")
     ),

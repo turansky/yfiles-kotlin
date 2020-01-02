@@ -15,7 +15,7 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.geometry.Point",
     "yfiles.geometry.Size",
 
-    "yfiles.graph.IModelItem",
+    IMODEL_ITEM,
     INODE,
     IEDGE,
     ILABEL,

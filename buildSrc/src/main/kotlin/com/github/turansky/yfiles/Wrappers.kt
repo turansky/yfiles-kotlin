@@ -694,7 +694,7 @@ internal class Method(
             "String" -> name == "editLabelCore" || name == "edit"
             IEDGE,
             ILABEL,
-            "$IENUMERABLE<yfiles.graph.IModelItem>" -> true
+            "$IENUMERABLE<$IMODEL_ITEM>" -> true
             else -> false
         }
 
