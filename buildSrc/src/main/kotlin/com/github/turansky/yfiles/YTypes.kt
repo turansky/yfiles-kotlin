@@ -23,6 +23,8 @@ val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
 val STRIPE_TYPES = "yfiles.graph.StripeTypes"
 val ILABEL_MODEL_PARAMETER = "yfiles.graph.ILabelModelParameter"
 
+val ELEMENT_ID = "yfiles.graphml.ElementId"
+
 val ICURSOR = "yfiles.algorithms.ICursor"
 val YLIST = "yfiles.algorithms.YList"
 val YPOINT = "yfiles.algorithms.YPoint"

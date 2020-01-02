@@ -72,6 +72,8 @@ internal fun applyHacks(api: JSONObject) {
     applyCanvasObjectInstallerHacks(source)
     applyVisualTemplateHacks(source)
 
+    applyElementIdHacks(source)
+
     fixConstructors(source)
 }
 

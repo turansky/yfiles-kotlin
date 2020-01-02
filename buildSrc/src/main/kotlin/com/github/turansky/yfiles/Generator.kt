@@ -50,6 +50,8 @@ fun generateKotlinDeclarations(
     generateFlagsUtils(context)
     generateIncrementalHint(context)
     generatePartitionCellUtils(context)
+
+    generateElementIdUtils(context)
 }
 
 fun generateVsdxKotlinDeclarations(
