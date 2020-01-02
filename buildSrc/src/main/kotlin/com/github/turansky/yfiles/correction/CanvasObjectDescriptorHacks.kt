@@ -32,33 +32,32 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         secondParameter.addGeneric("T")
     }
 
+    val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
     source.type("DefaultPortCandidateDescriptor").apply {
         get(IMPLEMENTS).apply {
-            put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$TAG?>")
+            put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$IPORT_CANDIDATE>")
         }
 
-        fixUserObjectType("$TAG?")
+        fixUserObjectType(IPORT_CANDIDATE)
     }
 
     source.type("CreateEdgeInputMode")
         .flatMap(PROPERTIES)
         .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
-        .forEach { it.addGeneric("$TAG?") }
+        .forEach { it.addGeneric(IPORT_CANDIDATE) }
 
-    source.types("PortRelocationHandle", "SnapContext")
-        .flatMap(METHODS)
-        .filter { it.has(RETURNS) }
-        .map { it[RETURNS] }
-        .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
-        .forEach { it.addGeneric("$TAG?") }
-
-    // TODO: check required
-    source.type("LabelPositionHandler")
-        .flatMap(METHODS)
-        .filter { it.has(RETURNS) }
-        .map { it[RETURNS] }
-        .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
-        .forEach { it.addGeneric("*") }
+    sequenceOf(
+        "LabelPositionHandler" to ILABEL_MODEL_PARAMETER,
+        "PortRelocationHandle" to IPORT_CANDIDATE,
+        "SnapContext" to "yfiles.input.SnapResult"
+    ).forEach { (className, typeParameter) ->
+        source.type(className)
+            .flatMap(METHODS)
+            .filter { it.has(RETURNS) }
+            .map { it[RETURNS] }
+            .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
+            .forEach { it.addGeneric(typeParameter) }
+    }
 
     source.type("ItemModelManager").apply {
         get(PROPERTIES)["descriptor"].addGeneric("T")
