@@ -1,8 +1,8 @@
 package com.github.turansky.yfiles
 
-val YOBJECT = "yfiles.lang.YObject"
+const val YOBJECT = "yfiles.lang.YObject"
 
-private val YOBJECT_CLASS = "yfiles.lang.Object"
+private const val YOBJECT_CLASS = "yfiles.lang.Object"
 
 private val PRIMITIVE_CLASSES = setOf(
     "yfiles.lang.Boolean",

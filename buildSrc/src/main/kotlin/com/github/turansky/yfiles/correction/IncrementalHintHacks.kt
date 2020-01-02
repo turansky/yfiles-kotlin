@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.json.get
 
-internal val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
+internal const val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
 
 internal fun generateIncrementalHint(context: GeneratorContext) {
     // language=kotlin
