@@ -350,7 +350,7 @@ private val THIS_TYPES = setOf(
     "List"
 )
 
-private val FUNC_RUDIMENT = ",number,yfiles.collections.IEnumerable<T>"
+private val FUNC_RUDIMENT = ",number,$IENUMERABLE<T>"
 private val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
 
 private fun removeThisParameters(source: Source) {

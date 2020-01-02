@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.IENUMERABLE
 import com.github.turansky.yfiles.JS_DOUBLE
 import com.github.turansky.yfiles.JS_INT
 import com.github.turansky.yfiles.JS_NUMBER
@@ -214,9 +215,9 @@ private fun JSONObject.correctMethods(key: JArrayKey) {
             when (returns[TYPE]) {
                 JS_NUMBER -> returns[TYPE] = getReturnType(className, methodName)
                 "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<$JS_DOUBLE>"
-                "yfiles.collections.IEnumerable<$JS_NUMBER>" -> {
+                "$IENUMERABLE<$JS_NUMBER>" -> {
                     check(methodName == "ofRange")
-                    returns[TYPE] = "yfiles.collections.IEnumerable<$JS_INT>"
+                    returns[TYPE] = "$IENUMERABLE<$JS_INT>"
                 }
             }
         }

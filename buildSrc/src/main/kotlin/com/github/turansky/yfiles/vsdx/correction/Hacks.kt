@@ -9,7 +9,7 @@ private val YFILES_TYPE_MAP = sequenceOf(
     YCLASS,
 
     "yfiles.collections.IEnumerator",
-    "yfiles.collections.IEnumerable",
+    IENUMERABLE,
 
     "yfiles.geometry.Insets",
     "yfiles.geometry.Point",

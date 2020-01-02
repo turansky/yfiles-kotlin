@@ -33,6 +33,7 @@ const val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
 const val DP_KEY_BASE = "yfiles.algorithms.DpKeyBase"
 
+const val IENUMERABLE = "yfiles.collections.IEnumerable"
 const val ICOLLECTION = "yfiles.collections.ICollection"
 const val ILIST = "yfiles.collections.IList"
 

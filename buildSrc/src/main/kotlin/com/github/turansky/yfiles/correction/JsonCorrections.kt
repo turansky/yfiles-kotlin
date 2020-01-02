@@ -441,7 +441,7 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("label", "ILabel"),
             MethodParameterData("model", "ILabelModel")
         ),
-        result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
+        result = ResultData("$IENUMERABLE<ILabelModelParameter>")
     ),
     MethodData(
         className = "EdgePathLabelModel",
@@ -460,7 +460,7 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("label", "ILabel"),
             MethodParameterData("model", "ILabelModel")
         ),
-        result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
+        result = ResultData("$IENUMERABLE<ILabelModelParameter>")
     ),
     MethodData(
         className = "EdgeSegmentLabelModel",
@@ -488,7 +488,7 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("label", "ILabel"),
             MethodParameterData("model", "ILabelModel")
         ),
-        result = ResultData("yfiles.collections.IEnumerable<ILabelModelParameter>")
+        result = ResultData("$IENUMERABLE<ILabelModelParameter>")
     ),
     MethodData(
         className = "GenericLabelModel",
