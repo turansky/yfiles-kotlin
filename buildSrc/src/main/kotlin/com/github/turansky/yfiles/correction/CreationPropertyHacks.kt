@@ -1,9 +1,8 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.GeneratorContext
-import com.github.turansky.yfiles.IENUMERABLE
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_BOOLEAN
+import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.json.get
+import com.github.turansky.yfiles.json.strictRemove
 
 private const val CREATION_PROPERTY_KEY = "yfiles.graphml.CreationPropertyKey"
 
@@ -35,7 +34,39 @@ internal fun applyCreationPropertyHacks(source: Source) {
         "TAG" to TAG
     )
 
-    source.types("CreationProperties")
-        .flatMap(CONSTANTS)
-        .forEach { it[TYPE] = propertyKey(typeMap.getValue(it[NAME])) }
+    source.type("CreationProperties").apply {
+        strictRemove(IMPLEMENTS)
+
+        get(PROPERTIES)["entries"].also {
+            it[TYPE] = it[TYPE].replace("<$JS_ANY,", "<${propertyKey("*")},")
+        }
+
+        flatMap(METHODS)
+            .filter { it.has(PARAMETERS) }
+            .forEach {
+                val typeParameter = when (it[NAME]) {
+                    "removeValue" -> "*"
+                    else -> {
+                        it.setSingleTypeParameter(bound = JS_OBJECT)
+                        "T"
+                    }
+                }
+
+                if (it[NAME] == "get") {
+                    it[RETURNS][TYPE] = "T"
+                }
+
+                it.flatMap(PARAMETERS)
+                    .forEach {
+                        it[TYPE] = when (it[NAME]) {
+                            "key" -> propertyKey(typeParameter)
+                            "value" -> typeParameter
+                            else -> TODO()
+                        }
+                    }
+            }
+
+        flatMap(CONSTANTS)
+            .forEach { it[TYPE] = propertyKey(typeMap.getValue(it[NAME])) }
+    }
 }
