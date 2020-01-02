@@ -52,6 +52,12 @@ internal fun applyCanvasObjectInstallerHacks(source: Source) {
 
             it.fixUserObjectType(typeParameter)
         }
+
+    source.types()
+        .filter { it[ID].run { startsWith("yfiles.view.") && endsWith("Manager") } }
+        .optFlatMap(METHODS)
+        .filter { it[NAME] == "getInstaller" }
+        .forEach { it[RETURNS].addGeneric("T") }
 }
 
 private fun JSONObject.fixUserObjectType(type: String) {
