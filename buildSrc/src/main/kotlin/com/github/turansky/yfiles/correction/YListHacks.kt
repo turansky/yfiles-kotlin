@@ -95,9 +95,6 @@ private fun getGeneric(
         methodName == "splice" && parameterName == "list" ->
             return "T"
 
-        methodName == "intersect" && parameterName == "objects" ->
-            return "yfiles.algorithms.IPlaneObject"
-
         methodName == "setNodeOrder" && parameterName == "list" ->
             return NODE
 
