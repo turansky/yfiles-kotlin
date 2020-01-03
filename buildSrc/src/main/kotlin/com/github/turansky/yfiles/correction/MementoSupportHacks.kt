@@ -9,7 +9,7 @@ internal fun applyMementoSupportHacks(source: Source) {
     val S = "S"
 
     source.type("IMementoSupport").apply {
-        setTypeParameters(T, S)
+        setTypeParameters("in $T", S)
 
         flatMap(METHODS)
             .flatMap(PARAMETERS)
