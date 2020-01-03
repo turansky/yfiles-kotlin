@@ -21,6 +21,7 @@ const val IBEND = "yfiles.graph.IBend"
 const val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
 const val STRIPE_TYPES = "yfiles.graph.StripeTypes"
 const val ILABEL_MODEL_PARAMETER = "yfiles.graph.ILabelModelParameter"
+const val IMEMENTO_SUPPORT = "yfiles.graph.IMementoSupport"
 
 const val ICURSOR = "yfiles.algorithms.ICursor"
 const val YLIST = "yfiles.algorithms.YList"
