@@ -41,4 +41,8 @@ internal fun applyLabelModelParameterHacks(source: Source) {
         .flatMap(PARAMETERS)
         .filter { it[NAME] == "parameter" }
         .forEach { it[TYPE] = ILABEL_MODEL_PARAMETER }
+
+    source.type("DiscreteEdgeLabelLayoutModel")
+        .staticMethod("createPositionParameter")
+        .get(RETURNS)[TYPE] = ILABEL_MODEL_PARAMETER
 }

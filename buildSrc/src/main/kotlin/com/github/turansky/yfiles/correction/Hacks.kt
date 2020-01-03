@@ -151,6 +151,9 @@ private fun fixFunctionGenerics(source: Source) {
 }
 
 private fun fixReturnType(source: Source) {
+    source.type("DiscreteEdgeLabelLayoutModel")
+        .staticMethod("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
+
     source.type("SvgExport").apply {
         get(METHODS)
             .get("exportSvg")
@@ -253,6 +256,10 @@ private fun fixMethodParameterType(source: Source) {
         .staticMethod("addingLookupChainLink")
         .parameter("instance")
         .set(TYPE, "TResult")
+
+    source.type("DiscreteEdgeLabelLayoutModel")
+        .staticMethod("createPositionParameter")
+        .parameter("position")[TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 
     source.type("SvgExport")
         .staticMethod("exportSvgString")
