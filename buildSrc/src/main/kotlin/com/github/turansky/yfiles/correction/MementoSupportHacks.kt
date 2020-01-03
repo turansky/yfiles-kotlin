@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.IMEMENTO_SUPPORT
 import com.github.turansky.yfiles.between
+import com.github.turansky.yfiles.json.get
 
 internal fun applyMementoSupportHacks(source: Source) {
     val T = "T"
@@ -12,7 +13,7 @@ internal fun applyMementoSupportHacks(source: Source) {
 
         flatMap(METHODS)
             .flatMap(PARAMETERS)
-            .onEach {
+            .forEach {
                 val name = it[NAME]
                 it[TYPE] = when {
                     name == "subject" -> T
@@ -20,8 +21,8 @@ internal fun applyMementoSupportHacks(source: Source) {
                     else -> TODO()
                 }
             }
-            .filter { it.has(RETURNS) }
-            .forEach { it[RETURNS][TYPE] = T }
+
+        get(METHODS)["getState"][RETURNS][TYPE] = S
     }
 
     source.types()
@@ -32,4 +33,9 @@ internal fun applyMementoSupportHacks(source: Source) {
             val typeParameter = between(it[TYPE], "<", ",")
             it[TYPE] = it[TYPE].replace(">", "<$typeParameter,*>>")
         }
+
+    source.functionSignatures
+        .getJSONObject("yfiles.graph.MementoSupportProvider")
+        .get(RETURNS)
+        .addGeneric("T,*")
 }
