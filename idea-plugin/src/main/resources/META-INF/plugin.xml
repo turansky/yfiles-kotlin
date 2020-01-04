@@ -34,6 +34,6 @@
             displayName="Inheritance inspection"
             groupName="yFiles"
             enabledByDefault="true"
-            implementationClass="com.github.turansky.yfiles.InheritanceInspection"/>
+            implementationClass="com.github.turansky.yfiles.ide.InheritanceInspection"/>
     </extensions>
 </idea-plugin>

@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles
+package com.github.turansky.yfiles.ide
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
