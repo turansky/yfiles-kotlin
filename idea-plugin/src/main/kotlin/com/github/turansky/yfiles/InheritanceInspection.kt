@@ -1,8 +1,8 @@
 package com.github.turansky.yfiles
 
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.psi.PsiFile
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.lexer.KtTokens.EXTERNAL_KEYWORD
@@ -10,45 +10,39 @@ import org.jetbrains.kotlin.platform.js.isJs
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtModifierListOwner
 import org.jetbrains.kotlin.psi.KtSuperTypeList
+import org.jetbrains.kotlin.psi.KtVisitorVoid
 import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 
 private const val YOBJECT = "yfiles.lang.YObject"
 
 class InheritanceInspection : AbstractKotlinInspection() {
-    override fun checkFile(
-        file: PsiFile,
-        manager: InspectionManager,
+    override fun buildVisitor(
+        holder: ProblemsHolder,
         isOnTheFly: Boolean
-    ): Array<ProblemDescriptor>? {
-        if (!manager.project.platform.isJs()) {
-            return ProblemDescriptor.EMPTY_ARRAY
+    ): PsiElementVisitor {
+        if (!holder.project.platform.isJs()) {
+            return PsiElementVisitor.EMPTY_VISITOR
         }
 
-        val problems = file.getChildrenOfType<KtClass>()
-            .mapNotNull { checkClass(it) }
+        return object : KtVisitorVoid() {
+            override fun visitClass(klass: KtClass) {
+                if (klass.isExternal()) {
+                    return
+                }
 
-        if (problems.isEmpty()) {
-            return ProblemDescriptor.EMPTY_ARRAY
+                klass.getSuperTypeList()
+                    ?.takeIf { it.implementsExternalInterfaceDirectly() }
+                    ?.takeIf { it.implementsYObject() }
+                    ?: return
+
+                holder.registerProblem(
+                    klass,
+                    "YObject inheritor detected!",
+                    ProblemHighlightType.ERROR
+                )
+            }
         }
-
-        return problems.toTypedArray()
-    }
-
-    private fun checkClass(declaration: KtClass): ProblemDescriptor? {
-        if (declaration.isExternal()) {
-            return null
-        }
-
-        val superTypes = declaration.getSuperTypeList()
-            ?.takeIf { it.implementsExternalInterfaceDirectly() }
-            ?: return null
-
-        if (superTypes.implementsYObject()) {
-            return null
-        }
-
-        return null
     }
 }
 
