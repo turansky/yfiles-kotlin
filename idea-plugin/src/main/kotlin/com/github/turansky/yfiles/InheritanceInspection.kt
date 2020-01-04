@@ -8,10 +8,7 @@ import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.lexer.KtTokens.EXTERNAL_KEYWORD
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.platform.js.isJs
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtModifierListOwner
-import org.jetbrains.kotlin.psi.KtSuperTypeList
-import org.jetbrains.kotlin.psi.KtVisitorVoid
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 
@@ -22,11 +19,13 @@ class InheritanceInspection : AbstractKotlinInspection() {
         holder: ProblemsHolder,
         isOnTheFly: Boolean
     ): PsiElementVisitor {
-        if (!holder.project.platform.isJs()) {
-            return PsiElementVisitor.EMPTY_VISITOR
-        }
-
         return object : KtVisitorVoid() {
+            override fun visitKtFile(file: KtFile) {
+                if (file.platform.isJs()) {
+                    super.visitKtFile(file)
+                }
+            }
+
             override fun visitClass(klass: KtClass) {
                 if (klass.isExternal()) {
                     return
