@@ -20,7 +20,7 @@ intellij {
 
     version = "2019.3.1"
 
-    setPlugins("com.intellij.gradle:193.5662.65")
+    setPlugins("gradle")
     setPlugins("org.jetbrains.kotlin:1.3.61-release-IJ2019.3-1")
 }
 
