@@ -32,15 +32,15 @@ class InheritanceInspection : AbstractKotlinInspection() {
                     return
                 }
 
-                klass.getSuperTypeList()
+                val superTypes = klass.getSuperTypeList()
                     ?.takeIf { it.implementsExternalInterfaceDirectly() }
                     ?.takeIf { it.implementsYObject() }
                     ?: return
 
                 holder.registerProblem(
-                    klass,
+                    superTypes,
                     "YObject inheritor detected!",
-                    ProblemHighlightType.ERROR
+                    ProblemHighlightType.GENERIC_ERROR
                 )
             }
         }
