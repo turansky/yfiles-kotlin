@@ -31,6 +31,13 @@ autostyle {
 }
 
 tasks {
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            allWarningsAsErrors = true
+        }
+    }
+
     publishPlugin {
         setToken(project.property("intellij.publish.token"))
     }
