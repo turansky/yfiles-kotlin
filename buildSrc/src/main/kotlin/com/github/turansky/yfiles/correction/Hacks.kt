@@ -254,6 +254,11 @@ private fun fixMethodParameterNullability(source: Source) {
 }
 
 private fun fixMethodParameterType(source: Source) {
+    source.type("IEnumerable")
+        .method("concat")
+        .parameter("elements")
+        .set(TYPE, "$IENUMERABLE<T>")
+
     source.type("IContextLookupChainLink")
         .staticMethod("addingLookupChainLink")
         .parameter("instance")
