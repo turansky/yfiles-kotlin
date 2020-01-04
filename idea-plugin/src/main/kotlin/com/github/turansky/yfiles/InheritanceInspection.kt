@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.lexer.KtTokens.EXTERNAL_KEYWORD
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.platform.js.isJs
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtModifierListOwner
@@ -14,7 +15,7 @@ import org.jetbrains.kotlin.psi.KtVisitorVoid
 import org.jetbrains.kotlin.psi.psiUtil.anyDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 
-private const val YOBJECT = "yfiles.lang.YObject"
+private val YOBJECT = FqName("yfiles.lang.YObject")
 
 class InheritanceInspection : AbstractKotlinInspection() {
     override fun buildVisitor(
@@ -54,4 +55,4 @@ private fun KtSuperTypeList.implementsExternalInterfaceDirectly(): Boolean =
         .any { it.isExternal() && it.isInterface() }
 
 private fun KtSuperTypeList.implementsYObject(): Boolean =
-    anyDescendantOfType<KtClass> { it.name == YOBJECT }
+    anyDescendantOfType<KtClass> { it.fqName == YOBJECT }
