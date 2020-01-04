@@ -5,10 +5,10 @@ import com.github.turansky.yfiles.IMODEL_ITEM
 import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.between
 
-internal fun applyClipboardHelperHacks(source: Source) {
-    val T = "T"
-    val D = "D"
+private const val T = "T"
+private const val D = "D"
 
+internal fun applyClipboardHelperHacks(source: Source) {
     source.type("IClipboardHelper").apply {
         set(
             TYPE_PARAMETERS,

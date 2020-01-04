@@ -4,10 +4,10 @@ import com.github.turansky.yfiles.IMEMENTO_SUPPORT
 import com.github.turansky.yfiles.between
 import com.github.turansky.yfiles.json.get
 
-internal fun applyMementoSupportHacks(source: Source) {
-    val T = "T"
-    val S = "S"
+private const val T = "T"
+private const val S = "S"
 
+internal fun applyMementoSupportHacks(source: Source) {
     source.type("IMementoSupport").apply {
         setTypeParameters("in $T", S)
 
