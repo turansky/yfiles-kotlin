@@ -1,4 +1,4 @@
-<idea-plugin url="https://github.com/turansky/yfiles-kotlin">
+<idea-plugin>
     <id>com.github.turansky.yfiles</id>
     <name>yFiles</name>
     <vendor url="https://github.com/turansky">Victor Turansky</vendor>
