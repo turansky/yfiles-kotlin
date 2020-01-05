@@ -79,6 +79,7 @@ internal fun applyHacks(api: JSONObject) {
     applySerializationHacks(source)
     applyCreationPropertyHacks(source)
 
+    applySingletonHacks(source)
     fixConstructors(source)
 }
 
