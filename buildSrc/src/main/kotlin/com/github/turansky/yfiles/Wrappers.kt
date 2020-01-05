@@ -466,7 +466,7 @@ internal class Constructor(
 
     fun toPrimaryCode(): String {
         val declaration: String = when {
-            protected -> "protected constructor"
+            protected -> "\nprotected constructor"
             else -> ""
         }
 
