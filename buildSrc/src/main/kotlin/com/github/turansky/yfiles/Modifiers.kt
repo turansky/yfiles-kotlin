@@ -8,6 +8,7 @@ internal val FINAL = "final"
 internal val RO = "ro"
 internal val WO = "wo"
 internal val ABSTRACT = "abstract"
+internal val INTERNAL = "internal"
 internal val PROTECTED = "protected"
 
 internal val ARTIFICIAL = "artificial"

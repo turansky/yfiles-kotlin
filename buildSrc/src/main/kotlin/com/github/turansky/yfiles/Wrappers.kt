@@ -400,6 +400,7 @@ internal class Modifiers(modifiers: List<String>) {
     val readOnly = RO in modifiers
     val writeOnly = WO in modifiers
     val abstract = ABSTRACT in modifiers
+    val internal = INTERNAL in modifiers
     val protected = PROTECTED in modifiers
 
     private val canbenull = CANBENULL in modifiers
@@ -431,8 +432,9 @@ internal class Constructor(
     source: JSONObject,
     parent: Class
 ) : MethodBase(source, parent) {
+    private val internal = modifiers.internal
     private val protected = modifiers.protected
-    val public = !protected
+    val public = !internal and !protected
 
     override val overridden: Boolean = false
 
@@ -466,6 +468,7 @@ internal class Constructor(
 
     fun toPrimaryCode(): String {
         val declaration: String = when {
+            internal -> "\ninternal constructor"
             protected -> "\nprotected constructor"
             else -> ""
         }
