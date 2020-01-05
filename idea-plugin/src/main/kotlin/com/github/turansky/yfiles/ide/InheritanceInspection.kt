@@ -17,30 +17,34 @@ class InheritanceInspection : AbstractKotlinInspection() {
         holder: ProblemsHolder,
         isOnTheFly: Boolean
     ): PsiElementVisitor {
-        return object : KtVisitorVoid() {
-            override fun visitKtFile(file: KtFile) {
-                if (file.platform.isJs()) {
-                    super.visitKtFile(file)
-                }
-            }
+        return YVisitor(holder)
+    }
+}
 
-            override fun visitClass(klass: KtClass) {
-                val descriptor = klass.descriptor as? ClassDescriptor
-                    ?: return
-
-                if (descriptor.isExternal) {
-                    return
-                }
-
-                val superTypeList = klass.getSuperTypeList()
-                    ?: return
-
-                holder.registerProblem(
-                    superTypeList,
-                    "YObject inheritor detected!",
-                    ProblemHighlightType.GENERIC_ERROR
-                )
-            }
+private class YVisitor(
+    private val holder: ProblemsHolder
+) : KtVisitorVoid() {
+    override fun visitKtFile(file: KtFile) {
+        if (file.platform.isJs()) {
+            super.visitKtFile(file)
         }
+    }
+
+    override fun visitClass(klass: KtClass) {
+        val descriptor = klass.descriptor as? ClassDescriptor
+            ?: return
+
+        if (descriptor.isExternal) {
+            return
+        }
+
+        val superTypeList = klass.getSuperTypeList()
+            ?: return
+
+        holder.registerProblem(
+            superTypeList,
+            "YObject inheritor detected!",
+            ProblemHighlightType.GENERIC_ERROR
+        )
     }
 }
