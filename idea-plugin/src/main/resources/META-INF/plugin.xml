@@ -19,7 +19,7 @@
     <!-- language=HTML -->
     <change-notes>
         <![CDATA[
-        Initial release of the plugin
+        Add inheritance inspection
         <br>
         <a href="https://github.com/turansky/yfiles-kotlin">More information</a>
         ]]>
