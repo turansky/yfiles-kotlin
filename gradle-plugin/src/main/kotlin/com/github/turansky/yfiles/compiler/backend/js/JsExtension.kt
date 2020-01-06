@@ -94,8 +94,6 @@ private fun TranslationContext.generateBaseClass(
             reportError(declaration, BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED)
         descriptor.isData ->
             reportError(declaration, BASE_CLASS__DATA_CLASS_NOT_SUPPORTED)
-        descriptor.isCompanionObject ->
-            reportError(declaration, BASE_CLASS__COMPANION_OBJECT_NOT_SUPPORTED)
 
         interfaces.any { !it.isYFilesInterface() } ->
             reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)

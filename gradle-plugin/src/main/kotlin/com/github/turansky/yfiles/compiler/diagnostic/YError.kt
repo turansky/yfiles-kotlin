@@ -20,10 +20,6 @@ internal val BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassO
 internal val BASE_CLASS__DATA_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
     errorDiagnosticFactory()
 
-internal val BASE_CLASS__COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
-
-
 internal val YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
     errorDiagnosticFactory()
 

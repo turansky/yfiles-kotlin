@@ -21,10 +21,6 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             BASE_CLASS__DATA_CLASS_NOT_SUPPORTED,
             "yFiles interface implementing not supported for data classes"
         )
-        put(
-            BASE_CLASS__COMPANION_OBJECT_NOT_SUPPORTED,
-            "yFiles interface implementing not supported for companion objects"
-        )
 
         put(
             YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
