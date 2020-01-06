@@ -1,14 +1,19 @@
 package com.github.turansky.yfiles.ide
 
-import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemHighlightType.GENERIC_ERROR
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
+import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
+import org.jetbrains.kotlin.lexer.KtTokens.DATA_KEYWORD
+import org.jetbrains.kotlin.lexer.KtTokens.INLINE_KEYWORD
 import org.jetbrains.kotlin.platform.js.isJs
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtVisitorVoid
@@ -42,7 +47,7 @@ private class YVisitor(
         }
 
         when (descriptor.kind) {
-            CLASS -> visitClass(classOrObject, descriptor)
+            CLASS -> visitClass(classOrObject as KtClass, descriptor)
 
             OBJECT,
             INTERFACE,
@@ -55,16 +60,29 @@ private class YVisitor(
     }
 
     private fun visitClass(
-        classOrObject: KtClassOrObject,
+        klass: KtClass,
         descriptor: ClassDescriptor
     ) {
+        if (!descriptor.implementsYFilesInterface) {
+            return
+        }
+
+        when {
+            descriptor.isInline -> registerModifierProblem(klass, INLINE_KEYWORD, "yFiles interface implementing not supported for inline classes")
+            descriptor.isData -> registerModifierProblem(klass, DATA_KEYWORD, "yFiles interface implementing not supported for data classes")
+        }
+
         if (descriptor.implementsYObjectDirectly) {
             if (descriptor.getSuperClassNotAny() != null) {
-                registerSuperTypesError(classOrObject, "YObject direct inheritor couldn't have super class")
+                registerSuperTypesError(klass, "YObject direct inheritor couldn't have super class")
             }
 
             if (descriptor.getSuperInterfaces().size != 1) {
-                registerSuperTypesError(classOrObject, "YObject direct inheritor couldn't implement another interfaces")
+                registerSuperTypesError(klass, "YObject direct inheritor couldn't implement another interfaces")
+            }
+        } else {
+            if (descriptor.getSuperInterfaces().any { !it.isYFilesInterface() }) {
+                registerSuperTypesError(klass, "yFiles interfaces could't be mixed with non-yFiles interfaces")
             }
         }
     }
@@ -78,14 +96,36 @@ private class YVisitor(
         }
     }
 
+    private fun registerProblem(
+        psiElement: PsiElement,
+        message: String
+    ) {
+        holder.registerProblem(
+            psiElement,
+            message,
+            GENERIC_ERROR
+        )
+    }
+
     private fun registerSuperTypesError(
         classOrObject: KtClassOrObject,
         message: String
     ) {
-        holder.registerProblem(
-            requireNotNull(classOrObject.getSuperTypeList()),
-            message,
-            ProblemHighlightType.GENERIC_ERROR
-        )
+        val superTypeList = classOrObject.getSuperTypeList()
+            ?: return
+
+        registerProblem(superTypeList, message)
+    }
+
+    private fun registerModifierProblem(
+        klass: KtClass,
+        tokenType: KtModifierKeywordToken,
+        message: String
+    ) {
+        val modifier = klass.modifierList
+            ?.getModifier(tokenType)
+            ?: return
+
+        registerProblem(modifier, message)
     }
 }
