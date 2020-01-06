@@ -4,7 +4,10 @@ import com.github.turansky.yfiles.compiler.backend.common.asClassMetadata
 import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface
 import com.github.turansky.yfiles.compiler.backend.common.implementsYObjectDirectly
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
-import com.github.turansky.yfiles.compiler.diagnostic.*
+import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
@@ -92,8 +95,6 @@ private fun TranslationContext.generateBaseClass(
     when {
         descriptor.isInline ->
             reportError(declaration, BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED)
-        descriptor.isData ->
-            reportError(declaration, BASE_CLASS__DATA_CLASS_NOT_SUPPORTED)
 
         interfaces.any { !it.isYFilesInterface() } ->
             reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
