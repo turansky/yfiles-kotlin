@@ -7,4 +7,5 @@ includeBuild("gradle-plugin")
 include("gradle-plugin-test")
 
 include("examples:simple-app")
+include("examples:data-classes")
 include("examples:configurable-properties")
