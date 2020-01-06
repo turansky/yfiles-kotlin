@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.platform.js.isJs
-import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtVisitorVoid
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
@@ -33,8 +33,8 @@ private class YVisitor(
         }
     }
 
-    override fun visitClass(klass: KtClass) {
-        val descriptor = klass.descriptor as? ClassDescriptor
+    override fun visitClassOrObject(classOrObject: KtClassOrObject) {
+        val descriptor = classOrObject.descriptor as? ClassDescriptor
             ?: return
 
         if (descriptor.isExternal) {
@@ -42,11 +42,11 @@ private class YVisitor(
         }
 
         when (descriptor.kind) {
-            CLASS -> visitClass(klass, descriptor)
+            CLASS -> visitClass(classOrObject, descriptor)
 
             OBJECT,
             INTERFACE,
-            ENUM_CLASS -> checkInterfaces(klass, descriptor)
+            ENUM_CLASS -> checkInterfaces(classOrObject, descriptor)
 
             else -> {
                 // do nothing
@@ -55,35 +55,35 @@ private class YVisitor(
     }
 
     private fun visitClass(
-        klass: KtClass,
+        classOrObject: KtClassOrObject,
         descriptor: ClassDescriptor
     ) {
         if (descriptor.implementsYObjectDirectly) {
             if (descriptor.getSuperClassNotAny() != null) {
-                registerSuperTypesError(klass, "YObject direct inheritor couldn't have super class")
+                registerSuperTypesError(classOrObject, "YObject direct inheritor couldn't have super class")
             }
 
             if (descriptor.getSuperInterfaces().size != 1) {
-                registerSuperTypesError(klass, "YObject direct inheritor couldn't implement another interfaces")
+                registerSuperTypesError(classOrObject, "YObject direct inheritor couldn't implement another interfaces")
             }
         }
     }
 
     private fun checkInterfaces(
-        klass: KtClass,
+        classOrObject: KtClassOrObject,
         descriptor: ClassDescriptor
     ) {
         if (descriptor.implementsYFilesInterface) {
-            registerSuperTypesError(klass, "yFiles interface implementing supported only for ordinal classes")
+            registerSuperTypesError(classOrObject, "yFiles interface implementing supported only for ordinal classes")
         }
     }
 
     private fun registerSuperTypesError(
-        klass: KtClass,
+        classOrObject: KtClassOrObject,
         message: String
     ) {
         holder.registerProblem(
-            requireNotNull(klass.getSuperTypeList()),
+            requireNotNull(classOrObject.getSuperTypeList()),
             message,
             ProblemHighlightType.GENERIC_ERROR
         )
