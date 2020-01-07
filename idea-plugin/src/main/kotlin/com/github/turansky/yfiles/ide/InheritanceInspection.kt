@@ -9,8 +9,6 @@ import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.project.platform
 import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
-import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
-import org.jetbrains.kotlin.lexer.KtTokens.DATA_KEYWORD
 import org.jetbrains.kotlin.lexer.KtTokens.INLINE_KEYWORD
 import org.jetbrains.kotlin.platform.js.isJs
 import org.jetbrains.kotlin.psi.KtClass
@@ -67,9 +65,8 @@ private class YVisitor(
             return
         }
 
-        when {
-            descriptor.isInline -> registerModifierProblem(klass, INLINE_KEYWORD, "yFiles interface implementing not supported for inline classes")
-            descriptor.isData -> registerModifierProblem(klass, DATA_KEYWORD, "yFiles interface implementing not supported for data classes")
+        klass.inlineModifier?.also {
+            registerProblem(it, "yFiles interface implementing not supported for inline classes")
         }
 
         if (descriptor.implementsYObjectDirectly) {
@@ -116,16 +113,7 @@ private class YVisitor(
 
         registerProblem(superTypeList, message)
     }
-
-    private fun registerModifierProblem(
-        klass: KtClass,
-        tokenType: KtModifierKeywordToken,
-        message: String
-    ) {
-        val modifier = klass.modifierList
-            ?.getModifier(tokenType)
-            ?: return
-
-        registerProblem(modifier, message)
-    }
 }
+
+private val KtClass.inlineModifier: PsiElement?
+    get() = modifierList?.getModifier(INLINE_KEYWORD)
