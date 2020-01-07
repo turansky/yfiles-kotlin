@@ -63,6 +63,7 @@ internal fun applyHacks(api: JSONObject) {
     applyLabelModelParameterHacks(source)
     applyMementoSupportHacks(source)
     applyClipboardHelperHacks(source)
+    applySnapLineProviderHacks(source)
     applyIncrementalHintHacks(source)
 
     applyTagHacks(source)

@@ -28,6 +28,11 @@ internal fun applySnapLineProviderHacks(source: Source) {
     }
 
     fixDecoratorProperties(source, ISNAP_LINE_PROVIDER)
+
+    source.type("CreateEdgeInputMode")
+        .method("getDummyEdgeSnapLines")
+        .parameter("provider")
+        .addGeneric(IEDGE)
 }
 
 fun JSONObject.fixItemType(type: String) {
