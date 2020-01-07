@@ -40,11 +40,12 @@ internal fun applyResourceHacks(source: Source) {
     source.type("CanvasComponent")[PROPERTIES]["resources"][TYPE] = RESOURCE_MAP
 
     val DEFAULT_PORT_CANDIDATE_DESCRIPTOR = "DefaultPortCandidateDescriptor"
-    source.type(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)[METHODS]["setTemplate"].apply {
-        val typeParameter = getVisualTemplateParameter(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)
-        firstParameter[TYPE] = resourceKey("$IVISUAL_TEMPLATE<$typeParameter>")
-        secondParameter.addGeneric(typeParameter)
-    }
+    source.type(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)
+        .method("setTemplate").apply {
+            val typeParameter = getVisualTemplateParameter(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)
+            firstParameter[TYPE] = resourceKey("$IVISUAL_TEMPLATE<$typeParameter>")
+            secondParameter.addGeneric(typeParameter)
+        }
 
 
     val RECTANGLE_INDICATOR_INSTALLER = "RectangleIndicatorInstaller"

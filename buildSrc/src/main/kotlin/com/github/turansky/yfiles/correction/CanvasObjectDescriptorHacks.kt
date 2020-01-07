@@ -24,13 +24,14 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
 
     source.type("ICanvasObject")[PROPERTIES]["descriptor"].addGeneric("*")
 
-    source.type("ICanvasObjectGroup")[METHODS]["addChild"].apply {
-        setSingleTypeParameter()
+    source.type("ICanvasObjectGroup")
+        .method("addChild").apply {
+            setSingleTypeParameter()
 
-        firstParameter[TYPE] = "T"
-        firstParameter.changeNullability(false)
-        secondParameter.addGeneric("T")
-    }
+            firstParameter[TYPE] = "T"
+            firstParameter.changeNullability(false)
+            secondParameter.addGeneric("T")
+        }
 
     val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
     source.type("DefaultPortCandidateDescriptor").apply {

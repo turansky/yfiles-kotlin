@@ -36,7 +36,7 @@ internal fun applyLabelModelParameterHacks(source: Source) {
         "DiscreteNodeLabelLayoutModel",
         "FreeNodeLabelLayoutModel"
     ).onEach { it[PROPERTIES]["defaultParameter"][TYPE] = ILABEL_MODEL_PARAMETER }
-        .onEach { it[METHODS]["createModelParameter"][RETURNS][TYPE] = ILABEL_MODEL_PARAMETER }
+        .onEach { it.method("createModelParameter")[RETURNS][TYPE] = ILABEL_MODEL_PARAMETER }
         .flatMap { it.flatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .flatMap(PARAMETERS)
         .filter { it[NAME] == "parameter" }

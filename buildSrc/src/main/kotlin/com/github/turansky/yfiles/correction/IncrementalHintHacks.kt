@@ -23,7 +23,7 @@ internal fun applyIncrementalHintHacks(source: Source) {
     source.type("IncrementalHintItemMapping").also {
         it[EXTENDS] = it[EXTENDS].replace(",$JS_ANY,", ",$INCREMENTAL_HINT,")
 
-        it[METHODS]["provideMapperForContext"]
+        it.method("provideMapperForContext")
             .get(RETURNS)
             .also { it[TYPE] = it[TYPE].replace(",$JS_ANY>", ",$INCREMENTAL_HINT>") }
     }

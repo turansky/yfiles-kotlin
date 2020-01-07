@@ -145,15 +145,18 @@ private fun fixHierarchic(source: Source) {
             .addGeneric(typeParameters)
     }
 
-    source.type("PortCandidateOptimizer")[METHODS]
-        .get("getPortCandidateSetDataProvider")[RETURNS]
+    source.type("PortCandidateOptimizer")
+        .method("getPortCandidateSetDataProvider")
+        .get(RETURNS)
         .addGeneric("$NODE,yfiles.layout.PortCandidateSet")
 
     source.type("WeightedLayerer")[PROPERTIES]["weight"]
         .addGeneric("$EDGE,$JS_INT")
 
-    source.type("SimplexNodePlacer")[METHODS]["assignNodesToSublayer"]
-        .get(PARAMETERS)["lowerSublayer"].addGeneric("yfiles.hierarchic.ILayer")
+    source.type("SimplexNodePlacer")
+        .method("assignNodesToSublayer")
+        .parameter("lowerSublayer")
+        .addGeneric("yfiles.hierarchic.ILayer")
 }
 
 private fun fixTriangulator(source: Source) {
@@ -191,7 +194,7 @@ private fun fixYGraphAdapter(source: Source) {
             .map { it[RETURNS] }
             .forEach { it.addGeneric("K,V") }
 
-        it[METHODS]["createMapper"].also {
+        it.method("createMapper").also {
             it.strictBound("T")
             it.firstParameter.addGeneric("$GRAPH_OBJECT,T")
         }
@@ -218,7 +221,8 @@ private fun fixMISLabelingBase(source: Source) {
         it[PROPERTIES]["boxesToNodes"]
             .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
 
-        it[METHODS]["assignProfit"][RETURNS]
+        it.method("assignProfit")
+            .get(RETURNS)
             .addGeneric(JS_DOUBLE)
     }
 }
