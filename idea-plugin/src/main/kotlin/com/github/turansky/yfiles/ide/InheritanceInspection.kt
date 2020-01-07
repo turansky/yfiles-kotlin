@@ -66,20 +66,16 @@ private class YVisitor(
         }
 
         klass.inlineModifier?.also {
-            registerProblem(it, "yFiles interface implementing not supported for inline classes")
+            registerProblem(it, "Unexpected modifier for yFiles class")
         }
 
         if (descriptor.implementsYObjectDirectly) {
-            if (descriptor.getSuperClassNotAny() != null) {
-                registerSuperTypesError(klass, "YObject direct inheritor couldn't have super class")
-            }
-
-            if (descriptor.getSuperInterfaces().size != 1) {
-                registerSuperTypesError(klass, "YObject direct inheritor couldn't implement another interfaces")
+            if (descriptor.getSuperClassNotAny() != null || descriptor.getSuperInterfaces().size != 1) {
+                registerSuperTypesError(klass, "YObject expected as single super type")
             }
         } else {
             if (descriptor.getSuperInterfaces().any { !it.isYFilesInterface() }) {
-                registerSuperTypesError(klass, "yFiles interfaces could't be mixed with non-yFiles interfaces")
+                registerSuperTypesError(klass, "Only yFiles interfaces expected")
             }
         }
     }
