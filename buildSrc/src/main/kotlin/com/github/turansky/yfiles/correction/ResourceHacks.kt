@@ -3,7 +3,6 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.IVISUAL_TEMPLATE
 import com.github.turansky.yfiles.JS_STRING
-import com.github.turansky.yfiles.json.get
 
 private const val RESOURCE_KEY = "yfiles.view.ResourceKey"
 private const val RESOURCE_MAP = "yfiles.view.ResourceMap"
@@ -37,7 +36,8 @@ internal fun applyResourceHacks(source: Source) {
             .forEach { it[TYPE] = getType(className, it[NAME]) }
     }
 
-    source.type("CanvasComponent")[PROPERTIES]["resources"][TYPE] = RESOURCE_MAP
+    source.type("CanvasComponent")
+        .property("resources")[TYPE] = RESOURCE_MAP
 
     val DEFAULT_PORT_CANDIDATE_DESCRIPTOR = "DefaultPortCandidateDescriptor"
     source.type(DEFAULT_PORT_CANDIDATE_DESCRIPTOR)

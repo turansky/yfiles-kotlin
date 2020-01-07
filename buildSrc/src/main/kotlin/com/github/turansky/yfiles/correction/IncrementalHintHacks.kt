@@ -32,5 +32,6 @@ internal fun applyIncrementalHintHacks(source: Source) {
         .map { it[CONSTANTS]["INCREMENTAL_HINTS_DP_KEY"] }
         .forEach { it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$INCREMENTAL_HINT>") }
 
-    source.type("INodeData")[PROPERTIES]["incrementalHint"][TYPE] = INCREMENTAL_HINT
+    source.type("INodeData")
+        .property("incrementalHint")[TYPE] = INCREMENTAL_HINT
 }

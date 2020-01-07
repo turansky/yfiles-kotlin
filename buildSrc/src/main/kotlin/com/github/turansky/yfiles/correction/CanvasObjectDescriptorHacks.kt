@@ -22,7 +22,9 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         }
     }
 
-    source.type("ICanvasObject")[PROPERTIES]["descriptor"].addGeneric("*")
+    source.type("ICanvasObject")
+        .property("descriptor")
+        .addGeneric("*")
 
     source.type("ICanvasObjectGroup")
         .method("addChild").apply {

@@ -69,7 +69,8 @@ private fun fixDefaultLayoutGraph(source: Source) {
 }
 
 private fun fixDfs(source: Source) {
-    source.type("DfsAlgorithm")[PROPERTIES]["stateMap"]
+    source.type("DfsAlgorithm")
+        .property("stateMap")
         .addGeneric(DFS_STATE)
 }
 
@@ -150,7 +151,8 @@ private fun fixHierarchic(source: Source) {
         .get(RETURNS)
         .addGeneric("$NODE,yfiles.layout.PortCandidateSet")
 
-    source.type("WeightedLayerer")[PROPERTIES]["weight"]
+    source.type("WeightedLayerer")
+        .property("weight")
         .addGeneric("$EDGE,$JS_INT")
 
     source.type("SimplexNodePlacer")
@@ -215,10 +217,13 @@ private fun fixYGraphAdapter(source: Source) {
 
 private fun fixMISLabelingBase(source: Source) {
     source.type("MISLabelingBase").also {
-        it[PROPERTIES]["nodesToBoxes"].addGeneric("yfiles.layout.LabelCandidate")
-        it[PROPERTIES]["nodesToID"].addGeneric(YID)
+        it.property("nodesToBoxes")
+            .addGeneric("yfiles.layout.LabelCandidate")
 
-        it[PROPERTIES]["boxesToNodes"]
+        it.property("nodesToID")
+            .addGeneric(YID)
+
+        it.property("boxesToNodes")
             .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
 
         it.method("assignProfit")
@@ -228,7 +233,9 @@ private fun fixMISLabelingBase(source: Source) {
 }
 
 private fun fixParallelEdgeRouter(source: Source) {
-    source.type("ParallelEdgeRouter")[PROPERTIES]["parallelEdges"].addGeneric(EDGE)
+    source.type("ParallelEdgeRouter")
+        .property("parallelEdges")
+        .addGeneric(EDGE)
 }
 
 private fun fixDataProviders(source: Source) {

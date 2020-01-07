@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyDpKeyHacks(source: Source) {
@@ -104,7 +103,7 @@ private fun fixMethodParameters(source: Source) {
             it.flatMap(CONSTRUCTORS)
                 .flatMap(PARAMETERS)
                 .single { it[NAME] == "key" },
-            it[PROPERTIES]["key"]
+            it.property("key")
         ).forEach { it[TYPE] = edgeDpKey(JS_INT) }
     }
 
