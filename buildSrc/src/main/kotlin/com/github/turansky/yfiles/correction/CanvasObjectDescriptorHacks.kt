@@ -61,7 +61,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
 
     source.type("ItemModelManager").apply {
         get(PROPERTIES)["descriptor"].addGeneric("T")
-        get(METHODS)["getDescriptor"][RETURNS].addGeneric("T")
+        method("getDescriptor")[RETURNS].addGeneric("T")
     }
 
     source.type("GraphModelManager").apply {

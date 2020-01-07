@@ -15,7 +15,8 @@ internal fun applyIntersectionHacks(source: Source) {
     source.type("IIntersectionHandler").apply {
         setSingleTypeParameter(bound = IPLANE_OBJECT)
 
-        get(METHODS)["checkIntersection"].flatMap(PARAMETERS)
+        method("checkIntersection")
+            .flatMap(PARAMETERS)
             .forEach { it[TYPE] = "T" }
     }
 }

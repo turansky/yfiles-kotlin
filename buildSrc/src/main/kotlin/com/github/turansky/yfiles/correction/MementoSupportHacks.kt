@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.IMEMENTO_SUPPORT
-import com.github.turansky.yfiles.json.get
 
 private const val T = "T"
 private const val S = "S"
@@ -21,7 +20,7 @@ internal fun applyMementoSupportHacks(source: Source) {
                 }
             }
 
-        get(METHODS)["getState"][RETURNS][TYPE] = S
+        method("getState")[RETURNS][TYPE] = S
     }
 
     fixDecoratorProperties(source, IMEMENTO_SUPPORT, true)
