@@ -31,11 +31,8 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |
             |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
             |    
-            |inline fun <T: Any> InterfaceMetadata<T>.isInstance(o:Any):Boolean = 
-            |    asDynamic().isInstance(o)
-            |
             |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
-            |    clazz.isInstance(this)
+            |    clazz.asDynamic().isInstance(this)
             |
             |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
             |    this != null && this yIs clazz
