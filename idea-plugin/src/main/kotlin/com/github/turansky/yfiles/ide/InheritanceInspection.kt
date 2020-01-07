@@ -85,7 +85,8 @@ private class YVisitor(
         descriptor: ClassDescriptor
     ) {
         if (descriptor.implementsYFilesInterface) {
-            registerSuperTypesError(classOrObject, "yFiles interface implementing supported only for ordinal classes")
+            val keyword = classOrObject.getDeclarationKeyword() ?: return
+            registerProblem(keyword, "Ordinary class expected by yFiles interface(s)")
         }
     }
 
