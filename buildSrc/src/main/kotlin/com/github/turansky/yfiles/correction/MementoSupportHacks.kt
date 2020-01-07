@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.IMEMENTO_SUPPORT
-import com.github.turansky.yfiles.between
 import com.github.turansky.yfiles.json.get
 
 private const val T = "T"
@@ -25,14 +24,7 @@ internal fun applyMementoSupportHacks(source: Source) {
         get(METHODS)["getState"][RETURNS][TYPE] = S
     }
 
-    source.types()
-        .filter { it[ID].run { startsWith("yfiles.graph.") && endsWith("Decorator") } }
-        .optFlatMap(PROPERTIES)
-        .filter { it[TYPE].endsWith("$IMEMENTO_SUPPORT>") }
-        .forEach {
-            val typeParameter = between(it[TYPE], "<", ",")
-            it[TYPE] = it[TYPE].replace(">", "<$typeParameter,*>>")
-        }
+    fixDecoratorProperties(source, IMEMENTO_SUPPORT, true)
 
     source.functionSignatures
         .getJSONObject("yfiles.graph.MementoSupportProvider")

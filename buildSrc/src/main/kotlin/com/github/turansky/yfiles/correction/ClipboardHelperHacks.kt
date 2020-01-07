@@ -3,7 +3,6 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.ICLIPBOARD_HELPER
 import com.github.turansky.yfiles.IMODEL_ITEM
 import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.between
 
 private const val T = "T"
 private const val D = "D"
@@ -34,14 +33,7 @@ internal fun applyClipboardHelperHacks(source: Source) {
             .forEach { it[RETURNS][TYPE] = D }
     }
 
-    source.types()
-        .filter { it[ID].run { startsWith("yfiles.graph.") && endsWith("Decorator") } }
-        .optFlatMap(PROPERTIES)
-        .filter { it[TYPE].endsWith("$ICLIPBOARD_HELPER>") }
-        .forEach {
-            val typeParameter = between(it[TYPE], "<", ",")
-            it[TYPE] = it[TYPE].replace(">", "<$typeParameter,*>>")
-        }
+    fixDecoratorProperties(source, ICLIPBOARD_HELPER, true)
 
     source.type("GraphClipboard")
         .method("getClipboardHelper")
