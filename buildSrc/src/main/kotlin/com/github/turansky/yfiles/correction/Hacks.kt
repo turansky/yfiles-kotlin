@@ -277,6 +277,13 @@ private fun fixMethodParameterType(source: Source) {
         .staticMethod("exportSvgString")
         .parameter("svg")
         .set(TYPE, JS_SVG_ELEMENT)
+
+    source.type("AspectRatioTreeLayout")
+        .flatMap(METHODS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME] == "localRoot" }
+        .filter { it[TYPE] == JS_OBJECT }
+        .forEach { it[TYPE] = NODE }
 }
 
 private fun fixMethodNullability(source: Source) {
