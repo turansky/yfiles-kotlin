@@ -52,10 +52,11 @@ private fun fixClass(source: Source) {
         .updateDpKeyGeneric(TYPE, "*")
 }
 
-fun dpKeyBase(typeParameter: String): String = "yfiles.algorithms.DpKeyBase<*,$typeParameter>"
-fun nodeDpKey(typeParameter: String): String = "yfiles.algorithms.NodeDpKey<$typeParameter>"
-fun edgeDpKey(typeParameter: String): String = "yfiles.algorithms.EdgeDpKey<$typeParameter>"
-fun labelDpKey(typeParameter: String): String = "yfiles.algorithms.ILabelLayoutDpKey<$typeParameter>"
+internal fun dpKeyBase(typeParameter: String): String = "yfiles.algorithms.DpKeyBase<*,$typeParameter>"
+internal fun graphDpKey(typeParameter: String): String = "yfiles.algorithms.GraphDpKey<$typeParameter>"
+internal fun nodeDpKey(typeParameter: String): String = "yfiles.algorithms.NodeDpKey<$typeParameter>"
+internal fun edgeDpKey(typeParameter: String): String = "yfiles.algorithms.EdgeDpKey<$typeParameter>"
+internal fun labelDpKey(typeParameter: String): String = "yfiles.algorithms.ILabelLayoutDpKey<$typeParameter>"
 
 private fun fixProperties(source: Source) {
     val typeMap = mapOf(
