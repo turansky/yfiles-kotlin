@@ -44,6 +44,7 @@ internal fun applyHacks(api: JSONObject) {
 
     applyIdHacks(source)
     applyBindingHacks(source)
+    applyBusinessObjectHacks(source)
     applyCloneableHacks(source)
     applyClassHacks(source)
     applyCollectionHacks(source)
