@@ -68,7 +68,6 @@ private fun fixProperties(source: Source) {
         "minSizeDataProviderKey" to nodeDpKey("yfiles.algorithms.YDimension"),
         "minimumNodeSizeDpKey" to nodeDpKey("yfiles.algorithms.YDimension"),
 
-        "groupNodeInsetsDPKey" to nodeDpKey("yfiles.algorithms.Insets"),
         "groupNodeInsetsDpKey" to nodeDpKey("yfiles.algorithms.Insets"),
 
         "affectedEdgesDpKey" to edgeDpKey(JS_BOOLEAN),
@@ -87,6 +86,26 @@ private fun fixProperties(source: Source) {
         .filter { it[NAME] in types }
         .filter { it[TYPE] == JS_ANY }
         .forEach { it[TYPE] = typeMap.getValue(it[NAME]) }
+
+    source.type("InsetsGroupBoundsCalculator")
+        .flatMap(CONSTRUCTORS)
+        .optFlatMap(PARAMETERS)
+        .single { it[NAME] == "groupNodeInsetsDPKey" }
+        .also {
+            val name = "groupNodeInsetsDpKey"
+            it[NAME] = name
+            it[TYPE] = typeMap.getValue(name)
+        }
+
+    source.type("MinimumSizeGroupBoundsCalculator")
+        .flatMap(CONSTRUCTORS)
+        .optFlatMap(PARAMETERS)
+        .single { it[NAME] == "minSizeDataProviderKey" }
+        .also {
+            val name = "minimumNodeSizeDpKey"
+            it[NAME] = name
+            it[TYPE] = typeMap.getValue(name)
+        }
 }
 
 private fun fixMethodParameters(source: Source) {
