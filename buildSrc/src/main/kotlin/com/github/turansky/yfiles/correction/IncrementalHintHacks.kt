@@ -11,7 +11,9 @@ internal fun generateIncrementalHint(context: GeneratorContext) {
     context[INCREMENTAL_HINT] = """
             |package yfiles.hierarchic
             |
-            |external interface IncrementalHint
+            |@JsName("Object")
+            |external class IncrementalHint
+            |internal constructor()
         """.trimMargin()
 }
 
