@@ -61,6 +61,7 @@ internal fun applyHacks(api: JSONObject) {
     applyEventHacks(source)
 
     applyLabelModelParameterHacks(source)
+    applyMementoHacks(source)
     applyMementoSupportHacks(source)
     applyClipboardHelperHacks(source)
     applySnapLineProviderHacks(source)

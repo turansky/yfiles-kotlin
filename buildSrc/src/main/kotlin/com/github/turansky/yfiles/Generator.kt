@@ -47,6 +47,7 @@ fun generateKotlinDeclarations(
 
     generateClassUtils(context)
     generateFlagsUtils(context)
+    generateMementoUtils(context)
     generateIncrementalHint(context)
     generatePartitionCellUtils(context)
     generateTooltipUtils(context)
