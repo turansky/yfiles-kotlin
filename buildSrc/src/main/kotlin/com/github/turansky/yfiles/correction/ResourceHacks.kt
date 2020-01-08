@@ -16,7 +16,8 @@ internal fun generateResourceUtils(context: GeneratorContext) {
             |package yfiles.view
             |
             |@JsName("String")
-            |external class ResourceKey<T : Any> internal constructor()
+            |external class ResourceKey<T : Any>
+            |internal constructor()
             |
             |external interface ResourceMap {
             |    operator fun <T: Any> set(

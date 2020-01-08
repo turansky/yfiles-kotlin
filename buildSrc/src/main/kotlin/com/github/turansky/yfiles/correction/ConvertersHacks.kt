@@ -14,6 +14,7 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
             |
             |@JsName("Object")
             |external class Converters
+            |internal constructor()
             |
             |operator fun <V, R : Any> Converters.set(
             |    name: String,
