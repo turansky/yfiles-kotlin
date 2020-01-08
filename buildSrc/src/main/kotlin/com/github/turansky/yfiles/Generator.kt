@@ -49,6 +49,7 @@ fun generateKotlinDeclarations(
     generateFlagsUtils(context)
     generateIncrementalHint(context)
     generatePartitionCellUtils(context)
+    generateTooltipUtils(context)
 
     generateElementIdUtils(context)
     generateCreationPropertyUtils(context)
