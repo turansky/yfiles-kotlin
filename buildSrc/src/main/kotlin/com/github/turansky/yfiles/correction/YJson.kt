@@ -46,6 +46,9 @@ internal fun JSONObject.methodParameters(
 internal fun JSONObject.method(methodName: String) =
     get(METHODS)[methodName]
 
+internal fun JSONObject.constant(name: String): JSONObject =
+    get(CONSTANTS)[name]
+
 internal fun JSONObject.property(name: String): JSONObject =
     get(PROPERTIES)[name]
 
