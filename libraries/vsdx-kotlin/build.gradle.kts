@@ -2,7 +2,7 @@ import com.github.turansky.yfiles.generateVsdxKotlinDeclarations
 import de.undercouch.gradle.tasks.download.Download
 
 group = "com.yworks.yfiles"
-version = "1.0.0-SNAPSHOT"
+version = "1.1.0-SNAPSHOT"
 
 plugins {
     kotlin("js")
@@ -40,7 +40,7 @@ tasks {
     val apiDescriptorFile = File(buildDir, "api.js")
 
     val downloadApiDescriptor by registering(Download::class) {
-        src("https://docs.yworks.com/vsdx-html/assets/api.56a9cdca.js")
+        src("https://docs.yworks.com/vsdx-html/assets/api.45d746ef.js")
         dest(apiDescriptorFile)
         overwrite(true)
     }
