@@ -49,3 +49,7 @@ internal fun JSONArray.strictRemove(index: Int) {
 internal fun JSONArray.removeItem(item: JSONObject) {
     requireNotNull(remove(indexOf(item)))
 }
+
+internal fun JSONArray.removeItem(item: String) {
+    requireNotNull(remove(indexOf(item)))
+}

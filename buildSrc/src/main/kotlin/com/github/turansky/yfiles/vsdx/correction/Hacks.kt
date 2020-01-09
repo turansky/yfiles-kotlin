@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.vsdx.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
+import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 private val YFILES_TYPE_MAP = sequenceOf(
@@ -90,6 +91,9 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
     fixSummary(source)
+
+    // TODO: remove after API update
+    fixAbstractAbstract(source)
 }
 
 private fun String.fixVsdxPackage(): String =
@@ -308,3 +312,15 @@ private fun fixSummary(source: VsdxSource) {
                 .replace("\r", " ")
         }
 }
+
+private fun fixAbstractAbstract(source: VsdxSource) {
+    source.types()
+        .optFlatMap(STATIC_METHODS)
+        .forEach { it[MODIFIERS].removeItem(ABSTRACT) }
+
+    source.types()
+        .forEach { it[MODIFIERS].put(ABSTRACT) }
+}
+
+private fun JSONObject.isAbstract(): Boolean =
+    ABSTRACT in get(MODIFIERS)
