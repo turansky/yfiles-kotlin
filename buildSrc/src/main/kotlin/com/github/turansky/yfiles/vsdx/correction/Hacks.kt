@@ -275,6 +275,7 @@ private fun JSONObject.fixSummary() {
         .replace("\r", " ")
         .replace("</p>", "")
         .replace("<p>", "\n\n")
+        .replace("\" ></api-link", "\"></api-link")
 
     set(SUMMARY, summary)
 }
