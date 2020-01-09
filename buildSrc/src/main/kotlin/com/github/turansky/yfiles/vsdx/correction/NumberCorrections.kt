@@ -25,7 +25,11 @@ private val INT_NAMES = setOf(
     "case",
     "style",
     "langID",
-    "themeEffects"
+    "themeEffects",
+
+    "action",
+    "calendar",
+    "format"
 )
 
 private val INT_SUFFIXES = setOf(
