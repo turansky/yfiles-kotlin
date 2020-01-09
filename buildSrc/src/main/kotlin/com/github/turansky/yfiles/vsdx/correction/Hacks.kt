@@ -66,7 +66,7 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
 
     "[number,vsdx.Value<number>]" to "Value<number>",
     "[vsdx.PageLike,vsdx.Shape]" to "PageLike",
-    "[Document,string]" to "Document", // ??? SvgDocument
+    "[Document,Element,string]" to "SVGElement",
 
     // TODO: use data interface instead
     "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
