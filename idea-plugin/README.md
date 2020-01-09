@@ -4,4 +4,4 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.61-blue.svg)](http://kotlinlang.org)
 
 # yFiles IDEA plugin
-In development...
+Check [inheritance rules](gradle-plugin) on the fly

@@ -5,11 +5,11 @@
 
 # Kotlin/JS declarations generator for yFiles
 
-## Gradle Plugin
-[Can resolve inheritance problems](gradle-plugin)
+## [Gradle Plugin](gradle-plugin)
+Resolve inheritance problems
 
-## IDEA Plugin
-[In development...](idea-plugin)
+## [IDEA Plugin](idea-plugin)
+Check [inheritance rules](gradle-plugin) on the fly
 
 ## Generation
 * Run `./gradlew build`
