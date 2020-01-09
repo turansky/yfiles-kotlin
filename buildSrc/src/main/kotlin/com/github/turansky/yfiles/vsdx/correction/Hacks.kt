@@ -253,6 +253,10 @@ private fun fixGeneric(source: VsdxSource) {
         staticMethod("formula")
             .setSingleTypeParameter("TValue")
     }
+
+    source.functionSignatures
+        .getJSONObject("yfiles.vsdx.ComparisonFunction")
+        .setSingleTypeParameter("T")
 }
 
 private fun fixMethodModifier(source: VsdxSource) {
