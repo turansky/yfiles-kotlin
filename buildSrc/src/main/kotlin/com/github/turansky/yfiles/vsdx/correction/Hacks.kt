@@ -2,7 +2,6 @@ package com.github.turansky.yfiles.vsdx.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
-import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
 
 private val YFILES_TYPE_MAP = sequenceOf(
@@ -84,8 +83,6 @@ private val COLLECTION_INTERFACES = setOf(
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
-    removeUnusedFunctionSignatures(source)
-
     fixPackage(source)
 
     fixTypes(source)
@@ -93,13 +90,6 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
     fixSummary(source)
-}
-
-private fun removeUnusedFunctionSignatures(source: VsdxSource) {
-    source.functionSignatures.apply {
-        strictRemove("vsdx.ComparisonFunction")
-        strictRemove("vsdx.LabelTextProcessingPredicate")
-    }
 }
 
 private fun String.fixVsdxPackage(): String =
