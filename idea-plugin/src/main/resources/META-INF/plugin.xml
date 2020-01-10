@@ -6,8 +6,11 @@
     <!-- language=HTML -->
     <description>
         <![CDATA[
-        <p>yFiles class framework helper for Kotlin/JS.<br>Check yFiles inheritance rules on the fly.<br>Companion of <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">yFiles
-            Gradle plugin</a>.</p>
+        <p>
+            yFiles class framework helper for Kotlin/JS.<br>
+            Check yFiles inheritance rules on the fly.<br>
+            Companion of <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">yFiles Gradle plugin</a>.
+        </p>
 
         <ul>
             <li><a href="https://github.com/turansky/yfiles-kotlin">yFiles Kotlin/JS declarations</a></li>
