@@ -6,20 +6,13 @@
     <!-- language=HTML -->
     <description>
         <![CDATA[
-        yFiles class framework helper
+        <p>yFiles class framework helper for Kotlin/JS.<br>Check yFiles inheritance rules on the fly.</p>
 
-        <h3>Supported platforms</h3>
         <ul>
-            <li>Kotlin/JS</li>
-        </ul>
-
-        <h3>About yFiles</h3>
-        <a href="https://www.yworks.com/products/yfiles-for-html">yFiles for HTML</a><br>
-        <a href="https://docs.yworks.com/yfileshtml/#/dguide/yfiles_class_framework">yFiles class framework</a><br>
-
-        <h3>yFiles & Kotlin/JS</h3>
-        <a href="https://github.com/turansky/yfiles-kotlin">Kotlin/JS declarations</a><br>
-        <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">Gradle plugin</a><br>
+            <li><a href="https://github.com/turansky/yfiles-kotlin">yFiles Kotlin/JS declarations</a></li>
+            <li><a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">yFiles Gradle plugin</a></li>
+            <li><a href="https://docs.yworks.com/yfileshtml/#/dguide/yfiles_class_framework">yFiles Class Framework</a></li>
+            <ul>
         ]]>
     </description>
 
