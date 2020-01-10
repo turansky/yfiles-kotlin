@@ -32,7 +32,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="kotlin"
             displayName="Inheritance inspection"
-            groupName="yFiles"
+            groupPath="yFiles"
+            groupName="Kotlin/JS"
             enabledByDefault="true"
             implementationClass="com.github.turansky.yfiles.ide.InheritanceInspection"/>
     </extensions>
