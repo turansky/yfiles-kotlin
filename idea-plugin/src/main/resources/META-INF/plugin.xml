@@ -16,15 +16,6 @@
         ]]>
     </description>
 
-    <!-- language=HTML -->
-    <change-notes>
-        <![CDATA[
-        Add inheritance inspection
-        <br>
-        <a href="https://github.com/turansky/yfiles-kotlin">More information</a>
-        ]]>
-    </change-notes>
-
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.gradle</depends>
     <depends>org.jetbrains.kotlin</depends>
