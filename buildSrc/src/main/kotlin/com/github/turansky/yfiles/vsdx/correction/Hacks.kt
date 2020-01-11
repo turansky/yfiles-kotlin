@@ -2,7 +2,6 @@ package com.github.turansky.yfiles.vsdx.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.*
-import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 private val YFILES_TYPE_MAP = sequenceOf(
@@ -68,7 +67,6 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[vsdx.PageLike,vsdx.Shape]" to "PageLike",
     "[Document,Element,string]" to "SVGElement",
 
-    // TODO: use data interface instead
     "[Promise<$JS_VOID>,undefined]" to "Promise<$JS_VOID>",
     "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
     "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
@@ -92,9 +90,6 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
     fixSummary(source)
-
-    // TODO: remove after API update
-    fixAbstractAbstract(source)
 }
 
 private fun String.fixVsdxPackage(): String =
@@ -317,15 +312,3 @@ private fun fixSummary(source: VsdxSource) {
                 .replace("\r", " ")
         }
 }
-
-private fun fixAbstractAbstract(source: VsdxSource) {
-    source.types()
-        .optFlatMap(STATIC_METHODS)
-        .forEach { it[MODIFIERS].removeItem(ABSTRACT) }
-
-    source.types()
-        .forEach { it[MODIFIERS].put(ABSTRACT) }
-}
-
-private fun JSONObject.isAbstract(): Boolean =
-    ABSTRACT in get(MODIFIERS)
