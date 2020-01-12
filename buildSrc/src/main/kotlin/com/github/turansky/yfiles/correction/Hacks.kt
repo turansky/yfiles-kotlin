@@ -57,6 +57,8 @@ internal fun applyHacks(api: JSONObject) {
     applyDpataHacks(source)
     applyDataHacks(source)
     applyDpKeyHacks(source)
+
+    applyListCellHacks(source)
     applyListHacks(source)
     applyYListHacks(source)
     applyEventHacks(source)
