@@ -25,6 +25,11 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("YNode", "lastInEdge") to true,
     PropertyDeclaration("YNode", "lastOutEdge") to true,
 
+    PropertyDeclaration("Edge", "nextInEdge") to true,
+    PropertyDeclaration("Edge", "nextOutEdge") to true,
+    PropertyDeclaration("Edge", "prevInEdge") to true,
+    PropertyDeclaration("Edge", "prevOutEdge") to true,
+
     PropertyDeclaration("SimpleBend", "owner") to true,
     PropertyDeclaration("SimpleEdge", "sourcePort") to true,
     PropertyDeclaration("SimpleEdge", "targetPort") to true,
@@ -222,6 +227,8 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "last") to false,
+    MethodDeclaration(className = "ListCell", methodName = "pred") to true,
+    MethodDeclaration(className = "ListCell", methodName = "succ") to true,
 
     MethodDeclaration(className = "Dendrogram", methodName = "getNodeAtLevel") to true,
     MethodDeclaration(className = "Dendrogram", methodName = "getOriginalNode") to true,
