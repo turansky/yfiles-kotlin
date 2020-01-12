@@ -1045,12 +1045,15 @@ private class SummaryDelegate : JsonDelegate<String?>() {
 private fun remarks(): JsonDelegate<String?> = RemarksDelegate()
 
 private class RemarksDelegate : JsonDelegate<String?>() {
+    private fun String.isSummaryLike(): Boolean =
+        startsWith("The default ") or startsWith("By default ") or endsWith("then <code>null</code> is returned.")
+
     override fun read(
         source: JSONObject,
         key: String
     ): String? {
         val value = NullableStringDelegate.value(source, key)
-            ?.takeIf { it.startsWith("The default ") || it.startsWith("By default ") }
+            ?.takeIf { it.isSummaryLike() }
             ?: return null
 
         return summary(value)
