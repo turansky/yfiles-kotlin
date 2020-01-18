@@ -69,6 +69,7 @@ internal fun applyHacks(api: JSONObject) {
     applyClipboardHelperHacks(source)
     applySnapLineProviderHacks(source)
     applyIncrementalHintHacks(source)
+    applyObstacleDataHacks(source)
     applyTooltipHacks(source)
     applyDragDropDataHacks(source)
 

@@ -51,6 +51,7 @@ fun generateKotlinDeclarations(
     generateMementoUtils(context)
     generateIncrementalHint(context)
     generatePartitionCellUtils(context)
+    generateObstacleData(context)
     generateTooltipUtils(context)
     generateDragDropData(context)
 
