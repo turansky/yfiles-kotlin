@@ -70,6 +70,7 @@ internal fun applyHacks(api: JSONObject) {
     applySnapLineProviderHacks(source)
     applyIncrementalHintHacks(source)
     applyTooltipHacks(source)
+    applyDragDropDataHacks(source)
 
     applyTagHacks(source)
     applyStyleTagHacks(source)
