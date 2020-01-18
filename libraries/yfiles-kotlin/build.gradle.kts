@@ -31,9 +31,7 @@ val kotlinSourceDir: File
 
 tasks {
     clean {
-        doLast {
-            delete("src")
-        }
+        delete("src")
     }
 
     val apiDescriptorFile = File(buildDir, "api.js")
