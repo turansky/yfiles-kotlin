@@ -18,5 +18,29 @@ internal fun generateDataTagUtils(context: GeneratorContext) {
 }
 
 internal fun applyDataTagHacks(source: Source) {
+    val tagNames = setOf(
+        "tag",
+        "registryTag"
+    )
+
+    val typeParameterMap = mapOf(
+        "createMapper" to "TData",
+        "addRegistryInputMapper" to "TData",
+        "addRegistryOutputMapper" to "TValue"
+    )
+
     source.type("GraphMLIOHandler")
+        .flatMap(METHODS)
+        .forEach { method ->
+            method.optFlatMap(PARAMETERS)
+                .filter { it[NAME] in tagNames }
+                .forEach {
+                    val typeParameter = when {
+                        method.has(TYPE_PARAMETERS) -> typeParameterMap.getValue(method[NAME])
+                        else -> "*"
+                    }
+
+                    it[TYPE] = "$DATA_TAG<*, $typeParameter>"
+                }
+        }
 }
