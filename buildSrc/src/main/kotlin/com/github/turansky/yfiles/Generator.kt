@@ -41,6 +41,7 @@ fun generateKotlinDeclarations(
     generateBindingUtils(context)
     generateBusinessObjectUtils(context)
     generateTagUtils(context)
+    generateDataTagUtils(context)
     generateStyleTagUtils(context)
     generateResourceUtils(context)
     generateConvertersUtils(context)

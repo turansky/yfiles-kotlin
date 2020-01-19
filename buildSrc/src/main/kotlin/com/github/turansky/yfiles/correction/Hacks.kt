@@ -74,6 +74,7 @@ internal fun applyHacks(api: JSONObject) {
     applyDragDropDataHacks(source)
 
     applyTagHacks(source)
+    applyDataTagHacks(source)
     applyStyleTagHacks(source)
     applyResourceHacks(source)
     applyConvertersHacks(source)
