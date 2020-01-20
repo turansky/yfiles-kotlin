@@ -1271,7 +1271,10 @@ private fun getDocumentationLines(
             lines.add("")
         }
 
-        lines.add(it)
+        lines.addAll(
+            it.replace(". If th", ".\nIf th")
+                .split(LINE_DELIMITER)
+        )
     }
 
     dpdata?.let {
