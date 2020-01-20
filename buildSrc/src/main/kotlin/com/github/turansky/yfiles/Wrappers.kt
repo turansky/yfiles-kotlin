@@ -502,6 +502,7 @@ private class TypeConstant(
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
+            remarks = remarks,
             seeAlso = seeAlso + seeAlsoDocs
         )
 
@@ -1048,12 +1049,15 @@ private class RemarksDelegate : JsonDelegate<String?>() {
     private fun String.isSummaryLike(): Boolean =
         startsWith("The default ") or startsWith("By default ") or endsWith("then <code>null</code> is returned.")
 
+    private fun JSONObject.isRequiredRemarks(): Boolean =
+        optString("id")?.startsWith("ICommand-field-") ?: false
+
     override fun read(
         source: JSONObject,
         key: String
     ): String? {
         val value = NullableStringDelegate.value(source, key)
-            ?.takeIf { it.isSummaryLike() }
+            ?.takeIf { it.isSummaryLike() or source.isRequiredRemarks() }
             ?: return null
 
         return summary(value)
