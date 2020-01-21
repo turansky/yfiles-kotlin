@@ -110,13 +110,8 @@ internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IPa
     val type: String by TypeDelegate { parseType(it) }
     override val summary: String? by summary()
 
-    // TODO: remove temp nullability fix
     override fun toCode(): String {
-        val nullable = type == ANY
-                && name != "source"
-                && name != "sender"
-
-        return "$name: $type" + exp(nullable, "?")
+        return "$name: $type"
     }
 }
 
