@@ -79,6 +79,7 @@ internal fun applyHacks(api: JSONObject) {
     applyResourceHacks(source)
     applyConvertersHacks(source)
     applyEventDispatcherHacks(source)
+    applyCommandHacks(source)
 
     applyCanvasObjectDescriptorHacks(source)
     applyCanvasObjectInstallerHacks(source)
