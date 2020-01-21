@@ -88,7 +88,7 @@ private val PARAMETER_MAP = mapOf(
     "UNDO" to JS_NOTHING,
     "UNGROUP_SELECTION" to JS_NOTHING,
     "UPDATE_CONTENT_RECT" to "yfiles.geometry.Rect",
-    "ZOOM" to "yfiles.geometry.Rect",
+    "ZOOM" to JS_ANY,
     "ZOOM_TO_CURRENT_ITEM" to JS_NOTHING
 )
 
