@@ -968,7 +968,9 @@ internal class Event(
     }
 
     override fun toExtensionCode(): String {
-        val generics = parent.generics.declaration
+        // TODO: fix in common way
+        val generics = parent.generics.declaration.replace("<in T", "<T")
+        val classDeclaration = parent.classDeclaration.replace("<in T>", "<T>")
         val extensionName = "add${name}Handler"
 
         val listenerType = add.parameters.single().type
@@ -976,7 +978,7 @@ internal class Event(
 
         return documentation +
                 """
-                    inline fun $generics ${parent.classDeclaration}.$extensionName(
+                    inline fun $generics $classDeclaration.$extensionName(
                         crossinline handler: ${data.handlerType}
                     ): () -> Unit {
                         val listener: $listenerType = ${data.listenerBody}
