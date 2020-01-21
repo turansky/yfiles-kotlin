@@ -18,7 +18,7 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2019.3.1"
+    version = "2019.3.2"
 
     setPlugins(
         "gradle",
