@@ -9,7 +9,7 @@ private val COMMAND_ALIASES = setOf(
     "yfiles.input.ExecuteCommandHandler"
 )
 
-private val COMMAND = "yfiles.input.ICommand"
+private val ICOMMAND = "yfiles.input.ICommand"
 
 private val PARAMETER_MAP = mapOf(
     "ADD_LABEL" to "yfiles.graph.ILabelOwner",
@@ -123,7 +123,7 @@ internal fun applyCommandHacks(source: Source) {
         .flatMap(PARAMETERS)
         .forEach {
             when {
-                it[TYPE] == COMMAND -> it.addGeneric("T")
+                it[TYPE] == ICOMMAND -> it.addGeneric("T")
                 it.opt(SIGNATURE) in COMMAND_ALIASES -> it[SIGNATURE] = it[SIGNATURE] + "<T>"
                 it[NAME] in "commandParameter" -> it[TYPE] = "T"
             }
