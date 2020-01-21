@@ -96,6 +96,8 @@ internal fun applyCommandHacks(source: Source) {
 
         flatMap(CONSTANTS)
             .forEach { it.addGeneric(PARAMETER_MAP.getValue(it[NAME])) }
+
+        staticMethod("createCommand")[RETURNS].addGeneric("*")
     }
 
     sequenceOf(
@@ -108,4 +110,17 @@ internal fun applyCommandHacks(source: Source) {
             it.parameter("command").addGeneric("T")
             it.parameter("parameter")[TYPE] = "T"
         }
+
+    source.types(
+        "GraphInputMode",
+        "NavigationInputMode",
+        "OverviewInputMode"
+    ).forEach {
+        it.property("availableCommands")
+            .also { it[TYPE] = it[TYPE].replace(">", "<*>>") }
+
+        it.method("shouldInstallCommand")
+            .firstParameter
+            .addGeneric("*")
+    }
 }
