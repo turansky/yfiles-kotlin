@@ -2,71 +2,73 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 
+private const val JS_NOTHING = "Nothing"
+
 private val PARAMETER_MAP = mapOf(
     "ADD_LABEL" to "yfiles.graph.ILabelOwner",
     "ADJUST_GROUP_NODE_SIZE" to INODE,
     "BEGIN_EDGE_CREATION" to "yfiles.input.IPortCandidate",
-    "CLOSE" to JS_VOID,
+    "CLOSE" to JS_NOTHING,
     "COLLAPSE_GROUP" to INODE,
-    "COPY" to JS_VOID,
-    "CUT" to JS_VOID,
+    "COPY" to JS_NOTHING,
+    "CUT" to JS_NOTHING,
     "DECREASE_ZOOM" to JS_DOUBLE,
-    "DELETE" to JS_VOID,
-    "DESELECT_ALL" to JS_VOID,
+    "DELETE" to JS_NOTHING,
+    "DESELECT_ALL" to JS_NOTHING,
     "DESELECT_ITEM" to IMODEL_ITEM,
-    "DUPLICATE" to JS_VOID,
+    "DUPLICATE" to JS_NOTHING,
     "EDIT_LABEL" to ILABEL,
 
     "ENTER_GROUP" to INODE,
-    "EXIT_GROUP" to JS_VOID,
+    "EXIT_GROUP" to JS_NOTHING,
     "EXPAND_GROUP" to INODE,
 
-    "EXTEND_SELECTION_DOWN" to JS_VOID,
-    "EXTEND_SELECTION_LEFT" to JS_VOID,
-    "EXTEND_SELECTION_RIGHT" to JS_VOID,
-    "EXTEND_SELECTION_UP" to JS_VOID,
+    "EXTEND_SELECTION_DOWN" to JS_NOTHING,
+    "EXTEND_SELECTION_LEFT" to JS_NOTHING,
+    "EXTEND_SELECTION_RIGHT" to JS_NOTHING,
+    "EXTEND_SELECTION_UP" to JS_NOTHING,
 
-    "FIT_CONTENT" to JS_VOID,
+    "FIT_CONTENT" to JS_NOTHING,
     "FIT_GRAPH_BOUNDS" to "yfiles.geometry.Insets",
-    "GROUP_SELECTION" to JS_VOID,
-    "HELP" to JS_VOID,
+    "GROUP_SELECTION" to JS_NOTHING,
+    "HELP" to JS_NOTHING,
     "INCREASE_ZOOM" to JS_DOUBLE,
     "LOWER" to IMODEL_ITEM,
 
-    "MOVE_DOWN" to JS_VOID,
-    "MOVE_FOCUS_BACK" to JS_VOID,
-    "MOVE_FOCUS_DOWN" to JS_VOID,
-    "MOVE_FOCUS_FORWARD" to JS_VOID,
-    "MOVE_FOCUS_PAGE_DOWN" to JS_VOID,
-    "MOVE_FOCUS_PAGE_UP" to JS_VOID,
-    "MOVE_FOCUS_UP" to JS_VOID,
-    "MOVE_LEFT" to JS_VOID,
-    "MOVE_RIGHT" to JS_VOID,
-    "MOVE_TO_PAGE_DOWN" to JS_VOID,
-    "MOVE_TO_PAGE_UP" to JS_VOID,
-    "MOVE_UP" to JS_VOID,
+    "MOVE_DOWN" to JS_NOTHING,
+    "MOVE_FOCUS_BACK" to JS_NOTHING,
+    "MOVE_FOCUS_DOWN" to JS_NOTHING,
+    "MOVE_FOCUS_FORWARD" to JS_NOTHING,
+    "MOVE_FOCUS_PAGE_DOWN" to JS_NOTHING,
+    "MOVE_FOCUS_PAGE_UP" to JS_NOTHING,
+    "MOVE_FOCUS_UP" to JS_NOTHING,
+    "MOVE_LEFT" to JS_NOTHING,
+    "MOVE_RIGHT" to JS_NOTHING,
+    "MOVE_TO_PAGE_DOWN" to JS_NOTHING,
+    "MOVE_TO_PAGE_UP" to JS_NOTHING,
+    "MOVE_UP" to JS_NOTHING,
 
-    "NEW" to JS_VOID,
-    "OPEN" to JS_VOID,
+    "NEW" to JS_NOTHING,
+    "OPEN" to JS_NOTHING,
     "PASTE" to "yfiles.geometry.IPoint",
-    "PRINT" to JS_VOID,
-    "PRINT_PREVIEW" to JS_VOID,
-    "PROPERTIES" to JS_VOID,
+    "PRINT" to JS_NOTHING,
+    "PRINT_PREVIEW" to JS_NOTHING,
+    "PROPERTIES" to JS_NOTHING,
     "RAISE" to IMODEL_ITEM,
-    "REDO" to JS_VOID,
+    "REDO" to JS_NOTHING,
     "REVERSE_EDGE" to IEDGE,
-    "SAVE" to JS_VOID,
+    "SAVE" to JS_NOTHING,
 
     "SCROLL_PAGE_DOWN" to JS_DOUBLE,
     "SCROLL_PAGE_LEFT" to JS_DOUBLE,
     "SCROLL_PAGE_RIGHT" to JS_DOUBLE,
     "SCROLL_PAGE_UP" to JS_DOUBLE,
 
-    "SELECT_ALL" to JS_VOID,
+    "SELECT_ALL" to JS_NOTHING,
     "SELECT_ITEM" to IMODEL_ITEM,
 
-    "SELECT_TO_PAGE_DOWN" to JS_VOID,
-    "SELECT_TO_PAGE_UP" to JS_VOID,
+    "SELECT_TO_PAGE_DOWN" to JS_NOTHING,
+    "SELECT_TO_PAGE_UP" to JS_NOTHING,
 
     "SET_CURRENT_ITEM" to IMODEL_ITEM,
 
@@ -76,13 +78,23 @@ private val PARAMETER_MAP = mapOf(
     "TO_BACK" to IMODEL_ITEM,
     "TO_FRONT" to IMODEL_ITEM,
 
-    "UNDO" to JS_VOID,
-    "UNGROUP_SELECTION" to JS_VOID,
+    "UNDO" to JS_NOTHING,
+    "UNGROUP_SELECTION" to JS_NOTHING,
     "UPDATE_CONTENT_RECT" to "yfiles.geometry.Rect",
     "ZOOM" to "yfiles.geometry.Rect",
-    "ZOOM_TO_CURRENT_ITEM" to JS_VOID
+    "ZOOM_TO_CURRENT_ITEM" to JS_NOTHING
 )
 
 internal fun applyCommandHacks(source: Source) {
-    source.type("ICommand")
+    source.type("ICommand").apply {
+        setSingleTypeParameter(bound = JS_ANY)
+
+        flatMap(METHODS)
+            .flatMap(PARAMETERS)
+            .filter { it[NAME] == "parameter" }
+            .forEach { it[TYPE] = "T" }
+
+        flatMap(CONSTANTS)
+            .forEach { it.addGeneric(PARAMETER_MAP.getValue(it[NAME])) }
+    }
 }
