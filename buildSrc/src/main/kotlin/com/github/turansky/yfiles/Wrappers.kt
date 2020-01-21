@@ -107,11 +107,12 @@ internal interface IParameter {
 
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by string()
-    val type: String by TypeDelegate { parseType(it) }
+    private val type: String by TypeDelegate { parseType(it) }
+    private val modifiers: ParameterModifiers by ParameterModifiersDelegate()
     override val summary: String? by summary()
 
     override fun toCode(): String {
-        return "$name: $type"
+        return "$name: $type${modifiers.nullability}"
     }
 }
 
