@@ -87,7 +87,7 @@ private val PARAMETER_MAP = mapOf(
 
 internal fun applyCommandHacks(source: Source) {
     source.type("ICommand").apply {
-        setSingleTypeParameter(bound = JS_ANY)
+        setSingleTypeParameter(name = "in T", bound = JS_ANY)
 
         flatMap(METHODS)
             .flatMap(PARAMETERS)
@@ -97,4 +97,15 @@ internal fun applyCommandHacks(source: Source) {
         flatMap(CONSTANTS)
             .forEach { it.addGeneric(PARAMETER_MAP.getValue(it[NAME])) }
     }
+
+    sequenceOf(
+        "yfiles.input.CanExecuteCommandHandler",
+        "yfiles.input.ExecuteCommandHandler"
+    ).map { source.functionSignatures.getJSONObject(it) }
+        .forEach {
+            it.setSingleTypeParameter(bound = JS_OBJECT)
+
+            it.parameter("command").addGeneric("T")
+            it.parameter("parameter")[TYPE] = "T"
+        }
 }
