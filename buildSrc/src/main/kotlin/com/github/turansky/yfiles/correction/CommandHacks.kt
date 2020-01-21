@@ -115,10 +115,14 @@ internal fun applyCommandHacks(source: Source) {
         "GraphInputMode",
         "NavigationInputMode",
         "OverviewInputMode"
-    ).forEach {
-        it.property("availableCommands")
-            .also { it[TYPE] = it[TYPE].replace(">", "<*>>") }
+    ).map { it.property("availableCommands") }
+        .forEach { it[TYPE] = it[TYPE].replace(">", "<*>>") }
 
+    source.types(
+        "GraphInputMode",
+        "OverviewInputMode",
+        "TableEditorInputMode"
+    ).forEach {
         it.method("shouldInstallCommand")
             .firstParameter
             .addGeneric("*")
