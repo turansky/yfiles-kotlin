@@ -4,6 +4,13 @@ import com.github.turansky.yfiles.*
 
 private const val JS_NOTHING = "Nothing"
 
+private val COMMAND_ALIASES = setOf(
+    "yfiles.input.CanExecuteCommandHandler",
+    "yfiles.input.ExecuteCommandHandler"
+)
+
+private val COMMAND = "yfiles.input.ICommand"
+
 private val PARAMETER_MAP = mapOf(
     "ADD_LABEL" to "yfiles.graph.ILabelOwner",
     "ADJUST_GROUP_NODE_SIZE" to INODE,
@@ -100,16 +107,36 @@ internal fun applyCommandHacks(source: Source) {
         staticMethod("createCommand")[RETURNS].addGeneric("*")
     }
 
-    sequenceOf(
-        "yfiles.input.CanExecuteCommandHandler",
-        "yfiles.input.ExecuteCommandHandler"
-    ).map { source.functionSignatures.getJSONObject(it) }
+    COMMAND_ALIASES
+        .map { source.functionSignatures.getJSONObject(it) }
         .forEach {
             it.setSingleTypeParameter(bound = JS_OBJECT)
 
             it.parameter("command").addGeneric("T")
             it.parameter("parameter")[TYPE] = "T"
         }
+
+    source.type("KeyboardInputMode")
+        .flatMap(METHODS)
+        .filter { it[NAME].startsWith("add") }
+        .onEach { it.setSingleTypeParameter(bound = JS_ANY) }
+        .flatMap(PARAMETERS)
+        .forEach {
+            when {
+                it[TYPE] == COMMAND -> it.addGeneric("T")
+                it.opt(SIGNATURE) in COMMAND_ALIASES -> it[SIGNATURE] = it[SIGNATURE] + "<T>"
+                it[NAME] in "commandParameter" -> it[TYPE] = "T"
+            }
+        }
+
+    source.type("KeyboardInputMode")
+        .method("removeCommand")
+        .parameter("command")
+        .addGeneric("*")
+
+    source.type("KeyboardInputModeBinding")
+        .property("command")
+        .addGeneric("*")
 
     source.types(
         "GraphInputMode",
