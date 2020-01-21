@@ -113,7 +113,10 @@ internal fun applyCommandHacks(source: Source) {
             it.setSingleTypeParameter(bound = JS_OBJECT)
 
             it.parameter("command").addGeneric("T")
-            it.parameter("parameter")[TYPE] = "T"
+            it.parameter("parameter").also {
+                it[TYPE] = "T"
+                it[MODIFIERS] = arrayOf(CANBENULL)
+            }
         }
 
     source.type("KeyboardInputMode")
