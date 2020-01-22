@@ -83,6 +83,8 @@ private val COLLECTION_INTERFACES = setOf(
 internal fun applyVsdxHacks(api: JSONObject) {
     val source = VsdxSource(api)
 
+    fixOptionsParameter(source)
+
     fixPackage(source)
 
     fixTypes(source)
@@ -90,6 +92,15 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixGeneric(source)
     fixMethodModifier(source)
     fixSummary(source)
+}
+
+private fun fixOptionsParameter(source: VsdxSource) {
+    source.types()
+        .optFlatMap(METHODS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[NAME].endsWith("OrOptions") }
+        .onEach { it[NAME] = it[NAME].removeSuffix("OrOptions") }
+        .forEach { it[TYPE] = between(it[TYPE], ":", ",", true) }
 }
 
 private fun String.fixVsdxPackage(): String =
