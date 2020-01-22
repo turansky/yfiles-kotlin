@@ -2,12 +2,13 @@ package com.github.turansky.yfiles
 
 import org.json.JSONObject
 import java.io.File
+import java.nio.charset.StandardCharsets.UTF_8
 
 internal fun readJson(
     file: File,
     action: JSONObject.() -> Unit
 ): JSONObject =
-    file.readText(DEFAULT_CHARSET)
+    file.readText(UTF_8)
         .run { substring(indexOf("{")) }
         .run { JSONObject(this) }
         .run { toString() }
