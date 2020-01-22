@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
+import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 internal fun generateClassUtils(context: GeneratorContext) {
@@ -80,6 +81,8 @@ internal fun applyClassHacks(source: Source) {
 private fun fixClass(source: Source) {
     source.type("Class").apply {
         setSingleTypeParameter(bound = JS_OBJECT)
+
+        get(METHODS).removeItem(method("getProperties"))
 
         get(METHODS)
             .get("newInstance")

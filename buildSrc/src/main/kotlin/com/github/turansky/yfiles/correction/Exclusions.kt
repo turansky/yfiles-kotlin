@@ -15,6 +15,7 @@ private val EXCLUDED_TYPES = setOf(
     "yfiles.lang.InterfaceDefinition",
 
     "yfiles.lang.ClassDefinition",
+    "yfiles.lang.PropertyInfo",
 
     "yfiles.lang.delegate",
     "yfiles.lang.Exception",
