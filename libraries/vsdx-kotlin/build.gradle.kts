@@ -2,7 +2,7 @@ import com.github.turansky.yfiles.generateVsdxKotlinDeclarations
 import de.undercouch.gradle.tasks.download.Download
 
 group = "com.yworks.yfiles"
-version = "1.1.0-SNAPSHOT"
+version = "1.1.1-SNAPSHOT"
 
 plugins {
     kotlin("js")
