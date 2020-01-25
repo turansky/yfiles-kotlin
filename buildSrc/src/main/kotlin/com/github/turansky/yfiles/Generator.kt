@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.ContentMode.*
-import com.github.turansky.yfiles.ContentMode.DEFAULT
+import com.github.turansky.yfiles.ContentMode.ALIASES
+import com.github.turansky.yfiles.ContentMode.EXTENSIONS
 import com.github.turansky.yfiles.correction.*
 import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
 import com.github.turansky.yfiles.vsdx.correction.correctVsdxNumbers
@@ -99,12 +99,7 @@ enum class ContentMode {
 internal interface GeneratorContext {
     operator fun set(
         classId: String,
-        content: String
-    )
-
-    operator fun set(
-        classId: String,
-        mode: ContentMode,
+        mode: ContentMode? = null,
         content: String
     )
 
@@ -118,25 +113,15 @@ private class SimpleGeneratorContext(
 ) : GeneratorContext {
     override fun set(
         classId: String,
-        content: String
-    ) {
-        set(
-            classId = classId,
-            mode = DEFAULT,
-            content = content
-        )
-    }
-
-    override fun set(
-        classId: String,
-        mode: ContentMode,
+        mode: ContentMode?,
         content: String
     ) {
         val dirPath = classId.substringBeforeLast(".").replace(".", "/")
         val fileName = when (mode) {
-            DEFAULT -> classId.substringAfterLast(".")
             EXTENSIONS -> classId.substringAfterLast(".") + ".ext"
             ALIASES -> "Aliases"
+
+            else -> classId.substringAfterLast(".")
         } + ".kt"
 
         val text = "// $GENERATOR_COMMENT\n\n" +
