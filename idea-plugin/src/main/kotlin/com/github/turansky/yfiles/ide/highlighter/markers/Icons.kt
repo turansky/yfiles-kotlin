@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.ide
+package com.github.turansky.yfiles.ide.highlighter.markers
 
 import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon
