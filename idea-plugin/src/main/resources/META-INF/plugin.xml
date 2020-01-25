@@ -20,6 +20,10 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider
+            language="kotlin"
+            implementationClass="com.github.turansky.yfiles.ide.highlighter.markers.YLineMarkerProvider"/>
+
         <localInspection
             language="kotlin"
             shortName="yfiles-kotlinjs-inheritance"
