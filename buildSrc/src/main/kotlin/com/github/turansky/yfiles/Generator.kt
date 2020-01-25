@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.ContentMode.*
+import com.github.turansky.yfiles.ContentMode.DEFAULT
 import com.github.turansky.yfiles.correction.*
 import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
 import com.github.turansky.yfiles.vsdx.correction.correctVsdxNumbers
@@ -88,6 +90,12 @@ fun generateVsdxKotlinDeclarations(
     createVsdxDataClasses(context)
 }
 
+enum class ContentMode {
+    DEFAULT,
+    EXTENSIONS,
+    ALIASES
+}
+
 internal interface GeneratorContext {
     operator fun set(
         classId: String,
@@ -95,8 +103,8 @@ internal interface GeneratorContext {
     )
 
     operator fun set(
-        dirPath: String,
-        fileName: String,
+        classId: String,
+        mode: ContentMode,
         content: String
     )
 
@@ -113,17 +121,24 @@ private class SimpleGeneratorContext(
         content: String
     ) {
         set(
-            dirPath = classId.substringBeforeLast(".").replace(".", "/"),
-            fileName = classId.substringAfterLast(".") + ".kt",
+            classId = classId,
+            mode = DEFAULT,
             content = content
         )
     }
 
     override fun set(
-        dirPath: String,
-        fileName: String,
+        classId: String,
+        mode: ContentMode,
         content: String
     ) {
+        val dirPath = classId.substringBeforeLast(".").replace(".", "/")
+        val fileName = when (mode) {
+            DEFAULT -> classId.substringAfterLast(".")
+            EXTENSIONS -> classId.substringAfterLast(".") + ".ext"
+            ALIASES -> "Aliases"
+        } + ".kt"
+
         val text = "// $GENERATOR_COMMENT\n\n" +
                 content
                     .replace(MODULE_NAME, moduleName)

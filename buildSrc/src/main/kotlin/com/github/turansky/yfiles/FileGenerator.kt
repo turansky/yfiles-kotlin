@@ -21,6 +21,13 @@ internal class TypeGeneratorData(
 ) : GeneratorData(fqn) {
     val jsName = alias ?: name
 
+    val fileId: String
+        get() = if (primitive || isYObject) {
+            "$packageName.$jsName"
+        } else {
+            fqn
+        }
+
     val isYObject: Boolean
         get() = isYObjectClass(fqn)
 

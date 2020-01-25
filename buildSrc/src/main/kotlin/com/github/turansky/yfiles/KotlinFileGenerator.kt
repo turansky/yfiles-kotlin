@@ -1,5 +1,8 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.ContentMode.ALIASES
+import com.github.turansky.yfiles.ContentMode.EXTENSIONS
+
 private val ENUM_COMPANION_MAP = mapOf(
     "BipartitionAlgorithm" to "BipartitionMark",
     "DfsAlgorithm" to "DfsState"
@@ -34,17 +37,11 @@ internal class KotlinFileGenerator(
         generatedFile: GeneratedFile
     ) {
         val data = generatedFile.data
-        val fileName = if (generatedFile.useJsName) {
-            data.jsName
-        } else {
-            data.name
-        }
-
         val header = generatedFile.header
         val content = generatedFile.content()
             .clear(data)
 
-        context[data.path, "$fileName.kt"] = "$header\n$content"
+        context[data.fileId] = "$header\n$content"
 
         var companionContent = generatedFile.companionContent()
             ?: return
@@ -52,7 +49,7 @@ internal class KotlinFileGenerator(
         companionContent = "package ${data.packageName}\n\n" +
                 companionContent.clear(data)
 
-        context[data.path, "$fileName.ext.kt"] = companionContent
+        context[data.fileId, EXTENSIONS] = companionContent
     }
 
     private fun generate(
@@ -70,12 +67,11 @@ internal class KotlinFileGenerator(
             .joinToString("\n\n")
             .clear(firstData)
 
-        context[firstData.path, "Aliases.kt"] = "$header\n\n$content"
+        context[firstData.fqn, ALIASES] = "$header\n\n$content"
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
         val data = es6GeneratorData(declaration)
-        open val useJsName = false
 
         protected val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
 
@@ -212,8 +208,6 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
-        override val useJsName = data.primitive
-
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
@@ -325,8 +319,6 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
-        override val useJsName = data.isYObject
-
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
             return memberProperties.filter { it.abstract } +
                     memberFunctions.filter { it.abstract } +
