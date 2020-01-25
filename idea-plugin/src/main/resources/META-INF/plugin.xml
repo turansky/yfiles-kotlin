@@ -27,6 +27,6 @@
             groupPath="yFiles"
             groupName="Kotlin/JS"
             enabledByDefault="true"
-            implementationClass="com.github.turansky.yfiles.ide.InheritanceInspection"/>
+            implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
     </extensions>
 </idea-plugin>

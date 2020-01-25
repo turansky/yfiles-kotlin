@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.ide
+package com.github.turansky.yfiles.ide.inspections
 
 import com.github.turansky.yfiles.ide.js.implementsYFilesInterface
 import com.github.turansky.yfiles.ide.js.implementsYObjectDirectly
