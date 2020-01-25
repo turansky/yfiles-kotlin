@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.ide
+package com.github.turansky.yfiles.ide.js
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.FqName

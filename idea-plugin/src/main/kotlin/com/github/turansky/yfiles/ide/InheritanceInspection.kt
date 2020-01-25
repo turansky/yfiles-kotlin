@@ -1,5 +1,8 @@
 package com.github.turansky.yfiles.ide
 
+import com.github.turansky.yfiles.ide.js.implementsYFilesInterface
+import com.github.turansky.yfiles.ide.js.implementsYObjectDirectly
+import com.github.turansky.yfiles.ide.js.isYFilesInterface
 import com.intellij.codeInspection.ProblemHighlightType.GENERIC_ERROR
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
