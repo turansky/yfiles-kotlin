@@ -6,7 +6,6 @@ import com.intellij.codeInsight.daemon.GutterIconDescriptor
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
 import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -35,8 +34,6 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
         if (DumbService.getInstance(first.project).isDumb || !ProjectRootsUtil.isInProjectOrLibSource(first)) return
 
         for (element in elements) {
-            ProgressManager.checkCanceled()
-
             val klass = element as? KtClass ?: continue
             if (!klass.platform.isJs()) return
 
