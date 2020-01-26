@@ -43,13 +43,15 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
             createClassMarker(
                 klass = klass,
                 option = LineMarkerOptions.baseClassOption,
-                check = ClassDescriptor::baseClassUsed
+                check = ClassDescriptor::baseClassUsed,
+                tooltipProvider = { "BaseClass inside" }
             )?.also { result.add(it) }
 
             createClassMarker(
                 klass = klass,
                 option = LineMarkerOptions.classFixTypeOption,
-                check = ClassDescriptor::classFixTypeUsed
+                check = ClassDescriptor::classFixTypeUsed,
+                tooltipProvider = { "Type fix activated" }
             )?.also { result.add(it) }
         }
     }
@@ -58,7 +60,8 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
 private fun createClassMarker(
     klass: KtClass,
     option: GutterIconDescriptor.Option,
-    check: (ClassDescriptor) -> Boolean
+    check: (ClassDescriptor) -> Boolean,
+    tooltipProvider: () -> String
 ): LineMarkerInfo<*>? {
     if (!option.isEnabled) return null
 
@@ -75,7 +78,7 @@ private fun createClassMarker(
         anchor,
         anchor.textRange,
         LineMarkerOptions.baseClassOption.icon,
-        null,
+        { tooltipProvider() },
         null,
         GutterIconRenderer.Alignment.RIGHT
     )
