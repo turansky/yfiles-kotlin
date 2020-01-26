@@ -33,12 +33,24 @@ internal val ClassDescriptor.implementsYFilesInterface: Boolean
     get() = getSuperInterfaces()
         .any { it.isYFilesInterface() }
 
-internal fun ClassDescriptor.isBaseClassInside(): Boolean =
+internal val ClassDescriptor.baseClassUsed: Boolean
+    get() = checkClass {
+        it.all { it.isYFilesInterface() && !it.isYObject }
+    }
+
+internal val ClassDescriptor.classFixTypeUsed: Boolean
+    get() = checkClass {
+        it.singleOrNull()?.isYObject ?: false
+    }
+
+private fun ClassDescriptor.checkClass(
+    check: (List<ClassDescriptor>) -> Boolean
+): Boolean =
     when {
         isExternal -> false
         kind != ClassKind.CLASS -> false
         getSuperClassNotAny() != null -> false
 
         else -> getSuperInterfaces()
-            .run { isNotEmpty() && all { it.isYFilesInterface() } }
+            .let { it.isNotEmpty() && check(it) }
     }

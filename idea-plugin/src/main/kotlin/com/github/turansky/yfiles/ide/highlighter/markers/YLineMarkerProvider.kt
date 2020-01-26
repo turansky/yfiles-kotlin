@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles.ide.highlighter.markers
 
-import com.github.turansky.yfiles.ide.js.isBaseClassInside
+import com.github.turansky.yfiles.ide.js.baseClassUsed
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
 import com.intellij.openapi.editor.markup.GutterIconRenderer
@@ -52,7 +52,7 @@ private fun collectClassMarkers(
     val descriptor = klass.descriptor as? ClassDescriptor
         ?: return
 
-    if (!descriptor.isBaseClassInside()) {
+    if (!descriptor.baseClassUsed) {
         return
     }
 
