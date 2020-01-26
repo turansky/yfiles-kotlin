@@ -1,6 +1,8 @@
 package com.github.turansky.yfiles.ide.highlighter.markers
 
 import com.github.turansky.yfiles.ide.js.baseClassUsed
+import com.github.turansky.yfiles.ide.js.classFixTypeUsed
+import com.intellij.codeInsight.daemon.GutterIconDescriptor
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
 import com.intellij.openapi.editor.markup.GutterIconRenderer
@@ -38,27 +40,38 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
             val klass = element as? KtClass ?: continue
             if (!klass.platform.isJs()) return
 
-            collectClassMarkers(klass, result)
+            createClassMarker(
+                klass = klass,
+                option = LineMarkerOptions.baseClassOption,
+                check = ClassDescriptor::baseClassUsed
+            )?.also { result.add(it) }
+
+            createClassMarker(
+                klass = klass,
+                option = LineMarkerOptions.classFixTypeOption,
+                check = ClassDescriptor::classFixTypeUsed
+            )?.also { result.add(it) }
         }
     }
 }
 
-private fun collectClassMarkers(
+private fun createClassMarker(
     klass: KtClass,
-    result: MutableCollection<LineMarkerInfo<*>>
-) {
-    if (!LineMarkerOptions.baseClassOption.isEnabled) return
+    option: GutterIconDescriptor.Option,
+    check: (ClassDescriptor) -> Boolean
+): LineMarkerInfo<*>? {
+    if (!option.isEnabled) return null
 
     val descriptor = klass.descriptor as? ClassDescriptor
-        ?: return
+        ?: return null
 
-    if (!descriptor.baseClassUsed) {
-        return
+    if (!check(descriptor)) {
+        return null
     }
 
     val anchor = klass.nameIdentifier ?: klass
 
-    val markerInfo = LineMarkerInfo(
+    return LineMarkerInfo(
         anchor,
         anchor.textRange,
         LineMarkerOptions.baseClassOption.icon,
@@ -66,6 +79,4 @@ private fun collectClassMarkers(
         null,
         GutterIconRenderer.Alignment.RIGHT
     )
-
-    result.add(markerInfo)
 }
