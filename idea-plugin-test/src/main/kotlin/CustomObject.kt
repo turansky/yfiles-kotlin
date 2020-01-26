@@ -1,5 +1,6 @@
 import yfiles.lang.ClassMetadata
 import yfiles.lang.YObject
+import yfiles.styles.IArrow
 import kotlin.browser.window
 
 class CustomObject : YObject {
@@ -15,3 +16,5 @@ class OtherCustomObject : YObject {
         window.alert("Hallo from OtherCustomObject!")
     }
 }
+
+abstract class AbstractArrow : IArrow {}
