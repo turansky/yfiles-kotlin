@@ -41,14 +41,14 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
                 klass = klass,
                 option = LineMarkerOptions.baseClassOption,
                 check = ClassDescriptor::baseClassUsed,
-                tooltipProvider = { "BaseClass inside" }
+                tooltipProvider = { "yFiles base class inside" }
             )?.also { result.add(it) }
 
             createClassMarker(
                 klass = klass,
                 option = LineMarkerOptions.classFixTypeOption,
                 check = ClassDescriptor::classFixTypeUsed,
-                tooltipProvider = { "Type fix activated" }
+                tooltipProvider = { "yFiles type fix for YObject inheritor" }
             )?.also { result.add(it) }
         }
     }
