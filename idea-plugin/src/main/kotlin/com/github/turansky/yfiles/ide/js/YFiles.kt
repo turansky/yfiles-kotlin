@@ -1,8 +1,10 @@
 package com.github.turansky.yfiles.ide.js
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
 private val YOBJECT = FqName("yfiles.lang.YObject")
@@ -30,3 +32,13 @@ private val ClassDescriptor.implementsYObject: Boolean
 internal val ClassDescriptor.implementsYFilesInterface: Boolean
     get() = getSuperInterfaces()
         .any { it.isYFilesInterface() }
+
+internal fun ClassDescriptor.isBaseClassInside(): Boolean =
+    when {
+        isExternal -> false
+        kind != ClassKind.CLASS -> false
+        getSuperClassNotAny() != null -> false
+
+        else -> getSuperInterfaces()
+            .run { isNotEmpty() && all { it.isYFilesInterface() } }
+    }
