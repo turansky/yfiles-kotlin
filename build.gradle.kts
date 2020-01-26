@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 
 plugins {
     kotlin("js") version "1.3.61" apply false
-    id("de.undercouch.download") version "4.0.3" apply false
+    id("de.undercouch.download") version "4.0.4" apply false
 }
 
 allprojects {
