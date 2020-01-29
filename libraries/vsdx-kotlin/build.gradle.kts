@@ -38,7 +38,7 @@ tasks {
     val apiDescriptorFile = File(buildDir, "api.js")
 
     val downloadApiDescriptor by registering(Download::class) {
-        src("https://docs.yworks.com/vsdx-html/assets/api.eaebd523.js")
+        src(project.property("vsdx.api.url"))
         dest(apiDescriptorFile)
         overwrite(true)
     }
