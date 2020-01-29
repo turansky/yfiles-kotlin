@@ -4,19 +4,19 @@ import org.json.JSONObject
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 
-internal fun readJson(
-    file: File,
-    action: JSONObject.() -> Unit
-): JSONObject =
-    file.readText(UTF_8)
+internal fun File.readJson(): JSONObject =
+    readText(UTF_8)
         .run { substring(indexOf("{")) }
         .run { JSONObject(this) }
-        .run { toString() }
-        .run { fixSystemPackage() }
-        .run { fixClassDeclaration() }
+
+internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
+    readJson()
+        .toString()
+        .fixSystemPackage()
+        .fixClassDeclaration()
         .run { JSONObject(this) }
         .apply(action)
-        .run { toString() }
+        .toString()
         .run { JSONObject(this) }
 
 private fun String.fixSystemPackage(): String =

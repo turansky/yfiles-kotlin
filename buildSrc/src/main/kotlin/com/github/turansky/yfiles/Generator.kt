@@ -19,7 +19,7 @@ fun generateKotlinDeclarations(
     devguideFile: File,
     sourceDir: File
 ) {
-    val source = readJson(apiFile) {
+    val source = apiFile.readApiJson {
         applyHacks(this)
         excludeUnusedTypes(this)
         correctNumbers(this)
@@ -70,7 +70,7 @@ fun generateVsdxKotlinDeclarations(
     apiFile: File,
     sourceDir: File
 ) {
-    val source = readJson(apiFile) {
+    val source = apiFile.readApiJson {
         applyVsdxHacks(this)
         correctVsdxNumbers(this)
     }
