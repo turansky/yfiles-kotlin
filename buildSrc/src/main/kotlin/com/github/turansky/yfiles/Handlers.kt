@@ -2,7 +2,7 @@ package com.github.turansky.yfiles
 
 internal fun getHandlerData(listenerType: String): HandlerData {
     if (listenerType.startsWith("yfiles.lang.EventHandler1<")) {
-        return getEventHandlerData(between(listenerType, "<", ">"))
+        return getEventHandlerData(listenerType.between("<", ">"))
     }
 
     return when (listenerType) {
@@ -30,7 +30,7 @@ internal fun getHandlerData(listenerType: String): HandlerData {
 
 private fun getEventHandlerData(eventType: String): HandlerData {
     if (eventType.startsWith("yfiles.collections.ItemEventArgs<")) {
-        val itemType = between(eventType, "<", ">")
+        val itemType = eventType.between("<", ">")
         return HandlerData(
             handlerType = "(item:$itemType) -> Unit",
             listenerBody = "{ _, event -> handler(event.item) }"

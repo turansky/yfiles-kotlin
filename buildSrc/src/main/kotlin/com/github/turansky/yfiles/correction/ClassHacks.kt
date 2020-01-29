@@ -499,7 +499,7 @@ private val JSONObject.classBoundPair: Pair<String, String>?
     get() {
         val type = get(TYPE)
         if (type.startsWith("$YCLASS<")) {
-            val generic = between(type, "$YCLASS<", ">")
+            val generic = type.between("$YCLASS<", ">")
             if ("." in generic) {
                 return null
             }
@@ -515,7 +515,7 @@ private val JSONObject.classBoundPair: Pair<String, String>?
         }
 
         if ("DpKey<" in type) {
-            val generic = between(type, "DpKey<", ">")
+            val generic = type.between("DpKey<", ">")
             if ("." in generic) {
                 return null
             }

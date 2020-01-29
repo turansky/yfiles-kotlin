@@ -1,19 +1,23 @@
 package com.github.turansky.yfiles
 
-fun between(str: String, start: String, end: String, firstEnd: Boolean = false): String {
-    val startIndex = str.indexOf(start)
+internal fun String.between(
+    start: String,
+    end: String,
+    firstEnd: Boolean = false
+): String {
+    val startIndex = indexOf(start)
     require(startIndex != -1)
-    { "String '$str' doesn't contain '$start'" }
+    { "String '$this' doesn't contain '$start'" }
 
     val endIndex = if (firstEnd) {
-        str.indexOf(end)
+        indexOf(end)
     } else {
-        str.lastIndexOf(end)
+        lastIndexOf(end)
     }
     require(endIndex != -1)
-    { "String '$str' doesn't contain '$end'" }
+    { "String '$this' doesn't contain '$end'" }
 
-    return str.substring(startIndex + start.length, endIndex)
+    return substring(startIndex + start.length, endIndex)
 }
 
 fun till(str: String, end: String): String {

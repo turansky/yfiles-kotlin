@@ -704,7 +704,7 @@ internal class Method(
             ?: return ""
 
         if (type.startsWith("$PROMISE<")) {
-            val generic = between(type, "<", ">")
+            val generic = type.between("<", ">")
             val newGeneric = if (generic == ANY) {
                 "Nothing?"
             } else if (generic == ELEMENT) {

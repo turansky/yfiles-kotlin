@@ -24,7 +24,7 @@ internal fun applyCanvasObjectInstallerHacks(source: Source) {
         .filter { it[TYPE].endsWith("Installer>") }
         .forEach {
             it[TYPE] = it[TYPE].run {
-                val typeParameter = between(this, "<", ",")
+                val typeParameter = this.between("<", ",")
                 replace(">", "<$typeParameter>>")
             }
         }

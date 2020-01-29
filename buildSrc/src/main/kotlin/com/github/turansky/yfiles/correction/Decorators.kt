@@ -12,7 +12,7 @@ internal fun fixDecoratorProperties(
         .optFlatMap(PROPERTIES)
         .filter { it[TYPE].endsWith("$type>") }
         .forEach {
-            var typeParameters = between(it[TYPE], "<", ",")
+            var typeParameters = it[TYPE].between("<", ",")
             if (addExtraTypeParameter) {
                 typeParameters += ",*"
             }

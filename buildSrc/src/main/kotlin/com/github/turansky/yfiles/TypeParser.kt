@@ -34,7 +34,7 @@ internal fun parseType(type: String): String {
     }
 
     val mainType = parseType(till(type, GENERIC_START))
-    val parametrizedTypes = parseGenericParameters(between(type, GENERIC_START, GENERIC_END))
+    val parametrizedTypes = parseGenericParameters(type.between(GENERIC_START, GENERIC_END))
     val generics = parametrizedTypes.byComma()
 
     return "$mainType<$generics>"

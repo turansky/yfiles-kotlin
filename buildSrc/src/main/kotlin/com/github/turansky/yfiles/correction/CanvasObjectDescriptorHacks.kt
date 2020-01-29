@@ -102,7 +102,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             .filter { it.has(PARAMETERS) }
             .filter { it.firstParameter[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
             .forEach {
-                val typeParameter = between(it[RETURNS][TYPE], "<", ">")
+                val typeParameter = it[RETURNS][TYPE].between("<", ">")
                 it.firstParameter.addGeneric(typeParameter)
             }
     }
