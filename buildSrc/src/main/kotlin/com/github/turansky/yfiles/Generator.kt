@@ -16,6 +16,7 @@ internal val DOC_BASE_URL = "%doc-base-url%"
 
 fun generateKotlinDeclarations(
     apiFile: File,
+    devguideFile: File,
     sourceDir: File
 ) {
     val source = readJson(apiFile) {
@@ -61,6 +62,8 @@ fun generateKotlinDeclarations(
     generateElementIdUtils(context)
     generateCreationPropertyUtils(context)
     generateSerializationUtils(context)
+
+    println("L: " + devguideFile.readText().length)
 }
 
 fun generateVsdxKotlinDeclarations(

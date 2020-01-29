@@ -35,10 +35,17 @@ tasks {
     }
 
     val apiDescriptorFile = File(buildDir, "api.js")
+    val devguideDescriptorFile = File(buildDir, "devguide.js")
 
     val downloadApiDescriptor by registering(Download::class) {
         src(project.property("yfiles.api.url"))
         dest(apiDescriptorFile)
+        overwrite(true)
+    }
+
+    val downloadDevguideDescriptor by registering(Download::class) {
+        src(project.property("yfiles.devguide.url"))
+        dest(devguideDescriptorFile)
         overwrite(true)
     }
 
@@ -47,10 +54,15 @@ tasks {
             val sourceDir = kotlinSourceDir
                 .also { delete(it) }
 
-            generateKotlinDeclarations(apiDescriptorFile, sourceDir)
+            generateKotlinDeclarations(
+                apiFile = apiDescriptorFile,
+                devguideFile = devguideDescriptorFile,
+                sourceDir = sourceDir
+            )
         }
 
         dependsOn(downloadApiDescriptor)
+        dependsOn(downloadDevguideDescriptor)
     }
 
     compileKotlinJs {
