@@ -63,7 +63,7 @@ fun generateKotlinDeclarations(
     generateCreationPropertyUtils(context)
     generateSerializationUtils(context)
 
-    println("L: " + devguideFile.readText().length)
+    generateResourceTypes(devguideFile.readJson(), context)
 }
 
 fun generateVsdxKotlinDeclarations(
