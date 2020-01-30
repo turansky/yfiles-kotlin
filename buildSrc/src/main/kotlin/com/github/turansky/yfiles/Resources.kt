@@ -26,29 +26,25 @@ internal fun generateResourceTypes(
         package yfiles
         
         @JsName("String")
-        external class ResourceKey
+        external class ResourceKey<T:Any>
         internal constructor()
         
-        fun ResourceKey(source:String):ResourceKey = 
-            source.unsafeCast<ResourceKey>()
-        
-        @JsName("String")
-        external class Hotkey
-        internal constructor()
-        
-        fun Hotkey(source:String):Hotkey = 
-            source.unsafeCast<Hotkey>()
+        fun <T:Any> ResourceKey(source:String):ResourceKey<T> = 
+            source.unsafeCast<ResourceKey<T>>()
         
         $keyDeclarations
     """.trimIndent()
 }
 
-private fun keyDeclaration(key: String, defaultValue: String): String {
+private fun keyDeclaration(
+    key: String,
+    defaultValue: String
+): String {
     val name = key.replace(".", "_")
     return """
         /**
          * Default value - $defaultValue
          */
-         val $name = "$key"
+         val $name: ResourceKey<String> = ResourceKey("$key")
     """.trimIndent()
 }
