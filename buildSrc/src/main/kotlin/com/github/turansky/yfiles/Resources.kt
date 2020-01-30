@@ -49,6 +49,30 @@ internal fun generateResourceTypes(
     """.trimIndent()
 
     // language=kotlin
+    context["yfiles.lang.ResourceMap"] = """
+            package yfiles.lang
+            
+            @JsName("Object")
+            external class ResourceMap
+            internal constructor()
+            
+            inline operator fun <T: Any> ResourceMap.get(key: ResourceKey<T>):T? {
+                return asDynamic()[key]
+            }
+            
+            inline fun <T: Any> ResourceMap.getValue(key: ResourceKey<T>):T? {
+                return requireNotNull(get(key))
+            }
+
+            inline operator fun <T: Any> ResourceMap.set(
+               key: ResourceKey<T>, 
+               value: T
+            ) {
+                asDynamic()[key] = value
+            }
+        """.trimIndent()
+
+    // language=kotlin
     context["yfiles.lang.Resources"] =
         """
             @file:JsModule("$MODULE_NAME") 
