@@ -22,6 +22,17 @@ internal fun generateResourceTypes(
         .map { constDeclaration(it.first(), it.last()) }
         .joinToString(separator = "\n\n", postfix = "\n")
 
+    context["yfiles.Hotkey"] = """
+        package yfiles
+        
+        @JsName("String")
+        external class Hotkey
+        internal constructor()
+        
+        fun Hotkey(source:String):Hotkey = 
+            source.unsafeCast<Hotkey>()
+    """.trimIndent()
+
     context["yfiles.ResourceKey"] = """
         package yfiles
         
@@ -70,6 +81,6 @@ private fun hotkeyDeclaration(
         /**
          * Default hotkey - `$defaultValue`
          */
-         val $name: ResourceKey<String> = ResourceKey("$key")
+         val $name: ResourceKey<Hotkey> = ResourceKey("$key")
     """.trimIndent()
 }
