@@ -19,7 +19,7 @@ internal fun generateResourceTypes(
         .map { it.substringAfterLast(">") }
         .chunked(2)
         .filter { it.size == 2 }
-        .map { keyDeclaration(it.first(), it.last()) }
+        .map { constDeclaration(it.first(), it.last()) }
         .joinToString(separator = "\n\n", postfix = "\n")
 
     context["yfiles.ResourceKey"] = """
@@ -36,14 +36,39 @@ internal fun generateResourceTypes(
     """.trimIndent()
 }
 
-private fun keyDeclaration(
+private fun constDeclaration(
     key: String,
     defaultValue: String
 ): String {
     val name = key.replace(".", "_")
+    return if (key.endsWith("Key")) {
+        hotkeyDeclaration(key, name, defaultValue)
+    } else {
+        keyDeclaration(key, name, defaultValue)
+    }
+}
+
+private fun keyDeclaration(
+    key: String,
+    name: String,
+    defaultValue: String
+): String {
     return """
         /**
-         * Default value - $defaultValue
+         * Default value - "$defaultValue"
+         */
+         val $name: ResourceKey<String> = ResourceKey("$key")
+    """.trimIndent()
+}
+
+private fun hotkeyDeclaration(
+    key: String,
+    name: String,
+    defaultValue: String
+): String {
+    return """
+        /**
+         * Default hotkey - `$defaultValue`
          */
          val $name: ResourceKey<String> = ResourceKey("$key")
     """.trimIndent()
