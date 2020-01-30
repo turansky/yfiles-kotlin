@@ -23,8 +23,8 @@ internal fun generateResourceTypes(
         .joinToString(separator = "\n\n", postfix = "\n")
 
     // language=kotlin
-    context["yfiles.Hotkey"] = """
-        package yfiles
+    context["yfiles.lang.Hotkey"] = """
+        package yfiles.lang
         
         @JsName("String")
         external class Hotkey
@@ -35,8 +35,8 @@ internal fun generateResourceTypes(
     """.trimIndent()
 
     // language=kotlin
-    context["yfiles.ResourceKey"] = """
-        package yfiles
+    context["yfiles.lang.ResourceKey"] = """
+        package yfiles.lang
         
         @JsName("String")
         external class ResourceKey<T:Any>
@@ -49,10 +49,10 @@ internal fun generateResourceTypes(
     """.trimIndent()
 
     // language=kotlin
-    context["yfiles.Resources"] =
+    context["yfiles.lang.Resources"] =
         """
             @file:JsModule("$MODULE_NAME") 
-            package yfiles
+            package yfiles.lang
             
             external val resources: dynamic
         """.trimIndent()
