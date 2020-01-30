@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.ContentMode.EXTENSIONS
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
@@ -56,6 +57,11 @@ internal fun generateResourceTypes(
             external class ResourceMap
             internal constructor()
             
+            inline fun ResourceMap(block: (ResourceMap) -> Unit):ResourceMap { 
+                val map: ResourceMap = js("({})")
+                return map.also(block)
+            }
+            
             inline operator fun <T: Any> ResourceMap.get(key: ResourceKey<T>):T? {
                 return asDynamic()[key]
             }
@@ -78,7 +84,32 @@ internal fun generateResourceTypes(
             @file:JsModule("$MODULE_NAME") 
             package yfiles.lang
             
-            external val resources: dynamic
+            @JsName("resources")
+            external object Resources {
+                val invariant: ResourceMap
+            }
+        """.trimIndent()
+
+    // language=kotlin
+    context["yfiles.lang.Resources", EXTENSIONS] =
+        """
+            package yfiles.lang
+            
+            inline operator fun Resources.get(locale: String):ResourceMap? {
+                return asDynamic()[locale]
+            }
+            
+            inline fun Resources.getOrCreate(locale: String):ResourceMap {
+                return get(locale) 
+                    ?: ResourceMap { set(locale, it) }
+            }
+            
+            inline operator fun Resources.set(
+                locale: String,
+                value: ResourceMap
+            ) {
+                asDynamic()[locale] = value
+            }
         """.trimIndent()
 }
 
