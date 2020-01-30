@@ -22,6 +22,7 @@ internal fun generateResourceTypes(
         .map { constDeclaration(it.first(), it.last()) }
         .joinToString(separator = "\n\n", postfix = "\n")
 
+    // language=kotlin
     context["yfiles.Hotkey"] = """
         package yfiles
         
@@ -33,6 +34,7 @@ internal fun generateResourceTypes(
             source.unsafeCast<Hotkey>()
     """.trimIndent()
 
+    // language=kotlin
     context["yfiles.ResourceKey"] = """
         package yfiles
         
@@ -45,6 +47,15 @@ internal fun generateResourceTypes(
         
         $keyDeclarations
     """.trimIndent()
+
+    // language=kotlin
+    context["yfiles.Resources"] =
+        """
+            @file:JsModule("$MODULE_NAME") 
+            package yfiles
+            
+            external val resources: dynamic
+        """.trimIndent()
 }
 
 private fun constDeclaration(
