@@ -114,6 +114,9 @@ val inputMode = GraphViewerInputMode {
 val nodesAreClickable = NODE in inputMode.clickableItems // true
 ```
 
+## [Resources Defaults][41]
+Supported. Check `lang` package for more details.
+
 ## KDoc
 #### Supported blocks
 * Summary
@@ -158,3 +161,5 @@ _Example:_
 [22]: https://docs.yworks.com/vsdx-html/
 
 [31]: https://docs.yworks.com/yfileshtml/#/api/Class
+
+[41]: http://docs.yworks.com/yfileshtml/#/dguide/customizing_concepts_resource-keys#resource_defaults
