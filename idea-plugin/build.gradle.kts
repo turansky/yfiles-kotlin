@@ -41,6 +41,10 @@ tasks {
         }
     }
 
+    patchPluginXml {
+        setUntilBuild("201.*")
+    }
+
     publishPlugin {
         setToken(project.property("intellij.publish.token"))
     }
