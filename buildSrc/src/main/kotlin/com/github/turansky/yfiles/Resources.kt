@@ -46,7 +46,9 @@ internal fun generateResourceTypes(
         fun <T:Any> ResourceKey(source:String):ResourceKey<T> = 
             source.unsafeCast<ResourceKey<T>>()
         
-        $keyDeclarations
+        object ResourceKeys {
+            $keyDeclarations
+        }
     """.trimIndent()
 
     // language=kotlin
@@ -138,7 +140,8 @@ private fun keyDeclaration(
         /**
          * Default value - "$defaultValue"
          */
-         val $name: ResourceKey<String> = ResourceKey("$key")
+        inline val $name: ResourceKey<String>
+            get() = ResourceKey("$key")
     """.trimIndent()
 }
 
@@ -151,6 +154,7 @@ private fun hotkeyDeclaration(
         /**
          * Default hotkey - `$defaultValue`
          */
-         val $name: ResourceKey<Hotkey> = ResourceKey("$key")
+        inline val $name: ResourceKey<Hotkey>
+            get() = ResourceKey("$key")
     """.trimIndent()
 }
