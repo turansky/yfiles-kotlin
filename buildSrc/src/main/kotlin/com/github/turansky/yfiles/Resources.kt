@@ -135,26 +135,26 @@ private fun keyDeclaration(
     key: String,
     name: String,
     defaultValue: String
-): String {
-    return """
+): String =
+    // language=kotlin
+    """
         /**
          * Default value - "$defaultValue"
          */
         inline val $name: ResourceKey<String>
             get() = ResourceKey("$key")
     """.trimIndent()
-}
 
 private fun hotkeyDeclaration(
     key: String,
     name: String,
     defaultValue: String
-): String {
-    return """
+): String =
+    // language=kotlin
+    """
         /**
          * Default hotkey - `$defaultValue`
          */
         inline val $name: ResourceKey<Hotkey>
             get() = ResourceKey("$key")
     """.trimIndent()
-}
