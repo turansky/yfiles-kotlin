@@ -115,7 +115,17 @@ val nodesAreClickable = NODE in inputMode.clickableItems // true
 ```
 
 ## [Resources Defaults][41]
-Supported. Check `lang` package for more details.
+```Kotlin
+import yfiles.lang.ResourceKeys.COPY
+import yfiles.lang.ResourceKeys.COPY_KEY
+import yfiles.lang.Resources.invariant
+import yfiles.lang.get
+
+fun main() {
+    println(invariant[COPY]) // Copy
+    println(invariant[COPY_KEY]) // Action+C;Ctrl+Ins
+}
+```
 
 ## KDoc
 #### Supported blocks
