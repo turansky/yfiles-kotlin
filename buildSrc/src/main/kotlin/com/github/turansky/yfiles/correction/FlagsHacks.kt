@@ -11,20 +11,19 @@ internal fun generateFlagsUtils(context: GeneratorContext) {
             |        where T : Flags<T>,
             |              T : YEnum<T>
             |
+            |inline val Flags<*>.v:Int
+            |   get() = unsafeCast<Int>()
+            |
             |inline infix fun <T> T.or(other: T): T
             |        where T : Flags<T>,
             |              T : YEnum<T> {
-            |    return unsafeCast<Int>()
-            |        .or(other.unsafeCast<Int>())
-            |        .unsafeCast<T>()
+            |    return (v or other.v).unsafeCast<T>()
             |}
             |
-            |operator fun <T> T.contains(other: T): Boolean
+            |inline operator fun <T> T.contains(other: T): Boolean
             |        where T : Flags<T>,
             |              T : YEnum<T> {
-            |    val t = unsafeCast<Int>()
-            |    val o = other.unsafeCast<Int>()
-            |    return (t and o) == o
+            |    return (v and other.v) == other.v
             |}
         """.trimMargin()
 }
