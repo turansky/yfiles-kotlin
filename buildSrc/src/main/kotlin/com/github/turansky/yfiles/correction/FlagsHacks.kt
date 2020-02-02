@@ -1,15 +1,12 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 
 internal fun generateFlagsUtils(context: GeneratorContext) {
     // language=kotlin
-    context["yfiles.lang.Flags"] =
+    context["yfiles.lang.Flags", INLINE] =
         """
-            |@file:Suppress("NOTHING_TO_INLINE")
-            |
-            |package yfiles.lang
-            |
             |external interface Flags<T>
             |        where T : Flags<T>,
             |              T : YEnum<T>

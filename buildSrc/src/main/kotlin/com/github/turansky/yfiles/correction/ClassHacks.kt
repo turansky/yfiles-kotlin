@@ -1,28 +1,23 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.ContentMode.CLASS
+import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.json.get
 import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
-    context["yfiles.lang.BaseClass"] =
+    context["yfiles.lang.BaseClass", CLASS] =
         """
-            |@file:JsModule("$MODULE_NAME") 
-            |package yfiles.lang
-            |
             |$HIDDEN_METHOD_ANNOTATION
             |external fun BaseClass(vararg types: JsClass<*>):JsClass<out YObject>
         """.trimMargin()
 
     // language=kotlin
-    context["yfiles.lang.ClassMetadata"] =
+    context["yfiles.lang.ClassMetadata", INLINE] =
         """
-            |@file:Suppress("NOTHING_TO_INLINE")
-            |
-            |package yfiles.lang
-            |
             |external interface TypeMetadata<T: Any>
             |
             |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>

@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.ContentMode.ALIASES
-import com.github.turansky.yfiles.ContentMode.EXTENSIONS
+import com.github.turansky.yfiles.ContentMode.*
 import com.github.turansky.yfiles.correction.*
 import com.github.turansky.yfiles.vsdx.correction.applyVsdxHacks
 import com.github.turansky.yfiles.vsdx.correction.correctVsdxNumbers
@@ -11,7 +10,6 @@ import java.io.File
 
 private val GENERATOR_COMMENT = "Automatically generated - do not modify!"
 
-internal val MODULE_NAME = "%module-name%"
 internal val DOC_BASE_URL = "%doc-base-url%"
 
 fun generateKotlinDeclarations(
@@ -95,8 +93,11 @@ fun generateVsdxKotlinDeclarations(
 
 enum class ContentMode {
     DEFAULT,
+    CLASS,
+    INTERFACE,
     EXTENSIONS,
-    ALIASES
+    ALIASES,
+    INLINE
 }
 
 internal interface GeneratorContext {
@@ -109,11 +110,16 @@ internal interface GeneratorContext {
     fun clean()
 }
 
+private val NESTED_CLASS_IN_EXTERNAL_INTERFACE = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
+private val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
+
 private class SimpleGeneratorContext(
     private val sourceDir: File,
-    private val moduleName: String,
+    moduleName: String,
     private val docBaseUrl: String
 ) : GeneratorContext {
+    private val moduleAnnotation = "@file:JsModule(\"$moduleName\")\n\n"
+
     override fun set(
         classId: String,
         mode: ContentMode?,
@@ -128,17 +134,22 @@ private class SimpleGeneratorContext(
             else -> classId.substringAfterLast(".")
         } + ".kt"
 
-        val packageDeclaration = if ("package yfiles." !in content) {
-            "package $packageId\n\n"
-        } else {
-            ""
+        val moduleDeclaration = when (mode) {
+            CLASS, INTERFACE -> moduleAnnotation
+            else -> ""
+        }
+
+        val suppresses = when (mode) {
+            INTERFACE -> NESTED_CLASS_IN_EXTERNAL_INTERFACE
+            INLINE -> NOTHING_TO_INLINE
+            else -> ""
         }
 
         val text = "// $GENERATOR_COMMENT\n\n" +
-                packageDeclaration +
-                content
-                    .replace(MODULE_NAME, moduleName)
-                    .replace(DOC_BASE_URL, docBaseUrl)
+                moduleDeclaration +
+                suppresses +
+                "package $packageId\n\n" +
+                content.replace(DOC_BASE_URL, docBaseUrl)
 
         sourceDir.resolve(dirPath)
             .also { it.mkdirs() }

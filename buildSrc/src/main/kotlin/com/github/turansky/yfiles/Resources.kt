@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.ContentMode.CLASS
 import com.github.turansky.yfiles.ContentMode.EXTENSIONS
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
@@ -75,11 +76,8 @@ internal fun generateResourceTypes(
         """.trimIndent()
 
     // language=kotlin
-    context["yfiles.lang.Resources"] =
+    context["yfiles.lang.Resources", CLASS] =
         """
-            @file:JsModule("$MODULE_NAME") 
-            package yfiles.lang
-            
             @JsName("resources")
             external object Resources {
                 val invariant: ResourceMap

@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.ContentMode.ALIASES
-import com.github.turansky.yfiles.ContentMode.EXTENSIONS
+import com.github.turansky.yfiles.ContentMode.*
 
 private val ENUM_COMPANION_MAP = mapOf(
     "BipartitionAlgorithm" to "BipartitionMark",
@@ -12,8 +11,6 @@ internal class KotlinFileGenerator(
     private val types: Iterable<Type>,
     private val functionSignatures: Iterable<FunctionSignature>
 ) : FileGenerator {
-    private val moduleAnnotation = "@file:JsModule(\"$MODULE_NAME\")"
-
     override fun generate(context: GeneratorContext) {
         context.clean()
 
@@ -37,11 +34,10 @@ internal class KotlinFileGenerator(
         generatedFile: GeneratedFile
     ) {
         val data = generatedFile.data
-        val header = generatedFile.header
-        val content = generatedFile.content()
-            .clear(data)
+        val mode = if (generatedFile is InterfaceFile) INTERFACE else CLASS
 
-        context[data.fileId] = "$header\n$content"
+        context[data.fileId, mode] = generatedFile.content()
+            .clear(data)
 
         val companionContent = generatedFile.companionContent()
             ?.clear(data)
@@ -121,16 +117,6 @@ internal class KotlinFileGenerator(
                 data.name != data.jsName && !data.isYObject,
                 "@JsName(\"${data.jsName}\")\n"
             )
-
-        protected open val suppress: String
-            get() = ""
-
-        val header: String
-            get() {
-                return moduleAnnotation + "\n" +
-                        suppress +
-                        "package ${data.packageName}\n"
-            }
 
         protected val classDeclaration: String
             get() {
@@ -318,9 +304,6 @@ internal class KotlinFileGenerator(
                     memberFunctions.filter { it.abstract } +
                     memberEvents
         }
-
-        override val suppress: String
-            get() = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
 
         override fun content(): String {
             val content = super.content()
