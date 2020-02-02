@@ -43,11 +43,9 @@ internal class KotlinFileGenerator(
 
         context[data.fileId] = "$header\n$content"
 
-        var companionContent = generatedFile.companionContent()
+        val companionContent = generatedFile.companionContent()
+            ?.clear(data)
             ?: return
-
-        companionContent = "package ${data.packageName}\n\n" +
-                companionContent.clear(data)
 
         context[data.fileId, EXTENSIONS] = companionContent
     }
@@ -58,16 +56,12 @@ internal class KotlinFileGenerator(
     ) {
         val firstData = GeneratorData(signatures.first().classId)
 
-        val header = "package ${firstData.packageName}"
-
-        val content = signatures
+        context[firstData.fqn, ALIASES] = signatures
             .asSequence()
             .sortedBy { it.classId }
             .map { it.toCode() }
             .joinToString("\n\n")
             .clear(firstData)
-
-        context[firstData.fqn, ALIASES] = "$header\n\n$content"
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
