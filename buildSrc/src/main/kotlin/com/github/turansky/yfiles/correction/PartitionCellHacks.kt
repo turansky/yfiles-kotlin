@@ -5,8 +5,6 @@ import com.github.turansky.yfiles.*
 internal fun generatePartitionCellUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.router.PartitionCellKey"] = """
-            |package yfiles.router
-            |
             |external interface PartitionCellKey<T:Any>
             |
             |fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 

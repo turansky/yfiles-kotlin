@@ -11,8 +11,6 @@ internal fun generateTagUtils(context: GeneratorContext) {
     // language=kotlin
     context[TAG] =
         """
-            |package yfiles.graph
-            |
             |external interface Tag
             |
             |fun Tag(source:Any):Tag = 

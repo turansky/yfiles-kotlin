@@ -9,8 +9,6 @@ private const val STYLE_TAG = "yfiles.styles.StyleTag"
 internal fun generateStyleTagUtils(context: GeneratorContext) {
     // language=kotlin
     context[STYLE_TAG] = """
-            |package yfiles.styles
-            |
             |external interface StyleTag
             |
             |fun StyleTag(source:Any):StyleTag = 

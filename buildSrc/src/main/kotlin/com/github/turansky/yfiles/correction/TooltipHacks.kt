@@ -7,8 +7,6 @@ private const val TOOL_TIP_CONTENT = "yfiles.view.ToolTipContent"
 internal fun generateTooltipUtils(context: GeneratorContext) {
     // language=kotlin
     context[TOOL_TIP_CONTENT] = """
-            |package yfiles.view
-            |
             |import org.w3c.dom.HTMLElement
             |
             |external interface ToolTipContent

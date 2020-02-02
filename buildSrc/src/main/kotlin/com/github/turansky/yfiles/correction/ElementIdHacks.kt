@@ -8,8 +8,6 @@ private const val ELEMENT_ID = "yfiles.graphml.ElementId"
 internal fun generateElementIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[ELEMENT_ID] = """
-            |package yfiles.graphml
-            |
             |@JsName("String")
             |external class ElementId 
             |internal constructor()

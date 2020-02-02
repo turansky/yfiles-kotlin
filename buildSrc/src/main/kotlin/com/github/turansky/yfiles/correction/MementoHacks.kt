@@ -12,8 +12,6 @@ private const val COMPACT_STRATEGY_MEMENTO = "yfiles.tree.CompactStrategyMemento
 internal fun generateMementoUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.hierarchic.Mementos"] = """
-            |package yfiles.hierarchic
-            |
             |@JsName("Object")
             |external class LayerConstraintsMemento 
             |internal constructor()
@@ -24,8 +22,6 @@ internal fun generateMementoUtils(context: GeneratorContext) {
         """.trimMargin()
 
     context["yfiles.tree.Mementos"] = """
-            |package yfiles.tree
-            |
             |@JsName("Object")
             |external class CompactStrategyMemento 
             |internal constructor()

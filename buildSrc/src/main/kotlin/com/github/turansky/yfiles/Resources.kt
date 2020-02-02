@@ -25,8 +25,6 @@ internal fun generateResourceTypes(
 
     // language=kotlin
     context["yfiles.lang.Hotkey"] = """
-        package yfiles.lang
-        
         @JsName("String")
         external class Hotkey
         internal constructor()
@@ -37,8 +35,6 @@ internal fun generateResourceTypes(
 
     // language=kotlin
     context["yfiles.lang.ResourceKey"] = """
-        package yfiles.lang
-        
         @JsName("String")
         external class ResourceKey<T:Any>
         internal constructor()
@@ -53,8 +49,6 @@ internal fun generateResourceTypes(
 
     // language=kotlin
     context["yfiles.lang.ResourceMap"] = """
-            package yfiles.lang
-            
             @JsName("Object")
             external class ResourceMap
             internal constructor()
@@ -95,8 +89,6 @@ internal fun generateResourceTypes(
     // language=kotlin
     context["yfiles.lang.Resources", EXTENSIONS] =
         """
-            package yfiles.lang
-            
             inline operator fun Resources.get(locale: String):ResourceMap? {
                 return asDynamic()[locale]
             }

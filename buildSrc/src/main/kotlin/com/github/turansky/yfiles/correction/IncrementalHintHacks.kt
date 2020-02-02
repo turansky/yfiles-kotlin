@@ -9,8 +9,6 @@ internal const val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
 internal fun generateIncrementalHint(context: GeneratorContext) {
     // language=kotlin
     context[INCREMENTAL_HINT] = """
-            |package yfiles.hierarchic
-            |
             |@JsName("Object")
             |external class IncrementalHint
             |internal constructor()

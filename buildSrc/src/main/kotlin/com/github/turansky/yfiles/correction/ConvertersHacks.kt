@@ -10,8 +10,6 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
     // language=kotlin
     context[CONVERTERS] =
         """
-            |package yfiles.styles
-            |
             |@JsName("Object")
             |external class Converters
             |internal constructor()

@@ -6,12 +6,7 @@ private const val DRAG_DROP_DATA = "yfiles.view.DragDropData"
 
 internal fun generateDragDropData(context: GeneratorContext) {
     // language=kotlin
-    context[DRAG_DROP_DATA] =
-        """
-            |package yfiles.view
-            |
-            |external interface DragDropData
-        """.trimMargin()
+    context[DRAG_DROP_DATA] = "external interface DragDropData"
 }
 
 internal fun applyDragDropDataHacks(source: Source) {

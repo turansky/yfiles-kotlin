@@ -13,8 +13,6 @@ private fun resourceKey(typeParameter: String) =
 internal fun generateResourceUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.view.Resources"] = """
-            |package yfiles.view
-            |
             |@JsName("String")
             |external class ResourceKey<T : Any>
             |internal constructor()

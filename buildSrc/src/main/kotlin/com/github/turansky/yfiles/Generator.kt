@@ -119,7 +119,8 @@ private class SimpleGeneratorContext(
         mode: ContentMode?,
         content: String
     ) {
-        val dirPath = classId.substringBeforeLast(".").replace(".", "/")
+        val packageId = classId.substringBeforeLast(".")
+        val dirPath = packageId.replace(".", "/")
         val fileName = when (mode) {
             EXTENSIONS -> classId.substringAfterLast(".") + ".ext"
             ALIASES -> "Aliases"
@@ -127,7 +128,14 @@ private class SimpleGeneratorContext(
             else -> classId.substringAfterLast(".")
         } + ".kt"
 
+        val packageDeclaration = if ("package yfiles." !in content) {
+            "package $packageId\n\n"
+        } else {
+            ""
+        }
+
         val text = "// $GENERATOR_COMMENT\n\n" +
+                packageDeclaration +
                 content
                     .replace(MODULE_NAME, moduleName)
                     .replace(DOC_BASE_URL, docBaseUrl)

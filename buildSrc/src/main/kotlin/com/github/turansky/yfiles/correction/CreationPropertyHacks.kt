@@ -12,8 +12,6 @@ private fun propertyKey(typeParameter: String) =
 internal fun generateCreationPropertyUtils(context: GeneratorContext) {
     // language=kotlin
     context[CREATION_PROPERTY_KEY] = """
-            |package yfiles.graphml
-            |
             |@JsName("String")
             |external class CreationPropertyKey<T : Any> 
             |internal constructor()

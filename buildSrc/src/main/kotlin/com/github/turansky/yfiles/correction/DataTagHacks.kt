@@ -8,8 +8,6 @@ internal fun generateDataTagUtils(context: GeneratorContext) {
     // language=kotlin
     context[DATA_TAG] =
         """
-            |package yfiles.graph
-            |
             |external interface DataTag<K : Any, V : Any>
             |
             |fun <K : Any, V : Any> DataTag(source:String):DataTag<K,V> = 

@@ -10,8 +10,6 @@ private fun propertyKey(typeParameter: String) =
 internal fun generateSerializationUtils(context: GeneratorContext) {
     // language=kotlin
     context[SERIALIZATION_PROPERTY_KEY] = """
-            |package yfiles.graphml
-            |
             |@JsName("String")
             |external class SerializationPropertyKey<T : Any> 
             |internal constructor()

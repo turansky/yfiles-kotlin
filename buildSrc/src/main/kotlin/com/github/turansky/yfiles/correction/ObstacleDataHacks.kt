@@ -6,12 +6,7 @@ private const val OBSTACLE_DATA = "yfiles.router.ObstacleData"
 
 internal fun generateObstacleData(context: GeneratorContext) {
     // language=kotlin
-    context[OBSTACLE_DATA] =
-        """
-            |package yfiles.router
-            |
-            |external interface ObstacleData
-        """.trimMargin()
+    context[OBSTACLE_DATA] = "external interface ObstacleData"
 }
 
 internal fun applyObstacleDataHacks(source: Source) {

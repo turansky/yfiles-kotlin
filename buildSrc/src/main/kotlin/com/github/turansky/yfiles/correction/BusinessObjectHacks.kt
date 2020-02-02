@@ -8,12 +8,7 @@ private const val BUSINESS_OBJECT = "yfiles.binding.BusinessObject"
 
 internal fun generateBusinessObjectUtils(context: GeneratorContext) {
     // language=kotlin
-    context["yfiles.binding.BusinessObject"] =
-        """
-            |package yfiles.binding
-            |
-            |typealias BusinessObject = Any
-        """.trimMargin()
+    context["yfiles.binding.BusinessObject"] = "typealias BusinessObject = Any"
 }
 
 internal fun applyBusinessObjectHacks(source: Source) {

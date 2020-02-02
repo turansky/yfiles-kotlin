@@ -7,8 +7,6 @@ internal fun generateBindingUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.binding.Binding"] =
         """
-            |package yfiles.binding
-            |
             |external interface Binding
             |
             |fun Binding(source:Any):Binding = 

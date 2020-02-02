@@ -8,12 +8,7 @@ import org.json.JSONObject
 
 internal fun generateEventDispatcherUtils(context: GeneratorContext) {
     // language=kotlin
-    context[IEVENT_DISPATCHER] =
-        """
-            |package yfiles.lang
-            |
-            |external interface IEventDispatcher
-        """.trimMargin()
+    context[IEVENT_DISPATCHER] = "external interface IEventDispatcher"
 }
 
 internal fun applyEventDispatcherHacks(source: Source) {

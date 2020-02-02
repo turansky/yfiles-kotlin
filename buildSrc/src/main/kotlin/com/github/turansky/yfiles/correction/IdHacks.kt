@@ -10,8 +10,6 @@ import org.json.JSONObject
 internal fun generateIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[YID] = """
-            |package yfiles.lang
-            |
             |external interface Id
             |
             |fun Id(source:Any):Id = 
