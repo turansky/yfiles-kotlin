@@ -42,7 +42,8 @@ tasks {
     }
 
     patchPluginXml {
-        setUntilBuild("201.*")
+        sinceBuild("191.5109.14")
+        untilBuild("201.*")
     }
 
     publishPlugin {
