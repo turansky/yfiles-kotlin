@@ -10,10 +10,10 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 private val YFILES_COMPILER_PLUGIN_ID = "com.github.turansky.yfiles"
 
-class KotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
+class YFilesKotlinPlugin : KotlinGradleSubplugin<AbstractCompile> {
 
     override fun isApplicable(project: Project, task: AbstractCompile) =
-        project.plugins.hasPlugin(GradlePlugin::class.java)
+        project.plugins.hasPlugin(YFilesGradlePlugin::class.java)
 
     override fun apply(
         project: Project,
