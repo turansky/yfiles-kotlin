@@ -17,11 +17,16 @@ class YFilesGradlePlugin : Plugin<Project> {
 }
 
 private fun KotlinJsCompile.addJsTransformation() {
+    var configured = false
     val config = TransformationConfig()
 
     doFirst {
-        config.originalOutputFile = property(KotlinJs.OUTPUT_FILE) as File
-        kotlinOptions.outputFile = config.tempOutputFile.absolutePath
+        if (!configured) {
+            configured = true
+
+            config.originalOutputFile = property(KotlinJs.OUTPUT_FILE) as File
+            kotlinOptions.outputFile = config.tempOutputFile.absolutePath
+        }
     }
 
     doLast {
