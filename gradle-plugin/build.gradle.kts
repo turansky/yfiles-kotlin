@@ -54,7 +54,7 @@ tasks {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    compileOnly(kotlin("gradle-plugin-api"))
+    compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
 }
 
