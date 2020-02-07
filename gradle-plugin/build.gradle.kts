@@ -52,9 +52,9 @@ tasks {
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin-api"))
-
     implementation(kotlin("stdlib"))
+
+    compileOnly(kotlin("gradle-plugin-api"))
     compileOnly(kotlin("compiler-embeddable"))
 }
 
