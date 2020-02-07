@@ -34,6 +34,7 @@ private fun KotlinJsCompile.addJsTransformation() {
         val outputFile = property("outputFile") as File
         println("END OUTPUT FILE: $outputFile")
 
-        originalOutputFile.writeBytes(tempOutputFile.readBytes())
+        // TODO: fix for webpack tests
+        // originalOutputFile.writeBytes(tempOutputFile.readBytes())
     }
 }
