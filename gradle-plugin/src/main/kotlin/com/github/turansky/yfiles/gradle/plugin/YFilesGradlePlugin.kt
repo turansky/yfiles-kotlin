@@ -17,24 +17,37 @@ class YFilesGradlePlugin : Plugin<Project> {
 }
 
 private fun KotlinJsCompile.addJsTransformation() {
-    lateinit var originalOutputFile: File
-    lateinit var tempOutputFile: File
+    val config = TransformationConfig()
 
     doFirst {
-        originalOutputFile = property("outputFile") as File
-        tempOutputFile = originalOutputFile.parentFile.resolve("temp.js")
-        println("START OUTPUT FILE: $originalOutputFile")
-        println("START TEMP OUTPUT FILE: $tempOutputFile")
-
-        // TODO: fix for webpack tests
-        // kotlinOptions.outputFile = tempOutputFile.absolutePath
+        config.originalOutputFile = property(KotlinJs.OUTPUT_FILE) as File
+        kotlinOptions.outputFile = config.tempOutputFile.absolutePath
     }
 
     doLast {
-        val outputFile = property("outputFile") as File
-        println("END OUTPUT FILE: $outputFile")
+        config.apply {
+            copyDirectory(tempOutputDir, originalOutputDir)
 
-        // TODO: fix for webpack tests
-        // originalOutputFile.writeBytes(tempOutputFile.readBytes())
+            originalOutputFile.writeText("/* GENERATED CONTENT */\n" + tempOutputFile.readText())
+        }
+    }
+}
+
+private class TransformationConfig {
+    lateinit var originalOutputFile: File
+
+    val originalOutputDir: File by lazy {
+        originalOutputFile.parentFile
+    }
+
+    val tempOutputDir: File by lazy {
+        originalOutputFile
+            .parentFile
+            .parentFile
+            .resolve("kotlin-temp")
+    }
+
+    val tempOutputFile: File by lazy {
+        tempOutputDir.resolve(originalOutputFile.name)
     }
 }
