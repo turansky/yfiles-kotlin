@@ -11,6 +11,10 @@ repositories {
     jcenter()
 }
 
+kotlinDslPluginOptions {
+    experimentalWarning.set(false)
+}
+
 autostyle {
     kotlin {
         endWithNewline()
