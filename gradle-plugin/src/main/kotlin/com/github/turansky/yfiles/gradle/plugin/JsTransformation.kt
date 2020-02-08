@@ -5,7 +5,10 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 import java.io.File
 
 private val DESCRIPTOR_REGEX = Regex("(Object\\.defineProperty\\(.+\\.prototype, '[a-zA-Z]+', \\{)")
@@ -15,13 +18,11 @@ private fun String.fixPropertyDeclaration(): String =
 
 
 internal fun Project.configureJsTransformation() {
-    plugins.withId(KotlinJs.GRADLE_PLUGIN_ID) {
+    plugins.withType<KotlinJsPluginWrapper> {
         // wait for Kotlin target configuration
         afterEvaluate {
-            val compileTasks = tasks.asSequence()
+            val compileTasks = tasks.withType<KotlinJsCompile>()
                 .filter { it.name in KotlinJs.COMPILE_TASK_NAMES }
-                .filterIsInstance<KotlinJsCompile>()
-                .toList()
 
             for (compileTask in compileTasks) {
                 val jsTarget = compileTask.kotlinOptions.target
@@ -47,7 +48,7 @@ private fun TaskContainer.copyTransformedJs(
     compileTaskName: String,
     config: TransformationConfig
 ): TaskProvider<*> =
-    register("copyTransformedJs_$compileTaskName", Copy::class.java) {
+    register("copyTransformedJs_$compileTaskName", Copy::class) {
         val outputFileName = config.originalOutputFile.name
 
         from(config.tempOutputDir) {
