@@ -42,7 +42,7 @@ private fun TaskContainer.copyTransformedJs(config: TransformationConfig): TaskP
 
         it.from(config.tempOutputDir) {
             it.include(outputFileName)
-            it.filter { "/* GENERATED CODE */\n$it" }
+            it.filter { it.fixPropertyObjectDescriptor() }
         }
 
         it.from(config.tempOutputDir) {
