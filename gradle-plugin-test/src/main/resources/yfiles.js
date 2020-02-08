@@ -18,6 +18,8 @@ function BaseClass (...types) {
   return YClass
 }
 
+function IArrow () {}
+
 function IVisibilityTestable () {}
 
 function IBoundsProvider () {}
@@ -26,6 +28,7 @@ export {
   YObject,
   Class,
   BaseClass,
+  IArrow,
   IVisibilityTestable,
   IBoundsProvider
 }
