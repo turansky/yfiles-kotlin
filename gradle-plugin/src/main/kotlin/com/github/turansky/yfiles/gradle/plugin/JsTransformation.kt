@@ -16,12 +16,13 @@ private fun String.fixPropertyDeclaration(): String =
 
 internal fun Project.configureJsTransformation() {
     plugins.withId(KotlinJs.GRADLE_PLUGIN_ID) {
-        val compileTasks = tasks.asSequence()
-            .filter { it.name in KotlinJs.COMPILE_TASK_NAMES }
-            .filterIsInstance<KotlinJsCompile>()
-            .toList()
-
+        // wait for Kotlin target configuration
         afterEvaluate {
+            val compileTasks = tasks.asSequence()
+                .filter { it.name in KotlinJs.COMPILE_TASK_NAMES }
+                .filterIsInstance<KotlinJsCompile>()
+                .toList()
+
             for (compileTask in compileTasks) {
                 val jsTarget = compileTask.kotlinOptions.target
                 if (jsTarget != KotlinJs.TARGET_V5) {
