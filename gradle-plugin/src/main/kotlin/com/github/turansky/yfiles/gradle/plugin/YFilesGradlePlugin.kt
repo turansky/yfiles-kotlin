@@ -10,18 +10,22 @@ import java.io.File
 
 class YFilesGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        target.plugins.withId(KotlinJs.GRADLE_PLUGIN_ID) {
-            val compileTasks = target.tasks.asSequence()
-                .filter { it.name == KotlinJs.COMPILE_TASK_NAME }
-                .filterIsInstance<KotlinJsCompile>()
-                .toList()
+        target.configureJsTransformation()
+    }
+}
 
-            target.afterEvaluate {
-                for (compileTask in compileTasks) {
-                    val config = compileTask.addJsTransformation()
-                    val copyTask = target.tasks.copyTransformedJs(config)
-                    compileTask.finalizedBy(copyTask)
-                }
+private fun Project.configureJsTransformation() {
+    plugins.withId(KotlinJs.GRADLE_PLUGIN_ID) {
+        val compileTasks = tasks.asSequence()
+            .filter { it.name == KotlinJs.COMPILE_TASK_NAME }
+            .filterIsInstance<KotlinJsCompile>()
+            .toList()
+
+        afterEvaluate {
+            for (compileTask in compileTasks) {
+                val config = compileTask.addJsTransformation()
+                val copyTask = tasks.copyTransformedJs(config)
+                compileTask.finalizedBy(copyTask)
             }
         }
     }
