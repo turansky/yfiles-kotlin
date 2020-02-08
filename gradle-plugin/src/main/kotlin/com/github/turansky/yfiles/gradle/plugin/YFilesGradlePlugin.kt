@@ -38,7 +38,17 @@ private fun KotlinJsCompile.addJsTransformation(): TransformationConfig =
 
 private fun TaskContainer.copyTransformedJs(config: TransformationConfig): TaskProvider<*> =
     register("copyTransformedJs", Copy::class.java) {
-        it.from(config.tempOutputDir)
+        val outputFileName = config.originalOutputFile.name
+
+        it.from(config.tempOutputDir) {
+            it.include(outputFileName)
+            it.filter { "/* GENERATED CODE */\n$it" }
+        }
+
+        it.from(config.tempOutputDir) {
+            it.exclude(outputFileName)
+        }
+
         it.into(config.originalOutputDir)
     }
 
