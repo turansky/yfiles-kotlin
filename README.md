@@ -8,6 +8,8 @@
 
 ## [Gradle Plugin](gradle-plugin)
 Resolve inheritance problems
+> Includes temp WA for [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770).
+> Configurable properties required for yFiles
 
 ## [IDEA Plugin](idea-plugin)
 Check [inheritance rules](gradle-plugin) on the fly
