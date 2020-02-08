@@ -17,14 +17,14 @@ class YFilesGradlePlugin : Plugin<Project> {
 private fun Project.configureJsTransformation() {
     plugins.withId(KotlinJs.GRADLE_PLUGIN_ID) {
         val compileTasks = tasks.asSequence()
-            .filter { it.name == KotlinJs.COMPILE_TASK_NAME }
+            .filter { it.name in KotlinJs.COMPILE_TASK_NAMES }
             .filterIsInstance<KotlinJsCompile>()
             .toList()
 
         afterEvaluate {
             for (compileTask in compileTasks) {
                 val config = compileTask.addJsTransformation()
-                val copyTask = tasks.copyTransformedJs(config)
+                val copyTask = tasks.copyTransformedJs(compileTask.name, config)
                 compileTask.finalizedBy(copyTask)
             }
         }
@@ -36,8 +36,11 @@ private fun KotlinJsCompile.addJsTransformation(): TransformationConfig =
         kotlinOptions.outputFile = tempOutputFile.absolutePath
     }
 
-private fun TaskContainer.copyTransformedJs(config: TransformationConfig): TaskProvider<*> =
-    register("copyTransformedJs", Copy::class.java) {
+private fun TaskContainer.copyTransformedJs(
+    compileTaskName: String,
+    config: TransformationConfig
+): TaskProvider<*> =
+    register("copyTransformedJs_$compileTaskName", Copy::class.java) {
         val outputFileName = config.originalOutputFile.name
 
         it.from(config.tempOutputDir) {
