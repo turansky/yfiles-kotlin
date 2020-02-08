@@ -10,7 +10,7 @@ import java.io.File
 
 private val DESCRIPTOR_REGEX = Regex("(Object\\.defineProperty\\(.+\\.prototype, '[a-zA-Z]+', \\{)")
 
-internal fun String.fixPropertyDeclaration(): String =
+private fun String.fixPropertyDeclaration(): String =
     replace(DESCRIPTOR_REGEX, "$1 configurable: true,")
 
 
@@ -62,18 +62,12 @@ private fun TaskContainer.copyTransformedJs(
     }
 
 private class TransformationConfig(val originalOutputFile: File) {
-    val originalOutputDir: File by lazy {
-        originalOutputFile.parentFile
-    }
+    val originalOutputDir: File = originalOutputFile.parentFile
 
-    val tempOutputDir: File by lazy {
-        originalOutputFile
-            .parentFile
-            .parentFile
-            .resolve("kotlin-temp")
-    }
+    val tempOutputDir: File = originalOutputFile
+        .parentFile
+        .parentFile
+        .resolve("kotlin-temp")
 
-    val tempOutputFile: File by lazy {
-        tempOutputDir.resolve(originalOutputFile.name)
-    }
+    val tempOutputFile: File = tempOutputDir.resolve(originalOutputFile.name)
 }
