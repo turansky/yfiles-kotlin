@@ -10,5 +10,7 @@ internal object KotlinJs {
         COMPILE_TEST_TASK_NAME
     )
 
+    val TARGET_V5 = "v5"
+
     val OUTPUT_FILE = "outputFile"
 }

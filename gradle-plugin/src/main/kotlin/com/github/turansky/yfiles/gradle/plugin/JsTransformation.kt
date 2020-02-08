@@ -23,6 +23,12 @@ internal fun Project.configureJsTransformation() {
 
         afterEvaluate {
             for (compileTask in compileTasks) {
+                val jsTarget = compileTask.kotlinOptions.target
+                if (jsTarget != KotlinJs.TARGET_V5) {
+                    logger.warn("Unsupported JS target '$jsTarget'. Fix for KT-34770 won't be applied!")
+                    continue
+                }
+
                 val config = compileTask.addJsTransformation()
                 val copyTask = tasks.copyTransformedJs(compileTask.name, config)
                 compileTask.finalizedBy(copyTask)
