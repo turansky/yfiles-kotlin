@@ -18,8 +18,7 @@ class YFilesGradlePlugin : Plugin<Project> {
 
             target.afterEvaluate {
                 for (compileTask in compileTasks) {
-                    val config = TransformationConfig()
-                    compileTask.addJsTransformation(config)
+                    val config = compileTask.addJsTransformation()
                     val copyTask = target.tasks.copyTransformedJs(config)
                     compileTask.finalizedBy(copyTask)
                 }
@@ -28,10 +27,10 @@ class YFilesGradlePlugin : Plugin<Project> {
     }
 }
 
-private fun KotlinJsCompile.addJsTransformation(config: TransformationConfig) {
-    config.originalOutputFile = property(KotlinJs.OUTPUT_FILE) as File
-    kotlinOptions.outputFile = config.tempOutputFile.absolutePath
-}
+private fun KotlinJsCompile.addJsTransformation(): TransformationConfig =
+    TransformationConfig(property(KotlinJs.OUTPUT_FILE) as File).apply {
+        kotlinOptions.outputFile = tempOutputFile.absolutePath
+    }
 
 private fun TaskContainer.copyTransformedJs(config: TransformationConfig): TaskProvider<*> =
     register("copyTransformedJs", Copy::class.java) {
@@ -39,9 +38,7 @@ private fun TaskContainer.copyTransformedJs(config: TransformationConfig): TaskP
         it.into(config.originalOutputDir)
     }
 
-private class TransformationConfig {
-    lateinit var originalOutputFile: File
-
+private class TransformationConfig(val originalOutputFile: File) {
     val originalOutputDir: File by lazy {
         originalOutputFile.parentFile
     }
