@@ -1,6 +1,7 @@
 plugins {
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
+    id("org.gradle.kotlin.kotlin-dsl") version "1.3.3"
 
     kotlin("jvm") version "1.3.61"
     id("com.github.autostyle") version "3.0"

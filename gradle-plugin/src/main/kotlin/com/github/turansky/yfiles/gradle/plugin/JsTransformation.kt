@@ -50,16 +50,16 @@ private fun TaskContainer.copyTransformedJs(
     register("copyTransformedJs_$compileTaskName", Copy::class.java) {
         val outputFileName = config.originalOutputFile.name
 
-        it.from(config.tempOutputDir) {
-            it.include(outputFileName)
-            it.filter { it.fixPropertyDeclaration() }
+        from(config.tempOutputDir) {
+            include(outputFileName)
+            filter { line -> line.fixPropertyDeclaration() }
         }
 
-        it.from(config.tempOutputDir) {
-            it.exclude(outputFileName)
+        from(config.tempOutputDir) {
+            exclude(outputFileName)
         }
 
-        it.into(config.originalOutputDir)
+        into(config.originalOutputDir)
     }
 
 private class TransformationConfig(val originalOutputFile: File) {
