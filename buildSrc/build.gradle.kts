@@ -16,7 +16,7 @@ autostyle {
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             allWarningsAsErrors = true
         }
     }
