@@ -1,5 +1,5 @@
 group = "com.github.turansky.yfiles"
-version = "0.0.13-SNAPSHOT"
+version = "0.0.14-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.3.61"
