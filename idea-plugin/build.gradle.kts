@@ -18,7 +18,7 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2019.3.2"
+    version = "2019.3.3"
 
     setPlugins(
         "gradle",
@@ -42,7 +42,8 @@ tasks {
     }
 
     patchPluginXml {
-        setUntilBuild("201.*")
+        sinceBuild("193.5233")
+        untilBuild("201.*")
     }
 
     publishPlugin {
