@@ -9,6 +9,7 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
+import org.jetbrains.kotlin.gradle.tasks.KotlinJsDce
 import java.io.File
 
 private val DESCRIPTOR_REGEX = Regex("(Object\\.defineProperty\\(.+\\.prototype, '[a-zA-Z]+', \\{)")
@@ -21,6 +22,10 @@ internal fun Project.configureJsTransformation() {
     plugins.withType<KotlinJsPluginWrapper> {
         // wait for Kotlin target configuration
         afterEvaluate {
+            // "freeze" DCE source file list
+            tasks.withType<KotlinJsDce>()
+                .forEach { it.source.files }
+
             val compileTasks = tasks.withType<KotlinJsCompile>()
                 .filter { it.name in KotlinJs.COMPILE_TASK_NAMES }
 
