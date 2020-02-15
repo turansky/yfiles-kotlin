@@ -54,9 +54,11 @@ gradlePlugin {
     }
 }
 
+val REPO_URL = "https://github.com/turansky/yfiles-kotlin"
+
 pluginBundle {
-    website = "https://github.com/turansky/yfiles-kotlin"
-    vcsUrl = "https://github.com/turansky/yfiles-kotlin"
+    website = REPO_URL
+    vcsUrl = REPO_URL
 
     plugins.getByName("yfiles") {
         displayName = "yFiles Kotlin/JS plugin"
