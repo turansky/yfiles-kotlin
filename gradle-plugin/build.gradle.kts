@@ -2,6 +2,7 @@ plugins {
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
     id("org.gradle.kotlin.kotlin-dsl") version "1.3.3"
+    id("com.github.turansky.kfc.plugin-publish") version "0.0.21"
 
     kotlin("jvm") version "1.3.61"
     id("com.github.autostyle") version "3.0"
@@ -29,39 +30,19 @@ val kotlinSourceDir: File
         .sourceDirectories
         .first()
 
-tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            allWarningsAsErrors = true
-        }
-    }
-
-    jar {
-        into("META-INF") {
-            from("$projectDir/LICENSE.md")
-        }
-    }
-
-    val preparePublish by registering {
-        doLast {
-            preparePublish(kotlinSourceDir)
-        }
-    }
-
-    val prepareDevelopment by registering {
-        doLast {
-            prepareDevelopment(kotlinSourceDir)
-        }
-    }
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(gradleApi())
 
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
+}
+
+pluginPublish {
+    gradlePluginPrefix = true
+    versionFiles = listOf(
+        kotlinSourceDir.resolve("com/github/turansky/yfiles/gradle/plugin/KotlinPluginArtifact.kt")
+    )
 }
 
 gradlePlugin {
