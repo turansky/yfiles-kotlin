@@ -16,5 +16,3 @@ jobs:
       - name: Build
         run: |
           ./gradlew build
-          cd idea-plugin-test
-          ./gradlew build
