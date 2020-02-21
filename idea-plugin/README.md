@@ -4,7 +4,7 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.61-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 # yFiles IDEA plugin
-Check [inheritance rules](gradle-plugin) on the fly
+Check [inheritance rules](../gradle-plugin) on the fly
 
 ## Examples
 ![Example #1](assets/class-interface-object.png)
