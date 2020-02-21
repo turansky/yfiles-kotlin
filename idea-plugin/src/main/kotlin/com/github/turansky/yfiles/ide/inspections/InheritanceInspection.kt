@@ -48,7 +48,7 @@ private class YVisitor(
         }
 
         when (descriptor.kind) {
-            CLASS -> visitClass(classOrObject as KtClass, descriptor)
+            CLASS -> if (classOrObject is KtClass) visitClass(classOrObject, descriptor)
 
             OBJECT,
             INTERFACE,
