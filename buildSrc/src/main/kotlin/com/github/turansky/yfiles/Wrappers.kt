@@ -632,7 +632,9 @@ private val OPERATOR_MAP = mapOf(
 private val OPERATOR_NAME_MAP = mapOf(
     "add" to "plus",
     "subtrack" to "minus",
-    "multiply" to "times"
+    "multiply" to "times",
+
+    "includes" to "contains"
 )
 
 private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
