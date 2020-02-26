@@ -734,16 +734,19 @@ internal class Method(
     }
 
     fun toOperatorExtension(): Method? {
-        val operatorName = when {
+        when {
+            parameters.size != 1 -> return null
             protected -> return null
             overridden -> return null
+        }
 
-            name == "add" && parameters.size == 1 && returns != null -> "plus"
-            name == "subtrack" && parameters.size == 1 && returns != null -> "minus"
-            name == "multiply" && parameters.size == 1 && returns != null -> "times"
+        val operatorName = when {
+            name == "add" && returns != null -> "plus"
+            name == "subtrack" && returns != null -> "minus"
+            name == "multiply" && returns != null -> "times"
 
-            name == "add" && parameters.size == 1 && returns == null -> "plusAssign"
-            name == "remove" && parameters.size == 1 && returns == null -> "minusAssign"
+            name == "add" && returns == null -> "plusAssign"
+            name == "remove" && returns == null -> "minusAssign"
 
             else -> return null
         }
