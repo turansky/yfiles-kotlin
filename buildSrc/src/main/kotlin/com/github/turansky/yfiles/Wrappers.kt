@@ -629,6 +629,17 @@ private val OPERATOR_MAP = mapOf(
     "compareTo" to 1
 )
 
+private val OPERATOR_NAME_MAP = mapOf(
+    "add" to "plus",
+    "subtrack" to "minus",
+    "multiply" to "times"
+)
+
+private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
+    "add" to "plusAssign",
+    "remove" to "minusAssign"
+)
+
 internal class Method(
     source: JSONObject,
     private val parent: Type,
@@ -740,16 +751,11 @@ internal class Method(
             overridden -> return null
         }
 
-        val operatorName = when {
-            name == "add" && returns != null -> "plus"
-            name == "subtrack" && returns != null -> "minus"
-            name == "multiply" && returns != null -> "times"
-
-            name == "add" && returns == null -> "plusAssign"
-            name == "remove" && returns == null -> "minusAssign"
-
-            else -> return null
-        }
+        val operatorName = if (returns != null) {
+            OPERATOR_NAME_MAP[name]
+        } else {
+            ASSIGN_OPERATOR_NAME_MAP[name]
+        } ?: return null
 
         return Method(source, parent, operatorName)
     }
