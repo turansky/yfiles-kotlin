@@ -4,7 +4,7 @@ plugins {
     id("org.gradle.kotlin.kotlin-dsl") version "1.3.3"
     id("com.github.turansky.kfc.plugin-publish") version "0.0.21"
 
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.3.70"
     id("com.github.autostyle") version "3.0"
 }
 
