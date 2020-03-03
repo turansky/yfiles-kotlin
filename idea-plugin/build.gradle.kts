@@ -22,8 +22,8 @@ intellij {
 
     setPlugins(
         "gradle",
-        "java", // TODO: check why depend is required for build
-        "org.jetbrains.kotlin:1.3.61-release-IJ2019.3-1"
+        "java",
+        "org.jetbrains.kotlin:1.3.70-release-IJ2019.3-1"
     )
 }
 
