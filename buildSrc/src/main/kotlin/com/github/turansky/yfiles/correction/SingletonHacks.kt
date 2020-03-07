@@ -1,8 +1,8 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.FINAL
+import com.github.turansky.yfiles.INTERNAL
 import com.github.turansky.yfiles.PROTECTED
-import com.github.turansky.yfiles.SEALED
 import com.github.turansky.yfiles.json.jArray
 import com.github.turansky.yfiles.json.jObject
 
@@ -12,16 +12,12 @@ internal fun applySingletonHacks(source: Source) {
         .filterNot { it.has(CONSTRUCTORS) }
         .filter { it.optFlatMap(CONSTANTS).any { it[NAME] == "INSTANCE" } }
         .forEach {
-            val modifiers = it[MODIFIERS]
-            if (FINAL in modifiers) {
-                modifiers.put(SEALED)
-            } else {
-                it[CONSTRUCTORS] = jArray(
-                    jObject(
-                        NAME to it[NAME],
-                        MODIFIERS to arrayOf(PROTECTED)
-                    )
+            val modifier = if (it[MODIFIERS].contains(FINAL)) INTERNAL else PROTECTED
+            it[CONSTRUCTORS] = jArray(
+                jObject(
+                    NAME to it[NAME],
+                    MODIFIERS to arrayOf(modifier)
                 )
-            }
+            )
         }
 }
