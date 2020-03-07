@@ -13,18 +13,15 @@ internal fun generateMementoUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.hierarchic.Mementos"] = """
             |@JsName("Object")
-            |external class LayerConstraintsMemento 
-            |internal constructor()
+            |sealed external class LayerConstraintsMemento 
             |
             |@JsName("Object")
-            |external class SequenceConstraintsMemento 
-            |internal constructor()
+            |sealed external class SequenceConstraintsMemento 
         """.trimMargin()
 
     context["yfiles.tree.Mementos"] = """
             |@JsName("Object")
-            |external class CompactStrategyMemento 
-            |internal constructor()
+            |sealed external class CompactStrategyMemento 
         """.trimMargin()
 }
 

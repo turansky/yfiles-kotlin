@@ -9,8 +9,7 @@ internal fun generateElementIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[ELEMENT_ID] = """
             |@JsName("String")
-            |external class ElementId 
-            |internal constructor()
+            |sealed external class ElementId 
             |
             |fun ElementId(source:String):ElementId = 
             |    source.unsafeCast<ElementId>()

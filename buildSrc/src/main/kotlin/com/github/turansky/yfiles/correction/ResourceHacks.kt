@@ -14,8 +14,7 @@ internal fun generateResourceUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.view.Resources"] = """
             |@JsName("String")
-            |external class ResourceKey<T : Any>
-            |internal constructor()
+            |sealed external class ResourceKey<T : Any>
             |
             |external interface ResourceMap {
             |    operator fun <T: Any> set(
