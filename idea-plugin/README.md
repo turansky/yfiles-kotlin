@@ -8,4 +8,4 @@ Check [inheritance rules](../gradle-plugin) on the fly
 
 ## Examples
 ![Example #1](assets/class-interface-object.png)
-![Example #1](assets/interface-combinations.png)
+![Example #2](assets/interface-combinations.png)
