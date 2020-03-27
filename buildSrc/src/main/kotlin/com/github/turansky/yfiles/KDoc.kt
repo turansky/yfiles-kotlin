@@ -4,10 +4,20 @@ const val LIST_MARKER = "-"
 const val LINE_DELIMITER = "\n"
 const val MULTILINE_INDENT = "  "
 
+// TODO: remove after fix
+//  https://youtrack.jetbrains.com/issue/KT-32815
+private fun String.applyAnchorWorkaround(): String =
+    if ("#" in this) {
+        val index = indexOf("#") + 1
+        substring(0, index) + substring(index).replace("#", "%23")
+    } else {
+        this
+    }
+
 // TODO: use Markdown after fix
 //  https://youtrack.jetbrains.com/issue/KT-32640
 fun link(text: String, href: String): String =
-    """<a href="$href">$text</a>"""
+    """<a href="${href.applyAnchorWorkaround()}">$text</a>"""
 
 fun listItem(text: String): String =
     "$LIST_MARKER $text"

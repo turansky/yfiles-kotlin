@@ -361,7 +361,7 @@ private class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSour
 }
 
 private class SeeAlsoDoc(private val id: String) : SeeAlso() {
-    constructor(typeId: String, memberId: String) : this("$typeId%23$memberId")
+    constructor(typeId: String, memberId: String) : this("$typeId#$memberId")
 
     override fun toDoc(): String =
         link(
