@@ -32,6 +32,7 @@ internal fun applyHacks(api: JSONObject) {
 
     fixMethodParameterName(source)
     fixMethodParameterType(source)
+    fixMethodParameterOptionality(source)
     fixMethodParameterNullability(source)
     fixMethodNullability(source)
     fixMethodGenericBounds(source)
@@ -223,6 +224,18 @@ private fun fixMethodParameterName(source: Source) {
         .flatMap(PARAMETERS)
         .single { it[NAME] == "_root" }
         .set(NAME, "root")
+}
+
+private fun fixMethodParameterOptionality(source: Source) {
+    val methodNames = setOf("onShow", "show")
+
+    source.type("MouseHoverInputMode")
+        .flatMap(METHODS)
+        .filter { it[NAME] in methodNames }
+        .flatMap(PARAMETERS)
+        .filter { it[NAME] == "content" }
+        .map { it[MODIFIERS] }
+        .forEach { it.removeItem(OPTIONAL) }
 }
 
 private fun fixMethodParameterNullability(source: Source) {
