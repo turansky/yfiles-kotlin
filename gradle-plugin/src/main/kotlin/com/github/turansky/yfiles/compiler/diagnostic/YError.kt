@@ -1,13 +1,18 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.Errors.Initializer.initializeFactoryNames
+import org.jetbrains.kotlin.diagnostics.Errors
 import org.jetbrains.kotlin.diagnostics.Severity.ERROR
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
+import kotlin.reflect.KClass
 
 private fun <T : KtElement> errorDiagnosticFactory(): DiagnosticFactory0<T> =
     DiagnosticFactory0.create(ERROR)
+
+private fun initialize(klass: KClass<*>) {
+    Errors.Initializer.initializeFactoryNames(klass.java)
+}
 
 internal object BaseClassErrors {
     val INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
@@ -20,7 +25,7 @@ internal object BaseClassErrors {
         errorDiagnosticFactory()
 
     init {
-        initializeFactoryNames(BaseClassErrors::class.java)
+        initialize(BaseClassErrors::class)
     }
 }
 
@@ -32,7 +37,7 @@ internal object YObjectErrors {
         errorDiagnosticFactory()
 
     init {
-        initializeFactoryNames(YObjectErrors::class.java)
+        initialize(YObjectErrors::class)
     }
 }
 
@@ -41,6 +46,6 @@ internal object ClassMetadataErrors {
         errorDiagnosticFactory()
 
     init {
-        initializeFactoryNames(ClassMetadataErrors::class.java)
+        initialize(ClassMetadataErrors::class)
     }
 }
