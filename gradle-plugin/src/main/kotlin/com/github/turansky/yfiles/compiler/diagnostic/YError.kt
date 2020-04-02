@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
+import org.jetbrains.kotlin.diagnostics.Errors.Initializer.initializeFactoryNames
 import org.jetbrains.kotlin.diagnostics.Severity.ERROR
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
@@ -17,6 +18,10 @@ internal object BaseClassErrors {
 
     val INLINE_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
+
+    init {
+        initializeFactoryNames(BaseClassErrors::class.java)
+    }
 }
 
 internal object YObjectErrors {
@@ -25,9 +30,17 @@ internal object YObjectErrors {
 
     val COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
+
+    init {
+        initializeFactoryNames(YObjectErrors::class.java)
+    }
 }
 
 internal object ClassMetadataErrors {
     val INVALID_TYPE_PARAMETER: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
+
+    init {
+        initializeFactoryNames(ClassMetadataErrors::class.java)
+    }
 }
