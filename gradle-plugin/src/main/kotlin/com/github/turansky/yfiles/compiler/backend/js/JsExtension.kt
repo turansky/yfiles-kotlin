@@ -4,10 +4,8 @@ import com.github.turansky.yfiles.compiler.backend.common.asClassMetadata
 import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface
 import com.github.turansky.yfiles.compiler.backend.common.implementsYObjectDirectly
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
-import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED
-import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
-import com.github.turansky.yfiles.compiler.diagnostic.BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED
-import com.github.turansky.yfiles.compiler.diagnostic.YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED
+import com.github.turansky.yfiles.compiler.diagnostic.BaseClassErrors
+import com.github.turansky.yfiles.compiler.diagnostic.YObjectErrors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
@@ -52,7 +50,7 @@ private fun TranslationContext.checkInterfaces(
     descriptor: ClassDescriptor
 ) {
     if (descriptor.implementsYFilesInterface) {
-        reportError(declaration, BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        reportError(declaration, BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
     }
 }
 
@@ -76,7 +74,7 @@ private fun TranslationContext.generateCustomYObject(
 ) {
     val yobject = descriptor.getSuperInterfaces().singleOrNull()
     if (yobject == null) {
-        reportError(declaration, YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        reportError(declaration, YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         return
     }
 
@@ -94,10 +92,10 @@ private fun TranslationContext.generateBaseClass(
 
     when {
         descriptor.isInline ->
-            reportError(declaration, BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED)
+            reportError(declaration, BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED)
 
         interfaces.any { !it.isYFilesInterface() } ->
-            reportError(declaration, BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED)
+            reportError(declaration, BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED)
 
         else -> {
             val baseClassName = generateName(descriptor, "BaseClass")

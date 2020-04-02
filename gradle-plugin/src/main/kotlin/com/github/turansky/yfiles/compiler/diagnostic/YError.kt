@@ -8,21 +8,26 @@ import org.jetbrains.kotlin.psi.KtElement
 private fun <T : KtElement> errorDiagnosticFactory(): DiagnosticFactory0<T> =
     DiagnosticFactory0.create(ERROR)
 
-internal val BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
+internal object BaseClassErrors {
+    val INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
 
-internal val BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
+    val INTERFACE_MIXING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
 
-internal val BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
+    val INLINE_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
+}
 
-internal val YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
+internal object YObjectErrors {
+    val INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
 
-internal val YOBJECT__COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
+    val COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
+}
 
-
-internal val CLASS_METADATA__INVALID_TYPE_PARAMETER: DiagnosticFactory0<KtClassOrObject> =
-    errorDiagnosticFactory()
+internal object ClassMetadataErrors {
+    val INVALID_TYPE_PARAMETER: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
+}

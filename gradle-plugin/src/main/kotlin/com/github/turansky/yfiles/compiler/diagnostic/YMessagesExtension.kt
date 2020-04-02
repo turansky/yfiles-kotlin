@@ -6,29 +6,29 @@ import org.jetbrains.kotlin.diagnostics.rendering.DiagnosticFactoryToRendererMap
 private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
     DiagnosticFactoryToRendererMap("yfiles").apply {
         put(
-            BASE_CLASS__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
+            BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
             "yFiles interface implementing supported only for ordinary classes"
         )
         put(
-            BASE_CLASS__INTERFACE_MIXING_NOT_SUPPORTED,
+            BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED,
             "yFiles interfaces could't be mixed with non-yFiles interfaces"
         )
         put(
-            BASE_CLASS__INLINE_CLASS_NOT_SUPPORTED,
+            BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED,
             "yFiles interface implementing not supported for inline classes"
         )
 
         put(
-            YOBJECT__INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
+            YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
             "Interface implementing not supported for direct `yfiles.lang.YObject` inheritors"
         )
         put(
-            YOBJECT__COMPANION_OBJECT_NOT_SUPPORTED,
+            YObjectErrors.COMPANION_OBJECT_NOT_SUPPORTED,
             "Parent type `yfiles.lang.YObject` not supported for companion objects"
         )
 
         put(
-            CLASS_METADATA__INVALID_TYPE_PARAMETER,
+            ClassMetadataErrors.INVALID_TYPE_PARAMETER,
             "Invalid type parameter for ClassMetadata"
         )
     }
