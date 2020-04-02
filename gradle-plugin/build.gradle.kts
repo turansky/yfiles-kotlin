@@ -6,7 +6,6 @@ plugins {
     id("com.github.turansky.kfc.plugin-publish") version "0.5.1"
 
     kotlin("jvm") version "1.3.71"
-    id("com.github.autostyle") version "3.0"
 }
 
 repositories {
@@ -15,12 +14,6 @@ repositories {
 
 kotlinDslPluginOptions {
     experimentalWarning.set(false)
-}
-
-autostyle {
-    kotlin {
-        endWithNewline()
-    }
 }
 
 val kotlinSourceDir: File

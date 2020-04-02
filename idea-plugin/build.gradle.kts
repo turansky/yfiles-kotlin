@@ -4,7 +4,6 @@ version = "0.1.4-SNAPSHOT"
 plugins {
     kotlin("jvm") version "1.3.71"
     id("org.jetbrains.intellij") version "0.4.18"
-    id("com.github.autostyle") version "3.0"
 }
 
 repositories {
@@ -25,12 +24,6 @@ intellij {
         "java",
         "org.jetbrains.kotlin:1.3.71-release-IJ2019.3-1"
     )
-}
-
-autostyle {
-    kotlin {
-        endWithNewline()
-    }
 }
 
 tasks {
