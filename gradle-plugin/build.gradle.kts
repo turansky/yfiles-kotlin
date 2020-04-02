@@ -25,9 +25,6 @@ val kotlinSourceDir: File
         .first()
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(gradleApi())
-
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
 }

@@ -16,6 +16,5 @@ tasks {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation("org.json", "json", "20190722")
 }
