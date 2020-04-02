@@ -11,7 +11,7 @@ private fun <T : KtElement> errorDiagnosticFactory(): DiagnosticFactory0<T> =
     DiagnosticFactory0.create(ERROR)
 
 private fun initialize(klass: KClass<*>) {
-    Errors.Initializer.initializeFactoryNames(klass.java)
+    Errors.Initializer.initializeFactoryNamesAndDefaultErrorMessages(klass.java, YMessagesExtension)
 }
 
 internal object BaseClassErrors {

@@ -5,11 +5,12 @@ plugins {
     id("com.gradle.plugin-publish") version "0.11.0"
     id("com.github.turansky.kfc.plugin-publish") version "0.5.1"
 
-    kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.4-M1"
 }
 
 repositories {
     jcenter()
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 kotlinDslPluginOptions {
@@ -71,7 +72,7 @@ tasks {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "1.8"
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
         }
     }
 

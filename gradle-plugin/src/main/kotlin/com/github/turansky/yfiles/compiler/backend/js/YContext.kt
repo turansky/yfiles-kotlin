@@ -1,11 +1,9 @@
 package com.github.turansky.yfiles.compiler.backend.js
 
-import com.github.turansky.yfiles.compiler.diagnostic.YMessagesExtension
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.diagnostics.SimpleDiagnostic
-import org.jetbrains.kotlin.diagnostics.reportFromPlugin
 import org.jetbrains.kotlin.js.backend.ast.JsBlock
 import org.jetbrains.kotlin.js.backend.ast.JsExpression
 import org.jetbrains.kotlin.js.backend.ast.JsFunction
@@ -44,7 +42,7 @@ internal fun <T : KtElement> TranslationContext.reportError(
     )
 
     bindingTrace()
-        .reportFromPlugin(diagnostic, YMessagesExtension)
+        .report(diagnostic)
 }
 
 internal fun TranslationContext.jsFunction(
