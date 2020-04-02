@@ -32,7 +32,7 @@ val kotlinSourceDir: File
         .first()
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
 
     compileOnly(kotlin("gradle-plugin"))
@@ -74,7 +74,16 @@ pluginBundle {
     }
 }
 
-tasks.wrapper {
-    gradleVersion = "6.3"
-    distributionType = Wrapper.DistributionType.ALL
+tasks {
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            allWarningsAsErrors = true
+        }
+    }
+
+    wrapper {
+        gradleVersion = "6.3"
+        distributionType = Wrapper.DistributionType.ALL
+    }
 }
