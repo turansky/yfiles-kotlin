@@ -3,7 +3,7 @@ plugins {
     `kotlin-dsl`
 
     id("com.gradle.plugin-publish") version "0.11.0"
-    id("com.github.turansky.kfc.plugin-publish") version "0.7.6"
+    id("com.github.turansky.kfc.plugin-publish") version "0.7.10"
 
     kotlin("jvm") version "1.3.71"
 }
@@ -16,14 +16,6 @@ kotlinDslPluginOptions {
     experimentalWarning.set(false)
 }
 
-val kotlinSourceDir: File
-    get() = kotlin
-        .sourceSets
-        .get("main")
-        .kotlin
-        .sourceDirectories
-        .first()
-
 dependencies {
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
@@ -31,9 +23,6 @@ dependencies {
 
 pluginPublish {
     gradlePluginPrefix = true
-    versionFiles = listOf(
-        kotlinSourceDir.resolve("com/github/turansky/yfiles/gradle/plugin/KotlinPluginArtifact.kt")
-    )
 }
 
 gradlePlugin {
