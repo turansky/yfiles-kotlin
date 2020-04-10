@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    target {
+    js {
         browser()
     }
 }

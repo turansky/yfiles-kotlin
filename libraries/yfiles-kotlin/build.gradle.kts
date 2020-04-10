@@ -12,8 +12,8 @@ plugins {
 }
 
 kotlin {
-    target {
-        nodejs()
+    js {
+        browser()
     }
 }
 

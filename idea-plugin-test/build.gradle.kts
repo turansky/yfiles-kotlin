@@ -10,8 +10,8 @@ repositories {
 }
 
 kotlin {
-    target {
-        nodejs()
+    js {
+        browser()
     }
 }
 

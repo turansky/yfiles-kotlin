@@ -3,14 +3,14 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("js") version "1.4-M1" apply false
+    kotlin("js") version "1.4.0-dev-5808" apply false
     id("de.undercouch.download") version "4.0.4" apply false
 }
 
 allprojects {
     repositories {
         jcenter()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        maven("https://dl.bintray.com/kotlin/kotlin-dev")
     }
 }
 
