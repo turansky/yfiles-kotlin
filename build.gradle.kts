@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
@@ -15,7 +14,7 @@ allprojects {
 }
 
 subprojects {
-    plugins.withType<KotlinJsPluginWrapper> {
+    afterEvaluate {
         tasks.withType<KotlinWebpack>().configureEach {
             sourceMaps = false
         }
