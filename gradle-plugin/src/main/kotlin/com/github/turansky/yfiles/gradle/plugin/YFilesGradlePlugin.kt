@@ -5,6 +5,6 @@ import org.gradle.api.Project
 
 class YFilesGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        target.configureJsTransformation()
+        // do nothing
     }
 }
