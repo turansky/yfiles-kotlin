@@ -14,6 +14,8 @@ allprojects {
 }
 
 subprojects {
+    // TODO: use plugins after regression fix
+    //  https://youtrack.jetbrains.com/issue/KT-38203
     afterEvaluate {
         tasks.withType<KotlinWebpack>().configureEach {
             sourceMaps = false
