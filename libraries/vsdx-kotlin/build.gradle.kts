@@ -11,10 +11,8 @@ plugins {
     id("maven-publish")
 }
 
-kotlin {
-    js {
-        browser()
-    }
+kotlin.js {
+    browser()
 }
 
 dependencies {

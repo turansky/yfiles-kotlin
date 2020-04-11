@@ -9,10 +9,8 @@ repositories {
     mavenLocal()
 }
 
-kotlin {
-    js {
-        browser()
-    }
+kotlin.js {
+    browser()
 }
 
 dependencies {
