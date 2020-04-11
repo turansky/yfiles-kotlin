@@ -3,7 +3,7 @@ plugins {
     `kotlin-dsl`
 
     id("com.gradle.plugin-publish") version "0.11.0"
-    id("com.github.turansky.kfc.plugin-publish") version "0.5.1"
+    id("com.github.turansky.kfc.plugin-publish") version "0.7.11"
 
     kotlin("jvm") version "1.4.0-dev-5808"
 }
@@ -17,27 +17,13 @@ kotlinDslPluginOptions {
     experimentalWarning.set(false)
 }
 
-val kotlinSourceDir: File
-    get() = kotlin
-        .sourceSets
-        .get("main")
-        .kotlin
-        .sourceDirectories
-        .first()
-
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(gradleApi())
-
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
 }
 
 pluginPublish {
     gradlePluginPrefix = true
-    versionFiles = listOf(
-        kotlinSourceDir.resolve("com/github/turansky/yfiles/gradle/plugin/KotlinPluginArtifact.kt")
-    )
 }
 
 gradlePlugin {
@@ -68,16 +54,12 @@ pluginBundle {
     }
 }
 
-tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            allWarningsAsErrors = false
-        }
-    }
+// TODO: remove after migration on 1.4
+tasks.compileKotlin {
+    kotlinOptions.allWarningsAsErrors = true
+}
 
-    wrapper {
-        gradleVersion = "6.3"
-        distributionType = Wrapper.DistributionType.ALL
-    }
+tasks.wrapper {
+    gradleVersion = "6.3"
+    distributionType = Wrapper.DistributionType.ALL
 }

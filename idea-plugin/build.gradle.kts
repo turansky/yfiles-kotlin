@@ -1,5 +1,5 @@
 group = "com.github.turansky.yfiles"
-version = "0.1.4-SNAPSHOT"
+version = "0.2.1-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.3.71"
@@ -17,12 +17,12 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2019.3.3"
+    version = "2020.1"
 
     setPlugins(
         "gradle",
         "java",
-        "org.jetbrains.kotlin:1.3.71-release-IJ2019.3-1"
+        "org.jetbrains.kotlin:1.3.71-release-IJ2020.1-1"
     )
 }
 
@@ -36,7 +36,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild("193.5233")
-        untilBuild("201.*")
+        untilBuild("202.*")
     }
 
     publishPlugin {
