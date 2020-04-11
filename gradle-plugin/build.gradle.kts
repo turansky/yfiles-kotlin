@@ -56,7 +56,7 @@ pluginBundle {
 
 // TODO: remove after migration on 1.4
 tasks.compileKotlin {
-    kotlinOptions.allWarningsAsErrors = true
+    kotlinOptions.allWarningsAsErrors = false
 }
 
 tasks.wrapper {
