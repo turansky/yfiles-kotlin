@@ -596,7 +596,7 @@ internal class Property(
         if (writeOnly) {
             str += """
                 |
-                |   @Deprecated(message = "Write only property", level = DeprecationLevel.HIDDEN)
+                |   @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
                 |   get() = definedExternally
             """.trimMargin()
         }
