@@ -2,7 +2,7 @@ group = "com.github.turansky.yfiles"
 version = "0.2.1-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.3.72"
     id("org.jetbrains.intellij") version "0.4.18"
 }
 
@@ -22,7 +22,7 @@ intellij {
     setPlugins(
         "gradle",
         "java",
-        "org.jetbrains.kotlin:1.3.71-release-IJ2020.1-1"
+        "org.jetbrains.kotlin:1.3.72-release-IJ2020.1-1"
     )
 }
 
