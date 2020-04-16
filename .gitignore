@@ -10,3 +10,5 @@ libraries/vsdx-kotlin/src/
 .idea/*
 !.idea/icon.png
 *.iml
+
+webpack.config.d/
