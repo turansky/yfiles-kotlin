@@ -607,7 +607,6 @@ internal class Property(
     override fun toExtensionCode(): String {
         require(!protected)
         require(!writeOnly)
-        requireNotNull(parent)
 
         val generics = parent.generics.declaration
 
@@ -764,7 +763,6 @@ internal class Method(
 
     override fun toExtensionCode(): String {
         require(!protected)
-        requireNotNull(parent)
 
         val extParameters = kotlinParametersString(extensionMode = true)
         val callParameters = parameters
