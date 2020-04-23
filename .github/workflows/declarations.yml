@@ -1,6 +1,11 @@
 name: declarations
 
-on: [push]
+on:
+  push:
+    branches:
+      - '*'
+  schedule:
+    - cron: 21 21 * * *
 
 jobs:
   build:
