@@ -16,12 +16,15 @@ Check [inheritance rules](gradle-plugin) on the fly
 
 ## Table of contents
 * [Generation](#generation)
-* [Class](#class)
+* [YClass](#yclass)
+  * [Metadata](#metadata)
+  * [Cast extensions](#cast-extensions)
+  * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
 * [Flags](#flags)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
-  + [Online Documentation](#online-documentation) 
+  * [Online Documentation](#online-documentation) 
 
 ## Generation
 * Run `./gradlew build`
@@ -54,7 +57,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 * [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
 * [`No Xcode or CLT version detected!`](https://github.com/nodejs/node-gyp/issues/1927#issuecomment-544507444) - For `macOS Catalina`
 
-## Class
+## YClass
 
 #### Metadata
 ```Kotlin
@@ -76,9 +79,9 @@ fun (o:Any?) {
 }
 ```
 
-#### Generic
+#### Type parameter
 ```Kotlin
-val clazz:Class<IVisibilityTestable> = IVisibilityTestable.yclass
+val clazz:YClass<IVisibilityTestable> = IVisibilityTestable.yclass
 
 // strict lookup
 val visibilityTestable:IVisibilityTestable? = renderer.lookup(IVisibilityTestable.yclass)
