@@ -14,6 +14,15 @@ Resolve inheritance problems
 ## [IDEA Plugin](idea-plugin)
 Check [inheritance rules](gradle-plugin) on the fly
 
+## Table of contents
+* [Generation](#generation)
+* [Class](#class)
+* [Factory methods](#factory-methods)
+* [Flags](#flags)
+* [Resources Defaults](#resources-defaults)
+* [KDoc](#kdoc)
+  + [Online Documentation](#online-documentation) 
+
 ## Generation
 * Run `./gradlew build`
 * Check source folders
@@ -116,7 +125,8 @@ val inputMode = GraphViewerInputMode {
 val nodesAreClickable = NODE in inputMode.clickableItems // true
 ```
 
-## [Resources Defaults][41]
+## Resources Defaults
+[What is resources defaults?][41]
 ```Kotlin
 import yfiles.lang.ResourceKeys.COPY
 import yfiles.lang.ResourceKeys.COPY_KEY
