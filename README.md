@@ -14,14 +14,26 @@ Resolve inheritance problems
 ## [IDEA Plugin](idea-plugin)
 Check [inheritance rules](gradle-plugin) on the fly
 
+## Table of contents
+* [Generation](#generation)
+* [YClass](#yclass)
+  * [Metadata](#metadata)
+  * [Cast extensions](#cast-extensions)
+  * [Type parameter](#type-parameter) 
+* [Factory methods](#factory-methods)
+* [Flags](#flags)
+* [Resources Defaults](#resources-defaults)
+* [KDoc](#kdoc)
+  * [Online Documentation](#online-documentation) 
+
 ## Generation
 * Run `./gradlew build`
 * Check source folders
 
-| Declarations                | Source folder                             |
-| :---                        | :---                                      |
-| [yFiles for HTML][11]       | `libraries/yfiles-kotlin/src/main/kotlin` |
-| [VSDX Export][21]           | `libraries/vsdx-kotlin/src/main/kotlin`   |
+| Declarations                | Source folder                                              |
+| :---                        | :---                                                       |
+| [yFiles for HTML][11]       | [`yfiles-kotlin`](libraries/yfiles-kotlin/src/main/kotlin) |
+| [VSDX Export][21]           | [`vsdx-kotlin`](libraries/vsdx-kotlin/src/main/kotlin)     |
   
 ## Description
 | JS library                  | [yFiles for HTML][11] | [VSDX Export][21] |
@@ -45,7 +57,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 * [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
 * [`No Xcode or CLT version detected!`](https://github.com/nodejs/node-gyp/issues/1927#issuecomment-544507444) - For `macOS Catalina`
 
-## Class
+## YClass
 
 #### Metadata
 ```Kotlin
@@ -67,9 +79,9 @@ fun (o:Any?) {
 }
 ```
 
-#### Generic
+#### Type parameter
 ```Kotlin
-val clazz:Class<IVisibilityTestable> = IVisibilityTestable.yclass
+val clazz:YClass<IVisibilityTestable> = IVisibilityTestable.yclass
 
 // strict lookup
 val visibilityTestable:IVisibilityTestable? = renderer.lookup(IVisibilityTestable.yclass)
@@ -116,7 +128,8 @@ val inputMode = GraphViewerInputMode {
 val nodesAreClickable = NODE in inputMode.clickableItems // true
 ```
 
-## [Resources Defaults][41]
+## Resources Defaults
+[What is resources defaults?][41]
 ```Kotlin
 import yfiles.lang.ResourceKeys.COPY
 import yfiles.lang.ResourceKeys.COPY_KEY
