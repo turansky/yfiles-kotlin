@@ -92,7 +92,6 @@ fun generateVsdxKotlinDeclarations(
 }
 
 enum class ContentMode {
-    DEFAULT,
     CLASS,
     INTERFACE,
     EXTENSIONS,

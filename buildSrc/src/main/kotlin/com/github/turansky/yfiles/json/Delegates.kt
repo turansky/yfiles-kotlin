@@ -104,7 +104,7 @@ internal class StringArrayDelegate(
             }
 
             val list = mutableListOf<String>()
-            for (i in 0..length - 1) {
+            for (i in 0 until length) {
                 list.add(array.getString(i))
             }
 
