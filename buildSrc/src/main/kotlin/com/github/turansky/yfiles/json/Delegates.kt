@@ -27,6 +27,29 @@ abstract class JsonDelegate<T> {
     }
 }
 
+internal fun <T : Any> delegate(
+    read: (source: JSONObject, key: String) -> T
+): JsonDelegate<T> = SimpleJsonDelegate(read)
+
+internal fun <T : Any> optObject(
+    create: (source: JSONObject) -> T
+): JsonDelegate<T?> = SimpleJsonDelegate { source, key ->
+    if (source.has(key)) {
+        create(source.getJSONObject(key))
+    } else {
+        null
+    }
+}
+
+private class SimpleJsonDelegate<T>(
+    private val getData: (source: JSONObject, key: String) -> T
+) : JsonDelegate<T>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): T = getData(source, key)
+}
+
 internal fun <T : Any> list(
     transform: (JSONObject) -> T
 ): JsonDelegate<List<T>> = ArrayDelegate(transform)
@@ -167,31 +190,15 @@ internal class StringDelegate : JsonDelegate<String>() {
         value(source, key)
 }
 
-internal fun int(): JsonDelegate<Int> = IntDelegate()
-
-internal class IntDelegate : JsonDelegate<Int>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Int = source.getInt(key)
+internal fun int(): JsonDelegate<Int> = delegate { source, key ->
+    source.getInt(key)
 }
 
-internal fun boolean(): JsonDelegate<Boolean> = BooleanDelegate()
-
-private class BooleanDelegate : JsonDelegate<Boolean>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Boolean {
-        if (!source.has(key)) {
-            return false
-        }
-
-        val value = source.getString(key)
-        return when (value) {
-            "!0" -> true
-            "!1" -> false
-            else -> source.getBoolean(key)
-        }
+internal fun boolean(): JsonDelegate<Boolean> = delegate { source, key ->
+    when (source.optString(key)) {
+        "",
+        "!1" -> false
+        "!0" -> true
+        else -> source.getBoolean(key)
     }
 }

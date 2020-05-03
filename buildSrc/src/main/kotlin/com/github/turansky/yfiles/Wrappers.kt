@@ -73,7 +73,7 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
 
     private val parameters: List<SignatureParameter> by list(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
-    private val returns: SignatureReturns? by SignatureReturnsDelegate()
+    private val returns: SignatureReturns? by optObject(::SignatureReturns)
 
     private val documentation: String
         get() = getDocumentation(
@@ -241,7 +241,7 @@ private class Value(private val value: Int) {
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by optString()
-    private val ref: TypeReference? by TypeReferenceDelegate()
+    private val ref: TypeReference? by optObject(::TypeReference)
     private val summary: String? by summary()
 
     private fun getDefault(): String {
@@ -493,7 +493,7 @@ private class TypeConstant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : Constant(source, parent) {
-    private val dpdata: DpData? by DpDataDelegate()
+    private val dpdata: DpData? by optObject(::DpData)
 
     private val documentation: String
         get() = getDocumentation(
@@ -662,7 +662,7 @@ internal class Method(
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     val generics: Generics = Generics(typeparameters)
 
-    val returns: Returns? by ReturnsDelegate()
+    val returns: Returns? by optObject(::Returns)
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
@@ -1087,57 +1087,6 @@ private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers>() {
     ): ParameterModifiers {
         return ParameterModifiers(StringArrayDelegate.value(source, key))
     }
-}
-
-private class SignatureReturnsDelegate : JsonDelegate<SignatureReturns?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): SignatureReturns? {
-        return if (source.has(key)) {
-            SignatureReturns(source.getJSONObject(key))
-        } else {
-            null
-        }
-    }
-}
-
-private class ReturnsDelegate : JsonDelegate<Returns?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Returns? {
-        return if (source.has(key)) {
-            Returns(source.getJSONObject(key))
-        } else {
-            null
-        }
-    }
-}
-
-private class TypeReferenceDelegate : JsonDelegate<TypeReference?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): TypeReference? {
-        return if (source.has(key)) {
-            TypeReference(source.getJSONObject(key))
-        } else {
-            null
-        }
-    }
-}
-
-private class DpDataDelegate : JsonDelegate<DpData?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): DpData? =
-        if (source.has(key)) {
-            DpData(source.getJSONObject(key))
-        } else {
-            null
-        }
 }
 
 private class DpDataItemDelegate : JsonDelegate<DpDataItem>() {
