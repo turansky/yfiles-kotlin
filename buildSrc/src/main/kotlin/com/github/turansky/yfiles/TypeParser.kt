@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
-private val GENERIC_START = "<"
-private val GENERIC_END = ">"
+private const val GENERIC_START = "<"
+private const val GENERIC_END = ">"
 
 internal fun parse(type: String, signature: String?): String {
     return parseType(signature ?: type)

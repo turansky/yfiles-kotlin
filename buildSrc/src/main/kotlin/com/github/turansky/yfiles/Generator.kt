@@ -8,9 +8,9 @@ import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
-private val GENERATOR_COMMENT = "Automatically generated - do not modify!"
+private const val GENERATOR_COMMENT = "Automatically generated - do not modify!"
 
-internal val DOC_BASE_URL = "%doc-base-url%"
+internal const val DOC_BASE_URL = "%doc-base-url%"
 
 fun generateKotlinDeclarations(
     apiFile: File,
@@ -109,8 +109,8 @@ internal interface GeneratorContext {
     fun clean()
 }
 
-private val NESTED_CLASS_IN_EXTERNAL_INTERFACE = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
-private val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
+private const val NESTED_CLASS_IN_EXTERNAL_INTERFACE = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
+private const val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
 
 private class SimpleGeneratorContext(
     private val sourceDir: File,

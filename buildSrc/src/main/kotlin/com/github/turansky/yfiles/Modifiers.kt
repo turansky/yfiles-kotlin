@@ -1,22 +1,22 @@
 package com.github.turansky.yfiles
 
-internal val PUBLIC = "public"
-internal val FLAGS = "flags"
+internal const val PUBLIC = "public"
+internal const val FLAGS = "flags"
 
-internal val STATIC = "static"
-internal val FINAL = "final"
-internal val RO = "ro"
-internal val WO = "wo"
-internal val ABSTRACT = "abstract"
-internal val INTERNAL = "internal"
-internal val PROTECTED = "protected"
+internal const val STATIC = "static"
+internal const val FINAL = "final"
+internal const val RO = "ro"
+internal const val WO = "wo"
+internal const val ABSTRACT = "abstract"
+internal const val INTERNAL = "internal"
+internal const val PROTECTED = "protected"
 
-internal val ARTIFICIAL = "artificial"
-internal val VARARGS = "varargs"
-internal val OPTIONAL = "optional"
-internal val CONVERSION = "conversion"
+internal const val ARTIFICIAL = "artificial"
+internal const val VARARGS = "varargs"
+internal const val OPTIONAL = "optional"
+internal const val CONVERSION = "conversion"
 
-internal val CANBENULL = "canbenull"
+internal const val CANBENULL = "canbenull"
 
 // for codegen
-internal val HIDDEN = "hidden"
+internal const val HIDDEN = "hidden"

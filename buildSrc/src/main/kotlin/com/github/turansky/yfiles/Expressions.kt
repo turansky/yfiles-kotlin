@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles
 
-internal val AS_DYNAMIC = "asDynamic()"
+internal const val AS_DYNAMIC = "asDynamic()"
 
-internal val EQ_DE = " = definedExternally"
-internal val EQ_NULL = " = null"
+internal const val EQ_DE = " = definedExternally"
+internal const val EQ_NULL = " = null"

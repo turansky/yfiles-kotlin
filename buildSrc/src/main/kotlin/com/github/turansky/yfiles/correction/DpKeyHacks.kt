@@ -9,10 +9,10 @@ internal fun applyDpKeyHacks(source: Source) {
     fixMethodParameters(source)
 }
 
-private val DP_KEY_BASE_CLASS = "DpKeyBase"
-private val DP_KEY_BASE_KEY = "TKey"
+private const val DP_KEY_BASE_CLASS = "DpKeyBase"
+private const val DP_KEY_BASE_KEY = "TKey"
 
-private val DP_KEY_BASE_DECLARATION = "$DP_KEY_BASE<"
+private const val DP_KEY_BASE_DECLARATION = "$DP_KEY_BASE<"
 
 private val DP_KEY_GENERIC_MAP = mapOf(
     DP_KEY_BASE_CLASS to DP_KEY_BASE_KEY,

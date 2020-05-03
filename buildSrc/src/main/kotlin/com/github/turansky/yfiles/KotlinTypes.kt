@@ -8,11 +8,11 @@ internal val INT: String = Int::class.simpleName!!
 internal val DOUBLE: String = Double::class.simpleName!!
 internal val BOOLEAN: String = Boolean::class.simpleName!!
 
-internal val PROMISE = "kotlin.js.Promise"
+internal const val PROMISE = "kotlin.js.Promise"
 
-internal val ELEMENT = "org.w3c.dom.Element"
-internal val SVG_ELEMENT = "org.w3c.dom.svg.SVGElement"
-internal val SVG_SVG_ELEMENT = "org.w3c.dom.svg.SVGSVGElement"
+internal const val ELEMENT = "org.w3c.dom.Element"
+internal const val SVG_ELEMENT = "org.w3c.dom.svg.SVGElement"
+internal const val SVG_SVG_ELEMENT = "org.w3c.dom.svg.SVGSVGElement"
 
 internal fun getKotlinType(type: String): String? =
     STANDARD_TYPE_MAP[type]
