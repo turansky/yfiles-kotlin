@@ -141,7 +141,9 @@ internal class MapDelegate<T>(
             return emptyMap()
         }
 
-        return keys.associateBy({ it }, { transform(it, data.getJSONObject(it)) })
+        return keys.associateWith {
+            transform(it, data.getJSONObject(it))
+        }
     }
 }
 
