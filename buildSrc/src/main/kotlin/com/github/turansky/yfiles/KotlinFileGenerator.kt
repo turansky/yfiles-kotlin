@@ -26,7 +26,7 @@ internal class KotlinFileGenerator(
 
         functionSignatures
             .groupBy { it.classId.substringBeforeLast(".") }
-            .forEach { _, items -> generate(context, items) }
+            .forEach { (_, items) -> generate(context, items) }
     }
 
     private fun generate(

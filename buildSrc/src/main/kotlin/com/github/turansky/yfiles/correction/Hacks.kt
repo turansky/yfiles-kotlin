@@ -211,7 +211,7 @@ private fun fixConstructorParameterName(source: Source) {
 }
 
 private fun fixMethodParameterName(source: Source) {
-    PARAMETERS_CORRECTION.forEach { data, fixedName ->
+    PARAMETERS_CORRECTION.forEach { (data, fixedName) ->
         source.type(data.className)
             .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
             .first()
@@ -240,7 +240,7 @@ private fun fixMethodParameterOptionality(source: Source) {
 
 private fun fixMethodParameterNullability(source: Source) {
     PARAMETERS_NULLABILITY_CORRECTION
-        .forEach { data, nullable ->
+        .forEach { (data, nullable) ->
             val parameters = source.type(data.className)
                 .methodParameters(data.methodName, data.parameterName)
 

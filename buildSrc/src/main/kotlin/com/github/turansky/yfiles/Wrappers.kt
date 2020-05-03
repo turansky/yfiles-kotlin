@@ -660,7 +660,7 @@ internal class Method(
     private val postconditions: List<String> by stringList(::summary)
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
-    val generics: Generics = Generics(typeparameters)
+    private val generics: Generics = Generics(typeparameters)
 
     val returns: Returns? by optObject(::Returns)
 
