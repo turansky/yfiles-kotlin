@@ -52,32 +52,33 @@ private class SimpleJsonDelegate<T>(
 
 internal fun <T : Any> list(
     transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = ArrayDelegate(transform)
+): JsonDelegate<List<T>> = delegate { source, key ->
+    objectSequence(source, key)
+        .map(transform)
+        .toList()
+}
 
-internal open class ArrayDelegate<T : Any>(
-    private val transform: (JSONObject) -> T
-) : JsonDelegate<List<T>>() {
+internal fun <T : Comparable<T>> sortedList(
+    transform: (JSONObject) -> T
+): JsonDelegate<List<T>> = delegate { source, key ->
+    objectSequence(source, key)
+        .map(transform)
+        .sorted()
+        .toList()
+}
 
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): List<T> {
-        if (!source.has(key)) {
-            return emptyList()
-        }
-
-        val array = source.getJSONArray(key)
-        val length = array.length()
-        if (length == 0) {
-            return emptyList()
-        }
-
-        return (0 until length)
-            .asSequence()
-            .map { array.getJSONObject(it) }
-            .map(transform)
-            .toList()
+private fun objectSequence(
+    source: JSONObject,
+    key: String
+): Sequence<JSONObject> {
+    if (!source.has(key)) {
+        return emptySequence()
     }
+
+    val array = source.getJSONArray(key)
+    return (0 until array.length())
+        .asSequence()
+        .map(array::getJSONObject)
 }
 
 internal fun stringList(): JsonDelegate<List<String>> = delegate(::stringList)

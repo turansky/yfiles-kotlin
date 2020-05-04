@@ -1113,20 +1113,7 @@ private class EventListenerDelegate(private val parent: HasClassId) : JsonDelega
 
 private fun <T : Declaration> declarationList(
     transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = DeclarationArrayDelegate(transform)
-
-private class DeclarationArrayDelegate<T : Declaration>(
-    transform: (JSONObject) -> T
-) : ArrayDelegate<T>(transform) {
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): List<T> {
-        return super.read(source, key)
-            .sorted()
-    }
-}
+): JsonDelegate<List<T>> = sortedList(transform)
 
 private fun getDocumentation(
     summary: String?,
