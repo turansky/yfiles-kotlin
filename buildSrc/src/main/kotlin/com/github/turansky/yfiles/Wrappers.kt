@@ -1032,7 +1032,7 @@ private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate
         source: JSONObject,
         key: String
     ): String {
-        return parse(StringDelegate.value(source, key))
+        return parse(string(source, key))
     }
 }
 

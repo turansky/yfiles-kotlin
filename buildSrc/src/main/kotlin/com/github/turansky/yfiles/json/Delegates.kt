@@ -173,24 +173,14 @@ internal class NullableStringDelegate : JsonDelegate<String?>() {
         value(source, key)
 }
 
-internal fun string(): JsonDelegate<String> = StringDelegate()
+internal fun string(): JsonDelegate<String> = delegate(::string)
 
-internal class StringDelegate : JsonDelegate<String>() {
-    companion object {
-        fun value(
-            source: JSONObject,
-            key: String
-        ): String =
-            source.getString(key)
-                .apply { check(isNotEmpty()) }
-    }
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): String =
-        value(source, key)
-}
+internal fun string(
+    source: JSONObject,
+    key: String
+): String =
+    source.getString(key)
+        .apply { check(isNotEmpty()) }
 
 internal fun int(): JsonDelegate<Int> = delegate { source, key ->
     source.getInt(key)
