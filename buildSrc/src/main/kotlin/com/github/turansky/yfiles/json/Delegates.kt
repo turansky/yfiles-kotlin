@@ -50,6 +50,17 @@ internal fun <T : Any> optNamed(
     }
 }
 
+internal fun <T : Any> optNamed(
+    name: String,
+    create: (source: JSONObject) -> T?
+): Prop<T?> = SimplePropDelegate { source, _ ->
+    if (source.has(name)) {
+        create(source.getJSONObject(name))
+    } else {
+        null
+    }
+}
+
 private class SimplePropDelegate<T>(
     private val getData: (source: JSONObject, key: String) -> T
 ) : PropDelegate<T>() {

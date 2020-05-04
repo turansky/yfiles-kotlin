@@ -1075,16 +1075,11 @@ private fun parameterModifiers(): Prop<ParameterModifiers> =
 private fun dpDataItem(): Prop<DpDataItem> =
     named(::DpDataItem)
 
-private const val Y_DEFAULT = "y.default"
-
-private fun defaultValue(): Prop<DefaultValue?> = prop { source, _ ->
-    if (source.has(Y_DEFAULT)) {
-        DefaultValue(source.getJSONObject(Y_DEFAULT))
+private fun defaultValue(): Prop<DefaultValue?> =
+    optNamed("y.default") {
+        DefaultValue(it)
             .takeIf { it.isNotEmpty() }
-    } else {
-        null
     }
-}
 
 private fun eventListener(parent: HasClassId): Prop<EventListener> =
     named { EventListener(it, parent) }
