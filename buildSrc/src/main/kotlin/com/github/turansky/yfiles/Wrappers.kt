@@ -1076,7 +1076,7 @@ private class ModifiersDelegate : JsonDelegate<Modifiers>() {
         source: JSONObject,
         key: String
     ): Modifiers {
-        return Modifiers(StringArrayDelegate.value(source, key))
+        return Modifiers(stringList(source, key))
     }
 }
 
@@ -1085,7 +1085,7 @@ private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers>() {
         source: JSONObject,
         key: String
     ): ParameterModifiers {
-        return ParameterModifiers(StringArrayDelegate.value(source, key))
+        return ParameterModifiers(stringList(source, key))
     }
 }
 
@@ -1131,7 +1131,7 @@ private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifie
         source: JSONObject,
         key: String
     ): EventListenerModifiers {
-        return EventListenerModifiers(StringArrayDelegate.value(source, key))
+        return EventListenerModifiers(stringList(source, key))
     }
 }
 

@@ -80,48 +80,31 @@ internal open class ArrayDelegate<T : Any>(
     }
 }
 
+internal fun stringList(): JsonDelegate<List<String>> = delegate(::stringList)
+
 internal fun stringList(
-    transform: ((String) -> String)? = null
-): JsonDelegate<List<String>> = StringArrayDelegate(transform)
+    transform: (String) -> String
+): JsonDelegate<List<String>> = delegate { source, key ->
+    stringList(source, key)
+        .map(transform)
+}
 
-internal class StringArrayDelegate(
-    private val transform: ((String) -> String)? = null
-) : JsonDelegate<List<String>>() {
-    companion object {
-        fun value(
-            source: JSONObject,
-            key: String,
-            transform: ((String) -> String)? = null
-        ): List<String> {
-            if (!source.has(key)) {
-                return emptyList()
-            }
-
-            val array = source.getJSONArray(key)
-            val length = array.length()
-            if (length == 0) {
-                return emptyList()
-            }
-
-            val list = mutableListOf<String>()
-            for (i in 0 until length) {
-                list.add(array.getString(i))
-            }
-
-            return if (transform != null) {
-                list.map(transform)
-            } else {
-                list.toList()
-            }
-        }
+internal fun stringList(
+    source: JSONObject,
+    key: String
+): List<String> {
+    if (!source.has(key)) {
+        return emptyList()
     }
 
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): List<String> {
-        return value(source, key, transform)
+    val array = source.getJSONArray(key)
+    val length = array.length()
+    if (length == 0) {
+        return emptyList()
     }
+
+    return (0 until length)
+        .map(array::getString)
 }
 
 internal class MapDelegate<T>(
