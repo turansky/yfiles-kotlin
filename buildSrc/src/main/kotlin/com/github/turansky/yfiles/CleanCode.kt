@@ -49,7 +49,7 @@ private fun String.getImportedClasses(className: String): List<String> {
         .distinct()
         // TODO: remove after es6name use
         // WA for duplicated class names (Insets for example)
-        .filterNot { it.endsWith("." + className) }
+        .filterNot { it.endsWith(".$className") }
         .plus(
             STANDARD_IMPORTED_TYPES
                 .asSequence()

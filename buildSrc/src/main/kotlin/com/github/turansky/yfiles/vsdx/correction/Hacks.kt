@@ -53,9 +53,8 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.view.Font",
     "yfiles.view.HorizontalTextAlignment",
     "yfiles.view.VerticalTextAlignment"
-).associate {
-    val classId = if (it == YCLASS) "Class" else it.substringAfterLast(".")
-    classId to it
+).associateBy {
+    if (it == YCLASS) "Class" else it.substringAfterLast(".")
 }
 
 private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
