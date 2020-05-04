@@ -954,7 +954,7 @@ internal class Event(
     private val listeners = listOf(add, remove)
 
     val overriden by lazy {
-        listeners.any { it.overriden }
+        listeners.any { it.overridden }
     }
 
     private val seeAlsoDocs: List<SeeAlso>
@@ -1004,13 +1004,13 @@ private class EventListener(
     val modifiers: EventListenerModifiers by wrapStringList(::EventListenerModifiers)
     val parameters: List<Parameter> by list { Parameter(it) }
 
-    val overriden: Boolean
+    val overridden: Boolean
         get() = ClassRegistry.instance
             .listenerOverridden(parent.classId, name)
 
     private fun kotlinModificator(): String {
         return when {
-            overriden -> "override "
+            overridden -> "override "
             modifiers.abstract -> "abstract "
             else -> ""
         }
