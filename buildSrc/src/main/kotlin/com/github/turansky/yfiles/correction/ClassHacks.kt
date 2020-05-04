@@ -38,14 +38,16 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |$primitiveTypeMetadata    
         """.trimMargin()
 
+    val YOBJECT_SN = YOBJECT.substringAfterLast(".")
+
     // language=kotlin
     context["yfiles.lang.ClassMetadata"] =
-        "external interface ClassMetadata<T: Any> : TypeMetadata<T>"
+        "external interface ClassMetadata<T: $YOBJECT_SN> : TypeMetadata<T>"
 
     // language=kotlin
     context["yfiles.lang.InterfaceMetadata", INLINE] =
         """
-            |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
+            |external interface InterfaceMetadata<T: $YOBJECT_SN>: TypeMetadata<T>
             |    
             |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
             |    clazz.asDynamic().isInstance(this)
@@ -53,26 +55,26 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
             |    this != null && this yIs clazz
             |
-            |inline infix fun <T : Any> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
+            |inline infix fun <T : $YOBJECT_SN> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
             |    if (this yIs clazz) {
             |        unsafeCast<T>()
             |    } else {
             |        null
             |    }
             |
-            |inline infix fun <T : Any> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
+            |inline infix fun <T : $YOBJECT_SN> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
             |    this ?: return null
             |
             |    return this yOpt clazz
             |}
             |
-            |inline infix fun <T : Any> Any.yAs(clazz: InterfaceMetadata<T>): T {
+            |inline infix fun <T : $YOBJECT_SN> Any.yAs(clazz: InterfaceMetadata<T>): T {
             |    require(this yIs clazz)
             |
             |    return unsafeCast<T>()
             |}
             |
-            |inline infix fun <T : Any> Any?.yAs(clazz: InterfaceMetadata<T>): T =
+            |inline infix fun <T : $YOBJECT_SN> Any?.yAs(clazz: InterfaceMetadata<T>): T =
             |    requireNotNull(this) yAs clazz
         """.trimMargin()
 }

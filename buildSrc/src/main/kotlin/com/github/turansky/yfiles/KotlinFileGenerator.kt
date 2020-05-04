@@ -154,7 +154,7 @@ internal class KotlinFileGenerator(
         protected fun getGeneric(): String {
             var generic = data.name
             if (generic == JS_OBJECT) {
-                generic = ANY
+                generic = YOBJECT
             }
 
             return generic + declaration.generics.placeholder
