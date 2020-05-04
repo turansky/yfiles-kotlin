@@ -73,7 +73,7 @@ internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper
 
     private val parameters: List<SignatureParameter> by list(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
-    private val returns: SignatureReturns? by optObject(::SignatureReturns)
+    private val returns: SignatureReturns? by optNamed(::SignatureReturns)
 
     private val documentation: String
         get() = getDocumentation(
@@ -241,7 +241,7 @@ private class Value(private val value: Int) {
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by optString()
-    private val ref: TypeReference? by optObject(::TypeReference)
+    private val ref: TypeReference? by optNamed(::TypeReference)
     private val summary: String? by summary()
 
     private fun getDefault(): String {
@@ -493,7 +493,7 @@ private class TypeConstant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : Constant(source, parent) {
-    private val dpdata: DpData? by optObject(::DpData)
+    private val dpdata: DpData? by optNamed(::DpData)
 
     private val documentation: String
         get() = getDocumentation(
@@ -664,7 +664,7 @@ internal class Method(
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     private val generics: Generics = Generics(typeparameters)
 
-    val returns: Returns? by optObject(::Returns)
+    val returns: Returns? by optNamed(::Returns)
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 

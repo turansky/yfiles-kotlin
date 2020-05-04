@@ -37,7 +37,7 @@ internal fun <T : Any> named(
     create(source.getJSONObject(key))
 }
 
-internal fun <T : Any> optObject(
+internal fun <T : Any> optNamed(
     create: (source: JSONObject) -> T
 ): JsonDelegate<T?> = SimpleJsonDelegate { source, key ->
     if (source.has(key)) {
