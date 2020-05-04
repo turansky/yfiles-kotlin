@@ -260,8 +260,7 @@ private fun addConstructorClassGeneric(source: Source) {
                 .optFlatMap(PARAMETERS)
                 .filter { it[TYPE] == YCLASS }
                 .forEach {
-                    val name = it[NAME]
-                    val generic = when (name) {
+                    val generic = when (it[NAME]) {
                         "edgeStyleType" -> "TStyle"
                         "decoratedType" -> "TDecoratedType"
                         "interfaceType" -> "TInterface"

@@ -196,9 +196,7 @@ private fun JSONObject.getDataMapsTypeParameter(): String {
         return "*"
     }
 
-    val type = get(DP_DATA)[VALUES][TYPE]
-
-    return when (type) {
+    return when (val type = get(DP_DATA)[VALUES][TYPE]) {
         JS_NUMBER -> getDataMapsNumberTypeParameter(get(NAME))
         JS_OBJECT -> when (get(NAME)) {
             "partitionIDMap" -> YID
@@ -253,9 +251,7 @@ private fun fixMethodTypes(source: Source) {
 
         it.flatMap(METHODS)
             .forEach {
-                val name = it[NAME]
-
-                when (name) {
+                when (it[NAME]) {
                     "get" -> it[RETURNS][TYPE] = valueTypeParameter
 
                     "set" -> it[PARAMETERS]["value"]

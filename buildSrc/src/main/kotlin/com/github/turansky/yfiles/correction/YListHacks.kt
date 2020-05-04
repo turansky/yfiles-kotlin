@@ -35,8 +35,7 @@ private fun JSONObject.fixGeneric() {
         .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
         .plus(flatMap(PROPERTIES))
         .forEach {
-            val type = it[TYPE]
-            val newType = when (type) {
+            val newType = when (val type = it[TYPE]) {
                 JS_ANY, JS_OBJECT -> "T"
                 ICURSOR -> "$ICURSOR<T>"
 
