@@ -46,14 +46,13 @@ internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
 
 private class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
-        fun parseType(source: JSONObject): Type {
-            return when (val group = source[GROUP]) {
+        fun parseType(source: JSONObject): Type =
+            when (val group = source[GROUP]) {
                 "class" -> Class(source)
                 "interface" -> Interface(source)
                 "enum" -> Enum(source)
                 else -> throw IllegalArgumentException("Undefined type group '$group'")
             }
-        }
     }
 
     val name: String by string()
