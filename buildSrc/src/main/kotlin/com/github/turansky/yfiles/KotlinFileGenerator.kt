@@ -235,7 +235,7 @@ internal class KotlinFileGenerator(
 
         private fun primitiveContent(): String {
             return documentation +
-                    "external object ${data.jsName}: yfiles.lang.ClassMetadata<${getGeneric()}>"
+                    "external val ${data.jsName} : $ANY"
         }
 
         private fun objectContent(): String {

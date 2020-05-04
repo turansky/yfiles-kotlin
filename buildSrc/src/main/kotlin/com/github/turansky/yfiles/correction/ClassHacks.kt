@@ -15,6 +15,18 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |external fun BaseClass(vararg types: JsClass<*>):JsClass<out YObject>
         """.trimMargin()
 
+    val primitiveTypeMetadata = sequenceOf(
+        BOOLEAN to "YBoolean",
+        DOUBLE to "YNumber",
+        INT to "YNumber",
+        STRING to "YString"
+    ).joinToString("\n\n") { (type, alias) ->
+        """
+            inline val $type.Companion.yclass:YClass<$type>
+                get() = $alias.unsafeCast<TypeMetadata<$type>>().yclass
+        """.trimIndent()
+    }
+
     // language=kotlin
     context["yfiles.lang.TypeMetadata"] =
         """
@@ -22,6 +34,8 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |
             |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
             |    get() = asDynamic()["\${'$'}class"]
+            |
+            |$primitiveTypeMetadata    
         """.trimMargin()
 
     // language=kotlin
