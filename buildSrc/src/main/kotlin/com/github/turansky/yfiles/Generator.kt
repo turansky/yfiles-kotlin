@@ -25,7 +25,6 @@ fun generateKotlinDeclarations(
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.types
-    val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types)
 
@@ -35,7 +34,7 @@ fun generateKotlinDeclarations(
         docBaseUrl = "https://docs.yworks.com/yfileshtml"
     )
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator(types, apiRoot.functionSignatures)
     fileGenerator.generate(context)
 
     generateIdUtils(context)
@@ -75,7 +74,6 @@ fun generateVsdxKotlinDeclarations(
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.rootTypes
-    val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
@@ -85,7 +83,7 @@ fun generateVsdxKotlinDeclarations(
         docBaseUrl = "https://docs.yworks.com/vsdx-html"
     )
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator(types, apiRoot.functionSignatures)
     fileGenerator.generate(context)
 
     createVsdxDataClasses(context)

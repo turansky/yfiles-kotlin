@@ -41,7 +41,7 @@ internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
             .flatMap { it.types.asSequence() }
             .toList()
 
-    val functionSignatures: Map<String, FunctionSignature> by MapDelegate(::FunctionSignature)
+    val functionSignatures: List<FunctionSignature> by list(::FunctionSignature)
 }
 
 private class Namespace(source: JSONObject) : JsonWrapper(source) {
@@ -61,8 +61,9 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val types: List<Type> by list(::parseType)
 }
 
-internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
-    override val classId = fqn
+internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasClassId {
+    private val id: String by string()
+    override val classId = id
 
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)

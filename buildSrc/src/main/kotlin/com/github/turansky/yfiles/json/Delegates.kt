@@ -134,29 +134,6 @@ private fun stringList(
         .map(array::getString)
 }
 
-internal class MapDelegate<T>(
-    private val transform: (name: String, source: JSONObject) -> T
-) : PropDelegate<Map<String, T>>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Map<String, T> {
-        if (!source.has(key)) {
-            return emptyMap()
-        }
-
-        val data = source.getJSONObject(key)
-        val keys: List<String> = data.keySet()?.toList() ?: emptyList()
-        if (keys.isEmpty()) {
-            return emptyMap()
-        }
-
-        return keys.associateWith {
-            transform(it, data.getJSONObject(it))
-        }
-    }
-}
-
 internal fun optString(): Prop<String?> = prop(::optString)
 
 internal fun optString(
