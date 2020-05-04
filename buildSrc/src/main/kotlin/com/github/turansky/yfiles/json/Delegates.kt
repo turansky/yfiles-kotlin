@@ -89,7 +89,13 @@ internal fun stringList(
         .map(transform)
 }
 
-internal fun stringList(
+internal fun <T : Any> wrapStringList(
+    wrap: (List<String>) -> T
+): JsonDelegate<T> = delegate { source, key ->
+    wrap(stringList(source, key))
+}
+
+private fun stringList(
     source: JSONObject,
     key: String
 ): List<String> {

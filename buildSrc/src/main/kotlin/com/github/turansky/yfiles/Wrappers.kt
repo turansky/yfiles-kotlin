@@ -21,7 +21,7 @@ internal abstract class JsonWrapper(override val source: JSONObject) : HasSource
 
 internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
     val name: String by string()
-    protected val modifiers: Modifiers by ModifiersDelegate()
+    protected val modifiers: Modifiers by wrapStringList(::Modifiers)
 
     protected val summary: String? by summary()
     protected val remarks: String? by remarks()
@@ -108,7 +108,7 @@ internal interface IParameter {
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by string()
     private val type: String by TypeDelegate { parseType(it) }
-    private val modifiers: ParameterModifiers by ParameterModifiersDelegate()
+    private val modifiers: ParameterModifiers by parameterModifiers()
     override val summary: String? by summary()
 
     override fun toCode(): String {
@@ -860,7 +860,7 @@ internal class Parameter(
     val lambda: Boolean = signature != null
     val type: String by TypeDelegate { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
-    val modifiers: ParameterModifiers by ParameterModifiersDelegate()
+    val modifiers: ParameterModifiers by parameterModifiers()
 }
 
 internal interface ITypeParameter {
@@ -999,7 +999,7 @@ private class EventListener(
     private val parent: HasClassId
 ) : JsonWrapper(source) {
     val name: String by string()
-    val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
+    val modifiers: EventListenerModifiers by wrapStringList(::EventListenerModifiers)
     val parameters: List<Parameter> by list { Parameter(it) }
 
     val overriden: Boolean
@@ -1071,23 +1071,8 @@ private class RemarksDelegate : JsonDelegate<String?>() {
     }
 }
 
-private class ModifiersDelegate : JsonDelegate<Modifiers>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Modifiers {
-        return Modifiers(stringList(source, key))
-    }
-}
-
-private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): ParameterModifiers {
-        return ParameterModifiers(stringList(source, key))
-    }
-}
+private fun parameterModifiers(): JsonDelegate<ParameterModifiers> =
+    wrapStringList(::ParameterModifiers)
 
 private class DpDataItemDelegate : JsonDelegate<DpDataItem>() {
     override fun read(
@@ -1123,15 +1108,6 @@ private class EventListenerDelegate(private val parent: HasClassId) : JsonDelega
         key: String
     ): EventListener {
         return EventListener(source.getJSONObject(key), parent)
-    }
-}
-
-private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifiers>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): EventListenerModifiers {
-        return EventListenerModifiers(stringList(source, key))
     }
 }
 
