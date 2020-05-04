@@ -16,15 +16,21 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """.trimMargin()
 
     // language=kotlin
-    context["yfiles.lang.ClassMetadata", INLINE] =
+    context["yfiles.lang.TypeMetadata"] =
         """
             |external interface TypeMetadata<T: Any>
             |
             |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
             |    get() = asDynamic()["\${'$'}class"]
-            |    
-            |external interface ClassMetadata<T: Any> : TypeMetadata<T>
-            |
+        """.trimMargin()
+
+    // language=kotlin
+    context["yfiles.lang.ClassMetadata"] =
+        "external interface ClassMetadata<T: Any> : TypeMetadata<T>"
+
+    // language=kotlin
+    context["yfiles.lang.InterfaceMetadata", INLINE] =
+        """
             |external interface InterfaceMetadata<T: Any>: TypeMetadata<T>
             |    
             |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
