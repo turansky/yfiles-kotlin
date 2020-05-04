@@ -244,6 +244,9 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
     private val ref: TypeReference? by optNamed(::TypeReference)
     private val summary: String? by summary()
 
+    fun isNotEmpty(): Boolean =
+        value != null || ref != null
+
     private fun getDefault(): String {
         ref?.let {
             return it.toDoc()
@@ -552,7 +555,7 @@ internal class Property(
 
     private val preconditions: List<String> by stringList(::summary)
 
-    private val defaultValue: DefaultValue? by DefaultValueDelegate()
+    private val defaultValue: DefaultValue? by defaultValue()
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
@@ -1076,23 +1079,14 @@ private fun parameterModifiers(): Prop<ParameterModifiers> =
 private fun dpDataItem(): Prop<DpDataItem> =
     named(::DpDataItem)
 
-private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
-    private val KEY = "y.default"
+private const val Y_DEFAULT = "y.default"
 
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): DefaultValue? {
-        if (!source.has(KEY)) {
-            return null
-        }
-
-        val s = source.getJSONObject(KEY)
-        return if (s.has("value") || s.has("ref")) {
-            DefaultValue(s)
-        } else {
-            null
-        }
+private fun defaultValue(): Prop<DefaultValue?> = prop { source, _ ->
+    if (source.has(Y_DEFAULT)) {
+        DefaultValue(source.getJSONObject(Y_DEFAULT))
+            .takeIf { it.isNotEmpty() }
+    } else {
+        null
     }
 }
 
