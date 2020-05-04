@@ -155,6 +155,12 @@ internal fun optString(
 internal fun string(): JsonDelegate<String> = delegate(::string)
 
 internal fun string(
+    transform: (String) -> String
+): JsonDelegate<String> = delegate { source, key ->
+    transform(string(source, key))
+}
+
+private fun string(
     source: JSONObject,
     key: String
 ): String =

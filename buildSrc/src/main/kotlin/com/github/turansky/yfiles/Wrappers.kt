@@ -107,7 +107,7 @@ internal interface IParameter {
 
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by string()
-    private val type: String by TypeDelegate { parseType(it) }
+    private val type: String by type { parseType(it) }
     private val modifiers: ParameterModifiers by parameterModifiers()
     override val summary: String? by summary()
 
@@ -121,7 +121,7 @@ internal interface IReturns {
 }
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IReturns {
-    private val type: String by TypeDelegate { parseType(it) }
+    private val type: String by type { parseType(it) }
     override val doc: String? by summary()
 
     override fun toCode(): String {
@@ -222,7 +222,7 @@ internal class Enum(source: JSONObject) : Type(source) {
 }
 
 private class TypeReference(override val source: JSONObject) : HasSource {
-    private val type: String by TypeDelegate { parseType(it) }
+    private val type: String by type { parseType(it) }
     private val member: String? by optString()
 
     fun toDoc(): String {
@@ -411,7 +411,7 @@ internal abstract class TypedDeclaration(
 ) : Declaration(source) {
     private val id: String? by optString()
     private val signature: String? by optString()
-    protected val type: String by TypeDelegate {
+    protected val type: String by type {
         parse(it, signature).run {
             if (fixGeneric) asReadOnly() else this
         }
@@ -861,7 +861,7 @@ internal class Parameter(
     override val name: String by string()
     private val signature: String? by optString()
     val lambda: Boolean = signature != null
-    val type: String by TypeDelegate { parse(it, signature).inMode(readOnly) }
+    val type: String by type { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
 }
@@ -938,7 +938,7 @@ internal class Generics(private val parameters: List<ITypeParameter>) {
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by optString()
-    val type: String by TypeDelegate { parse(it, signature).asReadOnly() }
+    val type: String by type { parse(it, signature).asReadOnly() }
     override val doc: String? by summary()
 }
 
@@ -1030,14 +1030,10 @@ internal class EventListenerModifiers(flags: List<String>) {
     val abstract = ABSTRACT in flags
 }
 
-private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate<String>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): String {
-        return parse(string(source, key))
-    }
-}
+private fun type(
+    parse: (String) -> String
+): JsonDelegate<String> =
+    string(parse)
 
 private fun summary(): JsonDelegate<String?> = SummaryDelegate()
 
