@@ -6,17 +6,14 @@ import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
 internal abstract class JsonWrapper(override val source: JSONObject) : HasSource {
-    open fun toCode(): String {
+    open fun toCode(): String =
         throw IllegalStateException("toCode() method must be overridden")
-    }
 
-    open fun toExtensionCode(): String {
+    open fun toExtensionCode(): String =
         throw IllegalStateException("toExtensionCode() method must be overridden")
-    }
 
-    final override fun toString(): String {
+    final override fun toString(): String =
         throw IllegalStateException("Use method toCode() instead")
-    }
 }
 
 internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
