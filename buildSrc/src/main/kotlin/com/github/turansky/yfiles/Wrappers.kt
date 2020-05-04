@@ -62,7 +62,7 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
     val name: String by string()
 
     val namespaces: List<Namespace> by list(::Namespace)
-    val types: List<Type> by declarationList { parseType(it) }
+    val types: List<Type> by list(::parseType)
 }
 
 internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
@@ -148,12 +148,12 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     abstract val constants: List<Constant>
 
-    val properties: List<Property> by declarationList { Property(it, this) }
-    val staticProperties: List<Property> by declarationList { Property(it, this) }
+    val properties: List<Property> by declarationList(::Property)
+    val staticProperties: List<Property> by declarationList(::Property)
 
-    val methods: List<Method> by declarationList { Method(it, this) }
+    val methods: List<Method> by declarationList(::Method)
     val extensionMethods: List<Method> by lazy { methods.mapNotNull { it.toOperatorExtension() } }
-    val staticMethods: List<Method> by declarationList { Method(it, this) }
+    val staticMethods: List<Method> by declarationList(::Method)
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -190,7 +190,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 }
 
 internal sealed class ExtendedType(source: JSONObject) : Type(source) {
-    override val constants: List<Constant> by declarationList { TypeConstant(it, this) }
+    override val constants: List<Constant> by declarationList(::TypeConstant)
 
     val events: List<Event> by list { Event(it, this) }
 }
@@ -206,7 +206,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         else -> ""
     }
 
-    private val constructors: List<Constructor> by declarationList { Constructor(it, this) }
+    private val constructors: List<Constructor> by declarationList(::Constructor)
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
 
@@ -218,7 +218,7 @@ internal class Interface(source: JSONObject) : ExtendedType(source)
 
 internal class Enum(source: JSONObject) : Type(source) {
     val flags = modifiers.flags
-    override val constants: List<Constant> by declarationList { EnumConstant(it, this) }
+    override val constants: List<Constant> by declarationList(::EnumConstant)
 }
 
 private class TypeReference(override val source: JSONObject) : HasSource {
@@ -643,9 +643,11 @@ private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: Type,
-    private val operatorName: String? = null
+    private val parent: Type
 ) : MethodBase(source, parent) {
+    // TODO: Move to constructor in Kotlin 1.4
+    private var operatorName: String? = null
+
     val abstract = modifiers.abstract
     private val static = modifiers.static
     private val protected = modifiers.protected
@@ -758,7 +760,8 @@ internal class Method(
             ASSIGN_OPERATOR_NAME_MAP[name]
         } ?: return null
 
-        return Method(source, parent, operatorName)
+        return Method(source, parent)
+            .also { it.operatorName = operatorName }
     }
 
     override fun toExtensionCode(): String {
@@ -1111,9 +1114,10 @@ private class EventListenerDelegate(private val parent: HasClassId) : JsonDelega
     }
 }
 
-private fun <T : Declaration> declarationList(
-    transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = sortedList(transform)
+private fun <P : Declaration, T : Declaration> P.declarationList(
+    create: (JSONObject, P) -> T
+): JsonDelegate<List<T>> =
+    sortedList { source -> create(source, this) }
 
 private fun getDocumentation(
     summary: String?,
