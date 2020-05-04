@@ -100,10 +100,9 @@ internal class KotlinFileGenerator(
             get() = declaration.extensionMethods
 
         protected val memberEvents: List<Event>
-            get() = if (declaration is ExtendedType) {
-                declaration.events
-            } else {
-                emptyList()
+            get() = when (declaration) {
+                is ExtendedType -> declaration.events
+                else -> emptyList()
             }
 
         protected val memberDeclarations by lazy { calculateMemberDeclarations() }

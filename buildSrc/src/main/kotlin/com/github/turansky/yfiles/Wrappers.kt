@@ -44,7 +44,7 @@ internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
             .flatMap { it.types.asSequence() }
             .toList()
 
-    val functionSignatures: Map<String, FunctionSignature> by MapDelegate { name, source -> FunctionSignature(name, source) }
+    val functionSignatures: Map<String, FunctionSignature> by MapDelegate(::FunctionSignature)
 }
 
 private class Namespace(source: JSONObject) : JsonWrapper(source) {
