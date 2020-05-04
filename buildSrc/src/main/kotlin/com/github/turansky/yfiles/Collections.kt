@@ -11,4 +11,3 @@ internal fun <T> Iterable<T>.byCommaLine(transform: ((T) -> CharSequence)? = nul
 internal fun <T> Iterable<T>.lines(transform: ((T) -> CharSequence)? = null): String {
     return joinToString(separator = "\n", postfix = "\n", transform = transform)
 }
-
