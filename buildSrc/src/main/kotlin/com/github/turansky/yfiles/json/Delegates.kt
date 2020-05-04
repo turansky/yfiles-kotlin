@@ -1,13 +1,16 @@
 package com.github.turansky.yfiles.json
 
 import org.json.JSONObject
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 interface HasSource {
     val source: JSONObject
 }
 
-abstract class JsonDelegate<T> {
+typealias Prop<T> = ReadOnlyProperty<HasSource, T>
+
+abstract class JsonDelegate<T> : Prop<T> {
     private var initialized = false
     private var value: T? = null
 
@@ -16,7 +19,7 @@ abstract class JsonDelegate<T> {
         key: String
     ): T
 
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): T {
+    override operator fun getValue(thisRef: HasSource, property: KProperty<*>): T {
         if (!initialized) {
             initialized = true
             value = read(thisRef.source, property.name)
@@ -27,19 +30,19 @@ abstract class JsonDelegate<T> {
     }
 }
 
-internal fun <T> delegate(
+internal fun <T> prop(
     read: (source: JSONObject, key: String) -> T
-): JsonDelegate<T> = SimpleJsonDelegate(read)
+): Prop<T> = SimpleJsonDelegate(read)
 
 internal fun <T : Any> named(
     create: (source: JSONObject) -> T
-): JsonDelegate<T> = SimpleJsonDelegate { source, key ->
+): Prop<T> = SimpleJsonDelegate { source, key ->
     create(source.getJSONObject(key))
 }
 
 internal fun <T : Any> optNamed(
     create: (source: JSONObject) -> T
-): JsonDelegate<T?> = SimpleJsonDelegate { source, key ->
+): Prop<T?> = SimpleJsonDelegate { source, key ->
     if (source.has(key)) {
         create(source.getJSONObject(key))
     } else {
@@ -58,7 +61,7 @@ private class SimpleJsonDelegate<T>(
 
 internal fun <T : Any> list(
     transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = delegate { source, key ->
+): Prop<List<T>> = prop { source, key ->
     objectSequence(source, key)
         .map(transform)
         .toList()
@@ -66,7 +69,7 @@ internal fun <T : Any> list(
 
 internal fun <T : Comparable<T>> sortedList(
     transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = delegate { source, key ->
+): Prop<List<T>> = prop { source, key ->
     objectSequence(source, key)
         .map(transform)
         .sorted()
@@ -87,18 +90,18 @@ private fun objectSequence(
         .map(array::getJSONObject)
 }
 
-internal fun stringList(): JsonDelegate<List<String>> = delegate(::stringList)
+internal fun stringList(): Prop<List<String>> = prop(::stringList)
 
 internal fun stringList(
     transform: (String) -> String
-): JsonDelegate<List<String>> = delegate { source, key ->
+): Prop<List<String>> = prop { source, key ->
     stringList(source, key)
         .map(transform)
 }
 
 internal fun <T : Any> wrapStringList(
     wrap: (List<String>) -> T
-): JsonDelegate<T> = delegate { source, key ->
+): Prop<T> = prop { source, key ->
     wrap(stringList(source, key))
 }
 
@@ -143,7 +146,7 @@ internal class MapDelegate<T>(
     }
 }
 
-internal fun optString(): JsonDelegate<String?> = delegate(::optString)
+internal fun optString(): Prop<String?> = prop(::optString)
 
 internal fun optString(
     source: JSONObject,
@@ -152,11 +155,11 @@ internal fun optString(
     source.optString(key, null)
         ?.takeIf { it.isNotEmpty() }
 
-internal fun string(): JsonDelegate<String> = delegate(::string)
+internal fun string(): Prop<String> = prop(::string)
 
 internal fun string(
     transform: (String) -> String
-): JsonDelegate<String> = delegate { source, key ->
+): Prop<String> = prop { source, key ->
     transform(string(source, key))
 }
 
@@ -167,11 +170,11 @@ private fun string(
     source.getString(key)
         .apply { check(isNotEmpty()) }
 
-internal fun int(): JsonDelegate<Int> = delegate { source, key ->
+internal fun int(): Prop<Int> = prop { source, key ->
     source.getInt(key)
 }
 
-internal fun boolean(): JsonDelegate<Boolean> = delegate { source, key ->
+internal fun boolean(): Prop<Boolean> = prop { source, key ->
     when (source.optString(key)) {
         "",
         "!1" -> false

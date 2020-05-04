@@ -1032,10 +1032,10 @@ internal class EventListenerModifiers(flags: List<String>) {
 
 private fun type(
     parse: (String) -> String
-): JsonDelegate<String> =
+): Prop<String> =
     string(parse)
 
-private fun summary(): JsonDelegate<String?> = SummaryDelegate()
+private fun summary(): Prop<String?> = SummaryDelegate()
 
 private class SummaryDelegate : JsonDelegate<String?>() {
     override fun read(
@@ -1049,7 +1049,7 @@ private class SummaryDelegate : JsonDelegate<String?>() {
     }
 }
 
-private fun remarks(): JsonDelegate<String?> = RemarksDelegate()
+private fun remarks(): Prop<String?> = RemarksDelegate()
 
 private class RemarksDelegate : JsonDelegate<String?>() {
     private fun String.isSummaryLike(): Boolean =
@@ -1070,10 +1070,10 @@ private class RemarksDelegate : JsonDelegate<String?>() {
     }
 }
 
-private fun parameterModifiers(): JsonDelegate<ParameterModifiers> =
+private fun parameterModifiers(): Prop<ParameterModifiers> =
     wrapStringList(::ParameterModifiers)
 
-private fun dpDataItem(): JsonDelegate<DpDataItem> =
+private fun dpDataItem(): Prop<DpDataItem> =
     named(::DpDataItem)
 
 private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
@@ -1096,12 +1096,12 @@ private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
     }
 }
 
-private fun eventListener(parent: HasClassId): JsonDelegate<EventListener> =
+private fun eventListener(parent: HasClassId): Prop<EventListener> =
     named { EventListener(it, parent) }
 
 private fun <P : Declaration, T : Declaration> P.declarationList(
     create: (JSONObject, P) -> T
-): JsonDelegate<List<T>> =
+): Prop<List<T>> =
     sortedList { source -> create(source, this) }
 
 private fun getDocumentation(
