@@ -10,7 +10,7 @@ interface HasSource {
 
 typealias Prop<T> = ReadOnlyProperty<HasSource, T>
 
-abstract class JsonDelegate<T> : Prop<T> {
+abstract class PropDelegate<T> : Prop<T> {
     private var initialized = false
     private var value: T? = null
 
@@ -32,17 +32,17 @@ abstract class JsonDelegate<T> : Prop<T> {
 
 internal fun <T> prop(
     read: (source: JSONObject, key: String) -> T
-): Prop<T> = SimpleJsonDelegate(read)
+): Prop<T> = SimplePropDelegate(read)
 
 internal fun <T : Any> named(
     create: (source: JSONObject) -> T
-): Prop<T> = SimpleJsonDelegate { source, key ->
+): Prop<T> = SimplePropDelegate { source, key ->
     create(source.getJSONObject(key))
 }
 
 internal fun <T : Any> optNamed(
     create: (source: JSONObject) -> T
-): Prop<T?> = SimpleJsonDelegate { source, key ->
+): Prop<T?> = SimplePropDelegate { source, key ->
     if (source.has(key)) {
         create(source.getJSONObject(key))
     } else {
@@ -50,9 +50,9 @@ internal fun <T : Any> optNamed(
     }
 }
 
-private class SimpleJsonDelegate<T>(
+private class SimplePropDelegate<T>(
     private val getData: (source: JSONObject, key: String) -> T
-) : JsonDelegate<T>() {
+) : PropDelegate<T>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -125,7 +125,7 @@ private fun stringList(
 
 internal class MapDelegate<T>(
     private val transform: (name: String, source: JSONObject) -> T
-) : JsonDelegate<Map<String, T>>() {
+) : PropDelegate<Map<String, T>>() {
     override fun read(
         source: JSONObject,
         key: String

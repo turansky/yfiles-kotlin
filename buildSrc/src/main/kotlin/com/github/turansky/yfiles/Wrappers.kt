@@ -1036,7 +1036,7 @@ private fun type(
 
 private fun summary(): Prop<String?> = SummaryDelegate()
 
-private class SummaryDelegate : JsonDelegate<String?>() {
+private class SummaryDelegate : PropDelegate<String?>() {
     override fun read(
         source: JSONObject,
         key: String
@@ -1050,7 +1050,7 @@ private class SummaryDelegate : JsonDelegate<String?>() {
 
 private fun remarks(): Prop<String?> = RemarksDelegate()
 
-private class RemarksDelegate : JsonDelegate<String?>() {
+private class RemarksDelegate : PropDelegate<String?>() {
     private fun String.isSummaryLike(): Boolean =
         startsWith("The default ") or startsWith("By default ") or endsWith("then <code>null</code> is returned.")
 
