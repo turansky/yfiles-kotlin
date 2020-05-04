@@ -267,8 +267,8 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
 }
 
 private class DpData(override val source: JSONObject) : HasSource {
-    private val domain: DpDataItem by DpDataItemDelegate()
-    private val values: DpDataItem by DpDataItemDelegate()
+    private val domain: DpDataItem by dpDataItem()
+    private val values: DpDataItem by dpDataItem()
 
     fun toDoc(): List<String> =
         listOf(
@@ -950,8 +950,8 @@ internal class Event(
     val name: String by string()
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
-    private val add: EventListener by EventListenerDelegate(parent)
-    private val remove: EventListener by EventListenerDelegate(parent)
+    private val add: EventListener by eventListener(parent)
+    private val remove: EventListener by eventListener(parent)
     private val listeners = listOf(add, remove)
 
     val overriden by lazy {
@@ -1077,13 +1077,8 @@ private class RemarksDelegate : JsonDelegate<String?>() {
 private fun parameterModifiers(): JsonDelegate<ParameterModifiers> =
     wrapStringList(::ParameterModifiers)
 
-private class DpDataItemDelegate : JsonDelegate<DpDataItem>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): DpDataItem =
-        DpDataItem(source.getJSONObject(key))
-}
+private fun dpDataItem(): JsonDelegate<DpDataItem> =
+    named(::DpDataItem)
 
 private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
     private val KEY = "y.default"
@@ -1105,14 +1100,8 @@ private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
     }
 }
 
-private class EventListenerDelegate(private val parent: HasClassId) : JsonDelegate<EventListener>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): EventListener {
-        return EventListener(source.getJSONObject(key), parent)
-    }
-}
+private fun eventListener(parent: HasClassId): JsonDelegate<EventListener> =
+    named { EventListener(it, parent) }
 
 private fun <P : Declaration, T : Declaration> P.declarationList(
     create: (JSONObject, P) -> T

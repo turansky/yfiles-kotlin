@@ -31,6 +31,12 @@ internal fun <T> delegate(
     read: (source: JSONObject, key: String) -> T
 ): JsonDelegate<T> = SimpleJsonDelegate(read)
 
+internal fun <T : Any> named(
+    create: (source: JSONObject) -> T
+): JsonDelegate<T> = SimpleJsonDelegate { source, key ->
+    create(source.getJSONObject(key))
+}
+
 internal fun <T : Any> optObject(
     create: (source: JSONObject) -> T
 ): JsonDelegate<T?> = SimpleJsonDelegate { source, key ->
