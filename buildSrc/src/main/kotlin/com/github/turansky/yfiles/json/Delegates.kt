@@ -27,7 +27,7 @@ abstract class JsonDelegate<T> {
     }
 }
 
-internal fun <T : Any> delegate(
+internal fun <T> delegate(
     read: (source: JSONObject, key: String) -> T
 ): JsonDelegate<T> = SimpleJsonDelegate(read)
 
@@ -147,31 +147,14 @@ internal class MapDelegate<T>(
     }
 }
 
-internal fun optString(): JsonDelegate<String?> = NullableStringDelegate()
+internal fun optString(): JsonDelegate<String?> = delegate(::optString)
 
-internal class NullableStringDelegate : JsonDelegate<String?>() {
-    companion object {
-        fun value(
-            source: JSONObject,
-            key: String
-        ): String? {
-            if (source.has(key)) {
-                val value = source.getString(key)
-                if (value.isNotEmpty()) {
-                    return value
-                }
-            }
-
-            return null
-        }
-    }
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): String? =
-        value(source, key)
-}
+internal fun optString(
+    source: JSONObject,
+    key: String
+): String? =
+    source.optString(key, null)
+        ?.takeIf { it.isNotEmpty() }
 
 internal fun string(): JsonDelegate<String> = delegate(::string)
 

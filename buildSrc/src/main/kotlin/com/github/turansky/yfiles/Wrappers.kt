@@ -1043,7 +1043,7 @@ private class SummaryDelegate : JsonDelegate<String?>() {
         source: JSONObject,
         key: String
     ): String? {
-        val value = NullableStringDelegate.value(source, key)
+        val value = optString(source, key)
             ?: return null
 
         return summary(value)
@@ -1063,7 +1063,7 @@ private class RemarksDelegate : JsonDelegate<String?>() {
         source: JSONObject,
         key: String
     ): String? {
-        val value = NullableStringDelegate.value(source, key)
+        val value = optString(source, key)
             ?.takeIf { it.isSummaryLike() or source.isRequiredRemarks() }
             ?: return null
 
