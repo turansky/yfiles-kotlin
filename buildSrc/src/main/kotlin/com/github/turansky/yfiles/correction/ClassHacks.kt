@@ -35,6 +35,9 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
             |    get() = asDynamic()["\${'$'}class"]
             |
+            |inline val objectClass:YClass<$ANY>
+            |    get() = YObject.unsafeCast<TypeMetadata<$ANY>>().yclass
+            |
             |$primitiveTypeMetadata    
         """.trimMargin()
 
