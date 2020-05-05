@@ -68,7 +68,7 @@ private fun fixProperties(source: Source) {
         "minSizeDataProviderKey" to nodeDpKey("yfiles.algorithms.YDimension"),
         "minimumNodeSizeDpKey" to nodeDpKey("yfiles.algorithms.YDimension"),
 
-        "groupNodeInsetsDpKey" to nodeDpKey("yfiles.algorithms.Insets"),
+        "groupNodeInsetsDpKey" to nodeDpKey("yfiles.algorithms.YInsets"),
 
         "affectedEdgesDpKey" to edgeDpKey(JS_BOOLEAN),
         "interEdgesDpKey" to edgeDpKey(JS_BOOLEAN),

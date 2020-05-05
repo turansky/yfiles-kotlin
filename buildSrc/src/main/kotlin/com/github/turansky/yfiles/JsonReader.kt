@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 internal fun File.readJson(): JSONObject =
     readText(UTF_8)
         .run { substring(indexOf("{")) }
+        .fixInsetsDeclaration()
         .run { JSONObject(this) }
 
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
@@ -31,6 +32,10 @@ private fun String.fixClassDeclaration(): String =
         .replace(""""yfiles.lang.Class"""", """"$YCLASS"""")
         .replace(""""Array<yfiles.lang.Class>"""", """"Array<$YCLASS>"""")
         .replace(""""yfiles.collections.Map<yfiles.lang.Class,$JS_OBJECT>"""", """"yfiles.collections.Map<$YCLASS,$JS_OBJECT>"""")
+
+private fun String.fixInsetsDeclaration(): String =
+    replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
+        .replace(""".YInsets",name:"Insets"""", """.YInsets",name:"YInsets"""")
 
 private fun JSONObject.fixFunctionSignatures() {
     val signatureMap = getJSONObject("functionSignatures")
