@@ -8,9 +8,9 @@ import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
-private val GENERATOR_COMMENT = "Automatically generated - do not modify!"
+private const val GENERATOR_COMMENT = "Automatically generated - do not modify!"
 
-internal val DOC_BASE_URL = "%doc-base-url%"
+internal const val DOC_BASE_URL = "%doc-base-url%"
 
 fun generateKotlinDeclarations(
     apiFile: File,
@@ -25,7 +25,6 @@ fun generateKotlinDeclarations(
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.types
-    val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types)
 
@@ -35,7 +34,7 @@ fun generateKotlinDeclarations(
         docBaseUrl = "https://docs.yworks.com/yfileshtml"
     )
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator(types, apiRoot.functionSignatures)
     fileGenerator.generate(context)
 
     generateIdUtils(context)
@@ -61,6 +60,9 @@ fun generateKotlinDeclarations(
     generateCreationPropertyUtils(context)
     generateSerializationUtils(context)
 
+    val timeSpanClass = types.first { it.classId == "yfiles.lang.TimeSpan" } as Class
+    generateTimeSpanExtensions(context, timeSpanClass)
+
     generateResourceTypes(devguideFile.readJson(), context)
 }
 
@@ -75,7 +77,6 @@ fun generateVsdxKotlinDeclarations(
 
     val apiRoot = ApiRoot(source)
     val types = apiRoot.rootTypes
-    val functionSignatures = apiRoot.functionSignatures
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
@@ -85,14 +86,13 @@ fun generateVsdxKotlinDeclarations(
         docBaseUrl = "https://docs.yworks.com/vsdx-html"
     )
 
-    val fileGenerator = KotlinFileGenerator(types, functionSignatures.values)
+    val fileGenerator = KotlinFileGenerator(types, apiRoot.functionSignatures)
     fileGenerator.generate(context)
 
     createVsdxDataClasses(context)
 }
 
 enum class ContentMode {
-    DEFAULT,
     CLASS,
     INTERFACE,
     EXTENSIONS,
@@ -110,8 +110,8 @@ internal interface GeneratorContext {
     fun clean()
 }
 
-private val NESTED_CLASS_IN_EXTERNAL_INTERFACE = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
-private val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
+private const val NESTED_CLASS_IN_EXTERNAL_INTERFACE = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
+private const val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
 
 private class SimpleGeneratorContext(
     private val sourceDir: File,

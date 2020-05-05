@@ -23,7 +23,7 @@ internal fun applyDpataHacks(source: Source) {
     fixComparers(source)
 }
 
-private val GENERIC_DP_KEY = "$DP_KEY_BASE<K,V>"
+private const val GENERIC_DP_KEY = "$DP_KEY_BASE<K,V>"
 
 private fun fixGraph(source: Source) {
     val methods = source.type("Graph")[METHODS]

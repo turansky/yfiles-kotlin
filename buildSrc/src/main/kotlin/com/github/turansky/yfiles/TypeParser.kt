@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
-private val GENERIC_START = "<"
-private val GENERIC_END = ">"
+private const val GENERIC_START = "<"
+private const val GENERIC_END = ">"
 
 internal fun parse(type: String, signature: String?): String {
     return parseType(signature ?: type)
@@ -54,7 +54,7 @@ private fun parseGenericParameters(parameters: String): List<String> {
     parameters.split(",").forEach { part ->
         items += part
         val str = items.joinToString(",")
-        if (str.count { it.equals('<') } == str.count { it.equals('>') }) {
+        if (str.count { it == '<' } == str.count { it == '>' }) {
             result.add(parseType(str))
             items = emptyList()
         }

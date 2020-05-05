@@ -18,12 +18,10 @@ internal fun jObject(vararg items: Pair<JKey, Any>): JSONObject {
     )
 }
 
-internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject {
-    return (0 until this.length())
+internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject =
+    (0 until this.length())
         .map(this::getJSONObject)
-        .filter(predicate)
-        .first()
-}
+        .first(predicate)
 
 internal operator fun JSONArray.get(name: String): JSONObject =
     first { it[NAME] == name }

@@ -7,7 +7,7 @@ internal class ClassRegistry(
         lateinit var instance: ClassRegistry
     }
 
-    private val instances = types.associateBy({ it.classId }, { it })
+    private val instances = types.associateBy { it.classId }
 
     private val functionsMap = types.associateBy(
         { it.classId },

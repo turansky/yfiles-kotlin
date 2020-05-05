@@ -12,7 +12,6 @@ internal open class GeneratorData(
 
     val name = names.last()
     val packageName = packageNames.joinToString(separator = ".")
-    val path = packageNames.joinToString(separator = "/")
 }
 
 internal class TypeGeneratorData(

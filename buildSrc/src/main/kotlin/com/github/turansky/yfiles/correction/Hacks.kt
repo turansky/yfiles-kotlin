@@ -211,7 +211,7 @@ private fun fixConstructorParameterName(source: Source) {
 }
 
 private fun fixMethodParameterName(source: Source) {
-    PARAMETERS_CORRECTION.forEach { data, fixedName ->
+    PARAMETERS_CORRECTION.forEach { (data, fixedName) ->
         source.type(data.className)
             .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
             .first()
@@ -240,7 +240,7 @@ private fun fixMethodParameterOptionality(source: Source) {
 
 private fun fixMethodParameterNullability(source: Source) {
     PARAMETERS_NULLABILITY_CORRECTION
-        .forEach { data, nullable ->
+        .forEach { (data, nullable) ->
             val parameters = source.type(data.className)
                 .methodParameters(data.methodName, data.parameterName)
 
@@ -398,8 +398,8 @@ private val THIS_TYPES = setOf(
     "List"
 )
 
-private val FUNC_RUDIMENT = ",number,$IENUMERABLE<T>"
-private val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
+private const val FUNC_RUDIMENT = ",number,$IENUMERABLE<T>"
+private const val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
 
 private fun removeThisParameters(source: Source) {
     sequenceOf(CONSTRUCTORS, STATIC_METHODS, METHODS)

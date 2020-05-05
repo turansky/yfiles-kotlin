@@ -108,9 +108,6 @@ private fun fixReturnType(source: Source) {
         .fixReturnTypeGeneric(YPOINT)
 }
 
-private fun Source.method(className: String, methodName: String) =
-    type(className).method(methodName)
-
 private fun JSONObject.fixReturnTypeGeneric(generic: String) {
     get(RETURNS)
         .fixTypeGeneric(generic)

@@ -1,9 +1,9 @@
 group = "com.github.turansky.yfiles"
-version = "0.2.2-SNAPSHOT"
+version = "0.2.3-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("org.jetbrains.intellij") version "0.4.18"
+    id("org.jetbrains.intellij") version "0.4.19"
 }
 
 repositories {
@@ -17,7 +17,7 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2020.1"
+    version = "2020.1.1"
 
     setPlugins(
         "gradle",

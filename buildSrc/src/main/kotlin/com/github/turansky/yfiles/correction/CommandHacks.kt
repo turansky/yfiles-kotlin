@@ -9,7 +9,7 @@ private val COMMAND_ALIASES = setOf(
     "yfiles.input.ExecuteCommandHandler"
 )
 
-private val ICOMMAND = "yfiles.input.ICommand"
+private const val ICOMMAND = "yfiles.input.ICommand"
 
 private val PARAMETER_MAP = mapOf(
     "ADD_LABEL" to "yfiles.graph.ILabelOwner",

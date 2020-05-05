@@ -26,7 +26,7 @@ internal class KotlinFileGenerator(
 
         functionSignatures
             .groupBy { it.classId.substringBeforeLast(".") }
-            .forEach { _, items -> generate(context, items) }
+            .forEach { (_, items) -> generate(context, items) }
     }
 
     private fun generate(
@@ -100,10 +100,9 @@ internal class KotlinFileGenerator(
             get() = declaration.extensionMethods
 
         protected val memberEvents: List<Event>
-            get() = if (declaration is ExtendedType) {
-                declaration.events
-            } else {
-                emptyList()
+            get() = when (declaration) {
+                is ExtendedType -> declaration.events
+                else -> emptyList()
             }
 
         protected val memberDeclarations by lazy { calculateMemberDeclarations() }
@@ -152,15 +151,6 @@ internal class KotlinFileGenerator(
             return ": " + parentTypes.byComma()
         }
 
-        protected fun getGeneric(): String {
-            var generic = data.name
-            if (generic == JS_OBJECT) {
-                generic = ANY
-            }
-
-            return generic + declaration.generics.placeholder
-        }
-
         protected fun typealiasDeclaration(): String? =
             if (data.name != data.jsName && !data.isYObject && !data.isYBase) {
                 val generics = declaration.generics.asAliasParameters()
@@ -178,11 +168,20 @@ internal class KotlinFileGenerator(
             get() = "yfiles.lang.ClassMetadata"
 
         protected val companionObjectContent: String
-            get() = """
-                |companion object: $metadataClass<${getGeneric()}> {
-                |${staticDeclarations.lines { it.toCode() }}
-                |}
-            """.trimMargin()
+            get() {
+                val type = if (data.isYObject) {
+                    "yfiles.lang.TypeMetadata<$ANY>"
+                } else {
+                    val generic = data.name + declaration.generics.placeholder
+                    "$metadataClass<$generic>"
+                }
+
+                return """
+                    |companion object: $type {
+                    |${staticDeclarations.lines { it.toCode() }}
+                    |}
+                """.trimMargin()
+            }
 
         abstract fun companionContent(): String?
     }
@@ -236,7 +235,7 @@ internal class KotlinFileGenerator(
 
         private fun primitiveContent(): String {
             return documentation +
-                    "external object ${data.jsName}: yfiles.lang.ClassMetadata<${getGeneric()}>"
+                    "external val ${data.jsName} : $ANY"
         }
 
         private fun objectContent(): String {

@@ -40,8 +40,7 @@ private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
         flatMap(STATIC_METHODS)
             .onEach {
-                val name = it[NAME]
-                val bound = when (name) {
+                val bound = when (it[NAME]) {
                     "createNodeCursor" -> NODE
                     "createEdgeCursor" -> EDGE
                     else -> JS_ANY

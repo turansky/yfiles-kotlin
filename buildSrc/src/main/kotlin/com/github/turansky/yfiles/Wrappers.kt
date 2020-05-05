@@ -6,22 +6,19 @@ import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
 internal abstract class JsonWrapper(override val source: JSONObject) : HasSource {
-    open fun toCode(): String {
+    open fun toCode(): String =
         throw IllegalStateException("toCode() method must be overridden")
-    }
 
-    open fun toExtensionCode(): String {
+    open fun toExtensionCode(): String =
         throw IllegalStateException("toExtensionCode() method must be overridden")
-    }
 
-    final override fun toString(): String {
+    final override fun toString(): String =
         throw IllegalStateException("Use method toCode() instead")
-    }
 }
 
 internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
     val name: String by string()
-    protected val modifiers: Modifiers by ModifiersDelegate()
+    protected val modifiers: Modifiers by wrapStringList(::Modifiers)
 
     protected val summary: String? by summary()
     protected val remarks: String? by remarks()
@@ -44,36 +41,36 @@ internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
             .flatMap { it.types.asSequence() }
             .toList()
 
-    val functionSignatures: Map<String, FunctionSignature> by MapDelegate { name, source -> FunctionSignature(name, source) }
+    val functionSignatures: List<FunctionSignature> by list(::FunctionSignature)
 }
 
 private class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
-        fun parseType(source: JSONObject): Type {
-            return when (val group = source[GROUP]) {
+        fun parseType(source: JSONObject): Type =
+            when (val group = source[GROUP]) {
                 "class" -> Class(source)
                 "interface" -> Interface(source)
                 "enum" -> Enum(source)
                 else -> throw IllegalArgumentException("Undefined type group '$group'")
             }
-        }
     }
 
     val name: String by string()
 
     val namespaces: List<Namespace> by list(::Namespace)
-    val types: List<Type> by declarationList { parseType(it) }
+    val types: List<Type> by list(::parseType)
 }
 
-internal class FunctionSignature(fqn: ClassId, source: JSONObject) : JsonWrapper(source), HasClassId {
-    override val classId = fqn
+internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasClassId {
+    private val id: String by string()
+    override val classId = id
 
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
 
     private val parameters: List<SignatureParameter> by list(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
-    private val returns: SignatureReturns? by SignatureReturnsDelegate()
+    private val returns: SignatureReturns? by optNamed(::SignatureReturns)
 
     private val documentation: String
         get() = getDocumentation(
@@ -107,8 +104,8 @@ internal interface IParameter {
 
 internal class SignatureParameter(source: JSONObject) : JsonWrapper(source), IParameter {
     override val name: String by string()
-    private val type: String by TypeDelegate { parseType(it) }
-    private val modifiers: ParameterModifiers by ParameterModifiersDelegate()
+    private val type: String by type { parseType(it) }
+    private val modifiers: ParameterModifiers by parameterModifiers()
     override val summary: String? by summary()
 
     override fun toCode(): String {
@@ -121,7 +118,7 @@ internal interface IReturns {
 }
 
 internal class SignatureReturns(source: JSONObject) : JsonWrapper(source), IReturns {
-    private val type: String by TypeDelegate { parseType(it) }
+    private val type: String by type { parseType(it) }
     override val doc: String? by summary()
 
     override fun toCode(): String {
@@ -148,12 +145,12 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     abstract val constants: List<Constant>
 
-    val properties: List<Property> by declarationList { Property(it, this) }
-    val staticProperties: List<Property> by declarationList { Property(it, this) }
+    val properties: List<Property> by declarationList(::Property)
+    val staticProperties: List<Property> by declarationList(::Property)
 
-    val methods: List<Method> by declarationList { Method(it, this) }
+    val methods: List<Method> by declarationList(::Method)
     val extensionMethods: List<Method> by lazy { methods.mapNotNull { it.toOperatorExtension() } }
-    val staticMethods: List<Method> by declarationList { Method(it, this) }
+    val staticMethods: List<Method> by declarationList(::Method)
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -190,7 +187,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 }
 
 internal sealed class ExtendedType(source: JSONObject) : Type(source) {
-    override val constants: List<Constant> by declarationList { TypeConstant(it, this) }
+    override val constants: List<Constant> by declarationList(::TypeConstant)
 
     val events: List<Event> by list { Event(it, this) }
 }
@@ -206,7 +203,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         else -> ""
     }
 
-    private val constructors: List<Constructor> by declarationList { Constructor(it, this) }
+    private val constructors: List<Constructor> by declarationList(::Constructor)
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
 
@@ -218,11 +215,11 @@ internal class Interface(source: JSONObject) : ExtendedType(source)
 
 internal class Enum(source: JSONObject) : Type(source) {
     val flags = modifiers.flags
-    override val constants: List<Constant> by declarationList { EnumConstant(it, this) }
+    override val constants: List<Constant> by declarationList(::EnumConstant)
 }
 
 private class TypeReference(override val source: JSONObject) : HasSource {
-    private val type: String by TypeDelegate { parseType(it) }
+    private val type: String by type { parseType(it) }
     private val member: String? by optString()
 
     fun toDoc(): String {
@@ -241,8 +238,11 @@ private class Value(private val value: Int) {
 
 private class DefaultValue(override val source: JSONObject) : HasSource {
     private val value: String? by optString()
-    private val ref: TypeReference? by TypeReferenceDelegate()
+    private val ref: TypeReference? by optNamed(::TypeReference)
     private val summary: String? by summary()
+
+    fun isNotEmpty(): Boolean =
+        value != null || ref != null
 
     private fun getDefault(): String {
         ref?.let {
@@ -267,8 +267,8 @@ private class DefaultValue(override val source: JSONObject) : HasSource {
 }
 
 private class DpData(override val source: JSONObject) : HasSource {
-    private val domain: DpDataItem by DpDataItemDelegate()
-    private val values: DpDataItem by DpDataItemDelegate()
+    private val domain: DpDataItem by dpDataItem()
+    private val values: DpDataItem by dpDataItem()
 
     fun toDoc(): List<String> =
         listOf(
@@ -411,7 +411,7 @@ internal abstract class TypedDeclaration(
 ) : Declaration(source) {
     private val id: String? by optString()
     private val signature: String? by optString()
-    protected val type: String by TypeDelegate {
+    protected val type: String by type {
         parse(it, signature).run {
             if (fixGeneric) asReadOnly() else this
         }
@@ -493,7 +493,7 @@ private class TypeConstant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : Constant(source, parent) {
-    private val dpdata: DpData? by DpDataDelegate()
+    private val dpdata: DpData? by optNamed(::DpData)
 
     private val documentation: String
         get() = getDocumentation(
@@ -552,7 +552,7 @@ internal class Property(
 
     private val preconditions: List<String> by stringList(::summary)
 
-    private val defaultValue: DefaultValue? by DefaultValueDelegate()
+    private val defaultValue: DefaultValue? by defaultValue()
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
@@ -643,9 +643,11 @@ private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: Type,
-    private val operatorName: String? = null
+    private val parent: Type
 ) : MethodBase(source, parent) {
+    // TODO: Move to constructor in Kotlin 1.4
+    private var operatorName: String? = null
+
     val abstract = modifiers.abstract
     private val static = modifiers.static
     private val protected = modifiers.protected
@@ -660,9 +662,9 @@ internal class Method(
     private val postconditions: List<String> by stringList(::summary)
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
-    val generics: Generics = Generics(typeparameters)
+    private val generics: Generics = Generics(typeparameters)
 
-    val returns: Returns? by ReturnsDelegate()
+    val returns: Returns? by optNamed(::Returns)
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
@@ -758,7 +760,8 @@ internal class Method(
             ASSIGN_OPERATOR_NAME_MAP[name]
         } ?: return null
 
-        return Method(source, parent, operatorName)
+        return Method(source, parent)
+            .also { it.operatorName = operatorName }
     }
 
     override fun toExtensionCode(): String {
@@ -799,7 +802,7 @@ internal abstract class MethodBase(
     private val parent: Type
 ) : Declaration(source) {
     private val id: String? by optString()
-    protected val parameters: List<Parameter> by list { Parameter(it, name !in EXCLUDED_READ_ONLY) }
+    val parameters: List<Parameter> by list { Parameter(it, name !in EXCLUDED_READ_ONLY) }
     val options: Boolean by boolean()
 
     protected val preconditions: List<String> by stringList(::summary)
@@ -858,9 +861,9 @@ internal class Parameter(
     override val name: String by string()
     private val signature: String? by optString()
     val lambda: Boolean = signature != null
-    val type: String by TypeDelegate { parse(it, signature).inMode(readOnly) }
+    val type: String by type { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
-    val modifiers: ParameterModifiers by ParameterModifiersDelegate()
+    val modifiers: ParameterModifiers by parameterModifiers()
 }
 
 internal interface ITypeParameter {
@@ -935,7 +938,7 @@ internal class Generics(private val parameters: List<ITypeParameter>) {
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by optString()
-    val type: String by TypeDelegate { parse(it, signature).asReadOnly() }
+    val type: String by type { parse(it, signature).asReadOnly() }
     override val doc: String? by summary()
 }
 
@@ -947,12 +950,12 @@ internal class Event(
     val name: String by string()
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
-    private val add: EventListener by EventListenerDelegate(parent)
-    private val remove: EventListener by EventListenerDelegate(parent)
+    private val add: EventListener by eventListener(parent)
+    private val remove: EventListener by eventListener(parent)
     private val listeners = listOf(add, remove)
 
     val overriden by lazy {
-        listeners.any { it.overriden }
+        listeners.any { it.overridden }
     }
 
     private val seeAlsoDocs: List<SeeAlso>
@@ -999,16 +1002,16 @@ private class EventListener(
     private val parent: HasClassId
 ) : JsonWrapper(source) {
     val name: String by string()
-    val modifiers: EventListenerModifiers by EventListenerModifiersDelegate()
+    val modifiers: EventListenerModifiers by wrapStringList(::EventListenerModifiers)
     val parameters: List<Parameter> by list { Parameter(it) }
 
-    val overriden: Boolean
+    val overridden: Boolean
         get() = ClassRegistry.instance
             .listenerOverridden(parent.classId, name)
 
     private fun kotlinModificator(): String {
         return when {
-            overriden -> "override "
+            overridden -> "override "
             modifiers.abstract -> "abstract "
             else -> ""
         }
@@ -1027,32 +1030,28 @@ internal class EventListenerModifiers(flags: List<String>) {
     val abstract = ABSTRACT in flags
 }
 
-private class TypeDelegate(private val parse: (String) -> String) : JsonDelegate<String>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): String {
-        return parse(StringDelegate.value(source, key))
-    }
-}
+private fun type(
+    parse: (String) -> String
+): Prop<String> =
+    string(parse)
 
-private fun summary(): JsonDelegate<String?> = SummaryDelegate()
+private fun summary(): Prop<String?> = SummaryDelegate()
 
-private class SummaryDelegate : JsonDelegate<String?>() {
+private class SummaryDelegate : PropDelegate<String?>() {
     override fun read(
         source: JSONObject,
         key: String
     ): String? {
-        val value = NullableStringDelegate.value(source, key)
+        val value = optString(source, key)
             ?: return null
 
         return summary(value)
     }
 }
 
-private fun remarks(): JsonDelegate<String?> = RemarksDelegate()
+private fun remarks(): Prop<String?> = RemarksDelegate()
 
-private class RemarksDelegate : JsonDelegate<String?>() {
+private class RemarksDelegate : PropDelegate<String?>() {
     private fun String.isSummaryLike(): Boolean =
         startsWith("The default ") or startsWith("By default ") or endsWith("then <code>null</code> is returned.")
 
@@ -1063,7 +1062,7 @@ private class RemarksDelegate : JsonDelegate<String?>() {
         source: JSONObject,
         key: String
     ): String? {
-        val value = NullableStringDelegate.value(source, key)
+        val value = optString(source, key)
             ?.takeIf { it.isSummaryLike() or source.isRequiredRemarks() }
             ?: return null
 
@@ -1071,137 +1070,25 @@ private class RemarksDelegate : JsonDelegate<String?>() {
     }
 }
 
-private class ModifiersDelegate : JsonDelegate<Modifiers>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Modifiers {
-        return Modifiers(StringArrayDelegate.value(source, key))
+private fun parameterModifiers(): Prop<ParameterModifiers> =
+    wrapStringList(::ParameterModifiers)
+
+private fun dpDataItem(): Prop<DpDataItem> =
+    named(::DpDataItem)
+
+private fun defaultValue(): Prop<DefaultValue?> =
+    optNamed("y.default") {
+        DefaultValue(it)
+            .takeIf { it.isNotEmpty() }
     }
-}
 
-private class ParameterModifiersDelegate : JsonDelegate<ParameterModifiers>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): ParameterModifiers {
-        return ParameterModifiers(StringArrayDelegate.value(source, key))
-    }
-}
+private fun eventListener(parent: HasClassId): Prop<EventListener> =
+    named { EventListener(it, parent) }
 
-private class SignatureReturnsDelegate : JsonDelegate<SignatureReturns?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): SignatureReturns? {
-        return if (source.has(key)) {
-            SignatureReturns(source.getJSONObject(key))
-        } else {
-            null
-        }
-    }
-}
-
-private class ReturnsDelegate : JsonDelegate<Returns?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Returns? {
-        return if (source.has(key)) {
-            Returns(source.getJSONObject(key))
-        } else {
-            null
-        }
-    }
-}
-
-private class TypeReferenceDelegate : JsonDelegate<TypeReference?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): TypeReference? {
-        return if (source.has(key)) {
-            TypeReference(source.getJSONObject(key))
-        } else {
-            null
-        }
-    }
-}
-
-private class DpDataDelegate : JsonDelegate<DpData?>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): DpData? =
-        if (source.has(key)) {
-            DpData(source.getJSONObject(key))
-        } else {
-            null
-        }
-}
-
-private class DpDataItemDelegate : JsonDelegate<DpDataItem>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): DpDataItem =
-        DpDataItem(source.getJSONObject(key))
-}
-
-private class DefaultValueDelegate : JsonDelegate<DefaultValue?>() {
-    private val KEY = "y.default"
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): DefaultValue? {
-        if (!source.has(KEY)) {
-            return null
-        }
-
-        val s = source.getJSONObject(KEY)
-        return if (s.has("value") || s.has("ref")) {
-            DefaultValue(s)
-        } else {
-            null
-        }
-    }
-}
-
-private class EventListenerDelegate(private val parent: HasClassId) : JsonDelegate<EventListener>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): EventListener {
-        return EventListener(source.getJSONObject(key), parent)
-    }
-}
-
-private class EventListenerModifiersDelegate : JsonDelegate<EventListenerModifiers>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): EventListenerModifiers {
-        return EventListenerModifiers(StringArrayDelegate.value(source, key))
-    }
-}
-
-private fun <T : Declaration> declarationList(
-    transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = DeclarationArrayDelegate(transform)
-
-private class DeclarationArrayDelegate<T : Declaration>(
-    transform: (JSONObject) -> T
-) : ArrayDelegate<T>(transform) {
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): List<T> {
-        return super.read(source, key)
-            .sorted()
-    }
-}
+private fun <P : Declaration, T : Declaration> P.declarationList(
+    create: (JSONObject, P) -> T
+): Prop<List<T>> =
+    sortedList { source -> create(source, this) }
 
 private fun getDocumentation(
     summary: String?,

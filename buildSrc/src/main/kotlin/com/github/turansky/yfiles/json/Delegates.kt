@@ -1,13 +1,16 @@
 package com.github.turansky.yfiles.json
 
 import org.json.JSONObject
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 interface HasSource {
     val source: JSONObject
 }
 
-abstract class JsonDelegate<T> {
+typealias Prop<T> = ReadOnlyProperty<HasSource, T>
+
+abstract class PropDelegate<T> : Prop<T> {
     private var initialized = false
     private var value: T? = null
 
@@ -16,7 +19,7 @@ abstract class JsonDelegate<T> {
         key: String
     ): T
 
-    operator fun getValue(thisRef: HasSource, property: KProperty<*>): T {
+    override operator fun getValue(thisRef: HasSource, property: KProperty<*>): T {
         if (!initialized) {
             initialized = true
             value = read(thisRef.source, property.name)
@@ -27,171 +30,143 @@ abstract class JsonDelegate<T> {
     }
 }
 
+internal fun <T> prop(
+    read: (source: JSONObject, key: String) -> T
+): Prop<T> = SimplePropDelegate(read)
+
+internal fun <T : Any> named(
+    create: (source: JSONObject) -> T
+): Prop<T> = SimplePropDelegate { source, key ->
+    create(source.getJSONObject(key))
+}
+
+internal fun <T : Any> optNamed(
+    create: (source: JSONObject) -> T
+): Prop<T?> = SimplePropDelegate { source, key ->
+    if (source.has(key)) {
+        create(source.getJSONObject(key))
+    } else {
+        null
+    }
+}
+
+internal fun <T : Any> optNamed(
+    name: String,
+    create: (source: JSONObject) -> T?
+): Prop<T?> = SimplePropDelegate { source, _ ->
+    if (source.has(name)) {
+        create(source.getJSONObject(name))
+    } else {
+        null
+    }
+}
+
+private class SimplePropDelegate<T>(
+    private val getData: (source: JSONObject, key: String) -> T
+) : PropDelegate<T>() {
+    override fun read(
+        source: JSONObject,
+        key: String
+    ): T = getData(source, key)
+}
+
 internal fun <T : Any> list(
     transform: (JSONObject) -> T
-): JsonDelegate<List<T>> = ArrayDelegate(transform)
-
-internal open class ArrayDelegate<T : Any>(
-    private val transform: (JSONObject) -> T
-) : JsonDelegate<List<T>>() {
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): List<T> {
-        if (!source.has(key)) {
-            return emptyList()
-        }
-
-        val array = source.getJSONArray(key)
-        val length = array.length()
-        if (length == 0) {
-            return emptyList()
-        }
-
-        return (0 until length)
-            .asSequence()
-            .map { array.getJSONObject(it) }
-            .map(transform)
-            .toList()
-    }
+): Prop<List<T>> = prop { source, key ->
+    objectSequence(source, key)
+        .map(transform)
+        .toList()
 }
+
+internal fun <T : Comparable<T>> sortedList(
+    transform: (JSONObject) -> T
+): Prop<List<T>> = prop { source, key ->
+    objectSequence(source, key)
+        .map(transform)
+        .sorted()
+        .toList()
+}
+
+private fun objectSequence(
+    source: JSONObject,
+    key: String
+): Sequence<JSONObject> {
+    if (!source.has(key)) {
+        return emptySequence()
+    }
+
+    val array = source.getJSONArray(key)
+    return (0 until array.length())
+        .asSequence()
+        .map(array::getJSONObject)
+}
+
+internal fun stringList(): Prop<List<String>> = prop(::stringList)
 
 internal fun stringList(
-    transform: ((String) -> String)? = null
-): JsonDelegate<List<String>> = StringArrayDelegate(transform)
-
-internal class StringArrayDelegate(
-    private val transform: ((String) -> String)? = null
-) : JsonDelegate<List<String>>() {
-    companion object {
-        fun value(
-            source: JSONObject,
-            key: String,
-            transform: ((String) -> String)? = null
-        ): List<String> {
-            if (!source.has(key)) {
-                return emptyList()
-            }
-
-            val array = source.getJSONArray(key)
-            val length = array.length()
-            if (length == 0) {
-                return emptyList()
-            }
-
-            val list = mutableListOf<String>()
-            for (i in 0..length - 1) {
-                list.add(array.getString(i))
-            }
-
-            return if (transform != null) {
-                list.map(transform)
-            } else {
-                list.toList()
-            }
-        }
-    }
-
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): List<String> {
-        return value(source, key, transform)
-    }
+    transform: (String) -> String
+): Prop<List<String>> = prop { source, key ->
+    stringList(source, key)
+        .map(transform)
 }
 
-internal class MapDelegate<T>(
-    private val transform: (name: String, source: JSONObject) -> T
-) : JsonDelegate<Map<String, T>>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Map<String, T> {
-        if (!source.has(key)) {
-            return emptyMap()
-        }
-
-        val data = source.getJSONObject(key)
-        val keys: List<String> = data.keySet()?.toList() ?: emptyList()
-        if (keys.isEmpty()) {
-            return emptyMap()
-        }
-
-        return keys.associateBy({ it }, { transform(it, data.getJSONObject(it)) })
-    }
+internal fun <T : Any> wrapStringList(
+    wrap: (List<String>) -> T
+): Prop<T> = prop { source, key ->
+    wrap(stringList(source, key))
 }
 
-internal fun optString(): JsonDelegate<String?> = NullableStringDelegate()
-
-internal class NullableStringDelegate : JsonDelegate<String?>() {
-    companion object {
-        fun value(
-            source: JSONObject,
-            key: String
-        ): String? {
-            if (source.has(key)) {
-                val value = source.getString(key)
-                if (value.isNotEmpty()) {
-                    return value
-                }
-            }
-
-            return null
-        }
+private fun stringList(
+    source: JSONObject,
+    key: String
+): List<String> {
+    if (!source.has(key)) {
+        return emptyList()
     }
 
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): String? =
-        value(source, key)
-}
-
-internal fun string(): JsonDelegate<String> = StringDelegate()
-
-internal class StringDelegate : JsonDelegate<String>() {
-    companion object {
-        fun value(
-            source: JSONObject,
-            key: String
-        ): String =
-            source.getString(key)
-                .apply { check(isNotEmpty()) }
+    val array = source.getJSONArray(key)
+    val length = array.length()
+    if (length == 0) {
+        return emptyList()
     }
 
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): String =
-        value(source, key)
+    return (0 until length)
+        .map(array::getString)
 }
 
-internal fun int(): JsonDelegate<Int> = IntDelegate()
+internal fun optString(): Prop<String?> = prop(::optString)
 
-internal class IntDelegate : JsonDelegate<Int>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Int = source.getInt(key)
+internal fun optString(
+    source: JSONObject,
+    key: String
+): String? =
+    source.optString(key, null)
+        ?.takeIf { it.isNotEmpty() }
+
+internal fun string(): Prop<String> = prop(::string)
+
+internal fun string(
+    transform: (String) -> String
+): Prop<String> = prop { source, key ->
+    transform(string(source, key))
 }
 
-internal fun boolean(): JsonDelegate<Boolean> = BooleanDelegate()
+private fun string(
+    source: JSONObject,
+    key: String
+): String =
+    source.getString(key)
+        .apply { check(isNotEmpty()) }
 
-private class BooleanDelegate : JsonDelegate<Boolean>() {
-    override fun read(
-        source: JSONObject,
-        key: String
-    ): Boolean {
-        if (!source.has(key)) {
-            return false
-        }
+internal fun int(): Prop<Int> = prop { source, key ->
+    source.getInt(key)
+}
 
-        val value = source.getString(key)
-        return when (value) {
-            "!0" -> true
-            "!1" -> false
-            else -> source.getBoolean(key)
-        }
+internal fun boolean(): Prop<Boolean> = prop { source, key ->
+    when (source.optString(key)) {
+        "",
+        "!1" -> false
+        "!0" -> true
+        else -> source.getBoolean(key)
     }
 }
