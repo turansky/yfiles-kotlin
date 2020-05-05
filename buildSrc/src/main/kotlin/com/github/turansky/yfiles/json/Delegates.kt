@@ -37,11 +37,17 @@ private fun <T> prop(
     read: (source: JSONObject, key: String) -> T
 ): Prop<T> = SimplePropDelegate(read)
 
+private fun <T, R> prop(
+    read: (source: JSONObject, key: String) -> T,
+    transform: T.() -> R
+): Prop<R> =
+    prop { source, key ->
+        read(source, key).transform()
+    }
+
 internal fun <T : Any> named(
     create: (source: JSONObject) -> T
-): Prop<T> = prop { source, key ->
-    create(source.getJSONObject(key))
-}
+): Prop<T> = prop(JSONObject::getJSONObject, create)
 
 internal fun <T : Any> optNamed(
     create: (source: JSONObject) -> T
@@ -75,20 +81,17 @@ private class SimplePropDelegate<T>(
 
 internal fun <T : Any> list(
     transform: (JSONObject) -> T
-): Prop<List<T>> = prop { source, key ->
-    objectSequence(source, key)
-        .map(transform)
-        .toList()
-}
+): Prop<List<T>> =
+    prop(::objectSequence) {
+        map(transform).toList()
+    }
 
 internal fun <T : Comparable<T>> sortedList(
     transform: (JSONObject) -> T
-): Prop<List<T>> = prop { source, key ->
-    objectSequence(source, key)
-        .map(transform)
-        .sorted()
-        .toList()
-}
+): Prop<List<T>> =
+    prop(::objectSequence) {
+        map(transform).sorted().toList()
+    }
 
 private fun objectSequence(
     source: JSONObject,
@@ -108,16 +111,15 @@ internal fun stringList(): Prop<List<String>> = prop(::stringList)
 
 internal fun stringList(
     transform: (String) -> String
-): Prop<List<String>> = prop { source, key ->
-    stringList(source, key)
-        .map(transform)
-}
+): Prop<List<String>> =
+    prop(::stringList) {
+        map(transform)
+    }
 
 internal fun <T : Any> wrapStringList(
     wrap: (List<String>) -> T
-): Prop<T> = prop { source, key ->
-    wrap(stringList(source, key))
-}
+): Prop<T> =
+    prop(::stringList, wrap)
 
 private fun stringList(
     source: JSONObject,
@@ -137,7 +139,8 @@ private fun stringList(
         .map(array::getString)
 }
 
-internal fun optString(): Prop<String?> = prop(::optString)
+internal fun optString(): Prop<String?> =
+    prop(::optString)
 
 internal fun optString(
     source: JSONObject,
@@ -146,13 +149,13 @@ internal fun optString(
     source.optString(key, null)
         ?.takeIf { it.isNotEmpty() }
 
-internal fun string(): Prop<String> = prop(::string)
+internal fun string(): Prop<String> =
+    prop(::string)
 
 internal fun string(
     transform: (String) -> String
-): Prop<String> = prop { source, key ->
-    transform(string(source, key))
-}
+): Prop<String> =
+    prop(::string, transform)
 
 private fun string(
     source: JSONObject,
@@ -161,9 +164,8 @@ private fun string(
     source.getString(key)
         .apply { check(isNotEmpty()) }
 
-internal fun int(): Prop<Int> = prop { source, key ->
-    source.getInt(key)
-}
+internal fun int(): Prop<Int> =
+    prop(JSONObject::getInt)
 
 internal fun boolean(): Prop<Boolean> = prop { source, key ->
     when (source.optString(key)) {
