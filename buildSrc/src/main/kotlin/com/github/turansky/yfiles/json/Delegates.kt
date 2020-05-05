@@ -39,13 +39,13 @@ private fun <T> prop(
 
 internal fun <T : Any> named(
     create: (source: JSONObject) -> T
-): Prop<T> = SimplePropDelegate { source, key ->
+): Prop<T> = prop { source, key ->
     create(source.getJSONObject(key))
 }
 
 internal fun <T : Any> optNamed(
     create: (source: JSONObject) -> T
-): Prop<T?> = SimplePropDelegate { source, key ->
+): Prop<T?> = prop { source, key ->
     if (source.has(key)) {
         create(source.getJSONObject(key))
     } else {
@@ -56,7 +56,7 @@ internal fun <T : Any> optNamed(
 internal fun <T : Any> optNamed(
     name: String,
     create: (source: JSONObject) -> T?
-): Prop<T?> = SimplePropDelegate { source, _ ->
+): Prop<T?> = prop { source, _ ->
     if (source.has(name)) {
         create(source.getJSONObject(name))
     } else {
