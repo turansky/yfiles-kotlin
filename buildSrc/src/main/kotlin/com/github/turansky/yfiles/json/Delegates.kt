@@ -34,16 +34,15 @@ internal abstract class PropDelegate<T> : Prop<T> {
 }
 
 private fun <T> prop(
-    read: (source: JSONObject, key: String) -> T
+    read: JSONObject.(key: String) -> T
 ): Prop<T> = SimplePropDelegate(read)
 
 private fun <T, R> prop(
-    read: (source: JSONObject, key: String) -> T,
+    read: JSONObject.(key: String) -> T,
     transform: T.() -> R
-): Prop<R> =
-    prop { source, key ->
-        read(source, key).transform()
-    }
+): Prop<R> = prop { key ->
+    read(key).transform()
+}
 
 internal fun <T : Any> named(
     create: (source: JSONObject) -> T
@@ -51,9 +50,9 @@ internal fun <T : Any> named(
 
 internal fun <T : Any> optNamed(
     create: (source: JSONObject) -> T
-): Prop<T?> = prop { source, key ->
-    if (source.has(key)) {
-        create(source.getJSONObject(key))
+): Prop<T?> = prop { key ->
+    if (has(key)) {
+        create(getJSONObject(key))
     } else {
         null
     }
@@ -62,9 +61,9 @@ internal fun <T : Any> optNamed(
 internal fun <T : Any> optNamed(
     name: String,
     create: (source: JSONObject) -> T?
-): Prop<T?> = prop { source, _ ->
-    if (source.has(name)) {
-        create(source.getJSONObject(name))
+): Prop<T?> = prop {
+    if (has(name)) {
+        create(getJSONObject(name))
     } else {
         null
     }
@@ -167,11 +166,11 @@ private fun string(
 internal fun int(): Prop<Int> =
     prop(JSONObject::getInt)
 
-internal fun boolean(): Prop<Boolean> = prop { source, key ->
-    when (source.optString(key)) {
+internal fun boolean(): Prop<Boolean> = prop { key ->
+    when (optString(key)) {
         "",
         "!1" -> false
         "!0" -> true
-        else -> source.getBoolean(key)
+        else -> getBoolean(key)
     }
 }
