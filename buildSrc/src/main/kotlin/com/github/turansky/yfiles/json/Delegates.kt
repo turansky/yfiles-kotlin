@@ -4,13 +4,13 @@ import org.json.JSONObject
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-interface HasSource {
+internal interface HasSource {
     val source: JSONObject
 }
 
-typealias Prop<T> = ReadOnlyProperty<HasSource, T>
+internal typealias Prop<T> = ReadOnlyProperty<HasSource, T>
 
-abstract class PropDelegate<T> : Prop<T> {
+internal abstract class PropDelegate<T> : Prop<T> {
     private var initialized = false
     private var value: T? = null
 
@@ -19,7 +19,10 @@ abstract class PropDelegate<T> : Prop<T> {
         key: String
     ): T
 
-    override operator fun getValue(thisRef: HasSource, property: KProperty<*>): T {
+    override operator fun getValue(
+        thisRef: HasSource,
+        property: KProperty<*>
+    ): T {
         if (!initialized) {
             initialized = true
             value = read(thisRef.source, property.name)
@@ -30,7 +33,7 @@ abstract class PropDelegate<T> : Prop<T> {
     }
 }
 
-internal fun <T> prop(
+private fun <T> prop(
     read: (source: JSONObject, key: String) -> T
 ): Prop<T> = SimplePropDelegate(read)
 
