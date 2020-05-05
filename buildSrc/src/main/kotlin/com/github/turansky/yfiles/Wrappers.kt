@@ -5,7 +5,7 @@ import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
-internal abstract class JsonWrapper(override val source: JSONObject) : HasSource {
+internal sealed class JsonWrapper(override val source: JSONObject) : HasSource {
     open fun toCode(): String =
         throw IllegalStateException("toCode() method must be overridden")
 
@@ -16,7 +16,7 @@ internal abstract class JsonWrapper(override val source: JSONObject) : HasSource
         throw IllegalStateException("Use method toCode() instead")
 }
 
-internal abstract class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
+internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
     val name: String by string()
     protected val modifiers: Modifiers by wrapStringList(::Modifiers)
 
@@ -405,7 +405,7 @@ internal class Modifiers(modifiers: List<String>) {
     val hidden = HIDDEN in modifiers
 }
 
-internal abstract class TypedDeclaration(
+internal sealed class TypedDeclaration(
     source: JSONObject,
     protected val parent: TypeDeclaration
 ) : Declaration(source) {
@@ -797,7 +797,7 @@ private val EXCLUDED_READ_ONLY = setOf(
     "toArray"
 )
 
-internal abstract class MethodBase(
+internal sealed class MethodBase(
     source: JSONObject,
     private val parent: Type
 ) : Declaration(source) {
