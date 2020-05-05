@@ -802,7 +802,7 @@ internal abstract class MethodBase(
     private val parent: Type
 ) : Declaration(source) {
     private val id: String? by optString()
-    protected val parameters: List<Parameter> by list { Parameter(it, name !in EXCLUDED_READ_ONLY) }
+    val parameters: List<Parameter> by list { Parameter(it, name !in EXCLUDED_READ_ONLY) }
     val options: Boolean by boolean()
 
     protected val preconditions: List<String> by stringList(::summary)

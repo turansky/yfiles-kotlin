@@ -60,6 +60,9 @@ fun generateKotlinDeclarations(
     generateCreationPropertyUtils(context)
     generateSerializationUtils(context)
 
+    val timeSpanClass = types.first { it.classId == "yfiles.lang.TimeSpan" } as Class
+    generateTimeSpanExtensions(context, timeSpanClass)
+
     generateResourceTypes(devguideFile.readJson(), context)
 }
 
