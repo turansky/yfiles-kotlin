@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
     kotlin("js") version "1.4-M2-eap-68" apply false
-    id("com.github.turansky.kfc.webpack") version "0.8.4" apply false
+    id("com.github.turansky.kfc.webpack") version "0.8.5" apply false
     id("de.undercouch.download") version "4.0.4" apply false
 }
 
