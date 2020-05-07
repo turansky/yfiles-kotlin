@@ -93,7 +93,6 @@ internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers) {
     val final = has(FINAL)
 
     val abstract = has(ABSTRACT)
-    val internal = has(INTERNAL)
     val protected = has(PROTECTED)
 
     private val canbenull = has(CANBENULL)
