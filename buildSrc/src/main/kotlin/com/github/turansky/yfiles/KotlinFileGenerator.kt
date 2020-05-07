@@ -136,7 +136,7 @@ internal class KotlinFileGenerator(
         }
 
         protected fun parentString(): String {
-            if (data.isYObject) {
+            if (data.isYObject || data.isYBase) {
                 return ""
             }
 
