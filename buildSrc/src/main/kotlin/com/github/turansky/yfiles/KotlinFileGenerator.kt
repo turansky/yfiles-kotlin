@@ -347,7 +347,7 @@ internal class KotlinFileGenerator(
         override fun content(): String {
             val name = data.name
 
-            val interfaces = "$YENUM<$name>" + exp(declaration.flags, ",yfiles.lang.Flags<$name>")
+            val interfaces = "$YENUM<$name>" + exp(declaration.flags, ",yfiles.lang.YFlags<$name>")
 
             return documentation +
                     externalAnnotation +
