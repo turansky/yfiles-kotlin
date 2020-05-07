@@ -19,11 +19,12 @@ internal const val OPTIONAL = "optional"
 internal const val CONVERSION = "conversion"
 
 internal const val CANBENULL = "canbenull"
+private const val NOTNULL = "notnull"
 
 // for codegen
 internal const val HIDDEN = "hidden"
 
-internal const val EXPERT = "expert"
+private const val EXPERT = "expert"
 
 sealed class Modifiers(
     private val modifiers: List<String>,
@@ -104,7 +105,24 @@ internal enum class PropertyMode(
     WRITE_ONLY(false, true)
 }
 
-internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+private val PROPERTY_MODIFIERS = setOf(
+    STATIC,
+    FINAL,
+
+    RO, WO,
+
+    ABSTRACT,
+    PROTECTED,
+
+    CANBENULL,
+
+    PUBLIC,
+    EXPERT,
+    NOTNULL,
+    CONVERSION
+)
+
+internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers, PROPERTY_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
 
