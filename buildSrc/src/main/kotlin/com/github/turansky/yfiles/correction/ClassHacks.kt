@@ -99,7 +99,7 @@ private fun fixClass(source: Source) {
     source.type("Class").apply {
         setSingleTypeParameter(bound = JS_OBJECT)
 
-        get(MODIFIERS).put(FINAL)
+        get(MODIFIERS).put(SEALED)
 
         get(METHODS).removeItem(method("getProperties"))
 

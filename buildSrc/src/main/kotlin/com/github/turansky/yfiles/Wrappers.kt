@@ -200,6 +200,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     val kotlinModificator: String = when (modifiers.mode) {
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
+        ClassMode.SEALED -> "sealed"
         ClassMode.ABSTRACT -> "abstract"
     }
 

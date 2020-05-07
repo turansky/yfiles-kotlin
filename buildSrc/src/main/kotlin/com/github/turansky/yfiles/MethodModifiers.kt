@@ -9,6 +9,7 @@ internal const val STATIC = "static"
 internal const val FINAL = "final"
 internal const val RO = "ro"
 internal const val WO = "wo"
+internal const val SEALED = "sealed"
 internal const val ABSTRACT = "abstract"
 internal const val INTERNAL = "internal"
 internal const val PROTECTED = "protected"
@@ -43,10 +44,12 @@ sealed class Modifiers(
 internal enum class ClassMode {
     FINAL,
     OPEN,
+    SEALED,
     ABSTRACT
 }
 
 private val CLASS_MODIFIERS = setOf(
+    SEALED,
     ABSTRACT,
     FINAL,
 
@@ -56,6 +59,7 @@ private val CLASS_MODIFIERS = setOf(
 
 internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CLASS_MODIFIERS) {
     val mode: ClassMode = when {
+        has(SEALED) -> ClassMode.SEALED
         has(ABSTRACT) -> ClassMode.ABSTRACT
         has(FINAL) -> ClassMode.FINAL
         else -> ClassMode.OPEN
