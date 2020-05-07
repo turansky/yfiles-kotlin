@@ -151,8 +151,8 @@ private fun fixEnum(source: Source) {
             .onEach {
                 val returns = it[RETURNS]
                 when (returns[TYPE]) {
-                    ENUM -> returns[TYPE] = "$YENUM<T>"
-                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<$YENUM<T>>"
+                    ENUM -> returns[TYPE] = "T"
+                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<T>"
                 }
             }
             .flatMap(PARAMETERS)
