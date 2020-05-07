@@ -193,15 +193,14 @@ internal sealed class ExtendedType(source: JSONObject) : Type(source) {
 }
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
-    private val modifiers: Modifiers by wrapStringList(::Modifiers)
-    val final = modifiers.final
-    val open = !final
-    val abstract = modifiers.abstract
+    private val modifiers: ClassModifiers by wrapStringList(::ClassModifiers)
+    val final: Boolean = modifiers.mode == ClassMode.FINAL
+    val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
 
-    val kotlinModificator = when {
-        abstract -> "abstract"
-        open -> "open"
-        else -> ""
+    val kotlinModificator: String = when (modifiers.mode) {
+        ClassMode.FINAL -> ""
+        ClassMode.OPEN -> "open"
+        ClassMode.ABSTRACT -> "abstract"
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)

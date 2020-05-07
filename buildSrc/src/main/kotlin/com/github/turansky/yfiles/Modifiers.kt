@@ -30,6 +30,20 @@ sealed class ModifiersBase(
         modifier in modifiers
 }
 
+internal enum class ClassMode {
+    FINAL,
+    OPEN,
+    ABSTRACT
+}
+
+internal class ClassModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val mode: ClassMode = when {
+        has(ABSTRACT) -> ClassMode.ABSTRACT
+        has(FINAL) -> ClassMode.FINAL
+        else -> ClassMode.OPEN
+    }
+}
+
 internal enum class PropertyMode(
     val readable: Boolean,
     val writable: Boolean
