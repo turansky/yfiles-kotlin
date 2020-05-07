@@ -80,7 +80,14 @@ internal enum class ConstructorVisibility {
     INTERNAL
 }
 
-internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+private val CONSTRUCTOR_MODIFIERS = setOf(
+    INTERNAL,
+    PROTECTED,
+
+    PUBLIC
+)
+
+internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifiers, CONSTRUCTOR_MODIFIERS) {
     val visibility: ConstructorVisibility = when {
         has(INTERNAL) -> ConstructorVisibility.INTERNAL
         has(PROTECTED) -> ConstructorVisibility.PROTECTED
