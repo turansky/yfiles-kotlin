@@ -28,13 +28,11 @@ private const val EXPERT = "expert"
 
 sealed class Modifiers(
     private val modifiers: List<String>,
-    validModifiers: Set<String>? = null
+    validModifiers: Set<String>
 ) {
     init {
-        if (validModifiers != null) {
-            check(validModifiers.containsAll(modifiers)) {
-                "Invalid modifiers: ${modifiers - validModifiers}"
-            }
+        check(validModifiers.containsAll(modifiers)) {
+            "Invalid modifiers: ${modifiers - validModifiers}"
         }
     }
 
