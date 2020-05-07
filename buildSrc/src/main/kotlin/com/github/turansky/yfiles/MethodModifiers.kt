@@ -168,7 +168,17 @@ internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, M
     val hidden = has(HIDDEN)
 }
 
-internal class ParameterModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+private val PARAMETER_MODIFIERS = setOf(
+    VARARGS,
+    OPTIONAL,
+
+    CANBENULL,
+
+    NOTNULL,
+    CONVERSION
+)
+
+internal class ParameterModifiers(modifiers: List<String>) : Modifiers(modifiers, PARAMETER_MODIFIERS) {
     val vararg = has(VARARGS)
     val optional = has(OPTIONAL)
 
