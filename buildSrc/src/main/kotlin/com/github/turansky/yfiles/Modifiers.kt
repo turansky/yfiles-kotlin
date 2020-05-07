@@ -44,6 +44,10 @@ internal class ClassModifiers(modifiers: List<String>) : ModifiersBase(modifiers
     }
 }
 
+internal class EnumModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val flags = has(FLAGS)
+}
+
 internal enum class PropertyMode(
     val readable: Boolean,
     val writable: Boolean
@@ -84,7 +88,6 @@ internal class EventListenerModifiers(modifiers: List<String>) : ModifiersBase(m
 }
 
 internal class Modifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
-    val flags = has(FLAGS)
     val static = has(STATIC)
     val final = has(FINAL)
 

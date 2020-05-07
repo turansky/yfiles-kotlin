@@ -214,7 +214,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 
 internal class Enum(source: JSONObject) : Type(source) {
-    private val modifiers: Modifiers by wrapStringList(::Modifiers)
+    private val modifiers: EnumModifiers by wrapStringList(::EnumModifiers)
     val flags = modifiers.flags
     override val constants: List<Constant> by declarationList(::EnumConstant)
 }
