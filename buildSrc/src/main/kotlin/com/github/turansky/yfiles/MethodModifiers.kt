@@ -63,7 +63,14 @@ internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CL
     }
 }
 
-internal class EnumModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+private val ENUM_MODIFIERS = setOf(
+    FLAGS,
+
+    PUBLIC,
+    EXPERT
+)
+
+internal class EnumModifiers(modifiers: List<String>) : Modifiers(modifiers, ENUM_MODIFIERS) {
     val flags = has(FLAGS)
 }
 
