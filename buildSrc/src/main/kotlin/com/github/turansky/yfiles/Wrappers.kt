@@ -413,10 +413,8 @@ internal class Constructor(
     source: JSONObject,
     parent: Class
 ) : MethodBase(source, parent) {
-    private val modifiers: Modifiers by wrapStringList(::Modifiers)
-    private val internal = modifiers.internal
-    private val protected = modifiers.protected
-    val public = !internal and !protected
+    private val modifiers: ConstructorModifiers by wrapStringList(::ConstructorModifiers)
+    val public = modifiers.visibility == ConstructorVisibility.PUBLIC
 
     override val overridden: Boolean = false
 
@@ -449,18 +447,18 @@ internal class Constructor(
     }
 
     fun toPrimaryCode(): String {
-        val declaration: String = when {
-            internal -> "\ninternal constructor"
-            protected -> "\nprotected constructor"
-            else -> ""
+        val declaration: String = when (modifiers.visibility) {
+            ConstructorVisibility.PUBLIC -> ""
+            ConstructorVisibility.PROTECTED -> "\nprotected constructor"
+            ConstructorVisibility.INTERNAL -> "\ninternal constructor"
         }
 
         return "$declaration (${kotlinParametersString()})"
     }
 
     override fun toCode(): String {
-        val modificator: String = when {
-            protected -> "protected"
+        val modificator: String = when (modifiers.visibility) {
+            ConstructorVisibility.PROTECTED -> "protected"
             else -> ""
         }
 

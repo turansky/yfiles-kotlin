@@ -48,6 +48,20 @@ internal class EnumModifiers(modifiers: List<String>) : ModifiersBase(modifiers)
     val flags = has(FLAGS)
 }
 
+internal enum class ConstructorVisibility {
+    PUBLIC,
+    PROTECTED,
+    INTERNAL
+}
+
+internal class ConstructorModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val visibility: ConstructorVisibility = when {
+        has(INTERNAL) -> ConstructorVisibility.INTERNAL
+        has(PROTECTED) -> ConstructorVisibility.PROTECTED
+        else -> ConstructorVisibility.PUBLIC
+    }
+}
+
 internal enum class PropertyMode(
     val readable: Boolean,
     val writable: Boolean
