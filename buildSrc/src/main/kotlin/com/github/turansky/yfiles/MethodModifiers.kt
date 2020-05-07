@@ -139,7 +139,23 @@ internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers,
     val nullability = exp(canbenull, "?")
 }
 
-internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+private val METHOD_MODIFIERS = setOf(
+    STATIC,
+    FINAL,
+
+    ABSTRACT,
+    PROTECTED,
+
+    CANBENULL,
+
+    HIDDEN,
+
+    PUBLIC,
+    EXPERT,
+    NOTNULL
+)
+
+internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, METHOD_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
 
