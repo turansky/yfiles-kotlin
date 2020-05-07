@@ -632,7 +632,7 @@ internal class Method(
     // TODO: Move to constructor in Kotlin 1.4
     private var operatorName: String? = null
 
-    private val modifiers: Modifiers by wrapStringList(::Modifiers)
+    private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
     private val static = modifiers.static
     private val protected = modifiers.protected

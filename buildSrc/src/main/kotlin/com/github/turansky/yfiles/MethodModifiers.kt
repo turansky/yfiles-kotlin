@@ -23,7 +23,7 @@ internal const val CANBENULL = "canbenull"
 // for codegen
 internal const val HIDDEN = "hidden"
 
-sealed class ModifiersBase(
+sealed class Modifiers(
     private val modifiers: List<String>
 ) {
     protected fun has(modifier: String): Boolean =
@@ -36,7 +36,7 @@ internal enum class ClassMode {
     ABSTRACT
 }
 
-internal class ClassModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers) {
     val mode: ClassMode = when {
         has(ABSTRACT) -> ClassMode.ABSTRACT
         has(FINAL) -> ClassMode.FINAL
@@ -44,7 +44,7 @@ internal class ClassModifiers(modifiers: List<String>) : ModifiersBase(modifiers
     }
 }
 
-internal class EnumModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+internal class EnumModifiers(modifiers: List<String>) : Modifiers(modifiers) {
     val flags = has(FLAGS)
 }
 
@@ -54,7 +54,7 @@ internal enum class ConstructorVisibility {
     INTERNAL
 }
 
-internal class ConstructorModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifiers) {
     val visibility: ConstructorVisibility = when {
         has(INTERNAL) -> ConstructorVisibility.INTERNAL
         has(PROTECTED) -> ConstructorVisibility.PROTECTED
@@ -71,7 +71,7 @@ internal enum class PropertyMode(
     WRITE_ONLY(false, true)
 }
 
-internal class PropertyModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers) {
     val static = has(STATIC)
     val final = has(FINAL)
 
@@ -88,20 +88,7 @@ internal class PropertyModifiers(modifiers: List<String>) : ModifiersBase(modifi
     val nullability = exp(canbenull, "?")
 }
 
-internal class ParameterModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
-    val vararg = has(VARARGS)
-    val optional = has(OPTIONAL)
-
-    private val canbenull = has(CANBENULL)
-    val nullability = exp(canbenull, "?")
-}
-
-internal class EventListenerModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
-    val public = has(PUBLIC)
-    val abstract = has(ABSTRACT)
-}
-
-internal class Modifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers) {
     val static = has(STATIC)
     val final = has(FINAL)
 
@@ -113,4 +100,17 @@ internal class Modifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
     val nullability = exp(canbenull, "?")
 
     val hidden = has(HIDDEN)
+}
+
+internal class ParameterModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+    val vararg = has(VARARGS)
+    val optional = has(OPTIONAL)
+
+    private val canbenull = has(CANBENULL)
+    val nullability = exp(canbenull, "?")
+}
+
+internal class EventListenerModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+    val public = has(PUBLIC)
+    val abstract = has(ABSTRACT)
 }
