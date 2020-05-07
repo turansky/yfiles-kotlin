@@ -168,15 +168,16 @@ internal class KotlinFileGenerator(
 
         protected val companionObjectContent: String
             get() {
-                val type = if (data.isYObject) {
-                    "yfiles.lang.TypeMetadata<$ANY>"
-                } else {
-                    val generic = data.name + declaration.generics.placeholder
-                    "$metadataClass<$generic>"
+                val typeDeclaration: String = when {
+                    data.isYBase -> ""
+                    data.isYObject -> ": yfiles.lang.TypeMetadata<$ANY>"
+                    else -> {
+                        val generic = data.name + declaration.generics.placeholder
+                        ": $metadataClass<$generic>"
+                    }
                 }
-
                 return """
-                    |companion object: $type {
+                    |companion object $typeDeclaration {
                     |${staticDeclarations.lines { it.toCode() }}
                     |}
                 """.trimMargin()
