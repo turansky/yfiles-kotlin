@@ -45,6 +45,10 @@ internal fun generateClassUtils(context: GeneratorContext) {
         "external interface ClassMetadata<T: $YOBJECT_SN> : TypeMetadata<T>"
 
     // language=kotlin
+    context["yfiles.lang.EnumMetadata"] =
+        "external interface EnumMetadata<T: YEnum<T>> : TypeMetadata<T>"
+
+    // language=kotlin
     context["yfiles.lang.InterfaceMetadata", INLINE] =
         """
             |external interface InterfaceMetadata<T: $YOBJECT_SN>: TypeMetadata<T>

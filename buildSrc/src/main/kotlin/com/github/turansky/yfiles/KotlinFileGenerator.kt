@@ -164,8 +164,7 @@ internal class KotlinFileGenerator(
                 .lines { it.toCode() }
         }
 
-        protected open val metadataClass: String
-            get() = "yfiles.lang.ClassMetadata"
+        protected abstract val metadataClass: String
 
         protected val companionObjectContent: String
             get() {
@@ -250,6 +249,9 @@ internal class KotlinFileGenerator(
                         |}${enumCompanionContent()}
                     """.trimMargin()
         }
+
+        override val metadataClass: String
+            get() = "yfiles.lang.ClassMetadata"
 
         override fun companionContent(): String? {
             if (isObject() || data.primitive) {
@@ -365,6 +367,9 @@ internal class KotlinFileGenerator(
                         |}
                     """.trimMargin()
         }
+
+        override val metadataClass: String
+            get() = "yfiles.lang.EnumMetadata"
 
         override fun companionContent(): String? =
             typealiasDeclaration()
