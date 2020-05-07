@@ -23,6 +23,13 @@ internal const val CANBENULL = "canbenull"
 // for codegen
 internal const val HIDDEN = "hidden"
 
+sealed class ModifiersBase(
+    private val modifiers: List<String>
+) {
+    protected fun has(modifier: String): Boolean =
+        modifier in modifiers
+}
+
 internal enum class PropertyMode(
     val readable: Boolean,
     val writable: Boolean
@@ -32,36 +39,36 @@ internal enum class PropertyMode(
     WRITE_ONLY(false, true)
 }
 
-internal class ParameterModifiers(flags: List<String>) {
-    val vararg = VARARGS in flags
-    val optional = OPTIONAL in flags
+internal class ParameterModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val vararg = has(VARARGS)
+    val optional = has(OPTIONAL)
 
-    private val canbenull = CANBENULL in flags
+    private val canbenull = has(CANBENULL)
     val nullability = exp(canbenull, "?")
 }
 
-internal class EventListenerModifiers(flags: List<String>) {
-    val public = PUBLIC in flags
-    val abstract = ABSTRACT in flags
+internal class EventListenerModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val public = has(PUBLIC)
+    val abstract = has(ABSTRACT)
 }
 
-internal class Modifiers(modifiers: List<String>) {
-    val flags = FLAGS in modifiers
-    val static = STATIC in modifiers
-    val final = FINAL in modifiers
+internal class Modifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val flags = has(FLAGS)
+    val static = has(STATIC)
+    val final = has(FINAL)
 
     val mode = when {
-        RO in modifiers -> READ_ONLY
-        WO in modifiers -> WRITE_ONLY
+        has(RO) -> READ_ONLY
+        has(WO) -> WRITE_ONLY
         else -> READ_WRITE
     }
 
-    val abstract = ABSTRACT in modifiers
-    val internal = INTERNAL in modifiers
-    val protected = PROTECTED in modifiers
+    val abstract = has(ABSTRACT)
+    val internal = has(INTERNAL)
+    val protected = has(PROTECTED)
 
-    private val canbenull = CANBENULL in modifiers
+    private val canbenull = has(CANBENULL)
     val nullability = exp(canbenull, "?")
 
-    val hidden = HIDDEN in modifiers
+    val hidden = has(HIDDEN)
 }
