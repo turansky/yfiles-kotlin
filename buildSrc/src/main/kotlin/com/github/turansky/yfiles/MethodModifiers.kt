@@ -186,7 +186,12 @@ internal class ParameterModifiers(modifiers: List<String>) : Modifiers(modifiers
     val nullability = exp(canbenull, "?")
 }
 
-internal class EventListenerModifiers(modifiers: List<String>) : Modifiers(modifiers) {
-    val public = has(PUBLIC)
+private val EVENT_LISTENERS_MODIFIERS = setOf(
+    ABSTRACT,
+
+    PUBLIC
+)
+
+internal class EventListenerModifiers(modifiers: List<String>) : Modifiers(modifiers, EVENT_LISTENERS_MODIFIERS) {
     val abstract = has(ABSTRACT)
 }
