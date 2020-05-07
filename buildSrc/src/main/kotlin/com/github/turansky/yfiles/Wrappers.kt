@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.PropertyMode.*
+import com.github.turansky.yfiles.PropertyMode.WRITE_ONLY
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -389,36 +389,6 @@ private fun seeAlsoDocs(
     return listOf(
         SeeAlsoDoc(parent.docId, docId)
     )
-}
-
-internal enum class PropertyMode(
-    val readable: Boolean,
-    val writable: Boolean
-) {
-    READ_WRITE(true, true),
-    READ_ONLY(true, false),
-    WRITE_ONLY(false, true)
-}
-
-internal class Modifiers(modifiers: List<String>) {
-    val flags = FLAGS in modifiers
-    val static = STATIC in modifiers
-    val final = FINAL in modifiers
-
-    val mode = when {
-        RO in modifiers -> READ_ONLY
-        WO in modifiers -> WRITE_ONLY
-        else -> READ_WRITE
-    }
-
-    val abstract = ABSTRACT in modifiers
-    val internal = INTERNAL in modifiers
-    val protected = PROTECTED in modifiers
-
-    private val canbenull = CANBENULL in modifiers
-    val nullability = exp(canbenull, "?")
-
-    val hidden = HIDDEN in modifiers
 }
 
 internal sealed class TypedDeclaration(
@@ -864,14 +834,6 @@ internal sealed class MethodBase(
     }
 }
 
-internal class ParameterModifiers(flags: List<String>) {
-    val vararg = VARARGS in flags
-    val optional = OPTIONAL in flags
-
-    private val canbenull = CANBENULL in flags
-    val nullability = exp(canbenull, "?")
-}
-
 internal class Parameter(
     source: JSONObject,
     private val readOnly: Boolean = true
@@ -1041,11 +1003,6 @@ private class EventListener(
 
         return "${kotlinModificator()}fun $name($parametersString)"
     }
-}
-
-internal class EventListenerModifiers(flags: List<String>) {
-    val public = PUBLIC in flags
-    val abstract = ABSTRACT in flags
 }
 
 private fun type(
