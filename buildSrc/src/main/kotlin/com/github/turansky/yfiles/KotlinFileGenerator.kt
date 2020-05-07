@@ -347,12 +347,16 @@ internal class KotlinFileGenerator(
         override fun content(): String {
             val name = data.name
 
-            val interfaces = "$YENUM<$name>" + exp(declaration.flags, ",yfiles.lang.YFlags<$name>")
+            val baseInterface = if (declaration.flags) {
+                "$YFLAGS<$name>"
+            } else {
+                "$YENUM<$name>"
+            }
 
             return documentation +
                     externalAnnotation +
                     """
-                        |external enum class $name: $interfaces {
+                        |external enum class $name: $baseInterface {
                         |${declaration.constants.toContent()}
                         |
                         |   companion object: $metadataClass<$name> {
