@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.PropertyMode.*
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -389,12 +390,26 @@ private fun seeAlsoDocs(
     )
 }
 
+internal enum class PropertyMode(
+    val readable: Boolean,
+    val writable: Boolean
+) {
+    READ_WRITE(true, true),
+    READ_ONLY(true, false),
+    WRITE_ONLY(false, true)
+}
+
 internal class Modifiers(modifiers: List<String>) {
     val flags = FLAGS in modifiers
     val static = STATIC in modifiers
     val final = FINAL in modifiers
-    val readOnly = RO in modifiers
-    val writeOnly = WO in modifiers
+
+    val mode = when {
+        RO in modifiers -> READ_ONLY
+        WO in modifiers -> WRITE_ONLY
+        else -> READ_WRITE
+    }
+
     val abstract = ABSTRACT in modifiers
     val internal = INTERNAL in modifiers
     val protected = PROTECTED in modifiers
@@ -543,8 +558,7 @@ internal class Property(
     val static = modifiers.static
     private val protected = modifiers.protected
     val public = !protected
-    val writable = !modifiers.readOnly
-    val writeOnly = modifiers.writeOnly
+    val mode = modifiers.mode
 
     val abstract = modifiers.abstract
     private val final = modifiers.final
@@ -590,10 +604,10 @@ internal class Property(
             }
         }
 
-        str += if (writable) "var " else "val "
+        str += if (mode.writable) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        if (writeOnly) {
+        if (mode == WRITE_ONLY) {
             str += """
                 |
                 |   @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
@@ -606,14 +620,14 @@ internal class Property(
 
     override fun toExtensionCode(): String {
         require(!protected)
-        require(!writeOnly)
+        require(mode != WRITE_ONLY)
 
         val generics = parent.generics.declaration
 
-        var str = "inline " + if (writable) "var " else "val "
+        var str = "inline " + if (mode.writable) "var " else "val "
         str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $AS_DYNAMIC.$name"
-        if (writable) {
+        if (mode.writable) {
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
