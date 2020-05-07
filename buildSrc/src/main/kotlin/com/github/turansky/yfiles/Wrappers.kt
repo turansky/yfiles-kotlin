@@ -527,7 +527,7 @@ internal class Property(
     source: JSONObject,
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
-    private val modifiers: Modifiers by wrapStringList(::Modifiers)
+    private val modifiers: PropertyModifiers by wrapStringList(::PropertyModifiers)
     val static = modifiers.static
     private val protected = modifiers.protected
     val public = !protected

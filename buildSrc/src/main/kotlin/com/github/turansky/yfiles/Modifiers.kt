@@ -39,6 +39,23 @@ internal enum class PropertyMode(
     WRITE_ONLY(false, true)
 }
 
+internal class PropertyModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
+    val static = has(STATIC)
+    val final = has(FINAL)
+
+    val mode = when {
+        has(RO) -> READ_ONLY
+        has(WO) -> WRITE_ONLY
+        else -> READ_WRITE
+    }
+
+    val abstract = has(ABSTRACT)
+    val protected = has(PROTECTED)
+
+    private val canbenull = has(CANBENULL)
+    val nullability = exp(canbenull, "?")
+}
+
 internal class ParameterModifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
     val vararg = has(VARARGS)
     val optional = has(OPTIONAL)
@@ -56,12 +73,6 @@ internal class Modifiers(modifiers: List<String>) : ModifiersBase(modifiers) {
     val flags = has(FLAGS)
     val static = has(STATIC)
     val final = has(FINAL)
-
-    val mode = when {
-        has(RO) -> READ_ONLY
-        has(WO) -> WRITE_ONLY
-        else -> READ_WRITE
-    }
 
     val abstract = has(ABSTRACT)
     val internal = has(INTERNAL)
