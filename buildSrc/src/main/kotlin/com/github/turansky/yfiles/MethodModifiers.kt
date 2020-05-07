@@ -23,9 +23,20 @@ internal const val CANBENULL = "canbenull"
 // for codegen
 internal const val HIDDEN = "hidden"
 
+internal const val EXPERT = "expert"
+
 sealed class Modifiers(
-    private val modifiers: List<String>
+    private val modifiers: List<String>,
+    validModifiers: Set<String>? = null
 ) {
+    init {
+        if (validModifiers != null) {
+            check(validModifiers.containsAll(modifiers)) {
+                "Invalid modifiers: ${modifiers - validModifiers}"
+            }
+        }
+    }
+
     protected fun has(modifier: String): Boolean =
         modifier in modifiers
 }
@@ -36,7 +47,15 @@ internal enum class ClassMode {
     ABSTRACT
 }
 
-internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers) {
+private val CLASS_MODIFIERS = setOf(
+    ABSTRACT,
+    FINAL,
+
+    PUBLIC,
+    EXPERT
+)
+
+internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CLASS_MODIFIERS) {
     val mode: ClassMode = when {
         has(ABSTRACT) -> ClassMode.ABSTRACT
         has(FINAL) -> ClassMode.FINAL
