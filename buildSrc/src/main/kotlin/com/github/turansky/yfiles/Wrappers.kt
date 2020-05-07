@@ -19,7 +19,6 @@ internal sealed class JsonWrapper(override val source: JSONObject) : HasSource {
 
 internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
     val name: String by string()
-    protected val modifiers: Modifiers by wrapStringList(::Modifiers)
 
     protected val summary: String? by summary()
     protected val remarks: String? by remarks()
@@ -194,6 +193,7 @@ internal sealed class ExtendedType(source: JSONObject) : Type(source) {
 }
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
+    private val modifiers: Modifiers by wrapStringList(::Modifiers)
     val final = modifiers.final
     val open = !final
     val abstract = modifiers.abstract
@@ -215,6 +215,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 
 internal class Enum(source: JSONObject) : Type(source) {
+    private val modifiers: Modifiers by wrapStringList(::Modifiers)
     val flags = modifiers.flags
     override val constants: List<Constant> by declarationList(::EnumConstant)
 }
@@ -443,6 +444,7 @@ internal class Constructor(
     source: JSONObject,
     parent: Class
 ) : MethodBase(source, parent) {
+    private val modifiers: Modifiers by wrapStringList(::Modifiers)
     private val internal = modifiers.internal
     private val protected = modifiers.protected
     val public = !internal and !protected
@@ -555,6 +557,7 @@ internal class Property(
     source: JSONObject,
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
+    private val modifiers: Modifiers by wrapStringList(::Modifiers)
     val static = modifiers.static
     private val protected = modifiers.protected
     val public = !protected
@@ -662,6 +665,7 @@ internal class Method(
     // TODO: Move to constructor in Kotlin 1.4
     private var operatorName: String? = null
 
+    private val modifiers: Modifiers by wrapStringList(::Modifiers)
     val abstract = modifiers.abstract
     private val static = modifiers.static
     private val protected = modifiers.protected
