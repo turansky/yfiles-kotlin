@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.PropertyMode.WRITE_ONLY
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -18,7 +19,6 @@ internal sealed class JsonWrapper(override val source: JSONObject) : HasSource {
 
 internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Comparable<Declaration> {
     val name: String by string()
-    protected val modifiers: Modifiers by wrapStringList(::Modifiers)
 
     protected val summary: String? by summary()
     protected val remarks: String? by remarks()
@@ -193,14 +193,15 @@ internal sealed class ExtendedType(source: JSONObject) : Type(source) {
 }
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
-    val final = modifiers.final
-    val open = !final
-    val abstract = modifiers.abstract
+    private val modifiers: ClassModifiers by wrapStringList(::ClassModifiers)
+    val final: Boolean = modifiers.mode == ClassMode.FINAL
+    val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
 
-    val kotlinModificator = when {
-        abstract -> "abstract"
-        open -> "open"
-        else -> ""
+    val kotlinModifier: String = when (modifiers.mode) {
+        ClassMode.FINAL -> ""
+        ClassMode.OPEN -> "open"
+        ClassMode.SEALED -> "sealed"
+        ClassMode.ABSTRACT -> "abstract"
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
@@ -214,6 +215,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 internal class Interface(source: JSONObject) : ExtendedType(source)
 
 internal class Enum(source: JSONObject) : Type(source) {
+    private val modifiers: EnumModifiers by wrapStringList(::EnumModifiers)
     val flags = modifiers.flags
     override val constants: List<Constant> by declarationList(::EnumConstant)
 }
@@ -389,22 +391,6 @@ private fun seeAlsoDocs(
     )
 }
 
-internal class Modifiers(modifiers: List<String>) {
-    val flags = FLAGS in modifiers
-    val static = STATIC in modifiers
-    val final = FINAL in modifiers
-    val readOnly = RO in modifiers
-    val writeOnly = WO in modifiers
-    val abstract = ABSTRACT in modifiers
-    val internal = INTERNAL in modifiers
-    val protected = PROTECTED in modifiers
-
-    private val canbenull = CANBENULL in modifiers
-    val nullability = exp(canbenull, "?")
-
-    val hidden = HIDDEN in modifiers
-}
-
 internal sealed class TypedDeclaration(
     source: JSONObject,
     protected val parent: TypeDeclaration
@@ -428,9 +414,8 @@ internal class Constructor(
     source: JSONObject,
     parent: Class
 ) : MethodBase(source, parent) {
-    private val internal = modifiers.internal
-    private val protected = modifiers.protected
-    val public = !internal and !protected
+    private val modifiers: ConstructorModifiers by wrapStringList(::ConstructorModifiers)
+    val public = modifiers.visibility == ConstructorVisibility.PUBLIC
 
     override val overridden: Boolean = false
 
@@ -463,18 +448,18 @@ internal class Constructor(
     }
 
     fun toPrimaryCode(): String {
-        val declaration: String = when {
-            internal -> "\ninternal constructor"
-            protected -> "\nprotected constructor"
-            else -> ""
+        val declaration: String = when (modifiers.visibility) {
+            ConstructorVisibility.PUBLIC -> ""
+            ConstructorVisibility.PROTECTED -> "\nprotected constructor"
+            ConstructorVisibility.INTERNAL -> "\ninternal constructor"
         }
 
         return "$declaration (${kotlinParametersString()})"
     }
 
     override fun toCode(): String {
-        val modificator: String = when {
-            protected -> "protected"
+        val modificator: String = when (modifiers.visibility) {
+            ConstructorVisibility.PROTECTED -> "protected"
             else -> ""
         }
 
@@ -540,11 +525,11 @@ internal class Property(
     source: JSONObject,
     parent: TypeDeclaration
 ) : TypedDeclaration(source, parent) {
+    private val modifiers: PropertyModifiers by wrapStringList(::PropertyModifiers)
     val static = modifiers.static
     private val protected = modifiers.protected
     val public = !protected
-    val writable = !modifiers.readOnly
-    val writeOnly = modifiers.writeOnly
+    val mode = modifiers.mode
 
     val abstract = modifiers.abstract
     private val final = modifiers.final
@@ -590,10 +575,10 @@ internal class Property(
             }
         }
 
-        str += if (writable) "var " else "val "
+        str += if (mode.writable) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        if (writeOnly) {
+        if (mode == WRITE_ONLY) {
             str += """
                 |
                 |   @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
@@ -606,14 +591,14 @@ internal class Property(
 
     override fun toExtensionCode(): String {
         require(!protected)
-        require(!writeOnly)
+        require(mode != WRITE_ONLY)
 
         val generics = parent.generics.declaration
 
-        var str = "inline " + if (writable) "var " else "val "
+        var str = "inline " + if (mode.writable) "var " else "val "
         str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $AS_DYNAMIC.$name"
-        if (writable) {
+        if (mode.writable) {
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
@@ -648,6 +633,7 @@ internal class Method(
     // TODO: Move to constructor in Kotlin 1.4
     private var operatorName: String? = null
 
+    private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
     private val static = modifiers.static
     private val protected = modifiers.protected
@@ -846,14 +832,6 @@ internal sealed class MethodBase(
     }
 }
 
-internal class ParameterModifiers(flags: List<String>) {
-    val vararg = VARARGS in flags
-    val optional = OPTIONAL in flags
-
-    private val canbenull = CANBENULL in flags
-    val nullability = exp(canbenull, "?")
-}
-
 internal class Parameter(
     source: JSONObject,
     private val readOnly: Boolean = true
@@ -1023,11 +1001,6 @@ private class EventListener(
 
         return "${kotlinModificator()}fun $name($parametersString)"
     }
-}
-
-internal class EventListenerModifiers(flags: List<String>) {
-    val public = PUBLIC in flags
-    val abstract = ABSTRACT in flags
 }
 
 private fun type(

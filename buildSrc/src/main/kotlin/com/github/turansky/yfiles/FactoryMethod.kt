@@ -40,7 +40,7 @@ private fun Class.canHaveFactoryMethod(): Boolean =
     when {
         abstract -> false
         generics.isNotEmpty() -> false
-        extendedType() == null && properties.none { it.public && it.writable } -> false
+        extendedType() == null && properties.none { it.public && it.mode.writable } -> false
         else -> true
     }
 

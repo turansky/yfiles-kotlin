@@ -45,6 +45,10 @@ internal fun generateClassUtils(context: GeneratorContext) {
         "external interface ClassMetadata<T: $YOBJECT_SN> : TypeMetadata<T>"
 
     // language=kotlin
+    context["yfiles.lang.EnumMetadata"] =
+        "external interface EnumMetadata<T: YEnum<T>> : TypeMetadata<T>"
+
+    // language=kotlin
     context["yfiles.lang.InterfaceMetadata", INLINE] =
         """
             |external interface InterfaceMetadata<T: $YOBJECT_SN>: TypeMetadata<T>
@@ -99,6 +103,8 @@ private fun fixClass(source: Source) {
     source.type("Class").apply {
         setSingleTypeParameter(bound = JS_OBJECT)
 
+        get(MODIFIERS).put(SEALED)
+
         get(METHODS).removeItem(method("getProperties"))
 
         get(METHODS)
@@ -145,8 +151,8 @@ private fun fixEnum(source: Source) {
             .onEach {
                 val returns = it[RETURNS]
                 when (returns[TYPE]) {
-                    ENUM -> returns[TYPE] = "$YENUM<T>"
-                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<$YENUM<T>>"
+                    ENUM -> returns[TYPE] = "T"
+                    "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<T>"
                 }
             }
             .flatMap(PARAMETERS)

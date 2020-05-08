@@ -5,6 +5,7 @@ const val IEVENT_DISPATCHER = "yfiles.lang.IEventDispatcher"
 
 const val YCLASS = "yfiles.lang.YClass"
 const val YENUM = "yfiles.lang.YEnum"
+const val YFLAGS = "yfiles.lang.YFlags"
 
 const val ICOMPARABLE = "yfiles.lang.IComparable"
 const val ICLONEABLE = "yfiles.lang.ICloneable"

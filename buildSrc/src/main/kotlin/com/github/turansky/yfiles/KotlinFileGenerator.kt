@@ -136,7 +136,7 @@ internal class KotlinFileGenerator(
         }
 
         protected fun parentString(): String {
-            if (data.isYObject) {
+            if (data.isYObject || data.isYBase) {
                 return ""
             }
 
@@ -164,20 +164,20 @@ internal class KotlinFileGenerator(
                 .lines { it.toCode() }
         }
 
-        protected open val metadataClass: String
-            get() = "yfiles.lang.ClassMetadata"
+        protected abstract val metadataClass: String
 
         protected val companionObjectContent: String
             get() {
-                val type = if (data.isYObject) {
-                    "yfiles.lang.TypeMetadata<$ANY>"
-                } else {
-                    val generic = data.name + declaration.generics.placeholder
-                    "$metadataClass<$generic>"
+                val typeDeclaration: String = when {
+                    data.isYBase -> ""
+                    data.isYObject -> ": yfiles.lang.TypeMetadata<$ANY>"
+                    else -> {
+                        val generic = data.name + declaration.generics.placeholder
+                        ": $metadataClass<$generic>"
+                    }
                 }
-
                 return """
-                    |companion object: $type {
+                    |companion object $typeDeclaration {
                     |${staticDeclarations.lines { it.toCode() }}
                     |}
                 """.trimMargin()
@@ -225,7 +225,7 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
-                    "external ${declaration.kotlinModificator} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
+                    "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
@@ -250,6 +250,9 @@ internal class KotlinFileGenerator(
                         |}${enumCompanionContent()}
                     """.trimMargin()
         }
+
+        override val metadataClass: String
+            get() = "yfiles.lang.ClassMetadata"
 
         override fun companionContent(): String? {
             if (isObject() || data.primitive) {
@@ -347,12 +350,16 @@ internal class KotlinFileGenerator(
         override fun content(): String {
             val name = data.name
 
-            val interfaces = "$YENUM<$name>" + exp(declaration.flags, ",yfiles.lang.Flags<$name>")
+            val baseInterface = if (declaration.flags) {
+                "$YFLAGS<$name>"
+            } else {
+                "$YENUM<$name>"
+            }
 
             return documentation +
                     externalAnnotation +
                     """
-                        |external enum class $name: $interfaces {
+                        |external enum class $name: $baseInterface {
                         |${declaration.constants.toContent()}
                         |
                         |   companion object: $metadataClass<$name> {
@@ -361,6 +368,9 @@ internal class KotlinFileGenerator(
                         |}
                     """.trimMargin()
         }
+
+        override val metadataClass: String
+            get() = "yfiles.lang.EnumMetadata"
 
         override fun companionContent(): String? =
             typealiasDeclaration()

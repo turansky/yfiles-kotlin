@@ -22,6 +22,7 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
 * [Flags](#flags)
+* [TimeSpan Extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
   * [Online Documentation](#online-documentation) 
@@ -57,7 +58,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 * [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
 * [`No Xcode or CLT version detected!`](https://github.com/nodejs/node-gyp/issues/1927#issuecomment-544507444) - For `macOS Catalina`
 
-## YClass
+## `YClass`
 
 #### Metadata
 ```Kotlin
@@ -126,6 +127,14 @@ val inputMode = GraphViewerInputMode {
 }
 
 val nodesAreClickable = NODE in inputMode.clickableItems // true
+```
+
+## `TimeSpan`
+```Kotlin
+val c: TimeSpan = 2.hours
+val o: TimeSpan = 0.minutes
+val d: TimeSpan = 1.seconds
+val e: TimeSpan = 3.milliseconds
 ```
 
 ## Resources Defaults
