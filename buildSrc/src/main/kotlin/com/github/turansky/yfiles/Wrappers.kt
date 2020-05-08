@@ -197,7 +197,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     val final: Boolean = modifiers.mode == ClassMode.FINAL
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
 
-    val kotlinModificator: String = when (modifiers.mode) {
+    val kotlinModifier: String = when (modifiers.mode) {
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
         ClassMode.SEALED -> "sealed"

@@ -225,7 +225,7 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
-                    "external ${declaration.kotlinModificator} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
+                    "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
