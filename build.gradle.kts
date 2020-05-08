@@ -34,3 +34,7 @@ tasks.wrapper {
     gradleVersion = "6.4"
     distributionType = Wrapper.DistributionType.ALL
 }
+
+tasks.register("ttt") {
+    dependsOn(project.getTasksByName("compileDevelopmentExecutableKotlinJs", true))
+}
