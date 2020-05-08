@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.compiler.extensions
 
-import com.github.turansky.yfiles.compiler.backend.common.LANG_PACKAGE
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -14,11 +13,12 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-private val YOBJECT_ID = ClassId(
-    LANG_PACKAGE,
-    Name.identifier("YObject")
+private val ARROW_ID = ClassId(
+    FqName("yfiles.styles"),
+    Name.identifier("Arrow")
 )
 
 internal class YLoweringExtension : IrGenerationExtension {
@@ -37,16 +37,15 @@ private class YClassLowering(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid(), ClassLoweringPass {
     override fun lower(irClass: IrClass) {
-        if (irClass.name.identifier != "AbstractArrow3") {
+        if (irClass.name.identifier != "AbstractArrow2") {
             return
         }
 
-        val yobject = context.moduleDescriptor.findClassAcrossModuleDependencies(YOBJECT_ID)!!
-        val classReference = context.symbolTable.referenceClass(yobject)
+        val arrow = context.moduleDescriptor.findClassAcrossModuleDependencies(ARROW_ID)!!
+        val classReference = context.symbolTable.referenceClass(arrow)
 
         irClass.superTypes = listOf(
             IrSimpleTypeImpl(
-                kotlinType = yobject.defaultType,
                 classifier = classReference,
                 hasQuestionMark = false,
                 arguments = emptyList(),
