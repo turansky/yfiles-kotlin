@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.compiler.extensions
 
+import com.github.turansky.yfiles.compiler.backend.ir.YLoweringExtension
 import com.github.turansky.yfiles.compiler.backend.js.JsExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject

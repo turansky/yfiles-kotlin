@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.compiler.extensions
+package com.github.turansky.yfiles.compiler.backend.ir
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
