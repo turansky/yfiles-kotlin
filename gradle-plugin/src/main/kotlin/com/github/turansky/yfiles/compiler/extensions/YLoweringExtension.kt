@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.runOnFilePostfix
+import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -37,6 +38,34 @@ private class YClassLowering(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid(), ClassLoweringPass {
     override fun lower(irClass: IrClass) {
+        if (irClass.isExternal) {
+            return
+        }
+
+        when (irClass.kind) {
+            ClassKind.CLASS
+            -> generateClass(irClass)
+
+            ClassKind.OBJECT,
+            ClassKind.INTERFACE,
+            ClassKind.ENUM_CLASS,
+            -> checkInterfaces(irClass)
+
+            else -> {
+                /* do nothing */
+            }
+        }
+
+        if (irClass.isCompanion) {
+            enrichCompanion(irClass)
+        }
+    }
+
+    private fun checkInterfaces(irClass: IrClass) {
+        // implement
+    }
+
+    private fun generateClass(irClass: IrClass) {
         if (irClass.name.identifier != "AbstractArrow2") {
             return
         }
@@ -53,6 +82,10 @@ private class YClassLowering(
             )
         )
         irClass.transformChildrenVoid()
+    }
+
+    private fun enrichCompanion(irClass: IrClass) {
+        // implement
     }
 
     override fun visitDelegatingConstructorCall(
