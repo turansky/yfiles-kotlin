@@ -1,9 +1,5 @@
 package com.github.turansky.yfiles.compiler.backend.js
 
-import com.github.turansky.yfiles.compiler.backend.common.asClassMetadata
-import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface
-import com.github.turansky.yfiles.compiler.backend.common.implementsYObjectDirectly
-import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import com.github.turansky.yfiles.compiler.diagnostic.BaseClassErrors
 import com.github.turansky.yfiles.compiler.diagnostic.YObjectErrors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
