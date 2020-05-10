@@ -10,7 +10,8 @@ import org.jetbrains.kotlin.platform.TargetPlatform
 class YStorageComponentContainerContributor : StorageComponentContainerContributor {
     override fun registerModuleComponents(
         container: StorageComponentContainer,
-        platform: TargetPlatform, moduleDescriptor: ModuleDescriptor
+        platform: TargetPlatform,
+        moduleDescriptor: ModuleDescriptor
     ) {
         container.useInstance(YDeclarationChecker)
     }
