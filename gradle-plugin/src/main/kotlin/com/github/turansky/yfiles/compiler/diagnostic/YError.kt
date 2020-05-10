@@ -2,20 +2,13 @@ package com.github.turansky.yfiles.compiler.diagnostic
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
 import org.jetbrains.kotlin.diagnostics.Errors
-import org.jetbrains.kotlin.diagnostics.PositioningStrategies
 import org.jetbrains.kotlin.diagnostics.Severity.ERROR
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
 import kotlin.reflect.KClass
 
-private class YDiagnosticFactory0<T : KtElement> : DiagnosticFactory0<T>(ERROR, PositioningStrategies.DEFAULT) {
-    override fun getName(): String {
-        return "yFiles"
-    }
-}
-
 private fun <T : KtElement> errorDiagnosticFactory(): DiagnosticFactory0<T> =
-    YDiagnosticFactory0()
+    DiagnosticFactory0.create(ERROR)
 
 private fun initialize(klass: KClass<*>) {
     Errors.Initializer.initializeFactoryNamesAndDefaultErrorMessages(klass.java, YMessagesExtension)
