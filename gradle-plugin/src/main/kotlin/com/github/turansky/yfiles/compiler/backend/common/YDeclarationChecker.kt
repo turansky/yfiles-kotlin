@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.compiler.backend.common
 
 import com.github.turansky.yfiles.compiler.diagnostic.BaseClassErrors
+import com.github.turansky.yfiles.compiler.diagnostic.YObjectErrors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
@@ -9,8 +10,16 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
 import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
+import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
-object YDeclarationChecker : DeclarationChecker {
+internal object YDeclarationChecker : DeclarationChecker {
+    private val TARGET_KINDS = setOf(
+        ClassKind.CLASS,
+        ClassKind.OBJECT,
+        ClassKind.INTERFACE,
+        ClassKind.ENUM_CLASS
+    )
+
     override fun check(
         declaration: KtDeclaration,
         descriptor: DeclarationDescriptor,
@@ -19,35 +28,39 @@ object YDeclarationChecker : DeclarationChecker {
         if (declaration !is KtClassOrObject) return
         if (descriptor !is ClassDescriptor) return
         if (descriptor.isExternal) return
+        if (descriptor.kind !in TARGET_KINDS) return
+        if (!descriptor.implementsYFilesInterface) return
 
-        when (descriptor.kind) {
-            ClassKind.CLASS
-            -> context.checkClass(declaration, descriptor)
+        when {
+            descriptor.kind != ClassKind.CLASS
+            -> context.reportError(declaration, BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
 
-            ClassKind.OBJECT,
-            ClassKind.INTERFACE,
-            ClassKind.ENUM_CLASS
-            -> context.checkInterfaces(declaration, descriptor)
+            descriptor.implementsYObjectDirectly
+            -> context.checkCustomYObject(declaration, descriptor)
 
-            else -> {
-                // do nothing
-            }
+            else -> context.checkBaseClass(declaration, descriptor)
         }
     }
 
-    private fun DeclarationCheckerContext.checkClass(
+    private fun DeclarationCheckerContext.checkBaseClass(
         declaration: KtClassOrObject,
         descriptor: ClassDescriptor
     ) {
-        // implement
+        when {
+            descriptor.isInline
+            -> reportError(declaration, BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED)
+
+            descriptor.getSuperInterfaces().any { !it.isYFilesInterface() }
+            -> reportError(declaration, BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED)
+        }
     }
 
-    private fun DeclarationCheckerContext.checkInterfaces(
+    private fun DeclarationCheckerContext.checkCustomYObject(
         declaration: KtClassOrObject,
         descriptor: ClassDescriptor
     ) {
-        if (descriptor.implementsYFilesInterface) {
-            reportError(declaration, BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+        if (descriptor.getSuperInterfaces().size != 1) {
+            reportError(declaration, YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
         }
     }
 
