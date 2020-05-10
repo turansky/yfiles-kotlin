@@ -12,9 +12,7 @@ import org.jetbrains.kotlin.js.translate.context.TranslationContext
 import org.jetbrains.kotlin.js.translate.reference.ReferenceTranslator.translateAsValueReference
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
-import org.jetbrains.kotlin.psi.KtPureClassOrObject
 import org.jetbrains.kotlin.resolve.DescriptorUtils.getFunctionByName
 
 internal fun TranslationContext.toValueReference(descriptor: DeclarationDescriptor): JsExpression =
@@ -75,13 +73,3 @@ internal fun TranslationContext.declareConstantValue(
         value,
         null
     )
-
-internal fun TranslationContext.reportError(
-    declaration: KtPureClassOrObject,
-    diagnosticFactory: DiagnosticFactory0<KtClassOrObject>
-) {
-    reportError(
-        element = declaration.psiOrParent as KtClassOrObject,
-        diagnosticFactory = diagnosticFactory
-    )
-}
