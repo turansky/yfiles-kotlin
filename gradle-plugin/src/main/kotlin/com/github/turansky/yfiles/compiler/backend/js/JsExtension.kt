@@ -7,7 +7,7 @@ import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import com.github.turansky.yfiles.compiler.diagnostic.BaseClassErrors
 import com.github.turansky.yfiles.compiler.diagnostic.YObjectErrors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.ClassKind.*
+import org.jetbrains.kotlin.descriptors.ClassKind.CLASS
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.prototypeOf
 import org.jetbrains.kotlin.js.backend.ast.JsNameRef
@@ -27,30 +27,16 @@ class JsExtension : JsSyntheticTranslateExtension {
         translator: DeclarationBodyVisitor,
         context: TranslationContext
     ) {
-        if (descriptor.isExternal) {
-            return
-        }
+        when {
+            descriptor.isExternal
+            -> return
 
-        when (descriptor.kind) {
-            CLASS -> context.generateClass(declaration, descriptor, translator)
-            OBJECT, INTERFACE, ENUM_CLASS -> context.checkInterfaces(declaration, descriptor)
-            else -> {
-                // do nothing
-            }
-        }
+            descriptor.kind == CLASS
+            -> context.generateClass(declaration, descriptor, translator)
 
-        if (descriptor.isCompanionObject) {
-            context.enrichCompanionObject(descriptor)
+            descriptor.isCompanionObject
+            -> context.enrichCompanionObject(descriptor)
         }
-    }
-}
-
-private fun TranslationContext.checkInterfaces(
-    declaration: KtPureClassOrObject,
-    descriptor: ClassDescriptor
-) {
-    if (descriptor.implementsYFilesInterface) {
-        reportError(declaration, BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
     }
 }
 
@@ -62,6 +48,7 @@ private fun TranslationContext.generateClass(
     when {
         descriptor.implementsYObjectDirectly ->
             generateCustomYObject(declaration, descriptor, translator)
+
         descriptor.implementsYFilesInterface ->
             generateBaseClass(declaration, descriptor, translator)
     }

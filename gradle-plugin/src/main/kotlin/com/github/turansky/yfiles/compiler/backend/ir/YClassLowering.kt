@@ -2,13 +2,13 @@ package com.github.turansky.yfiles.compiler.backend.ir
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
+import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -23,31 +23,16 @@ internal class YClassLowering(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid(), ClassLoweringPass {
     override fun lower(irClass: IrClass) {
-        if (irClass.isExternal) {
-            return
-        }
+        when {
+            irClass.isExternal
+            -> return
 
-        when (irClass.kind) {
-            ClassKind.CLASS
+            irClass.isClass
             -> generateClass(irClass)
 
-            ClassKind.OBJECT,
-            ClassKind.INTERFACE,
-            ClassKind.ENUM_CLASS,
-            -> checkInterfaces(irClass)
-
-            else -> {
-                /* do nothing */
-            }
+            irClass.isCompanion
+            -> enrichCompanion(irClass)
         }
-
-        if (irClass.isCompanion) {
-            enrichCompanion(irClass)
-        }
-    }
-
-    private fun checkInterfaces(irClass: IrClass) {
-        // implement
     }
 
     private fun generateClass(irClass: IrClass) {
