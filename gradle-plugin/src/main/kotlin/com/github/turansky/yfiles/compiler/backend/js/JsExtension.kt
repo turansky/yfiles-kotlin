@@ -3,9 +3,6 @@ package com.github.turansky.yfiles.compiler.backend.js
 import com.github.turansky.yfiles.compiler.backend.common.asClassMetadata
 import com.github.turansky.yfiles.compiler.backend.common.implementsYFilesInterface
 import com.github.turansky.yfiles.compiler.backend.common.implementsYObjectDirectly
-import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
-import com.github.turansky.yfiles.compiler.diagnostic.BaseClassErrors
-import com.github.turansky.yfiles.compiler.diagnostic.YObjectErrors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.CLASS
 import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.defineProperty
@@ -32,7 +29,7 @@ class JsExtension : JsSyntheticTranslateExtension {
             -> return
 
             descriptor.kind == CLASS
-            -> context.generateClass(declaration, descriptor, translator)
+            -> context.generateClass(descriptor, translator)
 
             descriptor.isCompanionObject
             -> context.enrichCompanionObject(descriptor)
@@ -41,60 +38,40 @@ class JsExtension : JsSyntheticTranslateExtension {
 }
 
 private fun TranslationContext.generateClass(
-    declaration: KtPureClassOrObject,
     descriptor: ClassDescriptor,
     translator: DeclarationBodyVisitor
 ) {
     when {
         descriptor.implementsYObjectDirectly ->
-            generateCustomYObject(declaration, descriptor, translator)
+            generateCustomYObject(descriptor, translator)
 
         descriptor.implementsYFilesInterface ->
-            generateBaseClass(declaration, descriptor, translator)
+            generateBaseClass(descriptor, translator)
     }
 }
 
 private fun TranslationContext.generateCustomYObject(
-    declaration: KtPureClassOrObject,
     descriptor: ClassDescriptor,
     translator: DeclarationBodyVisitor
 ) {
-    val yobject = descriptor.getSuperInterfaces().singleOrNull()
-    if (yobject == null) {
-        reportError(declaration, YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
-        return
-    }
-
+    val yobject = descriptor.getSuperInterfaces().single()
     val baseClass = toValueReference(yobject)
     translator.addInitializerStatement(constructorSuperCall(baseClass))
     configurePrototype(descriptor, baseClass, true)
 }
 
 private fun TranslationContext.generateBaseClass(
-    declaration: KtPureClassOrObject,
     descriptor: ClassDescriptor,
     translator: DeclarationBodyVisitor
 ) {
-    val interfaces = descriptor.getSuperInterfaces()
+    val baseClassName = generateName(descriptor, "BaseClass")
+    val baseClass = declareConstantValue(
+        suggestedName = baseClassName,
+        value = baseClass(descriptor.getSuperInterfaces(), baseClassName)
+    )
 
-    when {
-        descriptor.isInline ->
-            reportError(declaration, BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED)
-
-        interfaces.any { !it.isYFilesInterface() } ->
-            reportError(declaration, BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED)
-
-        else -> {
-            val baseClassName = generateName(descriptor, "BaseClass")
-            val baseClass = declareConstantValue(
-                suggestedName = baseClassName,
-                value = baseClass(interfaces, baseClassName)
-            )
-
-            translator.addInitializerStatement(constructorSuperCall(baseClass))
-            configurePrototype(descriptor, baseClass)
-        }
-    }
+    translator.addInitializerStatement(constructorSuperCall(baseClass))
+    configurePrototype(descriptor, baseClass)
 }
 
 private fun TranslationContext.enrichCompanionObject(
