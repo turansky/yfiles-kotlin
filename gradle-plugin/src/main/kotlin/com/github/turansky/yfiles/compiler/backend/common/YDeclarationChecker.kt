@@ -31,43 +31,29 @@ internal object YDeclarationChecker : DeclarationChecker {
         if (descriptor.kind !in TARGET_KINDS) return
         if (!descriptor.implementsYFilesInterface) return
 
-        when {
-            descriptor.kind != ClassKind.CLASS
-            -> context.reportError(declaration, BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
-
-            descriptor.implementsYObjectDirectly
-            -> context.checkCustomYObject(declaration, descriptor)
-
-            else -> context.checkBaseClass(declaration, descriptor)
+        descriptor.check {
+            context.trace.report(it.on(declaration))
         }
     }
 
-    private fun DeclarationCheckerContext.checkBaseClass(
-        declaration: KtClassOrObject,
-        descriptor: ClassDescriptor
+    private fun ClassDescriptor.check(
+        reportError: (diagnosticFactory: DiagnosticFactory0<KtClassOrObject>) -> Unit
     ) {
         when {
-            descriptor.isInline
-            -> reportError(declaration, BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED)
+            kind != ClassKind.CLASS
+            -> reportError(BaseClassErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
 
-            descriptor.getSuperInterfaces().any { !it.isYFilesInterface() }
-            -> reportError(declaration, BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED)
+            isInline
+            -> reportError(BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED)
+
+            getSuperInterfaces().size == 1
+            -> return
+
+            implementsYObjectDirectly
+            -> reportError(YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
+
+            getSuperInterfaces().any { !it.isYFilesInterface() }
+            -> reportError(BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED)
         }
-    }
-
-    private fun DeclarationCheckerContext.checkCustomYObject(
-        declaration: KtClassOrObject,
-        descriptor: ClassDescriptor
-    ) {
-        if (descriptor.getSuperInterfaces().size != 1) {
-            reportError(declaration, YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED)
-        }
-    }
-
-    private fun DeclarationCheckerContext.reportError(
-        declaration: KtClassOrObject,
-        diagnosticFactory: DiagnosticFactory0<KtClassOrObject>
-    ) {
-        trace.report(diagnosticFactory.on(declaration))
     }
 }
