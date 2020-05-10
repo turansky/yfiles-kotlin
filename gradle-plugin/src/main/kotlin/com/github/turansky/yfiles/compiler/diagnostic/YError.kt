@@ -22,12 +22,15 @@ private fun initialize(klass: KClass<*>) {
 }
 
 internal object BaseClassErrors {
+    @JvmField
     val INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
+    @JvmField
     val INTERFACE_MIXING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
+    @JvmField
     val INLINE_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
@@ -37,9 +40,11 @@ internal object BaseClassErrors {
 }
 
 internal object YObjectErrors {
+    @JvmField
     val INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
+    @JvmField
     val COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
@@ -49,6 +54,7 @@ internal object YObjectErrors {
 }
 
 internal object ClassMetadataErrors {
+    @JvmField
     val INVALID_TYPE_PARAMETER: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
