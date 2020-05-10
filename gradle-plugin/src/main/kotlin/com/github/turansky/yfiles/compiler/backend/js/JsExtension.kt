@@ -21,22 +21,15 @@ class JsExtension : JsSyntheticTranslateExtension {
             descriptor.isExternal
             -> return
 
-            descriptor.kind == CLASS
-            -> context.generateClass(descriptor, translator)
+            descriptor.kind != CLASS
+            -> return
+
+            descriptor.implementsYObjectDirectly ->
+                context.generateCustomYObject(descriptor, translator)
+
+            descriptor.implementsYFilesInterface ->
+                context.generateBaseClass(descriptor, translator)
         }
-    }
-}
-
-private fun TranslationContext.generateClass(
-    descriptor: ClassDescriptor,
-    translator: DeclarationBodyVisitor
-) {
-    when {
-        descriptor.implementsYObjectDirectly ->
-            generateCustomYObject(descriptor, translator)
-
-        descriptor.implementsYFilesInterface ->
-            generateBaseClass(descriptor, translator)
     }
 }
 
