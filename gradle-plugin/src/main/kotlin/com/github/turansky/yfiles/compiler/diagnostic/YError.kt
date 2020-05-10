@@ -37,21 +37,7 @@ internal object YObjectErrors {
     val INTERFACE_IMPLEMENTING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 
-    @JvmField
-    val COMPANION_OBJECT_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
-        errorDiagnosticFactory()
-
     init {
         initialize(YObjectErrors::class)
-    }
-}
-
-internal object ClassMetadataErrors {
-    @JvmField
-    val INVALID_TYPE_PARAMETER: DiagnosticFactory0<KtClassOrObject> =
-        errorDiagnosticFactory()
-
-    init {
-        initialize(ClassMetadataErrors::class)
     }
 }

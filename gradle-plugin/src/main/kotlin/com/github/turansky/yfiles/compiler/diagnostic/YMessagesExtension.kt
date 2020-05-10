@@ -22,15 +22,6 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             YObjectErrors.INTERFACE_IMPLEMENTING_NOT_SUPPORTED,
             "Interface implementing not supported for direct `yfiles.lang.YObject` inheritors"
         )
-        put(
-            YObjectErrors.COMPANION_OBJECT_NOT_SUPPORTED,
-            "Parent type `yfiles.lang.YObject` not supported for companion objects"
-        )
-
-        put(
-            ClassMetadataErrors.INVALID_TYPE_PARAMETER,
-            "Invalid type parameter for ClassMetadata"
-        )
     }
 }
 
