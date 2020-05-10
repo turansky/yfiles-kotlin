@@ -29,9 +29,6 @@ internal class YClassLowering(
 
             irClass.isClass
             -> generateClass(irClass)
-
-            irClass.isCompanion
-            -> enrichCompanion(irClass)
         }
     }
 
@@ -52,10 +49,6 @@ internal class YClassLowering(
             )
         )
         irClass.transformChildrenVoid()
-    }
-
-    private fun enrichCompanion(irClass: IrClass) {
-        // implement
     }
 
     override fun visitDelegatingConstructorCall(
