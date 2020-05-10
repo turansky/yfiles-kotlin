@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
@@ -22,27 +23,23 @@ private val ARROW_ID = ClassId(
 internal class YClassLowering(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid(), ClassLoweringPass {
-    override fun lower(irClass: IrClass) {
-        when {
-            irClass.isExternal
-            -> return
-
-            irClass.isClass
-            -> generateClass(irClass)
-        }
+    private fun findClassSymbol(id: ClassId): IrClassSymbol {
+        val descriptor = context.moduleDescriptor.findClassAcrossModuleDependencies(id)!!
+        return context.symbolTable.referenceClass(descriptor)
     }
 
-    private fun generateClass(irClass: IrClass) {
-        if (irClass.name.identifier != "AbstractArrow2") {
-            return
-        }
+    override fun lower(irClass: IrClass) {
+        if (irClass.isExternal) return
+        if (irClass.isInline) return
+        if (!irClass.isClass) return
+        // if (!irClass.implementsYFilesInterface) return
+        if (irClass.name.identifier != "AbstractArrow2") return
 
-        val arrow = context.moduleDescriptor.findClassAcrossModuleDependencies(ARROW_ID)!!
-        val classReference = context.symbolTable.referenceClass(arrow)
+        val arrow = findClassSymbol(ARROW_ID)
 
         irClass.superTypes = listOf(
             IrSimpleTypeImpl(
-                classifier = classReference,
+                classifier = arrow,
                 hasQuestionMark = false,
                 arguments = emptyList(),
                 annotations = emptyList()
@@ -61,4 +58,3 @@ internal class YClassLowering(
         )
     }
 }
-
