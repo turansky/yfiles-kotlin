@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
 import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
+import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
 internal object YDeclarationChecker : DeclarationChecker {
@@ -45,6 +46,9 @@ internal object YDeclarationChecker : DeclarationChecker {
 
             isInline
             -> reportError(BaseClassErrors.INLINE_CLASS_NOT_SUPPORTED)
+
+            getSuperClassNotAny() != null
+            -> reportError(BaseClassErrors.SUPER_CLASS_NOT_SUPPORTED)
 
             getSuperInterfaces().size == 1
             -> return

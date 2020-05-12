@@ -72,12 +72,13 @@ private class YVisitor(
             registerProblem(it, "Unexpected modifier for yFiles class")
         }
 
+        val hasSuperClass = descriptor.getSuperClassNotAny() != null
         if (descriptor.implementsYObjectDirectly) {
-            if (descriptor.getSuperClassNotAny() != null || descriptor.getSuperInterfaces().size != 1) {
+            if (hasSuperClass || descriptor.getSuperInterfaces().size != 1) {
                 registerSuperTypesError(klass, "YObject expected as single super type")
             }
         } else {
-            if (descriptor.getSuperInterfaces().any { !it.isYFilesInterface() }) {
+            if (hasSuperClass || descriptor.getSuperInterfaces().any { !it.isYFilesInterface() }) {
                 registerSuperTypesError(klass, "Only yFiles interfaces expected")
             }
         }
