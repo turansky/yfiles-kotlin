@@ -20,6 +20,10 @@ internal object BaseClassErrors {
         errorDiagnosticFactory()
 
     @JvmField
+    val SUPER_CLASS_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
+        errorDiagnosticFactory()
+
+    @JvmField
     val INTERFACE_MIXING_NOT_SUPPORTED: DiagnosticFactory0<KtClassOrObject> =
         errorDiagnosticFactory()
 

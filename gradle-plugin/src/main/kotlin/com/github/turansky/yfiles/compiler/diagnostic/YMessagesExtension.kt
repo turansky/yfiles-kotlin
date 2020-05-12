@@ -10,6 +10,10 @@ private val DIAGNOSTIC_FACTORY_TO_RENDERER by lazy {
             "yFiles interface implementing supported only for ordinary classes"
         )
         put(
+            BaseClassErrors.SUPER_CLASS_NOT_SUPPORTED,
+            "yFiles interface implementing not supported for classes with super class"
+        )
+        put(
             BaseClassErrors.INTERFACE_MIXING_NOT_SUPPORTED,
             "yFiles interfaces could't be mixed with non-yFiles interfaces"
         )
