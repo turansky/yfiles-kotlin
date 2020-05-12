@@ -37,7 +37,7 @@ internal object YDeclarationChecker : DeclarationChecker {
     }
 
     private fun ClassDescriptor.check(
-        reportError: (diagnosticFactory: DiagnosticFactory0<KtClassOrObject>) -> Unit
+        reportError: (DiagnosticFactory0<KtClassOrObject>) -> Unit
     ) {
         when {
             kind != ClassKind.CLASS

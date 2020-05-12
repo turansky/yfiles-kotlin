@@ -13,8 +13,6 @@ internal val YOBJECT = LANG_PACKAGE.child(identifier("YObject"))
 internal val YCLASS_NAME = identifier("YClass")
 internal val BASE_CLASS_NAME = identifier("BaseClass")
 
-internal val CLASS_METADATA = LANG_PACKAGE.child(identifier("ClassMetadata"))
-
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT
 
@@ -38,6 +36,3 @@ private val ClassDescriptor.implementsYObject: Boolean
 internal val ClassDescriptor.implementsYFilesInterface: Boolean
     get() = getSuperInterfaces()
         .any { it.isYFilesInterface() }
-
-internal fun ClassDescriptor.asClassMetadata(): ClassDescriptor? =
-    getSuperInterfaces().firstOrNull { it.fqNameSafe == CLASS_METADATA }
