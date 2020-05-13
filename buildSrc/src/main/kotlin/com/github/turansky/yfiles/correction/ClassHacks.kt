@@ -51,33 +51,33 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """
             |external interface InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T>
             |    
-            |inline infix fun Any.yIs(clazz: $INTERFACE_METADATA<*>): Boolean =
-            |    clazz.asDynamic().isInstance(this)
+            |inline infix fun Any.yIs(type: $INTERFACE_METADATA<*>): Boolean =
+            |    type.asDynamic().isInstance(this)
             |
-            |inline infix fun Any?.yIs(clazz: $INTERFACE_METADATA<*>): Boolean =
-            |    this != null && this yIs clazz
+            |inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
+            |    this != null && this yIs type
             |
-            |inline infix fun <T : $YOBJECT> Any.yOpt(clazz: $INTERFACE_METADATA<T>): T? =
-            |    if (this yIs clazz) {
+            |inline infix fun <T : $YOBJECT> Any.yOpt(type: $INTERFACE_METADATA<T>): T? =
+            |    if (this yIs type) {
             |        unsafeCast<T>()
             |    } else {
             |        null
             |    }
             |
-            |inline infix fun <T : $YOBJECT> Any?.yOpt(clazz: $INTERFACE_METADATA<T>): T? {
+            |inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? {
             |    this ?: return null
             |
-            |    return this yOpt clazz
+            |    return this yOpt type
             |}
             |
-            |inline infix fun <T : $YOBJECT> Any.yAs(clazz: $INTERFACE_METADATA<T>): T {
-            |    require(this yIs clazz)
+            |inline infix fun <T : $YOBJECT> Any.yAs(type: $INTERFACE_METADATA<T>): T {
+            |    require(this yIs type)
             |
             |    return unsafeCast<T>()
             |}
             |
-            |inline infix fun <T : $YOBJECT> Any?.yAs(clazz: $INTERFACE_METADATA<T>): T =
-            |    requireNotNull(this) yAs clazz
+            |inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T =
+            |    requireNotNull(this) yAs type
         """.trimMargin()
 }
 
