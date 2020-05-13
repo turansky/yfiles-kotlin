@@ -244,7 +244,7 @@ internal class KotlinFileGenerator(
         }
 
         override val metadataClass: String
-            get() = "yfiles.lang.ClassMetadata"
+            get() = CLASS_METADATA
 
         override fun companionContent(): String? {
             if (isObject() || data.primitive) {
@@ -322,7 +322,7 @@ internal class KotlinFileGenerator(
                 memberEvents.filter { !it.overriden }
 
         override val metadataClass: String
-            get() = "yfiles.lang.InterfaceMetadata"
+            get() = INTERFACE_METADATA
 
         override fun companionContent(): String? =
             listOfNotNull(
@@ -362,7 +362,7 @@ internal class KotlinFileGenerator(
         }
 
         override val metadataClass: String
-            get() = "yfiles.lang.EnumMetadata"
+            get() = ENUM_METADATA
 
         override fun companionContent(): String? =
             typealiasDeclaration()

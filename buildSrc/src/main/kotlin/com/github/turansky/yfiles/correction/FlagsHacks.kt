@@ -2,13 +2,14 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
+import com.github.turansky.yfiles.YENUM
 import com.github.turansky.yfiles.YFLAGS
 
 internal fun generateFlagsUtils(context: GeneratorContext) {
     // language=kotlin
     context[YFLAGS, INLINE] =
         """
-            |external interface YFlags<T: YFlags<T>> : YEnum<T>
+            |external interface YFlags<T: YFlags<T>> : $YENUM<T>
             |
             |inline val YFlags<*>.v:Int
             |   get() = unsafeCast<Int>()

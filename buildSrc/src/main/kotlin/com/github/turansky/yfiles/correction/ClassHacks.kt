@@ -23,60 +23,60 @@ internal fun generateClassUtils(context: GeneratorContext) {
     ).joinToString("\n\n") { (type, alias) ->
         """
             inline val $type.Companion.yclass: $YCLASS<$type>
-                get() = $alias.unsafeCast<TypeMetadata<$type>>().yclass
+                get() = $alias.unsafeCast<$TYPE_METADATA<$type>>().yclass
         """.trimIndent()
     }
 
     // language=kotlin
-    context["yfiles.lang.TypeMetadata"] =
+    context[TYPE_METADATA] =
         """
             |external interface TypeMetadata<T: Any>
             |
-            |inline val <T: Any> TypeMetadata<T>.yclass:$YCLASS<T>
+            |inline val <T: Any> $TYPE_METADATA<T>.yclass:$YCLASS<T>
             |    get() = asDynamic()["\${'$'}class"]
             |
             |$primitiveTypeMetadata    
         """.trimMargin()
 
     // language=kotlin
-    context["yfiles.lang.ClassMetadata"] =
-        "external interface ClassMetadata<T: $YOBJECT> : TypeMetadata<T>"
+    context[CLASS_METADATA] =
+        "external interface ClassMetadata<T: $YOBJECT> : $TYPE_METADATA<T>"
 
     // language=kotlin
-    context["yfiles.lang.EnumMetadata"] =
-        "external interface EnumMetadata<T: YEnum<T>> : TypeMetadata<T>"
+    context[ENUM_METADATA] =
+        "external interface EnumMetadata<T: $YENUM<T>> : $TYPE_METADATA<T>"
 
     // language=kotlin
-    context["yfiles.lang.InterfaceMetadata", INLINE] =
+    context[INTERFACE_METADATA, INLINE] =
         """
-            |external interface InterfaceMetadata<T: $YOBJECT>: TypeMetadata<T>
+            |external interface InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T>
             |    
-            |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
+            |inline infix fun Any.yIs(clazz: $INTERFACE_METADATA<*>): Boolean =
             |    clazz.asDynamic().isInstance(this)
             |
-            |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
+            |inline infix fun Any?.yIs(clazz: $INTERFACE_METADATA<*>): Boolean =
             |    this != null && this yIs clazz
             |
-            |inline infix fun <T : $YOBJECT> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
+            |inline infix fun <T : $YOBJECT> Any.yOpt(clazz: $INTERFACE_METADATA<T>): T? =
             |    if (this yIs clazz) {
             |        unsafeCast<T>()
             |    } else {
             |        null
             |    }
             |
-            |inline infix fun <T : $YOBJECT> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
+            |inline infix fun <T : $YOBJECT> Any?.yOpt(clazz: $INTERFACE_METADATA<T>): T? {
             |    this ?: return null
             |
             |    return this yOpt clazz
             |}
             |
-            |inline infix fun <T : $YOBJECT> Any.yAs(clazz: InterfaceMetadata<T>): T {
+            |inline infix fun <T : $YOBJECT> Any.yAs(clazz: $INTERFACE_METADATA<T>): T {
             |    require(this yIs clazz)
             |
             |    return unsafeCast<T>()
             |}
             |
-            |inline infix fun <T : $YOBJECT> Any?.yAs(clazz: InterfaceMetadata<T>): T =
+            |inline infix fun <T : $YOBJECT> Any?.yAs(clazz: $INTERFACE_METADATA<T>): T =
             |    requireNotNull(this) yAs clazz
         """.trimMargin()
 }

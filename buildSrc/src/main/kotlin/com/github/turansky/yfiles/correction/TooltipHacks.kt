@@ -10,11 +10,11 @@ internal fun generateTooltipUtils(context: GeneratorContext) {
     context[TOOL_TIP_CONTENT] = """
             |external interface ToolTipContent
             |
-            |fun ToolTipContent(source:$HTML_ELEMENT):ToolTipContent = 
-            |    source.unsafeCast<ToolTipContent>()
+            |fun ToolTipContent(source:$HTML_ELEMENT):$TOOL_TIP_CONTENT = 
+            |    source.unsafeCast<$TOOL_TIP_CONTENT>()
             |
-            |fun ToolTipContent(source:String):ToolTipContent = 
-            |    source.unsafeCast<ToolTipContent>()
+            |fun ToolTipContent(source:String):$TOOL_TIP_CONTENT = 
+            |    source.unsafeCast<$TOOL_TIP_CONTENT>()
         """.trimMargin()
 }
 
