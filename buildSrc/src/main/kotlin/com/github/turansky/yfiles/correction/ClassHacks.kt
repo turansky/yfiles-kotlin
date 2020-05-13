@@ -12,7 +12,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     context["yfiles.lang.BaseClass", CLASS] =
         """
             |$HIDDEN_METHOD_ANNOTATION
-            |external fun BaseClass(vararg types: JsClass<*>):JsClass<out YObject>
+            |external fun BaseClass(vararg types: JsClass<$YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
     val primitiveTypeMetadata = sequenceOf(
@@ -22,7 +22,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
         STRING to "YString"
     ).joinToString("\n\n") { (type, alias) ->
         """
-            inline val $type.Companion.yclass:YClass<$type>
+            inline val $type.Companion.yclass: $YCLASS<$type>
                 get() = $alias.unsafeCast<TypeMetadata<$type>>().yclass
         """.trimIndent()
     }
@@ -32,17 +32,15 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """
             |external interface TypeMetadata<T: Any>
             |
-            |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
+            |inline val <T: Any> TypeMetadata<T>.yclass:$YCLASS<T>
             |    get() = asDynamic()["\${'$'}class"]
             |
             |$primitiveTypeMetadata    
         """.trimMargin()
 
-    val YOBJECT_SN = YOBJECT.substringAfterLast(".")
-
     // language=kotlin
     context["yfiles.lang.ClassMetadata"] =
-        "external interface ClassMetadata<T: $YOBJECT_SN> : TypeMetadata<T>"
+        "external interface ClassMetadata<T: $YOBJECT> : TypeMetadata<T>"
 
     // language=kotlin
     context["yfiles.lang.EnumMetadata"] =
@@ -51,7 +49,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.lang.InterfaceMetadata", INLINE] =
         """
-            |external interface InterfaceMetadata<T: $YOBJECT_SN>: TypeMetadata<T>
+            |external interface InterfaceMetadata<T: $YOBJECT>: TypeMetadata<T>
             |    
             |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
             |    clazz.asDynamic().isInstance(this)
@@ -59,26 +57,26 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
             |    this != null && this yIs clazz
             |
-            |inline infix fun <T : $YOBJECT_SN> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
+            |inline infix fun <T : $YOBJECT> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
             |    if (this yIs clazz) {
             |        unsafeCast<T>()
             |    } else {
             |        null
             |    }
             |
-            |inline infix fun <T : $YOBJECT_SN> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
+            |inline infix fun <T : $YOBJECT> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
             |    this ?: return null
             |
             |    return this yOpt clazz
             |}
             |
-            |inline infix fun <T : $YOBJECT_SN> Any.yAs(clazz: InterfaceMetadata<T>): T {
+            |inline infix fun <T : $YOBJECT> Any.yAs(clazz: InterfaceMetadata<T>): T {
             |    require(this yIs clazz)
             |
             |    return unsafeCast<T>()
             |}
             |
-            |inline infix fun <T : $YOBJECT_SN> Any?.yAs(clazz: InterfaceMetadata<T>): T =
+            |inline infix fun <T : $YOBJECT> Any?.yAs(clazz: InterfaceMetadata<T>): T =
             |    requireNotNull(this) yAs clazz
         """.trimMargin()
 }

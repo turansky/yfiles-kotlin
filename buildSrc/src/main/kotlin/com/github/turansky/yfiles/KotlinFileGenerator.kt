@@ -37,27 +37,19 @@ internal class KotlinFileGenerator(
         val mode = if (generatedFile is InterfaceFile) INTERFACE else CLASS
 
         context[data.fileId, mode] = generatedFile.content()
-            .clear(data)
-
-        val companionContent = generatedFile.companionContent()
-            ?.clear(data)
-            ?: return
-
-        context[data.fileId, EXTENSIONS] = companionContent
+        context[data.fileId, EXTENSIONS] = generatedFile.companionContent() ?: return
     }
 
     private fun generate(
         context: GeneratorContext,
         signatures: List<FunctionSignature>
     ) {
-        val firstData = GeneratorData(signatures.first().classId)
-
-        context[firstData.fqn, ALIASES] = signatures
+        val firstFqn = signatures.first().classId
+        context[firstFqn, ALIASES] = signatures
             .asSequence()
             .sortedBy { it.classId }
             .map { it.toCode() }
             .joinToString("\n\n")
-            .clear(firstData)
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {

@@ -1,17 +1,16 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.GeneratorContext
+import com.github.turansky.yfiles.HTML_ELEMENT
 
 private const val TOOL_TIP_CONTENT = "yfiles.view.ToolTipContent"
 
 internal fun generateTooltipUtils(context: GeneratorContext) {
     // language=kotlin
     context[TOOL_TIP_CONTENT] = """
-            |import org.w3c.dom.HTMLElement
-            |
             |external interface ToolTipContent
             |
-            |fun ToolTipContent(source:HTMLElement):ToolTipContent = 
+            |fun ToolTipContent(source:$HTML_ELEMENT):ToolTipContent = 
             |    source.unsafeCast<ToolTipContent>()
             |
             |fun ToolTipContent(source:String):ToolTipContent = 

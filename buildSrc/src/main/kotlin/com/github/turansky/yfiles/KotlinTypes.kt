@@ -11,6 +11,7 @@ internal val BOOLEAN: String = Boolean::class.simpleName!!
 internal const val PROMISE = "kotlin.js.Promise"
 
 internal const val ELEMENT = "org.w3c.dom.Element"
+internal const val HTML_ELEMENT = "org.w3c.dom.HTMLElement"
 internal const val SVG_ELEMENT = "org.w3c.dom.svg.SVGElement"
 internal const val SVG_SVG_ELEMENT = "org.w3c.dom.svg.SVGSVGElement"
 
@@ -34,7 +35,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "Document" to "org.w3c.dom.Document",
     "Node" to "org.w3c.dom.Node",
     "Element" to ELEMENT,
-    "HTMLElement" to "org.w3c.dom.HTMLElement",
+    "HTMLElement" to HTML_ELEMENT,
     "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
     "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
     "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
