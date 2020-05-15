@@ -149,8 +149,10 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val staticProperties: List<Property> by declarationList(::Property)
 
     val methods: List<Method> by declarationList(::Method)
-    val extensionMethods: List<Method> by lazy { methods.mapNotNull { it.toOperatorExtension() } }
     val staticMethods: List<Method> by declarationList(::Method)
+    val extensionMethods: List<Method> by lazy {
+        methods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+    }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -615,7 +617,7 @@ private val OPERATOR_MAP = mapOf(
 
 private val OPERATOR_NAME_MAP = mapOf(
     "add" to "plus",
-    "subtrack" to "minus",
+    "subtract" to "minus",
     "multiply" to "times",
 
     "includes" to "contains"
@@ -733,6 +735,22 @@ internal class Method(
         return documentation + code
     }
 
+    fun toStaticOperatorExtension(): Method? {
+        val operatorName = OPERATOR_NAME_MAP[name] ?: return null
+        if (parameters.size != 2) return null
+        val returns = returns ?: return null
+
+        setOf(
+            parent.classId,
+            parameters[0].type,
+            parameters[1].type,
+            returns.type
+        ).singleOrNull() ?: return null
+
+        return Method(source, parent)
+            .also { it.operatorName = operatorName }
+    }
+
     fun toOperatorExtension(): Method? {
         when {
             parameters.size != 1 -> return null
@@ -751,6 +769,10 @@ internal class Method(
     }
 
     override fun toExtensionCode(): String {
+        if (static) {
+            return toStaticExtensionCode()
+        }
+
         require(!protected)
 
         val extParameters = kotlinParametersString(extensionMode = true)
@@ -775,6 +797,17 @@ internal class Method(
                 "inline $operator fun $genericDeclaration ${parent.classDeclaration}.$extensionName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
+    }
+
+    private fun toStaticExtensionCode(): String {
+        val type = parent.name
+        val parameter = parameters[1]
+
+        return """
+            inline operator fun $type.$operatorName(${parameter.name}: ${parameter.type}): $type {
+                return $type.$name(this, ${parameter.name})
+            }
+        """.trimIndent()
     }
 }
 
