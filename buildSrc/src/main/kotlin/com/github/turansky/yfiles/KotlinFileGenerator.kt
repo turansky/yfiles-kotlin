@@ -261,7 +261,8 @@ internal class KotlinFileGenerator(
                 ),
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
-                    ?.run { lines { it.toExtensionCode() } }
+                    ?.run { lines { it.toExtensionCode() } },
+                declaration.getComponents()
             )
 
             val events = memberEvents
