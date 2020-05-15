@@ -617,7 +617,11 @@ private val OPERATOR_MAP = mapOf(
 
 private val OPERATOR_NAME_MAP = mapOf(
     "add" to "plus",
+    "getEnlarged" to "plus",
+
     "subtract" to "minus",
+    "getReduced" to "minus",
+
     "multiply" to "times",
 
     "includes" to "contains"
