@@ -18,11 +18,12 @@ Check [inheritance rules](gradle-plugin) on the fly
 * [Generation](#generation)
 * [YClass](#yclass)
   * [Metadata](#metadata)
+  * [Primitive types](#primitive-types)
   * [Cast extensions](#cast-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
 * [Flags](#flags)
-* [TimeSpan Extensions](#timespan)
+* [TimeSpan extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
   * [Online Documentation](#online-documentation) 
@@ -67,6 +68,14 @@ val clazz = IVisibilityTestable.yclass
 
 // JS: IVisibilityTestable.isInstance(o)
 val isInstance = IVisibilityTestable.isInstance(o)
+```
+
+#### Primitive types
+```Kotlin
+Boolean.yclass   // YBoolean.$class
+Double.yclass    // YNumber.$class
+Int.yclass       // YNumber.$class
+String.yclass    // YString.$class
 ```
 
 #### Cast extensions

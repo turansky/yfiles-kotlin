@@ -149,7 +149,8 @@ private class SimpleGeneratorContext(
                 moduleDeclaration +
                 suppresses +
                 "package $packageId\n\n" +
-                content.replace(DOC_BASE_URL, docBaseUrl)
+                content.clear(classId)
+                    .replace(DOC_BASE_URL, docBaseUrl)
 
         sourceDir.resolve(dirPath)
             .also { it.mkdirs() }

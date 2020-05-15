@@ -12,7 +12,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     context["yfiles.lang.BaseClass", CLASS] =
         """
             |$HIDDEN_METHOD_ANNOTATION
-            |external fun BaseClass(vararg types: JsClass<*>):JsClass<out YObject>
+            |external fun BaseClass(vararg types: JsClass<$YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
     val primitiveTypeMetadata = sequenceOf(
@@ -22,64 +22,62 @@ internal fun generateClassUtils(context: GeneratorContext) {
         STRING to "YString"
     ).joinToString("\n\n") { (type, alias) ->
         """
-            inline val $type.Companion.yclass:YClass<$type>
-                get() = $alias.unsafeCast<TypeMetadata<$type>>().yclass
+            inline val $type.Companion.yclass: $YCLASS<$type>
+                get() = $alias.unsafeCast<$TYPE_METADATA<$type>>().yclass
         """.trimIndent()
     }
 
     // language=kotlin
-    context["yfiles.lang.TypeMetadata"] =
+    context[TYPE_METADATA] =
         """
             |external interface TypeMetadata<T: Any>
             |
-            |inline val <T: Any> TypeMetadata<T>.yclass:YClass<T>
+            |inline val <T: Any> $TYPE_METADATA<T>.yclass:$YCLASS<T>
             |    get() = asDynamic()["\${'$'}class"]
             |
             |$primitiveTypeMetadata    
         """.trimMargin()
 
-    val YOBJECT_SN = YOBJECT.substringAfterLast(".")
+    // language=kotlin
+    context[CLASS_METADATA] =
+        "external interface ClassMetadata<T: $YOBJECT> : $TYPE_METADATA<T>"
 
     // language=kotlin
-    context["yfiles.lang.ClassMetadata"] =
-        "external interface ClassMetadata<T: $YOBJECT_SN> : TypeMetadata<T>"
+    context[ENUM_METADATA] =
+        "external interface EnumMetadata<T: $YENUM<T>> : $TYPE_METADATA<T>"
 
     // language=kotlin
-    context["yfiles.lang.EnumMetadata"] =
-        "external interface EnumMetadata<T: YEnum<T>> : TypeMetadata<T>"
-
-    // language=kotlin
-    context["yfiles.lang.InterfaceMetadata", INLINE] =
+    context[INTERFACE_METADATA, INLINE] =
         """
-            |external interface InterfaceMetadata<T: $YOBJECT_SN>: TypeMetadata<T>
+            |external interface InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T>
             |    
-            |inline infix fun Any.yIs(clazz: InterfaceMetadata<*>): Boolean =
-            |    clazz.asDynamic().isInstance(this)
+            |inline infix fun Any.yIs(type: $INTERFACE_METADATA<*>): Boolean =
+            |    type.asDynamic().isInstance(this)
             |
-            |inline infix fun Any?.yIs(clazz: InterfaceMetadata<*>): Boolean =
-            |    this != null && this yIs clazz
+            |inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
+            |    this != null && this yIs type
             |
-            |inline infix fun <T : $YOBJECT_SN> Any.yOpt(clazz: InterfaceMetadata<T>): T? =
-            |    if (this yIs clazz) {
+            |inline infix fun <T : $YOBJECT> Any.yOpt(type: $INTERFACE_METADATA<T>): T? =
+            |    if (this yIs type) {
             |        unsafeCast<T>()
             |    } else {
             |        null
             |    }
             |
-            |inline infix fun <T : $YOBJECT_SN> Any?.yOpt(clazz: InterfaceMetadata<T>): T? {
+            |inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? {
             |    this ?: return null
             |
-            |    return this yOpt clazz
+            |    return this yOpt type
             |}
             |
-            |inline infix fun <T : $YOBJECT_SN> Any.yAs(clazz: InterfaceMetadata<T>): T {
-            |    require(this yIs clazz)
+            |inline infix fun <T : $YOBJECT> Any.yAs(type: $INTERFACE_METADATA<T>): T {
+            |    require(this yIs type)
             |
             |    return unsafeCast<T>()
             |}
             |
-            |inline infix fun <T : $YOBJECT_SN> Any?.yAs(clazz: InterfaceMetadata<T>): T =
-            |    requireNotNull(this) yAs clazz
+            |inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T =
+            |    requireNotNull(this) yAs type
         """.trimMargin()
 }
 
