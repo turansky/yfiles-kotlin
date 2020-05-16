@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.PropertyMode.WRITE_ONLY
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -580,7 +579,7 @@ internal class Property(
         str += if (mode.writable) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        if (mode == WRITE_ONLY) {
+        if (!mode.readable) {
             str += """
                 |
                 |   @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
@@ -593,7 +592,7 @@ internal class Property(
 
     override fun toExtensionCode(): String {
         require(!protected)
-        require(mode != WRITE_ONLY)
+        require(mode.readable)
 
         val generics = parent.generics.declaration
 
