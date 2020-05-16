@@ -706,17 +706,13 @@ internal class Method(
 
     // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(): String {
-        var type = returns?.type
-            ?: return ""
+        var type = returns?.type ?: return ""
 
         if (type.startsWith("$PROMISE<")) {
-            val generic = type.between("<", ">")
-            val newGeneric = if (generic == ANY) {
-                "Nothing?"
-            } else if (generic == ELEMENT) {
-                SVG_SVG_ELEMENT
-            } else {
-                generic + exp(nullablePromiseResult(generic), "?")
+            val newGeneric = when (val generic = type.between("<", ">")) {
+                ANY -> "Nothing?"
+                ELEMENT -> SVG_SVG_ELEMENT
+                else -> generic + exp(nullablePromiseResult(generic), "?")
             }
             type = "$PROMISE<$newGeneric>"
         }
@@ -762,13 +758,23 @@ internal class Method(
             overridden -> return null
         }
 
-        val operatorName = if (returns != null) {
-            OPERATOR_NAME_MAP[name]
-        } else {
+        val removeMethod = name == "remove"
+        if (removeMethod && parameters[0].type == INT) return null
+
+        val assignMode = returns.let { it == null || (removeMethod && it.type == BOOLEAN) }
+        val operatorName = if (assignMode) {
             ASSIGN_OPERATOR_NAME_MAP[name]
+        } else {
+            OPERATOR_NAME_MAP[name]
         } ?: return null
 
-        return Method(source, parent)
+        val newSource = if (assignMode && returns != null) {
+            JSONObject(source, (source.keySet() - "returns").toTypedArray())
+        } else {
+            source
+        }
+
+        return Method(newSource, parent)
             .also { it.operatorName = operatorName }
     }
 
