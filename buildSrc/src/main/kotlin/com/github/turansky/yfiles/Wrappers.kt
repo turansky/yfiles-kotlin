@@ -632,6 +632,28 @@ private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
     "remove" to "minusAssign"
 )
 
+private val INFIX_METHODS = setOf(
+    "intersects",
+    "distance",
+    "distanceSq",
+    "distanceTo",
+    "indexOf",
+    "scalarProduct",
+    "supports",
+    "lookup",
+    "canDecorate",
+    "combineWith",
+    "isGreaterThan",
+    "isLessThan",
+    "coveredBy",
+    "crosses",
+    "hasSameRange",
+    "manhattanDistanceTo",
+    "equalValues",
+    "above",
+    "below"
+)
+
 internal class Method(
     source: JSONObject,
     private val parent: Type
@@ -687,12 +709,19 @@ internal class Method(
             return exp(final, "final ") + exp(abstract, "abstract ") + "override "
         }
 
+        val infix = when {
+            parameters.size != 1 -> ""
+            returns == null -> ""
+            name !in INFIX_METHODS -> ""
+            else -> "infix "
+        }
+
         return when {
             abstract -> "abstract "
             final -> "final "
             open -> "open "
             else -> ""
-        } + exp(protected, "protected ")
+        } + exp(protected, "protected ") + infix
     }
 
     private fun nullablePromiseResult(generic: String): Boolean =
