@@ -9,6 +9,8 @@ internal fun Class.getComponents(): String? =
         "yfiles.algorithms.YPoint",
         "yfiles.algorithms.YOrientedRectangle",
 
+        "yfiles.algorithms.YInsets",
+
         "yfiles.geometry.Point",
         "yfiles.geometry.MutablePoint",
 
@@ -18,7 +20,7 @@ internal fun Class.getComponents(): String? =
         "yfiles.geometry.Rect",
         "yfiles.geometry.OrientedRectangle",
 
-        "yfiles.collections.MapEntry"
+        "yfiles.geometry.Insets"
         -> constructorComponents()
 
         "yfiles.algorithms.YVector"
