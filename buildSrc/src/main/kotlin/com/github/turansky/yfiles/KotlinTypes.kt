@@ -24,7 +24,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     JS_ANY to ANY,
     JS_OBJECT to ANY,
     JS_BOOLEAN to "Boolean",
-    JS_STRING to "String",
+    JS_STRING to STRING,
     JS_NUMBER to "Number",
     "Date" to "kotlin.js.Date",
     "Function" to "() -> $UNIT",
