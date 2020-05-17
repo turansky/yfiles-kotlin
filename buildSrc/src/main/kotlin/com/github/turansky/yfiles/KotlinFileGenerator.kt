@@ -24,6 +24,10 @@ internal class KotlinFileGenerator(
             generate(context, generatedFile)
         }
 
+        types.asSequence()
+            .filterIsInstance<Interface>()
+            .forEach { generateFunctionalCompanion(context, it) }
+
         functionSignatures
             .groupBy { it.classId.substringBeforeLast(".") }
             .forEach { (_, items) -> generate(context, items) }
@@ -50,6 +54,27 @@ internal class KotlinFileGenerator(
             .sortedBy { it.classId }
             .map { it.toCode() }
             .joinToString("\n\n")
+    }
+
+    private fun generateFunctionalCompanion(
+        context: GeneratorContext,
+        type: Interface
+    ) {
+        val method = type.functionalMethod ?: return
+        val delegateType = "(" + method.parameters.byComma { it.declaration } + ") -> " +
+                (method.returns?.type ?: UNIT)
+
+        val name = type.name
+        val wrapperName = type.name.removePrefix("I") + "FromFun"
+        val generics = type.generics
+
+        context[type.classId, FUNCTION] = """
+            private class $wrapperName${generics.declaration}(
+                private val delegate: $delegateType
+            ): $name${generics.asAliasParameters()} {
+                ${method.toWrapperCode("delegate")}
+            }
+        """.trimIndent()
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {

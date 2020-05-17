@@ -783,6 +783,14 @@ internal class Method(
         return documentation + code
     }
 
+    fun toWrapperCode(wrapper: String): String {
+        return """
+            override fun $name(${kotlinParametersString()})${getReturnSignature()} {
+                ${exp(returns != null, "return ")}$wrapper(${parameters.byComma { it.name }})    
+            }
+        """.trimIndent()
+    }
+
     fun toStaticOperatorExtension(): Method? {
         val operatorName = OPERATOR_NAME_MAP[name] ?: return null
         if (parameters.size != 2) return null
