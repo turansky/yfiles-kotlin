@@ -152,10 +152,12 @@ private class SimpleGeneratorContext(
                 content.clear(classId)
                     .replace(DOC_BASE_URL, docBaseUrl)
 
-        sourceDir.resolve(dirPath)
+        val file = sourceDir.resolve(dirPath)
             .also { it.mkdirs() }
             .resolve(fileName)
-            .writeText(text)
+
+        check(!file.exists())
+        file.writeText(text)
     }
 
     override fun clean() {
