@@ -945,12 +945,6 @@ internal class Parameter(
     val declaration: String by lazy { name + ": " + type + modifiers.nullability }
 }
 
-internal interface ITypeParameter {
-    val name: String
-
-    fun toCode(): String
-}
-
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter, ITypeParameter {
     override val name: String by string()
     override val summary: String? by summary()
@@ -975,44 +969,6 @@ internal class CustomTypeParameter(
 ) : ITypeParameter {
     override fun toCode(): String =
         "$name : $bound"
-}
-
-internal class Generics(private val parameters: List<ITypeParameter>) {
-    val declaration: String
-        get() = if (parameters.isNotEmpty()) {
-            "<${parameters.byComma { it.toCode() }}> "
-        } else {
-            ""
-        }
-
-    fun asParameters(): String =
-        asParameters { it }
-
-    fun asAliasParameters(): String =
-        asParameters { it.removePrefix("in ").removePrefix("out ") }
-
-    private fun asParameters(transform: (String) -> String): String =
-        if (parameters.isNotEmpty()) {
-            "<${parameters.byComma { transform(it.name) }}> "
-        } else {
-            ""
-        }
-
-    val placeholder: String
-        get() = if (parameters.isNotEmpty()) {
-            "<" + (1..parameters.size).map { "*" }.joinToString(",") + ">"
-        } else {
-            ""
-        }
-
-    fun isEmpty(): Boolean =
-        parameters.isEmpty()
-
-    fun isNotEmpty(): Boolean =
-        !isEmpty()
-
-    operator fun plus(other: Generics): Generics =
-        Generics(parameters + other.parameters)
 }
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
