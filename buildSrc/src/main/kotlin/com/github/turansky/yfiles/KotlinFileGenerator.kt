@@ -65,11 +65,16 @@ internal class KotlinFileGenerator(
                 (method.returns?.type ?: UNIT)
 
         val name = type.name
-        val wrapperName = type.name.removePrefix("I") + "FromFun"
+        val wrapperName = "__" + type.name.removePrefix("I") + "__"
         val generics = type.generics
 
         context[type.classId, FUNCTION] = """
-            private class $wrapperName${generics.declaration}(
+            fun ${generics.wrapperDeclaration} $name(
+                delegate: $delegateType
+            ): $name${generics.asAliasParameters()} =
+                $wrapperName(delegate)
+            
+            private class $wrapperName${generics.wrapperDeclaration}(
                 private val delegate: $delegateType
             ): $name${generics.asAliasParameters()} {
                 ${method.toWrapperCode("delegate")}
