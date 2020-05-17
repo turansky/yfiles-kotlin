@@ -12,7 +12,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     context["yfiles.lang.BaseClass", CLASS] =
         """
             |$HIDDEN_METHOD_ANNOTATION
-            |external fun BaseClass(vararg types: JsClass<$YOBJECT>):JsClass<out $YOBJECT>
+            |external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
     val primitiveTypeMetadata = sequenceOf(
