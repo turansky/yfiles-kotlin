@@ -213,12 +213,19 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         get() = primaryConstructor?.getPrimaryDocumentation()
 }
 
+val NON_FUNCTIONAL = setOf(
+    "ICloneable",
+    "IComparable",
+    "IEnumerable"
+)
+
 internal class Interface(source: JSONObject) : ExtendedType(source) {
     val functional: Boolean
         get() = when {
             implementedTypes().isNotEmpty() -> false
             events.isNotEmpty() -> false
             properties.any { it.abstract } -> false
+            name in NON_FUNCTIONAL -> false
             else -> {
                 val method = methods.singleOrNull { it.abstract }
                 method?.functional ?: false
