@@ -97,6 +97,7 @@ enum class ContentMode {
     CLASS,
     INTERFACE,
     EXTENSIONS,
+    FUNCTION,
     ALIASES,
     INLINE
 }
@@ -130,6 +131,7 @@ private class SimpleGeneratorContext(
         val dirPath = packageId.replace(".", "/")
         val fileName = when (mode) {
             EXTENSIONS -> classId.substringAfterLast(".") + ".ext"
+            FUNCTION -> classId.substringAfterLast(".") + ".fun"
             ALIASES -> "Aliases"
 
             else -> classId.substringAfterLast(".")
