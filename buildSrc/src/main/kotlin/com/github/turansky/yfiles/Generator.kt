@@ -62,6 +62,7 @@ fun generateKotlinDeclarations(
 
     val timeSpanClass = types.first { it.classId == "yfiles.lang.TimeSpan" } as Class
     generateTimeSpanExtensions(context, timeSpanClass)
+    generateLookupExtensions(context)
 
     generateResourceTypes(devguideFile.readJson(), context)
 }

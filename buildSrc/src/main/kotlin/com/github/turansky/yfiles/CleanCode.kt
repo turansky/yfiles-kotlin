@@ -41,6 +41,7 @@ private fun String.cleanDoc(): String {
 private fun String.getImportedClasses(): List<String> {
     val code = split("\n")
         .asSequence()
+        .filterNot { it.startsWith("import yfiles.") }
         .filterNot { it.startsWith(" *") }
         .joinToString("\n")
 
