@@ -15,7 +15,6 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |external fun BaseClass(vararg types: JsClass<$YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
-    // TODO: add inline after bug fix
     val primitiveTypeMetadata = sequenceOf(
         BOOLEAN to "YBoolean",
         DOUBLE to "YNumber",
@@ -23,7 +22,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
         STRING to "YString"
     ).joinToString("\n\n") { (type, alias) ->
         """
-            val $type.Companion.yclass: $YCLASS<$type>
+            inline val $type.Companion.yclass: $YCLASS<$type>
                 get() = $alias.unsafeCast<$TYPE_METADATA<$type>>().yclass
         """.trimIndent()
     }
