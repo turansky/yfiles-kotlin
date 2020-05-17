@@ -213,7 +213,18 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         get() = primaryConstructor?.getPrimaryDocumentation()
 }
 
-internal class Interface(source: JSONObject) : ExtendedType(source)
+internal class Interface(source: JSONObject) : ExtendedType(source) {
+    val functional: Boolean
+        get() = when {
+            implementedTypes().isNotEmpty() -> false
+            events.isNotEmpty() -> false
+            properties.any { it.abstract } -> false
+            else -> {
+                val method = methods.singleOrNull { it.abstract }
+                method?.functional ?: false
+            }
+        }
+}
 
 internal class Enum(source: JSONObject) : Type(source) {
     private val modifiers: EnumModifiers by wrapStringList(::EnumModifiers)
@@ -683,6 +694,9 @@ internal class Method(
 
     override val overridden: Boolean
         get() = !static && ClassRegistry.instance.functionOverridden(parent.classId, name)
+
+    val functional: Boolean
+        get() = typeparameters.isEmpty()
 
     private val documentation: String
         get() = getDocumentation(
