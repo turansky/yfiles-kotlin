@@ -17,6 +17,7 @@ internal sealed class Generics {
     protected abstract val parameters: List<ITypeParameter>
 
     abstract val declaration: String
+    abstract val wrapperDeclaration: String
 
     abstract fun asParameters(): String
     abstract fun asAliasParameters(): String
@@ -34,6 +35,7 @@ private object EmptyGenerics : Generics() {
     override val parameters: List<ITypeParameter> = emptyList()
 
     override val declaration: String = ""
+    override val wrapperDeclaration: String = ""
     override fun asParameters(): String = ""
     override fun asAliasParameters(): String = ""
     override val placeholder: String = ""
@@ -43,19 +45,26 @@ private object EmptyGenerics : Generics() {
 
 private class SimpleGenerics(override val parameters: List<ITypeParameter>) : Generics() {
     override val declaration: String
-        get() = "<${parameters.byComma { it.toCode() }}> "
+        get() = toString { it.toCode() }
+
+    override val wrapperDeclaration: String
+        get() = toString { it.toCode().clearName() }
 
     override fun asParameters(): String =
-        asParameters { it }
+        toString { it.name }
 
     override fun asAliasParameters(): String =
-        asParameters { it.removePrefix("in ").removePrefix("out ") }
-
-    private fun asParameters(transform: (String) -> String): String =
-        "<${parameters.byComma { transform(it.name) }}> "
+        toString { it.name.clearName() }
 
     override val placeholder: String
-        get() = "<" + (1..parameters.size).map { "*" }.joinToString(",") + ">"
+        get() = toString { "*" }
 
     override fun isEmpty(): Boolean = false
+
+    private fun toString(transform: (ITypeParameter) -> String): String =
+        "<${parameters.byComma { transform(it) }}> "
 }
+
+private fun String.clearName(): String =
+    removePrefix("in ").removePrefix("out ")
+
