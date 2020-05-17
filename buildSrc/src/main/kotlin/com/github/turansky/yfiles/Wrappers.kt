@@ -220,16 +220,15 @@ val NON_FUNCTIONAL = setOf(
 )
 
 internal class Interface(source: JSONObject) : ExtendedType(source) {
-    val functional: Boolean
+    val functionalMethod: Method?
         get() = when {
-            implementedTypes().isNotEmpty() -> false
-            events.isNotEmpty() -> false
-            properties.any { it.abstract } -> false
-            name in NON_FUNCTIONAL -> false
-            else -> {
-                val method = methods.singleOrNull { it.abstract }
-                method?.functional ?: false
-            }
+            implementedTypes().isNotEmpty() -> null
+            events.isNotEmpty() -> null
+            properties.any { it.abstract } -> null
+            name in NON_FUNCTIONAL -> null
+            else -> methods
+                .singleOrNull { it.abstract }
+                ?.takeIf { it.functional }
         }
 }
 
