@@ -20,6 +20,7 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Metadata](#metadata)
   * [Primitive types](#primitive-types)
   * [Cast extensions](#cast-extensions)
+  * [Lookup extensions](#lookup-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
 * [Flags](#flags)
@@ -87,6 +88,23 @@ fun (o:Any?) {
 
     val node:INode = o yAs INode
 }
+```
+
+#### Lookup extensions
+```Kotlin
+val graph: IGraph = DefaultGraph()
+val node = graph.createNode()
+
+// for classes
+val t1 = node lookup TimeSpan.yclass // 'TimeSpan?'
+val t2 = node lookup TimeSpan        // 'TimeSpan?'
+
+val t3: TimeSpan? = node.lookup()    // reified lookup type 'TimeSpan'
+val t4 = node.lookup<TimeSpan>()     // 'TimeSpan?'
+
+// for interfaces
+val h1 = node lookup IHitTestable.yclass // 'IHitTestable?'
+val h2 = node lookup IHitTestable        // 'IHitTestable?'
 ```
 
 #### Type parameter

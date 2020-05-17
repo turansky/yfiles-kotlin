@@ -11,11 +11,14 @@ fun lookups() {
     val graph: IGraph = DefaultGraph()
     val node = graph.createNode()
 
-    val t1: TimeSpan? = node lookup TimeSpan.yclass
-    val t2: TimeSpan? = node lookup TimeSpan
-    val t3: TimeSpan? = node.lookup()
-    val t4 = node.lookup<TimeSpan>()
+    // for classes
+    val t1 = node lookup TimeSpan.yclass // 'TimeSpan?'
+    val t2 = node lookup TimeSpan        // 'TimeSpan?'
 
-    val h1: IHitTestable? = node lookup IHitTestable.yclass
-    val h2: IHitTestable? = node lookup IHitTestable
+    val t3: TimeSpan? = node.lookup()    // reified lookup type
+    val t4 = node.lookup<TimeSpan>()     // 'TimeSpan?'
+
+    // for interfaces
+    val h1 = node lookup IHitTestable.yclass // 'IHitTestable?'
+    val h2 = node lookup IHitTestable        // 'IHitTestable?'
 }
