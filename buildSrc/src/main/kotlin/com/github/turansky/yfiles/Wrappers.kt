@@ -862,7 +862,7 @@ internal class Method(
         val parameter = parameters[1]
 
         return """
-            inline operator fun $type.$operatorName(${parameter.name}: ${parameter.type}): $type {
+            inline operator fun $type.$operatorName(${parameter.declaration}): $type {
                 return $type.$name(this, ${parameter.name})
             }
         """.trimIndent()
@@ -903,7 +903,7 @@ internal sealed class MethodBase(
                     ""
                 }
 
-                "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
+                "$modifiers ${it.declaration}" + body
             }
     }
 
@@ -933,6 +933,8 @@ internal class Parameter(
     val type: String by type { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
+
+    val declaration: String by lazy { name + ": " + type + modifiers.nullability }
 }
 
 internal interface ITypeParameter {
@@ -1088,7 +1090,7 @@ private class EventListener(
 
     override fun toCode(): String {
         val parametersString = parameters
-            .byComma { "${it.name}: ${it.type}" }
+            .byComma { it.declaration }
 
         return "${kotlinModificator()}fun $name($parametersString)"
     }
