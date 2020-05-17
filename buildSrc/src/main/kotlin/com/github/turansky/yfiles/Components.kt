@@ -40,5 +40,5 @@ private fun Class.constructorComponents(): String =
 
 private fun Type.components(vararg properties: String): String =
     properties.asSequence()
-        .mapIndexed { index, property -> "inline operator fun $classId.component$index() = $property" }
+        .mapIndexed { index, property -> "inline operator fun $classId.component${index + 1}() = $property" }
         .joinToString("\n")
