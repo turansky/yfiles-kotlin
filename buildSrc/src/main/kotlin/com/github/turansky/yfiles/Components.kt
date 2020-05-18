@@ -29,6 +29,18 @@ internal fun Class.getComponents(): String? =
         else -> null
     }
 
+internal fun Interface.getComponents(): String? =
+    when (classId) {
+        "yfiles.collections.IEnumerable"
+        -> indexAccessComponents("elementAt")
+
+        "yfiles.collections.IList",
+        "yfiles.collections.IListEnumerable"
+        -> indexAccessComponents("get")
+
+        else -> null
+    }
+
 private fun Class.constructorComponents(): String =
     secondaryConstructors
         .asSequence()
@@ -37,6 +49,11 @@ private fun Class.constructorComponents(): String =
         .parameters
         .map { it.name }
         .let { components(*it.toTypedArray()) }
+
+private fun Interface.indexAccessComponents(getMethod: String): String =
+    (1..5).joinToString("\n") { index ->
+        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index() = $getMethod(${index - 1})"
+    }
 
 private fun Type.components(vararg properties: String): String =
     properties.asSequence()
