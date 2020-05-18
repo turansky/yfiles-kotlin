@@ -14,6 +14,10 @@ internal fun String.clear(fqn: String): String {
         .replace(LINE_BREAK_3, "\n\n")
         .replace(LINE_BREAK_2, "\n}")
 
+    if (!content.endsWith("\n")) {
+        content += "\n"
+    }
+
     val importedClasses = content.getImportedClasses()
 
     if (importedClasses.isEmpty()) {
