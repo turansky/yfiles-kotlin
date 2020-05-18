@@ -62,7 +62,7 @@ private class SimpleGenerics(override val parameters: List<ITypeParameter>) : Ge
     override fun isEmpty(): Boolean = false
 
     private fun toString(transform: (ITypeParameter) -> String): String =
-        "<${parameters.byComma { transform(it) }}> "
+        "<${parameters.byComma { transform(it) }}>"
 }
 
 private fun String.clearName(): String =
