@@ -632,6 +632,8 @@ private val OPERATOR_MAP = mapOf(
 )
 
 private val OPERATOR_NAME_MAP = mapOf(
+    "elementAt" to "get",
+
     "add" to "plus",
     "getEnlarged" to "plus",
 
