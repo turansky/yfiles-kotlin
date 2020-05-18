@@ -225,6 +225,7 @@ internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
 internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
+    MethodDeclaration(className = "IEnumerable", methodName = "elementAt") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "last") to false,
     MethodDeclaration(className = "ListCell", methodName = "pred") to true,
