@@ -27,6 +27,8 @@ private fun String.fixApiLinks(): String {
         .replace(TYPE_TEXT_REGEX, "[$2][$1]")
         .replace(MEMBER_REGEX, "[$1.$2]")
         .replace(MEMBER_TEXT_REGEX, "[$3][$1.$2]")
+        .replace("<y-dataprovider-doc>", "A data provider key ")
+        .replace("</y-dataprovider-doc>", ".")
         .replace("[$JS_STRING]", "[$STRING]")
         .replace("[$JS_NUMBER]", "[Number]")
         .replace("[$JS_NUMBER.", "[$DOUBLE.")
