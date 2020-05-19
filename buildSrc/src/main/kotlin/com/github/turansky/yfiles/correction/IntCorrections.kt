@@ -38,6 +38,11 @@ internal val INT_METHODS = setOf(
     "getDepth",
     "getPreferredChildWedge",
 
+    "getAverageDegree",
+    "kCore",
+    "labelPropagation",
+    "louvainModularity",
+
     // ???
     "translateDirectionToReal",
     "translateDirectionToModel",

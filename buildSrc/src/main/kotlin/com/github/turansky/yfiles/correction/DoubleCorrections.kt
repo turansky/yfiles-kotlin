@@ -65,6 +65,14 @@ internal val DOUBLE_METHODS = setOf(
     "getStress",
     "getCurrentLocation",
 
+    "pageRank",
+    "getAverageWeightedDegree",
+    "getDiameter",
+    "getDensity",
+    "getModularity",
+    "getClusteringCoefficient",
+    "getProjection", // TODO: fix nullability
+
     // ???
     "getChannelCoordinate",
     "getSubchannelRank",
