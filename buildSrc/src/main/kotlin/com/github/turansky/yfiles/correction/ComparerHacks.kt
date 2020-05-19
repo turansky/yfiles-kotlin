@@ -171,7 +171,7 @@ private fun fixReturnType(source: Source) {
     }
 
     source.type("AssistantNodePlacer")
-        .staticMethod("createCompoundComparer")
+        .method("createCompoundComparer")
         .fixReturnTypeGeneric(EDGE)
 
     source.method("EdgeRouter", "createDefaultEdgeOrderComparer")

@@ -55,7 +55,7 @@ private fun fixCursorUtil(source: Source) {
                     .forEach { it[TYPE] = cursor("T") }
             }
 
-        staticMethod("toArray").apply {
+        method("toArray").apply {
             sequenceOf(secondParameter, get(RETURNS))
                 .forEach {
                     it[TYPE] = it[TYPE]
@@ -98,11 +98,11 @@ private fun fixReturnType(source: Source) {
         .fixReturnTypeGeneric(YPOINT)
 
     source.type("PathAlgorithm")
-        .staticMethod("findAllPathsCursor")
+        .method("findAllPathsCursor")
         .fixReturnTypeGeneric(EDGE_LIST)
 
     source.type("ShortestPathAlgorithm")
-        .staticMethod("kShortestPathsCursor")
+        .method("kShortestPathsCursor")
         .fixReturnTypeGeneric(EDGE_LIST)
 }
 

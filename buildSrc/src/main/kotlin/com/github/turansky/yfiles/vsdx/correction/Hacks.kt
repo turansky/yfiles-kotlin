@@ -250,13 +250,13 @@ private fun fixOptionTypes(source: VsdxSource) {
 
 private fun fixGeneric(source: VsdxSource) {
     source.type("Value").apply {
-        staticMethod("fetch")
+        method("fetch")
             .apply {
                 setSingleTypeParameter("TValue")
                 firstParameter[NAME] = "o"
             }
 
-        staticMethod("formula")
+        method("formula")
             .setSingleTypeParameter("TValue")
     }
 

@@ -149,16 +149,16 @@ private fun fixConstantGenerics(source: Source) {
 
 private fun fixFunctionGenerics(source: Source) {
     source.type("List")
-        .staticMethod("fromArray")
+        .method("fromArray")
         .setSingleTypeParameter()
 
     source.type("List")
-        .staticMethod("from")
+        .method("from")
         .get(TYPE_PARAMETERS)
         .put(jObject(NAME to "T"))
 
     source.type("IContextLookupChainLink")
-        .staticMethod("addingLookupChainLink")
+        .method("addingLookupChainLink")
         .apply {
             setSingleTypeParameter("TResult")
             firstParameter.addGeneric("TResult")
@@ -167,7 +167,7 @@ private fun fixFunctionGenerics(source: Source) {
 
 private fun fixReturnType(source: Source) {
     source.type("DiscreteEdgeLabelLayoutModel")
-        .staticMethod("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
+        .method("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 
     source.type("SvgExport").apply {
         get(METHODS)
@@ -285,16 +285,16 @@ private fun fixMethodParameterType(source: Source) {
         .set(TYPE, "$IENUMERABLE<T>")
 
     source.type("IContextLookupChainLink")
-        .staticMethod("addingLookupChainLink")
+        .method("addingLookupChainLink")
         .parameter("instance")
         .set(TYPE, "TResult")
 
     source.type("DiscreteEdgeLabelLayoutModel")
-        .staticMethod("createPositionParameter")
+        .method("createPositionParameter")
         .parameter("position")[TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 
     source.type("SvgExport")
-        .staticMethod("exportSvgString")
+        .method("exportSvgString")
         .parameter("svg")
         .set(TYPE, JS_SVG_ELEMENT)
 

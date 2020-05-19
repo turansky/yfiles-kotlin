@@ -42,6 +42,6 @@ internal fun applyLabelModelParameterHacks(source: Source) {
         .forEach { it[TYPE] = ILABEL_MODEL_PARAMETER }
 
     source.type("DiscreteEdgeLabelLayoutModel")
-        .staticMethod("createPositionParameter")
+        .method("createPositionParameter")
         .get(RETURNS)[TYPE] = ILABEL_MODEL_PARAMETER
 }

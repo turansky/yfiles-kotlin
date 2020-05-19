@@ -104,7 +104,7 @@ internal fun applyCommandHacks(source: Source) {
         flatMap(CONSTANTS)
             .forEach { it.addGeneric(PARAMETER_MAP.getValue(it[NAME])) }
 
-        staticMethod("createCommand")[RETURNS].addGeneric("*")
+        method("createCommand")[RETURNS].addGeneric("*")
     }
 
     COMMAND_ALIASES

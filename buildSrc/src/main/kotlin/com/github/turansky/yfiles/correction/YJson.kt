@@ -7,9 +7,6 @@ import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
-internal fun JSONObject.staticMethod(name: String): JSONObject =
-    get(METHODS)[name]
-
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
     optionalArray(METHODS)
         .optFlatMap(PARAMETERS)

@@ -305,7 +305,7 @@ private fun addConstructorClassGeneric(source: Source) {
 
 private fun addMethodClassGeneric(source: Source) {
     source.type("ILookup")
-        .staticMethod("createSingleLookup")
+        .method("createSingleLookup")
         .apply {
             setSingleTypeParameter()
             firstParameter[TYPE] = "T"
@@ -331,7 +331,7 @@ private fun addMapperMetadataGeneric(source: Source) {
             }
         }
 
-    type.staticMethod("create")
+    type.method("create")
         .apply {
             parameter("keyType").addGeneric("TKey")
             parameter("valueType").addGeneric("TValue")

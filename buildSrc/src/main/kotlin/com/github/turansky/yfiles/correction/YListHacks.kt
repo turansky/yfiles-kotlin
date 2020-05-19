@@ -156,7 +156,7 @@ private fun fixReturnType(source: Source) {
         Triple("ShortestPathAlgorithm", "kShortestPaths", EDGE_LIST)
     ).forEach { (className, methodName, generic) ->
         source.type(className)
-            .staticMethod(methodName)
+            .method(methodName)
             .fixReturnTypeGeneric(generic)
     }
 }
