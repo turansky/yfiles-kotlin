@@ -233,6 +233,16 @@ private fun fixGraphNullability(source: Source) {
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
+
+    if (!CorrectionMode.isProgressive()) {
+        return
+    }
+
+    source.type("IGraph")
+        .method("applyLayout")
+        .also {
+            it[PARAMETERS] = it[PARAMETERS].take(2)
+        }
 }
 
 private fun fixGraphmlNullability(source: Source) {
