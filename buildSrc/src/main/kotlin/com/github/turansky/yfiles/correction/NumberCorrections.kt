@@ -122,17 +122,8 @@ private fun getConstructorParameterType(className: String, parameterName: String
 }
 
 private fun JSONObject.correctProperties() {
-    correctProperties(STATIC_PROPERTIES)
-    correctProperties(PROPERTIES)
-}
-
-private fun JSONObject.correctProperties(key: JArrayKey) {
-    if (!has(key)) {
-        return
-    }
-
     val className = get(NAME)
-    flatMap(key)
+    optFlatMap(PROPERTIES)
         .filter { it[TYPE] == JS_NUMBER }
         .forEach { it[TYPE] = getPropertyType(className, it[NAME]) }
 }
