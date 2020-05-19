@@ -309,6 +309,13 @@ internal val DOUBLE_PROPERTIES = setOf(
     "portBorderGapRatios",
     "cutoff",
 
+    "descendantWeightSum",
+    "maximumDescendantWeight",
+    "averageCoefficient",
+    "precision",
+    "maximumK",
+    "dampingFactor",
+    "rankSum",
     "preferredAngle",
     "preferredCurveLength",
     "smoothness",
