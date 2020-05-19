@@ -111,25 +111,15 @@ private fun fixClass(source: Source) {
             .set(TYPE, "T")
 
         get(STATIC_METHODS).apply {
-            removeAll { true }
+            removeAll {
+                it as JSONObject
+                it[NAME] != "fixType"
+            }
 
-            put(
-                mapOf(
-                    NAME to "fixType",
-                    MODIFIERS to listOf(STATIC, HIDDEN),
-                    PARAMETERS to listOf(
-                        mapOf(
-                            NAME to "type",
-                            TYPE to "$JS_CLASS<out $YOBJECT>"
-                        ),
-                        mapOf(
-                            NAME to "name",
-                            TYPE to JS_STRING,
-                            MODIFIERS to listOf(OPTIONAL)
-                        )
-                    )
-                )
-            )
+            get("fixType").apply {
+                firstParameter[TYPE] = "$JS_CLASS<out $YOBJECT>"
+                get(MODIFIERS).put(HIDDEN)
+            }
         }
     }
 }
