@@ -2,7 +2,9 @@ package com.github.turansky.yfiles.correction
 
 import org.json.JSONObject
 
-internal class Source(private val api: JSONObject) {
+internal class Source(api: JSONObject) : SourceBase(api)
+
+internal abstract class SourceBase(private val api: JSONObject) {
     val functionSignatures: JSONObject
         get() = api[FUNCTION_SIGNATURES]
 
