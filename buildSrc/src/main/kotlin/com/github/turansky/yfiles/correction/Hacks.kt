@@ -113,6 +113,10 @@ private fun removeUnusedFunctionSignatures(source: Source) {
 }
 
 private fun fixUnionMethods(source: Source) {
+    if (!CorrectionMode.isNormal()) {
+        return
+    }
+
     val methods = source.type("GraphModelManager")
         .get(METHODS)
 
@@ -212,6 +216,10 @@ private fun fixMethodParameterName(source: Source) {
             .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
             .first()
             .set(NAME, fixedName)
+    }
+
+    if (!CorrectionMode.isNormal()) {
+        return
     }
 
     source.type("RankAssignmentAlgorithm")
