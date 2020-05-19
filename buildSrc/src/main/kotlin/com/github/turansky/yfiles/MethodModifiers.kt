@@ -7,6 +7,7 @@ internal const val FLAGS = "flags"
 
 internal const val STATIC = "static"
 internal const val FINAL = "final"
+internal const val VIRTUAL = "virtual"
 internal const val RO = "ro"
 internal const val WO = "wo"
 internal const val SEALED = "sealed"
@@ -121,7 +122,8 @@ private val PROPERTY_MODIFIERS = setOf(
     PUBLIC,
     EXPERT,
     NOTNULL,
-    CONVERSION
+    CONVERSION,
+    VIRTUAL
 )
 
 internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers, PROPERTY_MODIFIERS) {
@@ -154,7 +156,8 @@ private val METHOD_MODIFIERS = setOf(
 
     PUBLIC,
     EXPERT,
-    NOTNULL
+    NOTNULL,
+    VIRTUAL
 )
 
 internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, METHOD_MODIFIERS) {
