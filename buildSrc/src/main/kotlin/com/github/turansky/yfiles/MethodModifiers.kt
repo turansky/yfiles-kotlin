@@ -23,6 +23,8 @@ internal const val CONVERSION = "conversion"
 internal const val CANBENULL = "canbenull"
 private const val NOTNULL = "notnull"
 
+internal const val DEPRECATED = "deprecated"
+
 // for codegen
 internal const val HIDDEN = "hidden"
 
@@ -119,6 +121,8 @@ private val PROPERTY_MODIFIERS = setOf(
 
     CANBENULL,
 
+    DEPRECATED,
+
     PUBLIC,
     EXPERT,
     NOTNULL,
@@ -151,6 +155,8 @@ private val METHOD_MODIFIERS = setOf(
     PROTECTED,
 
     CANBENULL,
+
+    DEPRECATED,
 
     HIDDEN,
 
