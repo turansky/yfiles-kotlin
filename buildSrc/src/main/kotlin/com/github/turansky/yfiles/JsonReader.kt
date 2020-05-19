@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -13,6 +14,7 @@ internal fun File.readJson(): JSONObject =
 
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
+        .apply { removeNamespaces() }
         .toString()
         .fixSystemPackage()
         .fixClassDeclaration()
@@ -36,6 +38,14 @@ private fun String.fixClassDeclaration(): String =
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
         .replace(""".YInsets",name:"Insets"""", """.YInsets",name:"YInsets"""")
+
+private fun JSONObject.removeNamespaces() {
+    val types = flatMap(NAMESPACES)
+        .flatMap { it.optFlatMap(NAMESPACES).flatMap(TYPES) + it.optFlatMap(TYPES) }
+        .toList()
+
+    set(TYPES, types)
+}
 
 private fun JSONObject.fixFunctionSignatures() {
     val signatureMap = getJSONObject("functionSignatures")

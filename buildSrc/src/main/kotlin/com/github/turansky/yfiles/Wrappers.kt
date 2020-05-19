@@ -28,22 +28,6 @@ internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Com
 }
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
-    private val namespaces: List<Namespace> by list(::Namespace)
-    val rootTypes: List<Type>
-        get() = namespaces
-            .flatMap { it.types }
-
-    val types: List<Type>
-        get() = namespaces
-            .asSequence()
-            .flatMap { it.namespaces.asSequence() }
-            .flatMap { it.types.asSequence() }
-            .toList()
-
-    val functionSignatures: List<FunctionSignature> by list(::FunctionSignature)
-}
-
-private class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
         fun parseType(source: JSONObject): Type =
             when (val group = source[GROUP]) {
@@ -54,10 +38,9 @@ private class Namespace(source: JSONObject) : JsonWrapper(source) {
             }
     }
 
-    val name: String by string()
-
-    val namespaces: List<Namespace> by list(::Namespace)
     val types: List<Type> by list(::parseType)
+
+    val functionSignatures: List<FunctionSignature> by list(::FunctionSignature)
 }
 
 internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasClassId {

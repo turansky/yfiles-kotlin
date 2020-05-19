@@ -77,7 +77,7 @@ fun generateVsdxKotlinDeclarations(
     }
 
     val apiRoot = ApiRoot(source)
-    val types = apiRoot.rootTypes
+    val types = apiRoot.types
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
