@@ -88,7 +88,7 @@ internal class KotlinFileGenerator(
         protected val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
 
         private val properties: List<Property>
-            get() = declaration.properties
+            get() = declaration.memberProperties
 
         private val staticConstants: List<Constant>
             get() = if (enumCompanionName == null) {

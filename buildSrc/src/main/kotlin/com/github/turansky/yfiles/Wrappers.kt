@@ -145,6 +145,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     abstract val constants: List<Constant>
 
     val properties: List<Property> by declarationList(::Property)
+    val memberProperties: List<Property> = properties
     val staticProperties: List<Property> by declarationList(::Property)
 
     private val methods: List<Method> by declarationList(::Method)
@@ -222,7 +223,7 @@ internal class Interface(source: JSONObject) : ExtendedType(source) {
         get() = when {
             implementedTypes().isNotEmpty() -> null
             events.isNotEmpty() -> null
-            properties.any { it.abstract } -> null
+            memberProperties.any { it.abstract } -> null
             name in NON_FUNCTIONAL -> null
             else -> memberMethods
                 .singleOrNull { it.abstract }

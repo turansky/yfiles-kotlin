@@ -16,7 +16,7 @@ internal class ClassRegistry(
 
     private val propertiesMap = types.associateBy(
         { it.classId },
-        { it.properties.map { it.name } }
+        { it.memberProperties.map { it.name } }
     )
 
     private val listenerMap = types
