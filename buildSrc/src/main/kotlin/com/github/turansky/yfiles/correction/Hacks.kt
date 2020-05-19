@@ -10,6 +10,8 @@ import org.json.JSONObject
 internal fun applyHacks(api: JSONObject) {
     val source = Source(api)
 
+    fieldToProperties(source)
+
     cleanYObject(source)
 
     removeUnusedFunctionSignatures(source)
@@ -41,7 +43,6 @@ internal fun applyHacks(api: JSONObject) {
 
     addMissedProperties(source)
     addMissedMethods(source)
-    fieldToProperties(source)
 
     applyIdHacks(source)
     applyBindingHacks(source)
@@ -438,19 +439,37 @@ private fun fieldToProperties(source: Source) {
     source.types()
         .filter { it.has(FIELDS) }
         .forEach { type ->
-            val fields = type[FIELDS].apply {
-                asSequence()
-                    .map { it as JSONObject }
-                    .map { it[MODIFIERS] }
-                    .forEach { it.put(if (FINAL in it) RO else FINAL) }
+            if (type[GROUP] == "enum") {
+                require(!type.has(CONSTANTS))
+                type[CONSTANTS] = type[FIELDS]
+                type.strictRemove(FIELDS)
+                return@forEach
             }
+
+            val additionalProperties = type.flatMap(FIELDS)
+                .filter { STATIC !in it[MODIFIERS] }
+                .onEach {
+                    val modifiers = it[MODIFIERS]
+                    modifiers.put(if (FINAL in modifiers) RO else FINAL)
+                }
+                .toList()
 
             if (type.has(PROPERTIES)) {
                 val properties = type[PROPERTIES]
-                fields.forEach { properties.put(it) }
+                additionalProperties.forEach { properties.put(it) }
             } else {
-                type[PROPERTIES] = fields
+                type[PROPERTIES] = additionalProperties
             }
+
+            val additionalConstants = type.flatMap(FIELDS)
+                .filter { STATIC in it[MODIFIERS] }
+                .toList()
+
+            if (additionalConstants.isNotEmpty()) {
+                require(!type.has(CONSTANTS))
+                type[CONSTANTS] = additionalConstants
+            }
+
             type.strictRemove(FIELDS)
         }
 }
