@@ -309,6 +309,14 @@ internal val DOUBLE_PROPERTIES = setOf(
     "portBorderGapRatios",
     "cutoff",
 
+    "preferredAngle",
+    "preferredCurveLength",
+    "smoothness",
+
+    "modularity",
+    "mouseWheelDeltaX",
+    "wheelDeltaX",
+
     "Eps",
 
     // static
