@@ -73,7 +73,12 @@ private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
     val modifiers = get(MODIFIERS)
     val index = modifiers.indexOf(modifier)
 
-    require((index == -1) == value)
+    val hasEffect = (index == -1) == value
+    if (CorrectionMode.isNormal()) {
+        require(hasEffect)
+    } else if (!hasEffect) {
+        println("MODIFIER CHANGE FAILED")
+    }
 
     if (value) {
         modifiers.put(modifier)
