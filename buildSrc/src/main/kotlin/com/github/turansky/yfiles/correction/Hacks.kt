@@ -269,11 +269,11 @@ private fun fixMethodParameterNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     source.types(
-        "ModelManager",
-        "FocusIndicatorManager",
-        "HighlightIndicatorManager",
-        "SelectionIndicatorManager"
-    ).flatMap { it.flatMap(METHODS) }
+            "ModelManager",
+            "FocusIndicatorManager",
+            "HighlightIndicatorManager",
+            "SelectionIndicatorManager"
+        ).flatMap { it.flatMap(METHODS) }
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }

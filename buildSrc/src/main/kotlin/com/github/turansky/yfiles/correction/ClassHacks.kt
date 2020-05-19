@@ -155,15 +155,15 @@ private fun fixEnum(source: Source) {
 
 private fun addClassGeneric(source: Source) {
     source.allMethods(
-        "lookup",
-        "innerLookup",
-        "contextLookup",
-        "lookupContext",
-        "inputModeContextLookup",
-        "childInputModeContextLookup",
-        "getCopy",
-        "getOrCreateCopy"
-    )
+            "lookup",
+            "innerLookup",
+            "contextLookup",
+            "lookupContext",
+            "inputModeContextLookup",
+            "childInputModeContextLookup",
+            "getCopy",
+            "getOrCreateCopy"
+        )
         .forEach {
             it.setSingleTypeParameter()
 
@@ -181,22 +181,22 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.allMethods(
-        "typedHitElementsAt",
-        "createHitTester",
+            "typedHitElementsAt",
+            "createHitTester",
 
-        "serializeCore",
-        "deserializeCore"
-    )
+            "serializeCore",
+            "deserializeCore"
+        )
         .forEach {
             it.firstParameter.addGeneric("T")
         }
 
     source.allMethods(
-        "getCurrent",
-        "serialize",
-        "deserialize",
-        "setLookup"
-    )
+            "getCurrent",
+            "serialize",
+            "deserialize",
+            "setLookup"
+        )
         .map { it.firstParameter }
         .filter { it[TYPE] == YCLASS }
         .forEach {
@@ -216,9 +216,9 @@ private fun addClassGeneric(source: Source) {
         .forEach { it.addGeneric("TResult") }
 
     source.allMethods(
-        "addGraphInputData",
-        "addGraphOutputData"
-    )
+            "addGraphInputData",
+            "addGraphOutputData"
+        )
         .forEach {
             it.firstParameter.addGeneric("TValue")
         }
@@ -248,18 +248,18 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.allMethods(
-        "addMapper",
-        "addConstantMapper",
-        "addDelegateMapper",
+            "addMapper",
+            "addConstantMapper",
+            "addDelegateMapper",
 
-        "createMapper",
-        "createConstantMapper",
-        "createDelegateMapper",
+            "createMapper",
+            "createConstantMapper",
+            "createDelegateMapper",
 
-        "addDataProvider",
-        "createDataMap",
-        "createDataProvider"
-    )
+            "addDataProvider",
+            "createDataMap",
+            "createDataProvider"
+        )
         .filter { it.firstParameter[NAME] == "keyType" }
         .filter { it.secondParameter[NAME] == "valueType" }
         .forEach {
@@ -391,33 +391,33 @@ private fun addClassBounds(source: Source) {
         }
 
     source.types(
-        "DpKeyItemCollection",
+            "DpKeyItemCollection",
 
-        "ItemClickedEventArgs",
-        "TableItemClickedEventArgs",
+            "ItemClickedEventArgs",
+            "TableItemClickedEventArgs",
 
-        "ItemTappedEventArgs",
-        "TableItemTappedEventArgs",
+            "ItemTappedEventArgs",
+            "TableItemTappedEventArgs",
 
-        "IGridConstraintProvider",
-        "GridConstraintProvider",
+            "IGridConstraintProvider",
+            "GridConstraintProvider",
 
-        "IHitTester",
+            "IHitTester",
 
-        "ItemDropInputMode",
+            "ItemDropInputMode",
 
-        "ISelectionModel",
-        "DefaultSelectionModel",
+            "ISelectionModel",
+            "DefaultSelectionModel",
 
-        "ModelManager",
+            "ModelManager",
 
-        // replace mode
-        "SelectionIndicatorManager",
-        "FocusIndicatorManager",
-        "HighlightIndicatorManager",
+            // replace mode
+            "SelectionIndicatorManager",
+            "FocusIndicatorManager",
+            "HighlightIndicatorManager",
 
-        "ItemSelectionChangedEventArgs"
-    ).map { it.flatMap(TYPE_PARAMETERS).single() }
+            "ItemSelectionChangedEventArgs"
+        ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
 
     source.type("ResultItemMapping")
@@ -433,23 +433,23 @@ private fun addClassBounds(source: Source) {
         .set(BOUNDS, arrayOf(IMODEL_ITEM))
 
     source.types(
-        "ResultItemCollection",
+            "ResultItemCollection",
 
-        "IObservableCollection",
-        "ObservableCollection",
+            "IObservableCollection",
+            "ObservableCollection",
 
-        "DelegateUndoUnit",
-        "ItemCopiedEventArgs",
+            "DelegateUndoUnit",
+            "ItemCopiedEventArgs",
 
-        "Future"
-    ).map { it.flatMap(TYPE_PARAMETERS).single() }
+            "Future"
+        ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types(
-        "ResultItemMapping",
-        "GraphBuilderItemEventArgs",
-        "ItemChangedEventArgs"
-    ).map { it[TYPE_PARAMETERS].get(1) as JSONObject }
+            "ResultItemMapping",
+            "GraphBuilderItemEventArgs",
+            "ItemChangedEventArgs"
+        ).map { it[TYPE_PARAMETERS].get(1) as JSONObject }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 }
 
@@ -497,9 +497,9 @@ private fun addTypeParameterBounds(source: Source) {
         }
 
     source.types(
-        "IMapperRegistry",
-        "MapperRegistry"
-    ).flatMap(METHODS)
+            "IMapperRegistry",
+            "MapperRegistry"
+        ).flatMap(METHODS)
         .filter { "Metadata" in it[NAME] }
         .flatMap(TYPE_PARAMETERS)
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
@@ -538,14 +538,14 @@ private val JSONObject.classBoundPair: Pair<String, String>?
 
 private fun addMapClassBounds(source: Source) {
     source.types(
-        "MapEntry",
+            "MapEntry",
 
-        "IMap",
-        "HashMap",
+            "IMap",
+            "HashMap",
 
-        "IMapper",
-        "Mapper"
-    ).map { it.flatMap(TYPE_PARAMETERS).first() }
+            "IMapper",
+            "Mapper"
+        ).map { it.flatMap(TYPE_PARAMETERS).first() }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types()
@@ -557,9 +557,9 @@ private fun addMapClassBounds(source: Source) {
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types(
-        "IMapperRegistry",
-        "MapperRegistry"
-    ).flatMap(METHODS)
+            "IMapperRegistry",
+            "MapperRegistry"
+        ).flatMap(METHODS)
         .filter { it[NAME] == "getMapper" }
         .flatMap(TYPE_PARAMETERS)
         .filter { it[NAME] == "V" }

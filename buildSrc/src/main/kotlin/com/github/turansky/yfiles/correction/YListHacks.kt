@@ -56,24 +56,24 @@ private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
 
 private fun fixMethodParameter(source: Source) {
     source.types(
-        "YList",
+            "YList",
 
-        "Geom",
-        "TriangulationAlgorithm",
-        "LayoutGraph",
+            "Geom",
+            "TriangulationAlgorithm",
+            "LayoutGraph",
 
-        "LabelingBase",
-        "SelfLoopCalculator",
-        "IntersectionAlgorithm",
-        "ChannelBasedPathRouting",
-        "OrthogonalPatternEdgeRouter",
+            "LabelingBase",
+            "SelfLoopCalculator",
+            "IntersectionAlgorithm",
+            "ChannelBasedPathRouting",
+            "OrthogonalPatternEdgeRouter",
 
-        "ILayer",
+            "ILayer",
 
-        "IElementFactory",
-        "DefaultElementFactory",
-        "MultiPageLayout"
-    ).flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+            "IElementFactory",
+            "DefaultElementFactory",
+            "MultiPageLayout"
+        ).flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .forEach {
             val methodName = it[NAME]
 

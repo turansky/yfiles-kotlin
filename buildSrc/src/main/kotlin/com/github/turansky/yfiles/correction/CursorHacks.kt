@@ -76,18 +76,18 @@ private fun fixMethodParameter(source: Source) {
     )
 
     source.types(
-        "Graph",
-        "LayoutGraph",
-        "DefaultLayoutGraph"
-    ).flatMap(CONSTRUCTORS)
+            "Graph",
+            "LayoutGraph",
+            "DefaultLayoutGraph"
+        ).flatMap(CONSTRUCTORS)
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] in nodeParameterNames }
         .forEach { it.fixTypeGeneric(NODE) }
 
     source.types(
-        "GraphPartitionManager",
-        "LayoutGraphHider"
-    ).map { it.method("hideItemCursor") }
+            "GraphPartitionManager",
+            "LayoutGraphHider"
+        ).map { it.method("hideItemCursor") }
         .map { it.firstParameter }
         .forEach { it.fixTypeGeneric(GRAPH_OBJECT) }
 }

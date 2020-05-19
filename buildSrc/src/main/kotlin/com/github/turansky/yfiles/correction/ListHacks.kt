@@ -40,24 +40,24 @@ private fun fixProperty(source: Source) {
 
 private fun fixMethodParameter(source: Source) {
     source.types(
-        "YPointPath",
+            "YPointPath",
 
-        "ChannelBasedPathRouting",
-        "DynamicObstacleDecomposition",
-        "GraphPartition",
-        "GraphPartitionExtensionAdapter",
+            "ChannelBasedPathRouting",
+            "DynamicObstacleDecomposition",
+            "GraphPartition",
+            "GraphPartitionExtensionAdapter",
 
-        "IDecompositionListener",
-        "IEnterIntervalCalculator",
-        "IObstaclePartition",
+            "IDecompositionListener",
+            "IEnterIntervalCalculator",
+            "IObstaclePartition",
 
-        "EdgeRouterPath",
-        "PathSearchExtension",
-        "SegmentGroup",
-        "SegmentInfo",
+            "EdgeRouterPath",
+            "PathSearchExtension",
+            "SegmentGroup",
+            "SegmentInfo",
 
-        "RootNodeAlignment"
-    ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+            "RootNodeAlignment"
+        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
         .flatMap { it.optFlatMap(PARAMETERS) }
         .filter { it[TYPE] in DEFAULT_LISTS }
         .forEach {
@@ -82,11 +82,11 @@ private fun fixMethodParameter(source: Source) {
 
 private fun fixReturnType(source: Source) {
     source.types(
-        "IPartition",
-        "IObstaclePartition",
-        "DynamicObstacleDecomposition",
-        "GraphPartition"
-    ).flatMap(METHODS)
+            "IPartition",
+            "IObstaclePartition",
+            "DynamicObstacleDecomposition",
+            "GraphPartition"
+        ).flatMap(METHODS)
         .forEach {
             val generic = when (it[NAME]) {
                 "getCells",
