@@ -202,6 +202,15 @@ private fun fixCollectionsNullability(source: Source) {
         .filterNot { it[TYPE] in excludedTypes }
         .filterNot { it[NAME] in excludedParameters }
         .forEach { it.changeNullability(false) }
+
+    if (!CorrectionMode.isProgressive()) {
+        return
+    }
+
+    source.type("IEnumerable")
+        .method("indexOf")
+        .get(PARAMETERS)
+        .remove(1)
 }
 
 private fun fixGraphNullability(source: Source) {
