@@ -443,20 +443,8 @@ private fun addClassBounds(source: Source) {
 
     source.types(
             "ResultItemMapping",
-            "GraphBuilderItemEventArgs",
             "ItemChangedEventArgs"
         ).map { it[TYPE_PARAMETERS].getJSONObject(1) }
-        .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
-
-    if (!CorrectionMode.isProgressive()) {
-        return
-    }
-
-    source.types(
-            "NodeCreator",
-            "EdgeCreator",
-            "LabelCreator"
-        ).map { it[TYPE_PARAMETERS].getJSONObject(0) }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 }
 
