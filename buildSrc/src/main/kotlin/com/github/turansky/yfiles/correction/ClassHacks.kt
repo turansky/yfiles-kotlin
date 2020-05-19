@@ -105,8 +105,7 @@ private fun fixClass(source: Source) {
 
         get(METHODS).removeItem(method("getProperties"))
 
-        get(METHODS)
-            .get("newInstance")
+        method("newInstance")
             .get(RETURNS)
             .set(TYPE, "T")
 
@@ -349,20 +348,17 @@ private fun addMapperMetadataGeneric(source: Source) {
         "IMapperRegistry",
         "MapperRegistry"
     ).forEach {
-        val methods = it[METHODS]
-        methods["getMapperMetadata"]
-            .apply {
-                setTypeParameters("K", "V")
-                get(RETURNS)
-                    .addGeneric("K,V")
-            }
+        it.method("getMapperMetadata").apply {
+            setTypeParameters("K", "V")
+            get(RETURNS)
+                .addGeneric("K,V")
+        }
 
-        methods["setMapperMetadata"]
-            .apply {
-                setTypeParameters("K", "V")
-                parameter("metadata")
-                    .addGeneric("K,V")
-            }
+        it.method("setMapperMetadata").apply {
+            setTypeParameters("K", "V")
+            parameter("metadata")
+                .addGeneric("K,V")
+        }
     }
 }
 

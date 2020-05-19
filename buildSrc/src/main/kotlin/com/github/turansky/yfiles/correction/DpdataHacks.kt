@@ -109,15 +109,13 @@ private fun fixTreeLayout(source: Source) {
     }
 
     source.type("TreeComponentLayout")
-        .get(METHODS)
-        .get("applyLayoutUsingDummies")
+        .method("applyLayoutUsingDummies")
         .get(PARAMETERS)
         .get("dummyDp")
         .addGeneric("$NODE,$JS_BOOLEAN")
 
     source.type("LeftRightNodePlacer")
-        .get(METHODS)
-        .get("createLeftRightDataProvider")
+        .method("createLeftRightDataProvider")
         .also {
             it.firstParameter.addGeneric("$NODE,yfiles.tree.INodePlacer")
             it[RETURNS].addGeneric("$NODE,$JS_BOOLEAN")

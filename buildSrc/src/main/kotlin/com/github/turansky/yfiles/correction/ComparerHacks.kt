@@ -35,8 +35,7 @@ private fun fixComparerInheritors(source: Source) {
                     put(0, comparer(generic))
                 }
 
-                get(METHODS)
-                    .get("compare")
+                method("compare")
                     .flatMap(PARAMETERS)
                     .forEach { it[TYPE] = generic }
             }

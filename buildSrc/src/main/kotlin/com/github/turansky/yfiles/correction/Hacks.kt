@@ -169,12 +169,8 @@ private fun fixReturnType(source: Source) {
     source.type("DiscreteEdgeLabelLayoutModel")
         .method("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 
-    source.type("SvgExport").apply {
-        get(METHODS)
-            .get("exportSvg")
-            .get(RETURNS)
-            .set(TYPE, JS_SVG_SVG_ELEMENT)
-    }
+    source.type("SvgExport")
+        .method("exportSvg")[RETURNS][TYPE] = JS_SVG_SVG_ELEMENT
 }
 
 private fun fixPropertyType(source: Source) {
