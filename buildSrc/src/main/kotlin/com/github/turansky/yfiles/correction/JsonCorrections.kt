@@ -694,7 +694,7 @@ internal val MISSED_METHODS = listOf(
     ),
     MethodData(
         className = "VoidPathGeometry",
-        methodName = "getTangent",
+        methodName = CorrectionMode.getValue("getTangent", "getTangentForSegment"),
         parameters = listOf(
             MethodParameterData("segmentIndex", JS_NUMBER),
             MethodParameterData("ratio", JS_NUMBER)
