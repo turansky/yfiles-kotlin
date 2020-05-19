@@ -15,6 +15,7 @@ internal fun File.readJson(): JSONObject =
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
         .apply { removeNamespaces() }
+        .apply { fixInsetsDeclaration() }
         .toString()
         .fixSystemPackage()
         .fixClassDeclaration()
@@ -37,7 +38,11 @@ private fun String.fixClassDeclaration(): String =
 
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
-        .replace(""".YInsets",name:"Insets"""", """.YInsets",name:"YInsets"""")
+
+private fun JSONObject.fixInsetsDeclaration() =
+    flatMap(TYPES)
+        .firstOrNull { it[ID] == "yfiles.algorithms.YInsets" }
+        ?.also { it[NAME] = "YInsets" }
 
 private fun JSONObject.removeNamespaces() {
     val types = flatMap(NAMESPACES)
