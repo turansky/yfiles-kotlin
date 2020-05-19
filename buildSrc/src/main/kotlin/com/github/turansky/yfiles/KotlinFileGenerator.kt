@@ -116,7 +116,7 @@ internal class KotlinFileGenerator(
             get() = properties.filter { !it.static }
 
         protected val memberFunctions: List<Method>
-            get() = declaration.methods
+            get() = declaration.memberMethods
 
         protected val memberExtensionFunctions: List<Method>
             get() = declaration.extensionMethods

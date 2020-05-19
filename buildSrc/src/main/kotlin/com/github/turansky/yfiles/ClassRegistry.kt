@@ -11,7 +11,7 @@ internal class ClassRegistry(
 
     private val functionsMap = types.associateBy(
         { it.classId },
-        { it.methods.map { it.name } }
+        { it.memberMethods.map { it.name } }
     )
 
     private val propertiesMap = types.associateBy(

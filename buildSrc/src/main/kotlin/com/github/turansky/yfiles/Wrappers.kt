@@ -147,10 +147,11 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val properties: List<Property> by declarationList(::Property)
     val staticProperties: List<Property> by declarationList(::Property)
 
-    val methods: List<Method> by declarationList(::Method)
+    private val methods: List<Method> by declarationList(::Method)
+    val memberMethods: List<Method> = methods
     val staticMethods: List<Method> by declarationList(::Method)
     val extensionMethods: List<Method> by lazy {
-        methods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+        memberMethods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
     }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -223,7 +224,7 @@ internal class Interface(source: JSONObject) : ExtendedType(source) {
             events.isNotEmpty() -> null
             properties.any { it.abstract } -> null
             name in NON_FUNCTIONAL -> null
-            else -> methods
+            else -> memberMethods
                 .singleOrNull { it.abstract }
                 ?.takeIf { it.functional }
         }
