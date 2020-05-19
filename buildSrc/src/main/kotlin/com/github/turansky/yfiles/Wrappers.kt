@@ -159,8 +159,6 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     private val extends: String? by optString()
     private val implements: List<String> by stringList()
 
-    private val relatedDemos: List<Demo> by list(::Demo)
-
     final override val docId: String = es6name ?: name
     final override val classDeclaration = name + generics.asParameters()
 
@@ -172,7 +170,6 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
         get() = getDocumentation(
             summary = summary,
             typeparameters = typeparameters,
-            relatedDemos = relatedDemos,
             seeAlso = seeAlso + seeAlsoDoc,
             additionalDocumentation = additionalDocumentation
         )
@@ -322,16 +319,6 @@ private class ExceptionDescription(override val source: JSONObject) : HasSource 
         summary?.let {
             "$name $it"
         } ?: name
-}
-
-internal class Demo(override val source: JSONObject) : HasSource {
-    private val path: String by string()
-    private val text: String by string()
-    private val summary: String by string()
-
-    fun toDoc(): String {
-        return link("$text 🚀", path)
-    }
 }
 
 internal sealed class SeeAlso {
@@ -1135,7 +1122,6 @@ private fun getDocumentation(
     value: Value? = null,
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
-    relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     additionalDocumentation: String? = null
 ): String {
@@ -1151,7 +1137,6 @@ private fun getDocumentation(
         value = value,
         defaultValue = defaultValue,
         exceptions = exceptions,
-        relatedDemos = relatedDemos,
         seeAlso = seeAlso
     )
 
@@ -1184,7 +1169,6 @@ private fun getDocumentationLines(
     value: Value? = null,
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
-    relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     primaryConstructor: Boolean = false
 ): List<String> {
@@ -1249,10 +1233,6 @@ private fun getDocumentationLines(
 
     exceptions?.mapTo(lines) {
         throws(it.toDoc())
-    }
-
-    relatedDemos?.mapTo(lines) {
-        see(it.toDoc())
     }
 
     seeAlso?.apply {
