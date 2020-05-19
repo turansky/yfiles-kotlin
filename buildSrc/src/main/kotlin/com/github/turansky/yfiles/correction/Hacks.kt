@@ -211,12 +211,14 @@ private fun fixConstructorParameterName(source: Source) {
 }
 
 private fun fixMethodParameterName(source: Source) {
-    PARAMETERS_CORRECTION.forEach { (data, fixedName) ->
-        source.type(data.className)
-            .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
-            .first()
-            .set(NAME, fixedName)
-    }
+    PARAMETERS_CORRECTION
+        .filter { (data) -> CorrectionMode.test(data.mode) }
+        .forEach { (data, fixedName) ->
+            source.type(data.className)
+                .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
+                .first()
+                .set(NAME, fixedName)
+        }
 
     if (!CorrectionMode.isNormal()) {
         return

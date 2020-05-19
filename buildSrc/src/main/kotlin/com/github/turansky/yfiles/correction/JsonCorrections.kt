@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.correction.CorrectionMode.NORMAL
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.lang.Action3",
@@ -73,7 +74,7 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("TimeSpan", "compareTo", "obj") to "o",
     ParameterData("IEnumerable", "includes", "value") to "item",
 
-    ParameterData("YList", "indexOf", "obj") to "item",
+    ParameterData("YList", "indexOf", "obj", mode = NORMAL) to "item",
     ParameterData("YList", "insert", "element") to "item",
     ParameterData("YList", "remove", "o") to "item",
 
@@ -121,7 +122,7 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
     ParameterData("LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
+    ParameterData("MultiStageLayout", "applyLayout", "layoutGraph", mode = NORMAL) to "graph",
 
     ParameterData("DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
     ParameterData("IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
@@ -775,7 +776,8 @@ internal data class ParameterData(
     val className: String,
     val methodName: String,
     val parameterName: String,
-    val last: Boolean = false
+    val last: Boolean = false,
+    val mode: CorrectionMode? = null
 )
 
 internal data class PropertyDeclaration(
