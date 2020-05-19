@@ -341,6 +341,7 @@ internal val DOUBLE_PROPERTIES = setOf(
 
 internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "eps",
+    "t",
     "x", "y",
     "x1", "y1",
     "x2", "y2",
