@@ -110,10 +110,10 @@ private fun fixClass(source: Source) {
             .get(RETURNS)
             .set(TYPE, "T")
 
-        get(STATIC_METHODS).apply {
+        get(METHODS).apply {
             removeAll {
                 it as JSONObject
-                it[NAME] != "fixType"
+                STATIC in it[MODIFIERS] && it[NAME] != "fixType"
             }
 
             get("fixType").apply {
@@ -134,7 +134,7 @@ private fun fixEnum(source: Source) {
         set(GROUP, "interface")
         setSingleTypeParameter(bound = "$YENUM<T>")
 
-        flatMap(STATIC_METHODS)
+        flatMap(METHODS)
             .onEach { it.setSingleTypeParameter(bound = "$YENUM<T>") }
             .onEach {
                 val returns = it[RETURNS]
@@ -476,7 +476,7 @@ private fun addTypeParameterBounds(source: Source) {
         }
 
     source.types()
-        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .optFlatMap(METHODS)
         .filter { it.has(TYPE_PARAMETERS) }
         .forEach {
             val boundMap = it.flatMap(PARAMETERS)
@@ -549,7 +549,7 @@ private fun addMapClassBounds(source: Source) {
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types()
-        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .optFlatMap(METHODS)
         .filter { it.has(TYPE_PARAMETERS) }
         .map { it.flatMap(TYPE_PARAMETERS).first() }
         .filterNot { it.has(BOUNDS) }

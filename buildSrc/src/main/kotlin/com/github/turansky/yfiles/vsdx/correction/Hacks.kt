@@ -189,7 +189,7 @@ private fun fixTypes(source: VsdxSource) {
 
     source.types()
         .flatMap {
-            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(METHODS))
+            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS))
                 .flatMap {
                     it.optFlatMap(PARAMETERS) + if (it.has(RETURNS)) {
                         sequenceOf(it[RETURNS])
@@ -307,7 +307,7 @@ private fun fixSummary(source: VsdxSource) {
     source.types()
         .onEach { it.fixSummary() }
         .onEach { it.optFlatMap(PROPERTIES).forEach { it.fixSummary() } }
-        .flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(METHODS) }
+        .flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .onEach { it.fixSummary() }
         .flatMap { it.optFlatMap(PARAMETERS) }
         .forEach { it.fixSummary() }

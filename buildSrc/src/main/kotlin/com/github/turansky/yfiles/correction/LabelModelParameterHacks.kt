@@ -20,7 +20,7 @@ internal fun applyLabelModelParameterHacks(source: Source) {
             "ExtendedNodeLabelCandidate",
 
             "LayoutGraphUtilities"
-        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] == "param" }
         .forEach { it[TYPE] = ILABEL_MODEL_PARAMETER }
@@ -36,7 +36,7 @@ internal fun applyLabelModelParameterHacks(source: Source) {
             "FreeNodeLabelLayoutModel"
         ).onEach { it.property("defaultParameter")[TYPE] = ILABEL_MODEL_PARAMETER }
         .onEach { it.method("createModelParameter")[RETURNS][TYPE] = ILABEL_MODEL_PARAMETER }
-        .flatMap { it.flatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .flatMap(METHODS)
         .flatMap(PARAMETERS)
         .filter { it[NAME] == "parameter" }
         .forEach { it[TYPE] = ILABEL_MODEL_PARAMETER }

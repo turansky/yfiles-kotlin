@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.STATIC
 import com.github.turansky.yfiles.YCLASS
 import org.json.JSONObject
 
@@ -175,7 +176,7 @@ private fun fixCollectionsNullability(source: Source) {
             "Mapper" -> includedMethods = includedMethods - "delete"
         }
 
-        return (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        return type.flatMap(METHODS)
             .filter { it[ID] in includedMethodIds || it.get(NAME) in includedMethods }
     }
 
@@ -341,7 +342,8 @@ private fun fixAlgorithmsNullability(source: Source) {
             "TransitivityAlgorithm",
             "TreeAlgorithm",
             "TriangulationAlgorithm"
-        ).flatMap(STATIC_METHODS)
+        ).flatMap(METHODS)
+        .filter { STATIC in it[MODIFIERS] }
         .filter { it.has(PARAMETERS) }
         .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
         .filterNot { it[NAME] in excludedMethods }
@@ -351,7 +353,7 @@ private fun fixAlgorithmsNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.flatMap(METHODS)
             .plus(type.optFlatMap(CONSTRUCTORS))
             .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
             .filterNot { it[NAME] in excludedMethods }
@@ -404,7 +406,7 @@ private fun fixAlgorithmsNullability(source: Source) {
     source.types(
             "YOrientedRectangle",
             "YVector"
-        ).flatMap { it.flatMap(METHODS) + it.flatMap(STATIC_METHODS) + it.flatMap(CONSTRUCTORS) }
+        ).flatMap { it.flatMap(METHODS) + it.flatMap(CONSTRUCTORS) }
         .filter { it[ID] in yMethodIds || it.get(NAME) in yMethods }
         .flatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
@@ -458,7 +460,8 @@ private fun fixLayoutNullability(source: Source) {
             "NormalizeGraphElementOrderStage",
             "PortConstraint",
             "Swimlanes"
-        ).flatMap(STATIC_METHODS)
+        ).flatMap(METHODS)
+        .filter { STATIC in it[MODIFIERS] }
         .filter { it.has(PARAMETERS) }
         .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
         .filterNot { it[NAME] in excludedMethods }
@@ -467,7 +470,7 @@ private fun fixLayoutNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.optFlatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.optFlatMap(METHODS)
             .plus(type.optFlatMap(CONSTRUCTORS))
             .filterNot { it[NAME] in excludedMethods }
 
@@ -524,7 +527,7 @@ private fun fixCommonLayoutNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.flatMap(METHODS)
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -560,7 +563,7 @@ private fun fixStageNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.flatMap(METHODS)
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -599,7 +602,7 @@ private fun fixMultipageNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.flatMap(METHODS)
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
@@ -646,7 +649,7 @@ private fun fixHierarchicNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.flatMap(METHODS)
             .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
             .filterNot { it[NAME] in excludedMethods }
 
@@ -722,7 +725,7 @@ private fun fixRouterNullability(source: Source) {
 
     source.types(
             "BusRepresentations"
-        ).flatMap(STATIC_METHODS)
+        ).flatMap(METHODS)
         .filter { it.has(PARAMETERS) }
         .filterNot { it[NAME] in excludedMethods }
         .flatMap(PARAMETERS)
@@ -730,7 +733,7 @@ private fun fixRouterNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.optFlatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.optFlatMap(METHODS)
             .filterNot { it[NAME] in excludedMethods }
             .let {
                 if (type[NAME].endsWith("Router")) {
@@ -801,7 +804,7 @@ private fun fixTreeNullability(source: Source) {
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
-        (type.flatMap(METHODS) + type.optFlatMap(STATIC_METHODS))
+        type.flatMap(METHODS)
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(

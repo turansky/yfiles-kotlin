@@ -8,10 +8,10 @@ import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
 internal fun JSONObject.staticMethod(name: String): JSONObject =
-    get(STATIC_METHODS)[name]
+    get(METHODS)[name]
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
-    (optionalArray(METHODS) + optionalArray(STATIC_METHODS))
+    optionalArray(METHODS)
         .optFlatMap(PARAMETERS)
 
 internal fun JSONObject.methodParameters(

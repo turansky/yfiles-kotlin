@@ -45,7 +45,7 @@ private fun fixComparerInheritors(source: Source) {
 
 private fun fixComparerUtilMethods(source: Source) {
     val staticMethods = source.type("Comparers")
-        .get(STATIC_METHODS)
+        .get(METHODS)
 
     sequenceOf(
         "createIntDataComparer" to GRAPH_OBJECT,
@@ -75,7 +75,7 @@ private fun fixComparerAsMethodParameter(source: Source) {
             "MultiComponentLayerer",
 
             "SwimlaneDescriptor"
-        ).flatMap { it.flatMap(METHODS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(CONSTRUCTORS) }
+        ).flatMap { it.flatMap(METHODS) + it.optFlatMap(CONSTRUCTORS) }
         .forEach {
             val methodName = it[NAME]
 

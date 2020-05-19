@@ -57,7 +57,7 @@ private fun fixMethodParameter(source: Source) {
             "SegmentInfo",
 
             "RootNodeAlignment"
-        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .flatMap { it.optFlatMap(PARAMETERS) }
         .filter { it[TYPE] in DEFAULT_LISTS }
         .forEach {

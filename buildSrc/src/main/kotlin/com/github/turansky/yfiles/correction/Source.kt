@@ -24,8 +24,7 @@ internal abstract class SourceBase(private val api: JSONObject) {
 
     fun allMethods(vararg methodNames: String): Sequence<JSONObject> =
         types.asSequence()
-            .map { it.optionalArray(METHODS) + it.optionalArray(STATIC_METHODS) }
-            .flatMap { it.asSequence() }
+            .optFlatMap(METHODS)
             .filter { it[NAME] in methodNames }
 
     private val JSONObject.uid: String

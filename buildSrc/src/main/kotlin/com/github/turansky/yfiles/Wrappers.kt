@@ -132,8 +132,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val staticProperties: List<Property> = properties.filter { it.static }
 
     private val methods: List<Method> by declarationList(::Method)
-    val memberMethods: List<Method> = methods
-    val staticMethods: List<Method> by declarationList(::Method)
+    val memberMethods: List<Method> = methods.filter { !it.static }
+    val staticMethods: List<Method> = methods.filter { it.static }
     val extensionMethods: List<Method> by lazy {
         memberMethods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
     }
@@ -653,7 +653,7 @@ internal class Method(
 
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
-    private val static = modifiers.static
+    val static = modifiers.static
     private val protected = modifiers.protected
 
     private val final = modifiers.final

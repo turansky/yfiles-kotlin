@@ -187,17 +187,8 @@ private fun getPropertyGenericType(propertyName: String, type: String): String {
 
 
 private fun JSONObject.correctMethods() {
-    correctMethods(STATIC_METHODS)
-    correctMethods(METHODS)
-}
-
-private fun JSONObject.correctMethods(key: JArrayKey) {
-    if (!has(key)) {
-        return
-    }
-
     val className = get(NAME)
-    flatMap(key)
+    optFlatMap(METHODS)
         .filter { it.has(RETURNS) }
         .forEach {
             val methodName = it[NAME]
@@ -233,17 +224,8 @@ private fun getReturnType(className: String, methodName: String): String =
     }
 
 private fun JSONObject.correctMethodParameters() {
-    correctMethodParameters(STATIC_METHODS)
-    correctMethodParameters(METHODS)
-}
-
-private fun JSONObject.correctMethodParameters(key: JArrayKey) {
-    if (!has(key)) {
-        return
-    }
-
     val className = get(NAME)
-    flatMap(key)
+    optFlatMap(METHODS)
         .filter { it.has(PARAMETERS) }
         .forEach { method ->
             val methodName = method[NAME]
@@ -332,7 +314,7 @@ private fun correctEnumerable(types: List<JSONObject>) {
     types.asSequence()
         .filter { it[NAME] in INT_SIGNATURE_CLASSES }
         .flatMap { type ->
-            sequenceOf(CONSTRUCTORS, METHODS, STATIC_METHODS)
+            sequenceOf(CONSTRUCTORS, METHODS)
                 .filter { type.has(it) }
                 .flatMap { type.flatMap(it) }
         }

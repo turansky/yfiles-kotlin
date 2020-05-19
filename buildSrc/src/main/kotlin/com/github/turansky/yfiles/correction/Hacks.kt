@@ -100,7 +100,6 @@ private fun cleanYObject(source: Source) {
     source.type("YObject").apply {
         set(GROUP, "interface")
 
-        strictRemove(STATIC_METHODS)
         strictRemove(METHODS)
     }
 }
@@ -220,7 +219,7 @@ private fun fixMethodParameterName(source: Source) {
     }
 
     source.type("RankAssignmentAlgorithm")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .filter { it[NAME] == "simplex" }
         .flatMap(PARAMETERS)
         .single { it[NAME] == "_root" }
@@ -311,7 +310,7 @@ private fun fixMethodNullability(source: Source) {
     STATIC_METHOD_NULLABILITY_MAP
         .forEach { (className, methodName), nullable ->
             source.type(className)
-                .flatMap(STATIC_METHODS)
+                .flatMap(METHODS)
                 .filter { it[NAME] == methodName }
                 .forEach { it.changeNullability(nullable) }
         }
@@ -403,7 +402,7 @@ private const val FUNC_RUDIMENT = ",number,$IENUMERABLE<T>"
 private const val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
 
 private fun removeThisParameters(source: Source) {
-    sequenceOf(CONSTRUCTORS, STATIC_METHODS, METHODS)
+    sequenceOf(CONSTRUCTORS, METHODS)
         .flatMap { parameter ->
             THIS_TYPES.asSequence()
                 .map { source.type(it) }

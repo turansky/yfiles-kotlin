@@ -5,7 +5,7 @@ import com.github.turansky.yfiles.json.get
 private const val IPLANE_OBJECT = "yfiles.algorithms.IPlaneObject"
 
 internal fun applyIntersectionHacks(source: Source) {
-    source.type("IntersectionAlgorithm")[STATIC_METHODS]["intersect"].apply {
+    source.type("IntersectionAlgorithm")[METHODS]["intersect"].apply {
         setSingleTypeParameter(bound = IPLANE_OBJECT)
 
         flatMap(PARAMETERS)

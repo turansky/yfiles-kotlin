@@ -97,7 +97,7 @@ internal fun applyCommandHacks(source: Source) {
         setSingleTypeParameter(name = "in T", bound = JS_ANY)
 
         flatMap(METHODS)
-            .flatMap(PARAMETERS)
+            .optFlatMap(PARAMETERS)
             .filter { it[NAME] == "parameter" }
             .forEach { it[TYPE] = "T" }
 

@@ -73,7 +73,7 @@ private fun fixMethodParameter(source: Source) {
             "IElementFactory",
             "DefaultElementFactory",
             "MultiPageLayout"
-        ).flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        ).optFlatMap(METHODS)
         .forEach {
             val methodName = it[NAME]
 

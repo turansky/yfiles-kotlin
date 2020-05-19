@@ -38,7 +38,7 @@ private fun JSONObject.fixGeneric() {
 
 private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
-        flatMap(STATIC_METHODS)
+        flatMap(METHODS)
             .onEach {
                 val bound = when (it[NAME]) {
                     "createNodeCursor" -> NODE

@@ -116,7 +116,7 @@ private fun fixTreeLayout(source: Source) {
         .addGeneric("$NODE,$JS_BOOLEAN")
 
     source.type("LeftRightNodePlacer")
-        .get(STATIC_METHODS)
+        .get(METHODS)
         .get("createLeftRightDataProvider")
         .also {
             it.firstParameter.addGeneric("$NODE,yfiles.tree.INodePlacer")
@@ -163,7 +163,8 @@ private fun fixHierarchic(source: Source) {
 
 private fun fixTriangulator(source: Source) {
     source.type("TriangulationAlgorithm")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
+        .filter { STATIC in it[MODIFIERS] }
         .flatMap(PARAMETERS)
         .forEach {
             when (it[NAME]) {
@@ -240,7 +241,7 @@ private fun fixParallelEdgeRouter(source: Source) {
 
 private fun fixDataProviders(source: Source) {
     source.type("DataProviders")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .forEach {
             val name = it[NAME]
 
@@ -286,7 +287,7 @@ private fun fixDataProviders(source: Source) {
 
 private fun fixMaps(source: Source) {
     source.type("Maps")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .forEach {
             val returns = it[RETURNS]
 
@@ -350,7 +351,7 @@ private fun fixLists(source: Source) {
 
 private fun fixComparers(source: Source) {
     source.type("Comparers")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .filter { it.has(PARAMETERS) }
         .filter { it.firstParameter[TYPE] == IDATA_PROVIDER }
         .forEach {

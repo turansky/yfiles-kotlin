@@ -48,7 +48,10 @@ private fun JSONObject.fixInsetsDeclaration() =
 
 private fun JSONObject.mergeDeclarations() {
     flatMap(TYPES)
-        .forEach { it.merge(PROPERTIES, STATIC_PROPERTIES) }
+        .forEach {
+            it.merge(PROPERTIES, STATIC_PROPERTIES)
+            it.merge(METHODS, STATIC_METHODS)
+        }
 }
 
 private fun JSONObject.merge(

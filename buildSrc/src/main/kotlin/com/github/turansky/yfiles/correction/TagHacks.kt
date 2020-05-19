@@ -42,7 +42,7 @@ private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .filterNot { it[NAME] == "GraphMLIOHandler" }
         .flatMap {
-            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS))
+            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS))
                 .optFlatMap(PARAMETERS)
                 .plus(it.optFlatMap(PROPERTIES))
         }

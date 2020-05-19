@@ -179,17 +179,8 @@ private fun getPropertyType(className: String, propertyName: String): String {
 }
 
 private fun JSONObject.correctMethodParameters() {
-    correctMethodParameters(STATIC_METHODS)
-    correctMethodParameters(METHODS)
-}
-
-private fun JSONObject.correctMethodParameters(key: JArrayKey) {
-    if (!has(key)) {
-        return
-    }
-
     val className = get(NAME)
-    flatMap(key)
+    optFlatMap(METHODS)
         .filter { it.has(PARAMETERS) }
         .forEach { method ->
             val methodName = method[NAME]
@@ -227,17 +218,8 @@ private fun getParameterType(
 }
 
 private fun JSONObject.correctMethods() {
-    correctMethods(STATIC_METHODS)
-    correctMethods(METHODS)
-}
-
-private fun JSONObject.correctMethods(key: JArrayKey) {
-    if (!has(key)) {
-        return
-    }
-
     val className = get(NAME)
-    flatMap(key)
+    optFlatMap(METHODS)
         .filter { it.has(RETURNS) }
         .forEach {
             val methodName = it[NAME]

@@ -272,7 +272,7 @@ private fun JSONObject.getTypeParameterName(index: Int): String =
         .removePrefix("out ")
 
 private fun JSONObject.getTypeHolders(): Sequence<JSONObject> =
-    (optFlatMap(CONSTRUCTORS) + optFlatMap(STATIC_METHODS) + optFlatMap(METHODS))
+    (optFlatMap(CONSTRUCTORS) + optFlatMap(METHODS))
         .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
         .plus(optFlatMap(PROPERTIES))
 
