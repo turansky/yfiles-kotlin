@@ -48,22 +48,25 @@ private fun JSONObject.fixInsetsDeclaration() =
 
 private fun JSONObject.mergeDeclarations() {
     flatMap(TYPES)
-        .forEach { it.mergeProperties() }
+        .forEach { it.merge(PROPERTIES, STATIC_PROPERTIES) }
 }
 
-private fun JSONObject.mergeProperties() {
-    if (!has(STATIC_PROPERTIES)) {
+private fun JSONObject.merge(
+    key: JArrayKey,
+    staticKey: JArrayKey
+) {
+    if (!has(staticKey)) {
         return
     }
 
-    if (has(PROPERTIES)) {
-        val properties = get(PROPERTIES)
-        flatMap(STATIC_PROPERTIES).forEach { properties.put(it) }
+    if (has(key)) {
+        val items = get(key)
+        flatMap(staticKey).forEach { items.put(it) }
     } else {
-        set(PROPERTIES, get(STATIC_PROPERTIES))
+        set(key, get(staticKey))
     }
 
-    strictRemove(STATIC_PROPERTIES)
+    strictRemove(staticKey)
 }
 
 private fun JSONObject.removeNamespaces() {
