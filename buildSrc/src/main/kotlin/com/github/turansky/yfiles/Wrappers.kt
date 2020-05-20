@@ -1083,7 +1083,10 @@ private fun remarks(): Prop<String?> = RemarksDelegate()
 
 private class RemarksDelegate : PropDelegate<String?>() {
     private fun String.isSummaryLike(): Boolean =
-        startsWith("The default ") or startsWith("By default ") or endsWith("then <code>null</code> is returned.")
+        startsWith("The default ") or
+                startsWith("By default ") or
+                startsWith("<p>This property is deprecated") or
+                endsWith("then <code>null</code> is returned.")
 
     private fun JSONObject.isRequiredRemarks(): Boolean =
         optString("id")?.startsWith("ICommand-field-") ?: false
