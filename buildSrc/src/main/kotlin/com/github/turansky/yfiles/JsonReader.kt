@@ -18,6 +18,7 @@ internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
         .apply { removeNamespaces() }
         .apply { fixInsetsDeclaration() }
         .apply { mergeDeclarations() }
+        .apply { removeFromFactories() }
         .toString()
         .fixSystemPackage()
         .fixClassDeclaration()
@@ -92,3 +93,16 @@ private fun JSONObject.fixFunctionSignatures() {
 
     put("functionSignatures", signatures)
 }
+
+private fun JSONObject.removeFromFactories() {
+    flatMap(TYPES)
+        .mapNotNull { it.opt(METHODS) }
+        .forEach { methods ->
+            methods.removeAll {
+                (it as JSONObject).isFromFactory()
+            }
+        }
+}
+
+private fun JSONObject.isFromFactory(): Boolean =
+    STATIC in get(MODIFIERS) && get(NAME) == "from" && get(PARAMETERS).length() == 1
