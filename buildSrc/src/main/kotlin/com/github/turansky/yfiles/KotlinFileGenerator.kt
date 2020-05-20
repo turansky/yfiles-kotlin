@@ -24,10 +24,6 @@ internal class KotlinFileGenerator(
             generate(context, generatedFile)
         }
 
-        types.asSequence()
-            .filterIsInstance<Interface>()
-            .forEach { generateFunctionalCompanion(context, it) }
-
         functionSignatures
             .groupBy { it.classId.substringBeforeLast(".") }
             .forEach { (_, items) -> generate(context, items) }
@@ -54,14 +50,6 @@ internal class KotlinFileGenerator(
             .sortedBy { it.classId }
             .map { it.toCode() }
             .joinToString("\n\n")
-    }
-
-    private fun generateFunctionalCompanion(
-        context: GeneratorContext,
-        type: Interface
-    ) {
-        val code = type.qiiMethod?.toQiiCode() ?: return
-        context[type.classId, FUNCTION] = code
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
@@ -339,6 +327,7 @@ internal class KotlinFileGenerator(
 
         override fun companionContent(): String? =
             listOfNotNull(
+                declaration.qiiMethod?.toQiiCode(),
                 invokeExtension(
                     className = declaration.name,
                     generics = declaration.generics
