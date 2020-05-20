@@ -4,6 +4,13 @@ import com.github.turansky.yfiles.*
 import org.json.JSONObject
 
 internal fun applyCanvasObjectInstallerHacks(source: Source) {
+    if (CorrectionMode.isProgressive()) {
+        source.type("ICanvasObjectInstaller")
+            .method("create")
+            .get(RETURNS)
+            .addGeneric("T")
+    }
+
     source.types()
         .filter { it[ID].run { startsWith("yfiles.view.") && endsWith("Installer") } }
         .filter { it[GROUP] == "interface" }

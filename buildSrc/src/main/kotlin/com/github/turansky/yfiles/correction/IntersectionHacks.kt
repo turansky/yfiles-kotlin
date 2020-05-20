@@ -18,5 +18,11 @@ internal fun applyIntersectionHacks(source: Source) {
         method("checkIntersection")
             .flatMap(PARAMETERS)
             .forEach { it[TYPE] = "T" }
+
+        if (CorrectionMode.isProgressive()) {
+            method("create")
+                .get(RETURNS)
+                .addGeneric("T")
+        }
     }
 }
