@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.CorrectionMode
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -344,15 +345,8 @@ private class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSourc
     }
 }
 
-private class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSource {
-    private val section: String by string()
-    private val name: String by string()
-
-    override fun toDoc(): String =
-        link(
-            text = name,
-            href = "$DOC_BASE_URL/#/dguide/$section"
-        )
+private object EmptySeeAlso : SeeAlso() {
+    override fun toDoc() = TODO()
 }
 
 private class SeeAlsoDoc(private val id: String) : SeeAlso() {
@@ -369,8 +363,9 @@ private fun seeAlso() = list(::parseSeeAlso)
 
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
     when {
+        CorrectionMode.isProgressive() -> SeeAlsoType(source)
         source.has("type") -> SeeAlsoType(source)
-        source.has("section") -> SeeAlsoGuide(source)
+        source.has("section") -> EmptySeeAlso
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
     }
 
@@ -1142,7 +1137,7 @@ private fun getDocumentation(
         value = value,
         defaultValue = defaultValue,
         exceptions = exceptions,
-        seeAlso = seeAlso
+        seeAlso = seeAlso?.filter { it !is EmptySeeAlso }
     )
 
     additionalDocumentation?.apply {
