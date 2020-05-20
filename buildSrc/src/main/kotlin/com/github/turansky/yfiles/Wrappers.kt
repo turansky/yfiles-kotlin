@@ -21,7 +21,7 @@ internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Com
 
     protected val summary: String? by summary()
     protected val remarks: String? by remarks()
-    protected val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
+    protected val seeAlso: List<SeeAlso> by seeAlso()
 
     override fun compareTo(other: Declaration): Int =
         name.compareTo(other.name)
@@ -48,7 +48,7 @@ internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasC
     override val classId = id
 
     private val summary: String? by summary()
-    private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
+    private val seeAlso: List<SeeAlso> by seeAlso()
 
     private val parameters: List<SignatureParameter> by list(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -364,6 +364,8 @@ private class SeeAlsoDoc(private val id: String) : SeeAlso() {
             href = "$DOC_BASE_URL/#/api/$id"
         )
 }
+
+private fun seeAlso() = list(::parseSeeAlso)
 
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
     when {
@@ -976,7 +978,7 @@ internal class Event(
     private val id: String by string()
     val name: String by string()
     private val summary: String? by summary()
-    private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
+    private val seeAlso: List<SeeAlso> by seeAlso()
     private val add: EventListener by eventListener(parent)
     private val remove: EventListener by eventListener(parent)
     private val listeners = listOf(add, remove)
