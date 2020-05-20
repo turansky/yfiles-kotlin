@@ -127,10 +127,6 @@ private class SimpleGeneratorContext(
         mode: ContentMode?,
         content: String
     ) {
-        if (mode == FUNCTION) {
-            return
-        }
-
         val packageId = classId.substringBeforeLast(".")
         val dirPath = packageId.replace(".", "/")
         val fileName = when (mode) {
