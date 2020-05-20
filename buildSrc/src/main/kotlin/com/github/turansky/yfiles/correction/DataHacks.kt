@@ -157,7 +157,11 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "normalizedLayerId",
         "uCapDP",
         "w",
-        "weight" -> INT
+        "weight",
+        "initialLabel",
+        "edgeDirectedness",
+        "communityIndex"
+        -> INT
 
         "cost",
         "cost0DP",
@@ -165,8 +169,12 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "edgeCost",
         "edgeCosts",
         "edgeWeights",
+        "nodeWeight",
+        "edgeWeight",
         "heuristicCost",
-        "supplyDP" -> DOUBLE
+        "supplyDP",
+        "initialPageRank"
+        -> DOUBLE
 
         else -> throw IllegalArgumentException("No type parameter for data map: $name")
     }
