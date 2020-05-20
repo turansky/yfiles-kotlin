@@ -19,7 +19,7 @@ internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
         .apply { fixInsetsDeclaration() }
         .apply { mergeDeclarations() }
         .apply { removeFromFactories() }
-        .apply { removeCreateFactories() }
+        .apply { removeRedundantCreateFactories() }
         .toString()
         .fixSystemPackage()
         .fixClassDeclaration()
@@ -109,21 +109,22 @@ private fun JSONObject.removeFromFactories() {
 private fun JSONObject.isFromFactory(): Boolean =
     isStaticMethod("from") && get(PARAMETERS).length() == 1
 
-private fun JSONObject.removeCreateFactories() {
+private fun JSONObject.removeRedundantCreateFactories() {
     flatMap(TYPES)
         .filter { it[GROUP] == "interface" }
-        .filter { it[NAME] != "IHitTestable" }
         .mapNotNull { it.opt(METHODS) }
         .forEach { methods ->
             methods.removeAll { method ->
                 method as JSONObject
-                method.isCreateFactory()
+                method.isRedundantCreateFactory()
             }
         }
 }
 
-private fun JSONObject.isCreateFactory(): Boolean =
+private fun JSONObject.isRedundantCreateFactory(): Boolean =
     isStaticMethod("create")
+            && optBoolean("qii")
+            && get(PARAMETERS).length() != 1
 
 private fun JSONObject.isStaticMethod(name: String): Boolean =
     STATIC in get(MODIFIERS) && get(NAME) == name
