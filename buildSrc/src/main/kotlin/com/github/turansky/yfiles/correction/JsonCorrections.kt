@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.correction.CorrectionMode.NORMAL
+import com.github.turansky.yfiles.correction.CorrectionMode.PROGRESSIVE
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.lang.Action3",
@@ -136,7 +137,13 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
     ParameterData("PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
     ParameterData("IArrow", "getBoundsProvider", "directionVector") to "direction",
-    ParameterData("StripeSelection", "isSelected", "stripe") to "item"
+    ParameterData("StripeSelection", "isSelected", "stripe") to "item",
+
+    ParameterData("NodeReshapeHandleProvider", "getHandle", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "dragFinished", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "handleMove", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "initializeDrag", "inputModeContext", mode = PROGRESSIVE) to "context"
 )
 
 internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
