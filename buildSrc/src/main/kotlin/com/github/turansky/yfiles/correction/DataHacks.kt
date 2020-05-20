@@ -231,7 +231,11 @@ private fun getDataMapsNumberTypeParameter(name: String): String =
         "rank",
         "result",
         "subtreeDepthMap",
-        "subtreeSizeMap" -> INT
+        "subtreeSizeMap",
+        "kValue",
+        "finalLabel",
+        "communityIndex"
+        -> INT
 
         "centrality",
         "closeness",
@@ -239,7 +243,11 @@ private fun getDataMapsNumberTypeParameter(name: String): String =
         "edgeCentrality",
         "map",
         "maxDist",
-        "nodeCentrality" -> DOUBLE
+        "nodeCentrality",
+        "centralityMap",
+        "pageRank",
+        "coefficientMap"
+        -> DOUBLE
 
         else -> throw IllegalArgumentException("No type parameter for data map: $name")
     }
