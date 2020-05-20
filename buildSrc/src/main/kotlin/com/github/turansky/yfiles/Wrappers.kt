@@ -6,6 +6,8 @@ import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
+private const val DEPRECATED_ANNOTATION = """@Deprecated("Read documentation for more information")"""
+
 internal sealed class JsonWrapper(override val source: JSONObject) : HasSource {
     open fun toCode(): String =
         throw IllegalStateException("toCode() method must be overridden")
@@ -576,6 +578,10 @@ internal class Property(
             """.trimMargin()
         }
 
+        if (modifiers.deprecated) {
+            str = DEPRECATED_ANNOTATION + "\n" + str
+        }
+
         return "$documentation$str"
     }
 
@@ -659,6 +665,7 @@ internal class Method(
     private val final = modifiers.final
     private val open = !static && !final
 
+    private val deprecated = modifiers.deprecated
     private val hidden = modifiers.hidden
 
     val qii by boolean()
@@ -751,8 +758,11 @@ internal class Method(
         val operator = exp(isOperatorMode(), "operator")
 
         var code = "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
-        if (hidden) {
-            code = HIDDEN_METHOD_ANNOTATION + "\n" + code
+        when {
+            deprecated ->
+                code = DEPRECATED_ANNOTATION + "\n" + code
+            hidden ->
+                code = HIDDEN_METHOD_ANNOTATION + "\n" + code
         }
 
         return documentation + code

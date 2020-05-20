@@ -133,6 +133,7 @@ private val PROPERTY_MODIFIERS = setOf(
 internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers, PROPERTY_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
+    val deprecated = has(DEPRECATED)
 
     val mode = when {
         has(RO) -> READ_ONLY
@@ -169,6 +170,7 @@ private val METHOD_MODIFIERS = setOf(
 internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, METHOD_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
+    val deprecated = has(DEPRECATED)
 
     val abstract = has(ABSTRACT)
     val protected = has(PROTECTED)
