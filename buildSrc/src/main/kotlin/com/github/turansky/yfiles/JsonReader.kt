@@ -7,6 +7,11 @@ import org.json.JSONObject
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 
+private const val FROM = "from"
+private const val CREATE = "create"
+
+private const val QII = "qii"
+
 internal fun File.readJson(): JSONObject =
     readText(UTF_8)
         .run { substring(indexOf("{")) }
@@ -107,7 +112,7 @@ private fun JSONObject.removeFromFactories() {
 }
 
 private fun JSONObject.isFromFactory(): Boolean =
-    isStaticMethod("from") && get(PARAMETERS).length() == 1
+    isStaticMethod(FROM) && get(PARAMETERS).length() == 1
 
 private fun JSONObject.removeRedundantCreateFactories() {
     flatMap(TYPES)
@@ -118,12 +123,17 @@ private fun JSONObject.removeRedundantCreateFactories() {
                 method as JSONObject
                 method.isRedundantCreateFactory()
             }
+
+            methods.asSequence()
+                .filterIsInstance<JSONObject>()
+                .filter { it.isStaticMethod(CREATE) }
+                .forEach { it.put(QII, true) }
         }
 }
 
 private fun JSONObject.isRedundantCreateFactory(): Boolean =
-    isStaticMethod("create")
-            && optBoolean("qii")
+    isStaticMethod(CREATE)
+            && optBoolean(QII)
             && get(PARAMETERS).length() != 1
 
 private fun JSONObject.isStaticMethod(name: String): Boolean =
