@@ -761,14 +761,23 @@ internal class Method(
         return documentation + code
     }
 
-    fun toQiiCode(delegateType: String): String {
+    fun toQiiCode(): String? {
         require(qii)
-        val parameter = parameters.single()
-        val factoryGenerics = parent.generics
+        parent as Interface
 
+        val functionalMethod = parent.functionalMethod ?: return null
+        val delegateName = functionalMethod.name
+        val delegateType = """(
+            ${functionalMethod.parameters.byCommaLine { it.declaration }}
+            ) -> ${(functionalMethod.returns?.type ?: UNIT)} 
+        """.trimIndent()
+
+        val factoryGenerics = parent.generics
         val code = """
-            fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(${parameter.name}: $delegateType)${getReturnSignature()} =
-                ${parent.name}.$AS_DYNAMIC.$name(${parameter.name})
+            fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(
+                $delegateName: $delegateType
+            )${getReturnSignature()} =
+                ${parent.name}.$AS_DYNAMIC.$name($delegateName)
         """.trimIndent()
 
         return documentation + code
