@@ -131,7 +131,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val memberProperties: List<Property> = properties.filter { !it.static }
     val staticProperties: List<Property> = properties.filter { it.static }
 
-    private val methods: List<Method> by declarationList(::Method)
+    protected val methods: List<Method> by declarationList(::Method)
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
     val extensionMethods: List<Method> by lazy {
@@ -202,6 +202,9 @@ val NON_FUNCTIONAL = setOf(
 )
 
 internal class Interface(source: JSONObject) : ExtendedType(source) {
+    val qiiMethod: Method?
+        get() = methods.singleOrNull { it.qii }
+
     val functionalMethod: Method?
         get() = when {
             implementedTypes().isNotEmpty() -> null
@@ -758,12 +761,17 @@ internal class Method(
         return documentation + code
     }
 
-    fun toWrapperCode(wrapper: String): String {
-        return """
-            override fun $name(${kotlinParametersString()})${getReturnSignature()} {
-                ${exp(returns != null, "return ")}$wrapper(${parameters.byComma { it.name }})    
-            }
+    fun toQiiCode(delegateType: String): String {
+        require(qii)
+        val parameter = parameters.single()
+        val factoryGenerics = parent.generics
+
+        val code = """
+            fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(${parameter.name}: $delegateType)${getReturnSignature()} =
+                ${parent.name}.$AS_DYNAMIC.$name(${parameter.name})
         """.trimIndent()
+
+        return documentation + code
     }
 
     fun toStaticOperatorExtension(): Method? {

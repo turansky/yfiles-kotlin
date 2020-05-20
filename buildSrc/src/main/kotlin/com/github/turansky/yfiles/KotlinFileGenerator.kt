@@ -60,26 +60,13 @@ internal class KotlinFileGenerator(
         context: GeneratorContext,
         type: Interface
     ) {
-        val method = type.functionalMethod ?: return
-        val delegateType = "(" + method.parameters.byComma { it.declaration } + ") -> " +
-                (method.returns?.type ?: UNIT)
+        val qiiMethod = type.qiiMethod ?: return
 
-        val name = type.name
-        val wrapperName = type.name + "_fromDelegate"
-        val generics = type.generics
+        val functionalMethod = type.functionalMethod ?: return
+        val delegateType = "(" + functionalMethod.parameters.byComma { it.declaration } + ") -> " +
+                (functionalMethod.returns?.type ?: UNIT)
 
-        context[type.classId, FUNCTION] = """
-            fun ${generics.wrapperDeclaration} $name(
-                delegate: $delegateType
-            ): $name${generics.asAliasParameters()} =
-                $wrapperName(delegate)
-            
-            private class $wrapperName${generics.wrapperDeclaration}(
-                private val delegate: $delegateType
-            ): $name${generics.asAliasParameters()} {
-                ${method.toWrapperCode("delegate")}
-            }
-        """.trimIndent()
+        context[type.classId, FUNCTION] = qiiMethod.toQiiCode(delegateType)
     }
 
     abstract inner class GeneratedFile(private val declaration: Type) {
