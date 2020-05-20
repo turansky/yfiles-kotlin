@@ -10,6 +10,7 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.lang.Func1",
     "yfiles.lang.Func4",
     "yfiles.lang.Func5",
+    "yfiles.input.HitTestableHandler",
     "yfiles.input.KeyEventHandler"
 )
 
