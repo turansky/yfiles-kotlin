@@ -32,13 +32,14 @@ internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Com
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
     companion object {
+        private val FACTORY_MAP = mapOf(
+            "class" to ::Class,
+            "interface" to ::Interface,
+            "enum" to ::Enum
+        )
+
         fun parseType(source: JSONObject): Type =
-            when (val group = source[GROUP]) {
-                "class" -> Class(source)
-                "interface" -> Interface(source)
-                "enum" -> Enum(source)
-                else -> throw IllegalArgumentException("Undefined type group '$group'")
-            }
+            FACTORY_MAP.getValue(source[GROUP])(source)
     }
 
     val types: List<Type> by list(::parseType)
