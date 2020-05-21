@@ -79,6 +79,7 @@ internal fun applyHacks(api: JSONObject) {
     applyDataTagHacks(source)
     applyStyleTagHacks(source)
     applyResourceHacks(source)
+    applyTemplatesHacks(source)
     applyConvertersHacks(source)
     applyEventDispatcherHacks(source)
     applyCommandHacks(source)

@@ -10,7 +10,7 @@ internal abstract class SourceBase(private val api: JSONObject) {
 
     private val types: List<JSONObject> = api.flatMap(TYPES).toList()
 
-    private val typeMap = types.associateBy { it.uid }
+    private val typeMap = types.associateBy { it.uid }.toMutableMap()
 
     fun types(): Sequence<JSONObject> =
         types.asSequence()
@@ -29,4 +29,9 @@ internal abstract class SourceBase(private val api: JSONObject) {
 
     private val JSONObject.uid: String
         get() = opt(ES6_NAME) ?: get(NAME)
+
+    fun add(type: JSONObject) {
+        api[TYPES].put(type)
+        typeMap[type[NAME]] = type
+    }
 }

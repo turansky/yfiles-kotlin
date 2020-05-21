@@ -35,10 +35,9 @@ internal fun applyConvertersHacks(source: Source) {
         JS_ANY
     )
 
-    source.types()
-        .filter { it[ID].startsWith("yfiles.styles.") }
-        .optFlatMap(CorrectionMode.getValue(CONSTANTS, PROPERTIES))
-        .filter { it[NAME] == "CONVERTERS" }
-        .filter { it[TYPE] in likeObjectTypes }
-        .forEach { it[TYPE] = CONVERTERS }
+    source.type(TEMPLATES_NAME)
+        .flatMap(CorrectionMode.getValue(CONSTANTS, PROPERTIES))
+        .first { it[NAME] == "CONVERTERS" }
+        .also { check(it[TYPE] in likeObjectTypes) }
+        .set(TYPE, CONVERTERS)
 }
