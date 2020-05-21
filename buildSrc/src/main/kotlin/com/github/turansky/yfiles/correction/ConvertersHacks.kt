@@ -37,7 +37,7 @@ internal fun applyConvertersHacks(source: Source) {
 
     source.types()
         .filter { it[ID].startsWith("yfiles.styles.") }
-        .optFlatMap(CONSTANTS)
+        .optFlatMap(CorrectionMode.getValue(CONSTANTS, PROPERTIES))
         .filter { it[NAME] == "CONVERTERS" }
         .filter { it[TYPE] in likeObjectTypes }
         .forEach { it[TYPE] = CONVERTERS }
