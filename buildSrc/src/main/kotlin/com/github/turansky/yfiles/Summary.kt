@@ -31,6 +31,8 @@ private fun String.fixApiLinks(): String {
         .replace("</y-dataprovider-doc>", ".")
         .replace("<y-dataacceptor-doc>", "A data acceptor key ")
         .replace("</y-dataacceptor-doc>", ".")
+        .replace("[$JS_OBJECT.", "[$YOBJECT.")
+        .replace("[yfiles.lang.Object.", "[$YOBJECT.")
         .replace("[$JS_STRING]", "[$STRING]")
         .replace("[$JS_NUMBER]", "[Number]")
         .replace("[$JS_NUMBER.", "[$DOUBLE.")
