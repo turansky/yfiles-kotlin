@@ -15,6 +15,9 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
 )
 
 internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
+    PropertyDeclaration("YList", "firstCell", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("YList", "lastCell", mode = PROGRESSIVE) to false,
+
     PropertyDeclaration("Graph", "firstEdge", mode = PROGRESSIVE) to false,
     PropertyDeclaration("Graph", "firstNode", mode = PROGRESSIVE) to false,
     PropertyDeclaration("Graph", "lastEdge", mode = PROGRESSIVE) to false,
@@ -226,7 +229,7 @@ internal val BROKEN_NULLABILITY_METHODS = setOf(
     "applyLayoutCore"
 )
 
-internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
+internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Geom", methodName = "calcIntersection") to true,
     MethodDeclaration(className = "ShortestPathAlgorithm", methodName = "shortestPair") to true,
     MethodDeclaration(className = "YOrientedRectangle", methodName = "intersectionPoint") to true,
@@ -235,11 +238,10 @@ internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
 
     MethodDeclaration(className = "PartitionGrid", methodName = "getPartitionGrid") to true,
     MethodDeclaration(className = "PortConstraint", methodName = "getSPC") to true,
-    MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true
-)
+    MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true,
 
-internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
+    MethodDeclaration(className = "Graph", methodName = "firstOutEdge", mode = NORMAL) to true,
     MethodDeclaration(className = "YNode", methodName = "getEdge", mode = NORMAL) to true,
     MethodDeclaration(className = "YNode", methodName = "getEdgeFrom", mode = NORMAL) to true,
     MethodDeclaration(className = "YNode", methodName = "getEdgeTo", mode = NORMAL) to true,
