@@ -452,8 +452,9 @@ private fun fieldToProperties(source: Source) {
                 return@forEach
             }
 
+            val noneIsProperty = CorrectionMode.isProgressive() && type[NAME] == "IArrow"
             val additionalProperties = type.flatMap(FIELDS)
-                .filter { STATIC !in it[MODIFIERS] }
+                .filter { STATIC !in it[MODIFIERS] || (noneIsProperty && it[NAME] == "NONE") }
                 .onEach {
                     val modifiers = it[MODIFIERS]
                     modifiers.put(if (FINAL in modifiers) RO else FINAL)
@@ -468,7 +469,7 @@ private fun fieldToProperties(source: Source) {
             }
 
             val additionalConstants = type.flatMap(FIELDS)
-                .filter { STATIC in it[MODIFIERS] }
+                .filter { it !in additionalProperties }
                 .toList()
 
             if (additionalConstants.isNotEmpty()) {
