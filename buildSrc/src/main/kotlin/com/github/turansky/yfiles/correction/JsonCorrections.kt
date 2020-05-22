@@ -170,9 +170,15 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("IGraph", "contains", "item") to false,
     ParameterData("IGraph", "isGroupNode", "node") to false,
     ParameterData("IGraph", "setIsGroupNode", "node") to false,
+    ParameterData("IGraph", "addPort", "locationParameter", mode = NORMAL) to true,
+    ParameterData("IGraph", "addPort", "style", mode = NORMAL) to true,
+
     ParameterData("DefaultGraph", "contains", "item") to false,
     ParameterData("DefaultGraph", "isGroupNode", "node") to false,
     ParameterData("DefaultGraph", "setIsGroupNode", "node") to false,
+    ParameterData("DefaultGraph", "addPort", "locationParameter", mode = NORMAL) to true,
+    ParameterData("DefaultGraph", "addPort", "style", mode = NORMAL) to true,
+
     ParameterData("FilteredGraphWrapper", "contains", "item") to false,
     ParameterData("FilteredGraphWrapper", "isGroupNode", "node") to false,
     ParameterData("FilteredGraphWrapper", "setIsGroupNode", "node") to false,
