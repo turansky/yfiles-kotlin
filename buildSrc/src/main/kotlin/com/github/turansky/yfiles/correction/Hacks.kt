@@ -246,6 +246,23 @@ private fun fixMethodParameterOptionality(source: Source) {
         .filter { it[NAME] == "content" }
         .map { it[MODIFIERS] }
         .forEach { it.removeItem(OPTIONAL) }
+
+    if (!CorrectionMode.isNormal()) {
+        return
+    }
+
+    source.type("PortCandidate").apply {
+        get(METHODS).removeAll {
+            it as JSONObject
+            it[NAME] == "createCandidate" && it[PARAMETERS].length() == 1
+        }
+
+        flatMap(METHODS)
+            .filter { it[NAME] == "createCandidate" }
+            .single { it[PARAMETERS].length() == 2 }
+            .secondParameter
+            .changeOptionality(true)
+    }
 }
 
 private fun fixMethodParameterNullability(source: Source) {
