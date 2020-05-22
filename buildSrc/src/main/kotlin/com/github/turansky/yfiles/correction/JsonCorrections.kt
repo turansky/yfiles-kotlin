@@ -23,11 +23,13 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleNode", "tag") to true,
     PropertyDeclaration("SimplePort", "tag") to true,
 
+    PropertyDeclaration("YNode", "graph", mode = NORMAL) to true,
     PropertyDeclaration("YNode", "firstInEdge") to true,
     PropertyDeclaration("YNode", "firstOutEdge") to true,
     PropertyDeclaration("YNode", "lastInEdge") to true,
     PropertyDeclaration("YNode", "lastOutEdge") to true,
 
+    PropertyDeclaration("Edge", "graph", mode = NORMAL) to true,
     PropertyDeclaration("Edge", "nextInEdge") to true,
     PropertyDeclaration("Edge", "nextOutEdge") to true,
     PropertyDeclaration("Edge", "prevInEdge") to true,
@@ -233,6 +235,10 @@ internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
 
 internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
+    MethodDeclaration(className = "YNode", methodName = "getEdge", mode = NORMAL) to true,
+    MethodDeclaration(className = "YNode", methodName = "getEdgeFrom", mode = NORMAL) to true,
+    MethodDeclaration(className = "YNode", methodName = "getEdgeTo", mode = NORMAL) to true,
+
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
     MethodDeclaration(className = "IEnumerable", methodName = "elementAt") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
@@ -790,7 +796,8 @@ internal data class ParameterData(
 
 internal data class PropertyDeclaration(
     val className: String,
-    val propertyName: String
+    val propertyName: String,
+    val mode: CorrectionMode? = null
 )
 
 internal data class PropertyData(
@@ -801,7 +808,8 @@ internal data class PropertyData(
 
 internal data class MethodDeclaration(
     val className: String,
-    val methodName: String
+    val methodName: String,
+    val mode: CorrectionMode? = null
 )
 
 internal data class MethodData(

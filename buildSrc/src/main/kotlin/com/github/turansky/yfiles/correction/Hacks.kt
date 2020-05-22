@@ -187,12 +187,15 @@ private fun fixPropertyType(source: Source) {
 }
 
 private fun fixPropertyNullability(source: Source) {
-    PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
-        source
-            .type(className)
-            .property(propertyName)
-            .changeNullability(nullable)
-    }
+    PROPERTY_NULLABILITY_CORRECTION
+        .asSequence()
+        .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
+        .forEach { (declaration, nullable) ->
+            source
+                .type(declaration.className)
+                .property(declaration.propertyName)
+                .changeNullability(nullable)
+        }
 
     source.type("SvgVisualGroup")
         .get(PROPERTIES)
@@ -323,10 +326,12 @@ private fun fixMethodNullability(source: Source) {
         }
 
     METHOD_NULLABILITY_MAP
-        .forEach { (className, methodName), nullable ->
-            source.type(className)
+        .asSequence()
+        .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
+        .forEach { (declaration, nullable) ->
+            source.type(declaration.className)
                 .flatMap(METHODS)
-                .filter { it[NAME] == methodName }
+                .filter { it[NAME] == declaration.methodName }
                 .forEach { it.changeNullability(nullable) }
         }
 }
