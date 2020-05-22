@@ -1,8 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.STATIC
-import com.github.turansky.yfiles.YCLASS
+import com.github.turansky.yfiles.*
 import org.json.JSONObject
 
 internal fun fixNullability(source: Source) {
@@ -736,8 +734,8 @@ private fun fixRouterNullability(source: Source) {
     )
 
     val excludedTypes = setOf(
-        "boolean",
-        "number",
+        JS_BOOLEAN,
+        JS_NUMBER,
 
         "yfiles.router.ChannelOrientation"
     )
