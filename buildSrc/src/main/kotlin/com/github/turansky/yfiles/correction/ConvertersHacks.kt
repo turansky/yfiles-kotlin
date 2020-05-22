@@ -13,18 +13,20 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
             |@JsName("Object")
             |sealed external class Converters
             |
-            |operator fun <V, R : Any> Converters.set(
+            |fun <V, R : Any> Converters.put(
             |    name: String,
             |    converter: (value: V) -> R
-            |) {
+            |): Converters {
             |    asDynamic()[name] = converter
+            |    return this
             |}
             |
-            |operator fun <V, P, R : Any> Converters.set(
+            |fun <V, P, R : Any> Converters.put(
             |    name: String,
             |    converter: (value: V, parameter: P) -> R
-            |) {
+            |): Converters {
             |    asDynamic()[name] = converter
+            |    return this
             |}
         """.trimMargin()
 }
