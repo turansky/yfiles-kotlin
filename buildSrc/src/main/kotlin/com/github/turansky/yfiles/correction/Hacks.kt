@@ -95,6 +95,8 @@ internal fun applyHacks(api: JSONObject) {
     applyExtensionHacks(source)
     applySingletonHacks(source)
     fixConstructors(source)
+
+    markDeprecatedItems(source)
 }
 
 private fun cleanYObject(source: Source) {
@@ -554,4 +556,35 @@ private fun fixMethodGenericBounds(source: Source) {
         .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
+}
+
+private fun markDeprecatedItems(source: Source) {
+    if (!CorrectionMode.isNormal()) {
+        return
+    }
+
+    source.type("HierarchicLayout").apply {
+        sequenceOf(
+            "createLayerConstraintFactory",
+            "createSequenceConstraintFactory"
+        ).map { method(it) }
+            .forEach { it[MODIFIERS].put(DEPRECATED) }
+    }
+
+    source.type("HierarchicLayoutData").apply {
+        sequenceOf(
+            "layerConstraintFactory",
+            "sequenceConstraintFactory"
+        ).map { get(PROPERTIES)[it] }
+            .forEach { it[MODIFIERS].put(DEPRECATED) }
+    }
+
+    source.type("EdgeRouter").apply {
+        sequenceOf(
+            "maximumPolylineSegmentRatio",
+            "polylineRouting",
+            "preferredPolylineSegmentLength"
+        ).map { get(PROPERTIES)[it] }
+            .forEach { it[MODIFIERS].put(DEPRECATED) }
+    }
 }
