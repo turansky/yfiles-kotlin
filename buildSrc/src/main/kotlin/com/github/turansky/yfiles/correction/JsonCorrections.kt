@@ -185,10 +185,14 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("GraphWrapperBase", "contains", "item") to false,
     ParameterData("GraphWrapperBase", "isGroupNode", "node") to false,
     ParameterData("GraphWrapperBase", "setIsGroupNode", "node") to false,
+    ParameterData("GraphWrapperBase", "addPort", "locationParameter", mode = NORMAL) to true,
+    ParameterData("GraphWrapperBase", "addPort", "style", mode = NORMAL) to true,
 
     ParameterData("IGraph", "addPortAt", "style") to true,
     ParameterData("ILookupDecorator", "add", "nullIsFallback") to true,
     ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
+
+    ParameterData("DefaultLayoutGraph", "setLayout", "layout", mode = NORMAL) to false,
 
     ParameterData("GraphClipboard", "isDummy", "item") to false,
     ParameterData("GraphModelManager", "update", "item") to false,
