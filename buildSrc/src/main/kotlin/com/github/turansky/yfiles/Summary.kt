@@ -54,6 +54,8 @@ private fun String.fixMarkdown(): String {
         .replace(" &lt;img> ", " `<img>` ")
         .replace(" IEnumerable>TSource&lt; ", " `IEnumerable<TSource>` ")
         .replace("IEnumerable&lt;IEdge&gt;", "IEnumerable<IEdge>")
+        .replace(" &lt; ", " < ")
+        .replace(" &lt;0", " <0")
         .replace("<pre><code>", "\n```\n")
         .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")
