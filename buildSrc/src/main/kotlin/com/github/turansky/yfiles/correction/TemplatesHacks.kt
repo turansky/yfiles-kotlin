@@ -5,7 +5,7 @@ import org.json.JSONObject
 
 private const val TEMPLATES = "yfiles.styles.Templates"
 internal val TEMPLATES_NAME = TEMPLATES.substringAfterLast(".")
-internal const val TEMPLATES_ALIAS = "StringTemplateNodeStyle"
+private const val TEMPLATES_ALIAS = "StringTemplateNodeStyle"
 
 private val COPIED_KEYS = setOf(
     CONSTANTS,
