@@ -52,6 +52,7 @@ private fun String.fixMarkdown(): String {
         .replace("</y-dataacceptor-doc>", ".")
         .replace(" &lt;default> ", " `<default>` ")
         .replace(" &lt;img> ", " `<img>` ")
+        .replace(" IEnumerable>TSource<)", " IEnumerable<TSource>)")
         .replace(" IEnumerable>TSource&lt; ", " `IEnumerable<TSource>` ")
         .replace("IEnumerable&lt;IEdge&gt;", "IEnumerable<IEdge>")
         .replace(" &lt; ", " < ")
