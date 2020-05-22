@@ -193,6 +193,7 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
 
     ParameterData("DefaultLayoutGraph", "setLayout", "layout", mode = NORMAL) to false,
+    ParameterData("DefaultLayoutGraph", "setLayout", "layout", true, mode = NORMAL) to false,
 
     ParameterData("GraphClipboard", "isDummy", "item") to false,
     ParameterData("GraphModelManager", "update", "item") to false,
