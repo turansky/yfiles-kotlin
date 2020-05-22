@@ -565,10 +565,9 @@ private fun markDeprecatedItems(source: Source) {
     }
 
     source.type("HierarchicLayout").apply {
-        sequenceOf(
-            "createLayerConstraintFactory",
-            "createSequenceConstraintFactory"
-        ).map { method(it) }
+        flatMap(METHODS)
+            .filter { it[NAME] == "createLayerConstraintFactory" || it[NAME] == "createSequenceConstraintFactory" }
+            .filter { it.firstParameter[TYPE] == "yfiles.graph.IGraph" }
             .forEach { it[MODIFIERS].put(DEPRECATED) }
     }
 
