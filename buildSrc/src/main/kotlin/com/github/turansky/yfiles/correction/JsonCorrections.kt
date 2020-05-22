@@ -15,8 +15,8 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
 )
 
 internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
-    PropertyDeclaration("YList", "firstCell", mode = PROGRESSIVE) to false,
-    PropertyDeclaration("YList", "lastCell", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("YList", "firstCell", mode = NORMAL) to true,
+    PropertyDeclaration("YList", "lastCell", mode = NORMAL) to true,
 
     PropertyDeclaration("Graph", "firstEdge", mode = NORMAL) to true,
     PropertyDeclaration("Graph", "firstNode", mode = NORMAL) to true,
