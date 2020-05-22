@@ -53,6 +53,8 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
     PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
 
+    PropertyDeclaration("HierarchicalClusteringResult", "dendrogramRoot", mode = PROGRESSIVE) to false,
+
     PropertyDeclaration("ClickInputMode", "inputModeContext") to true,
     PropertyDeclaration("ContextMenuInputMode", "inputModeContext") to true,
     PropertyDeclaration("CreateBendInputMode", "inputModeContext") to true,
@@ -235,6 +237,8 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "YOrientedRectangle", methodName = "intersectionPoint") to true,
 
     MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true,
+
+    MethodDeclaration("HierarchicalClusteringResult", "getDendrogramNode", mode = PROGRESSIVE) to false,
 
     MethodDeclaration(className = "PartitionGrid", methodName = "getPartitionGrid") to true,
     MethodDeclaration(className = "PortConstraint", methodName = "getSPC") to true,
