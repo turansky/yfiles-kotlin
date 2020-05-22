@@ -18,10 +18,10 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("YList", "firstCell", mode = PROGRESSIVE) to false,
     PropertyDeclaration("YList", "lastCell", mode = PROGRESSIVE) to false,
 
-    PropertyDeclaration("Graph", "firstEdge", mode = PROGRESSIVE) to false,
-    PropertyDeclaration("Graph", "firstNode", mode = PROGRESSIVE) to false,
-    PropertyDeclaration("Graph", "lastEdge", mode = PROGRESSIVE) to false,
-    PropertyDeclaration("Graph", "lastEdge", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("Graph", "firstEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Graph", "firstNode", mode = NORMAL) to true,
+    PropertyDeclaration("Graph", "lastEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Graph", "lastNode", mode = NORMAL) to true,
 
     PropertyDeclaration("DefaultGraph", "tag") to true,
     PropertyDeclaration("GraphWrapperBase", "tag") to true,
