@@ -15,6 +15,11 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
 )
 
 internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
+    PropertyDeclaration("Graph", "firstEdge", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("Graph", "firstNode", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("Graph", "lastEdge", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("Graph", "lastEdge", mode = PROGRESSIVE) to false,
+
     PropertyDeclaration("DefaultGraph", "tag") to true,
     PropertyDeclaration("GraphWrapperBase", "tag") to true,
     PropertyDeclaration("SimpleBend", "tag") to true,
