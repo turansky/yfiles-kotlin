@@ -254,7 +254,9 @@ private fun fixMethodParameterOptionality(source: Source) {
     source.type("PortCandidate").apply {
         get(METHODS).removeAll {
             it as JSONObject
-            it[NAME] == "createCandidate" && it[PARAMETERS].length() == 1
+            it[NAME] == "createCandidate" &&
+                    it[PARAMETERS].length() == 1 &&
+                    it.firstParameter[NAME] == "directionMask"
         }
 
         flatMap(METHODS)
