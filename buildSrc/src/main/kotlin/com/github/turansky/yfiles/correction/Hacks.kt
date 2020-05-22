@@ -254,6 +254,17 @@ private fun fixMethodParameterOptionality(source: Source) {
         return
     }
 
+    source.type("GridNodePlacer").apply {
+        val constructor = flatMap(CONSTRUCTORS)
+            .filter { it.has(PARAMETERS) }
+            .maxBy { it[PARAMETERS].length() }!!
+
+        constructor.flatMap(PARAMETERS)
+            .forEach { it.changeOptionality(true) }
+
+        set(CONSTRUCTORS, listOf(constructor))
+    }
+
     source.type("PortCandidate").apply {
         get(METHODS).removeAll {
             it as JSONObject
