@@ -57,6 +57,7 @@ private fun String.fixMarkdown(): String {
         .replace("IEnumerable&lt;IEdge&gt;", "IEnumerable<IEdge>")
         .replace(" &lt; ", " < ")
         .replace(" &lt;0", " <0")
+        .replace("B&#xE9;zier", "Bézier")
         .replace("<pre><code>", "\n```\n")
         .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")
