@@ -38,7 +38,6 @@ internal fun applyTagHacks(source: Source) {
         .flatMap(METHODS)
         .filter { it[NAME].endsWith("TagChanged") }
         .map { it.firstParameter }
-        .onEach { println(it) }
         .forEach { it[TYPE] = it[TYPE].replace(",$JS_OBJECT>", ",$TAG>") }
 
     source.types()
