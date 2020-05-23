@@ -4,6 +4,7 @@ import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.ContentMode.CLASS
 import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.json.get
+import com.github.turansky.yfiles.json.removeAllObjects
 import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
@@ -110,8 +111,7 @@ private fun fixClass(source: Source) {
             .set(TYPE, "T")
 
         get(METHODS).apply {
-            removeAll {
-                it as JSONObject
+            removeAllObjects {
                 STATIC in it[MODIFIERS] && it[NAME] != "fixType"
             }
 

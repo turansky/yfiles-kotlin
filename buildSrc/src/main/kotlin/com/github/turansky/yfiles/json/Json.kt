@@ -32,6 +32,12 @@ internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSO
         .filter(predicate)
 }
 
+internal fun JSONArray.removeAllObjects(predicate: (JSONObject) -> Boolean) {
+    removeAll {
+        predicate(it as JSONObject)
+    }
+}
+
 internal fun JSONObject.strictRemove(key: JKey) {
     requireNotNull(remove(key))
 }

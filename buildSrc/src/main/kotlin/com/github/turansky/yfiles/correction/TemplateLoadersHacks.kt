@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.json.jObject
+import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
 
 private const val TEMPLATE_LOADERS = "yfiles.styles.TemplateLoaders"
@@ -22,8 +23,8 @@ internal fun applyTemplateLoadersHacks(source: Source) {
 }
 
 private fun JSONObject.removeCommonItems() {
-    get(METHODS).removeAll {
-        (it as JSONObject)[NAME] in COPIED_NAMES
+    get(METHODS).removeAllObjects {
+        it[NAME] in COPIED_NAMES
     }
 }
 

@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
 
 private val EXCLUDED_TYPES = setOf(
@@ -22,8 +23,7 @@ private val EXCLUDED_TYPES = setOf(
 )
 
 internal fun excludeUnusedTypes(api: JSONObject) {
-    api[TYPES].removeAll {
-        it as JSONObject
+    api[TYPES].removeAllObjects {
         it[ID] in EXCLUDED_TYPES
     }
 }

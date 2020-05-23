@@ -1,10 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
-import com.github.turansky.yfiles.json.jObject
-import com.github.turansky.yfiles.json.removeItem
-import com.github.turansky.yfiles.json.strictRemove
+import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
 internal fun applyHacks(api: JSONObject) {
@@ -266,8 +263,7 @@ private fun fixMethodParameterOptionality(source: Source) {
     }
 
     source.type("PortCandidate").apply {
-        get(METHODS).removeAll {
-            it as JSONObject
+        get(METHODS).removeAllObjects {
             it[NAME] == "createCandidate" &&
                     it[PARAMETERS].length() == 1 &&
                     it.firstParameter[NAME] == "directionMask"

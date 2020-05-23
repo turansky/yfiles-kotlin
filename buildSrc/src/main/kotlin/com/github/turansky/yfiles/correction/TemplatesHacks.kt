@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.json.jObject
+import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
 
 private const val TEMPLATES = "yfiles.styles.Templates"
@@ -33,8 +34,8 @@ private fun JSONObject.removeCommonItems() {
     COPIED_KEYS
         .filter { has(it) }
         .forEach { key ->
-            get(key).removeAll {
-                (it as JSONObject)[NAME] in COPIED_NAMES
+            get(key).removeAllObjects {
+                it[NAME] in COPIED_NAMES
             }
         }
 }

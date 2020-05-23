@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.correction.*
+import com.github.turansky.yfiles.json.removeAllObjects
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONArray
 import org.json.JSONObject
@@ -103,12 +104,7 @@ private fun JSONObject.fixFunctionSignatures() {
 private fun JSONObject.removeFromFactories() {
     flatMap(TYPES)
         .mapNotNull { it.opt(METHODS) }
-        .forEach { methods ->
-            methods.removeAll { method ->
-                method as JSONObject
-                method.isFromFactory()
-            }
-        }
+        .forEach { it.removeAllObjects { it.isFromFactory() } }
 }
 
 private fun JSONObject.isFromFactory(): Boolean =
@@ -119,10 +115,7 @@ private fun JSONObject.removeRedundantCreateFactories() {
         .filter { it[GROUP] == "interface" }
         .mapNotNull { it.opt(METHODS) }
         .forEach { methods ->
-            methods.removeAll { method ->
-                method as JSONObject
-                method.isRedundantCreateFactory()
-            }
+            methods.removeAllObjects { it.isRedundantCreateFactory() }
 
             methods.asSequence()
                 .filterIsInstance<JSONObject>()
