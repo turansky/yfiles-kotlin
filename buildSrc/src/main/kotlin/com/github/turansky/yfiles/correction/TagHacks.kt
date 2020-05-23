@@ -34,6 +34,13 @@ internal fun applyTagHacks(source: Source) {
         .filter { it[NAME].run { startsWith("copy") && endsWith("Tag") } }
         .forEach { it[RETURNS][TYPE] = TAG }
 
+    source.types("GraphWrapperBase")
+        .flatMap(METHODS)
+        .filter { it[NAME].endsWith("TagChanged") }
+        .map { it.firstParameter }
+        .onEach { println(it) }
+        .forEach { it[TYPE] = it[TYPE].replace(",$JS_OBJECT>", ",$TAG>") }
+
     source.types()
         .optFlatMap(EVENTS)
         .filter { "TagChanged" in it[NAME] }
