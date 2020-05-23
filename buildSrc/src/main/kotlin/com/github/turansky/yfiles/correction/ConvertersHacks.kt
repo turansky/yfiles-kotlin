@@ -13,6 +13,11 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
             |@JsName("Object")
             |sealed external class Converters
             |
+            |inline operator fun Converters.invoke(
+            |    block: Converters.() -> Unit
+            |): Converters =
+            |   apply(block)
+            |
             |fun <V, R : Any> Converters.put(
             |    name: String,
             |    converter: (value: V) -> R
