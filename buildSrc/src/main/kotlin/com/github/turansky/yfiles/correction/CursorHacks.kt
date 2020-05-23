@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
 
 private fun cursor(generic: String): String =
@@ -23,10 +24,20 @@ private fun fixCursor(source: Source) {
         "INodeCursor" to NODE,
         "IPointCursor" to YPOINT
     ).forEach { (className, generic) ->
-        source.type(className)
-            .get(IMPLEMENTS).apply {
+        source.type(className) {
+            get(IMPLEMENTS).apply {
                 put(0, getString(0) + "<$generic>")
             }
+
+            val duplicatedPropertyName = className
+                .removePrefix("I")
+                .removeSuffix("Cursor")
+                .decapitalize()
+
+            get(PROPERTIES).removeAllObjects {
+                it[NAME] == duplicatedPropertyName
+            }
+        }
     }
 }
 
