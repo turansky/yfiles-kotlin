@@ -19,7 +19,7 @@ internal fun generateTooltipUtils(context: GeneratorContext) {
 }
 
 internal fun applyTooltipHacks(source: Source) {
-    source.type("ToolTip").apply {
+    source.type("ToolTip") {
         property("content")[TYPE] = TOOL_TIP_CONTENT
 
         flatMap(METHODS)
@@ -31,7 +31,7 @@ internal fun applyTooltipHacks(source: Source) {
     source.type("ToolTipQueryEventArgs")
         .property("toolTip")[TYPE] = TOOL_TIP_CONTENT
 
-    source.type("MouseHoverInputMode").apply {
+    source.type("MouseHoverInputMode") {
         method("getToolTipContent")[RETURNS][TYPE] = TOOL_TIP_CONTENT
 
         flatMap(METHODS)

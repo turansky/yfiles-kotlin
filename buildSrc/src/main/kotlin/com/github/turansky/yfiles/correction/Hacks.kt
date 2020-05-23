@@ -98,7 +98,7 @@ internal fun applyHacks(api: JSONObject) {
 }
 
 private fun cleanYObject(source: Source) {
-    source.type("YObject").apply {
+    source.type("YObject") {
         set(GROUP, "interface")
 
         strictRemove(METHODS)
@@ -251,7 +251,7 @@ private fun fixMethodParameterOptionality(source: Source) {
         return
     }
 
-    source.type("GridNodePlacer").apply {
+    source.type("GridNodePlacer") {
         val constructor = flatMap(CONSTRUCTORS)
             .filter { it.has(PARAMETERS) }
             .maxBy { it[PARAMETERS].length() }!!
@@ -262,7 +262,7 @@ private fun fixMethodParameterOptionality(source: Source) {
         set(CONSTRUCTORS, listOf(constructor))
     }
 
-    source.type("PortCandidate").apply {
+    source.type("PortCandidate") {
         get(METHODS).removeAllObjects {
             it[NAME] == "createCandidate" &&
                     it[PARAMETERS].length() == 1 &&

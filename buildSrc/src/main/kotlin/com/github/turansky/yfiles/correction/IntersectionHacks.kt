@@ -12,7 +12,7 @@ internal fun applyIntersectionHacks(source: Source) {
             .forEach { it.addGeneric("T") }
     }
 
-    source.type("IIntersectionHandler").apply {
+    source.type("IIntersectionHandler") {
         setSingleTypeParameter(bound = IPLANE_OBJECT)
 
         method("checkIntersection")

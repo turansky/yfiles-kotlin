@@ -29,7 +29,7 @@ private val DP_KEY_GENERIC_MAP = mapOf(
 )
 
 private fun fixClass(source: Source) {
-    source.type(DP_KEY_BASE_CLASS).apply {
+    source.type(DP_KEY_BASE_CLASS) {
         addFirstTypeParameter(DP_KEY_BASE_KEY, JS_OBJECT)
 
         methodParameters(

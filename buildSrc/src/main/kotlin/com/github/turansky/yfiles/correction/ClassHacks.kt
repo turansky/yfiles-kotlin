@@ -99,7 +99,7 @@ internal fun applyClassHacks(source: Source) {
 }
 
 private fun fixClass(source: Source) {
-    source.type("Class").apply {
+    source.type("Class") {
         setSingleTypeParameter(bound = JS_OBJECT)
 
         get(MODIFIERS).put(SEALED)
@@ -126,7 +126,7 @@ private fun fixClass(source: Source) {
 private fun fixEnum(source: Source) {
     val ENUM = "yfiles.lang.Enum"
 
-    source.type("Enum").apply {
+    source.type("Enum") {
         set(ID, YENUM)
         set(NAME, "YEnum")
         set(ES6_NAME, "Enum")

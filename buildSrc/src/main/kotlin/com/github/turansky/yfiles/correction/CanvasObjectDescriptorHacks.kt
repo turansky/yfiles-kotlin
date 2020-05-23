@@ -5,7 +5,7 @@ import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyCanvasObjectDescriptorHacks(source: Source) {
-    source.type("ICanvasObjectDescriptor").apply {
+    source.type("ICanvasObjectDescriptor") {
         setSingleTypeParameter("in T")
 
         fixUserObjectType("T")
@@ -36,7 +36,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         }
 
     val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
-    source.type("DefaultPortCandidateDescriptor").apply {
+    source.type("DefaultPortCandidateDescriptor") {
         get(IMPLEMENTS).apply {
             put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$IPORT_CANDIDATE>")
         }
@@ -62,12 +62,12 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             .forEach { it.addGeneric(typeParameter) }
     }
 
-    source.type("ItemModelManager").apply {
+    source.type("ItemModelManager") {
         get(PROPERTIES)["descriptor"].addGeneric("T")
         method("getDescriptor")[RETURNS].addGeneric("T")
     }
 
-    source.type("GraphModelManager").apply {
+    source.type("GraphModelManager") {
         flatMap(PROPERTIES)
             .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
             .forEach {

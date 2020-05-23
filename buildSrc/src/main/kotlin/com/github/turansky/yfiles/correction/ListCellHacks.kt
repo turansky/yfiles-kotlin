@@ -7,7 +7,7 @@ import org.json.JSONObject
 private const val LIST_CELL = "yfiles.algorithms.ListCell"
 
 internal fun applyListCellHacks(source: Source) {
-    source.type("ListCell").apply {
+    source.type("ListCell") {
         setSingleTypeParameter(bound = JS_OBJECT)
 
         property("info")[TYPE] = "T"

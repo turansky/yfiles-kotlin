@@ -26,18 +26,17 @@ private fun fixComparerInheritors(source: Source) {
         "NodeOrderComparer" to NODE,
         "NodeWeightComparer" to NODE
     ).forEach { (className, generic) ->
-        source.type(className)
-            .apply {
-                get(IMPLEMENTS).apply {
-                    require(length() == 1)
-                    require(get(0) in DEFAULT_COMPARERS)
+        source.type(className) {
+            get(IMPLEMENTS).apply {
+                require(length() == 1)
+                require(get(0) in DEFAULT_COMPARERS)
 
-                    put(0, comparer(generic))
-                }
+                put(0, comparer(generic))
+            }
 
-                method("compare")
-                    .flatMap(PARAMETERS)
-                    .forEach { it[TYPE] = generic }
+            method("compare")
+                .flatMap(PARAMETERS)
+                .forEach { it[TYPE] = generic }
             }
     }
 }

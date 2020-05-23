@@ -18,6 +18,9 @@ internal abstract class SourceBase(private val api: JSONObject) {
     fun type(className: String): JSONObject =
         typeMap.getValue(className)
 
+    fun type(className: String, action: JSONObject.() -> Unit): JSONObject =
+        typeMap.getValue(className).apply(action)
+
     fun types(vararg classNames: String): Sequence<JSONObject> =
         classNames.asSequence()
             .map { type(it) }

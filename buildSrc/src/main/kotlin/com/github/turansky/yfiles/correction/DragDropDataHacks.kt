@@ -10,7 +10,7 @@ internal fun generateDragDropData(context: GeneratorContext) {
 }
 
 internal fun applyDragDropDataHacks(source: Source) {
-    source.type("DragDropItem").apply {
+    source.type("DragDropItem") {
         (flatMap(CONSTRUCTORS) + flatMap(METHODS))
             .flatMap(PARAMETERS)
             .filter { it[NAME] == "data" }

@@ -235,7 +235,7 @@ private fun fixOptionTypes(source: VsdxSource) {
         .parameter("edgeStyleType")
         .addGeneric("yfiles.styles.IEdgeStyle")
 
-    source.type("VssxStencilProviderFactory").apply {
+    source.type("VssxStencilProviderFactory") {
         sequenceOf(
             "createMappedEdgeProvider" to "yfiles.styles.IEdgeStyle",
             "createMappedLabelProvider" to "yfiles.styles.ILabelStyle",
@@ -249,7 +249,7 @@ private fun fixOptionTypes(source: VsdxSource) {
 }
 
 private fun fixGeneric(source: VsdxSource) {
-    source.type("Value").apply {
+    source.type("Value") {
         method("fetch")
             .apply {
                 setSingleTypeParameter("TValue")

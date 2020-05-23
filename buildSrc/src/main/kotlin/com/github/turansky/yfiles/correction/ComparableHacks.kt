@@ -4,11 +4,10 @@ import com.github.turansky.yfiles.ICOMPARABLE
 import org.json.JSONObject
 
 internal fun applyComparableHacks(source: Source) {
-    source.type("IComparable")
-        .apply {
-            setSingleTypeParameter(bound = "IComparable<T>")
-            configureCompareTo("T")
-        }
+    source.type("IComparable") {
+        setSingleTypeParameter(bound = "IComparable<T>")
+        configureCompareTo("T")
+    }
 
     source.types(
             "ColumnDescriptor",
