@@ -33,6 +33,13 @@ internal fun applyTagHacks(source: Source) {
         .flatMap(METHODS)
         .filter { it[NAME].run { startsWith("copy") && endsWith("Tag") } }
         .forEach { it[RETURNS][TYPE] = TAG }
+
+    source.types()
+        .optFlatMap(EVENTS)
+        .filter { "TagChanged" in it[NAME] }
+        .flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+        .map { it.firstParameter }
+        .forEach { it[SIGNATURE] = it[SIGNATURE].replace(",$JS_OBJECT>>", ",$TAG>>") }
 }
 
 private fun looksLikeTag(name: String): Boolean =
