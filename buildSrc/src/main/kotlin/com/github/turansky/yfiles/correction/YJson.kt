@@ -8,7 +8,7 @@ import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
-    optionalArray(METHODS)
+    optFlatMap(METHODS)
         .optFlatMap(PARAMETERS)
 
 internal fun JSONObject.methodParameters(
@@ -165,13 +165,6 @@ internal fun Sequence<JSONObject>.flatMap(key: JArrayKey): Sequence<JSONObject> 
 internal fun Sequence<JSONObject>.optFlatMap(key: JArrayKey): Sequence<JSONObject> =
     filter { it.has(key) }
         .flatMap(key)
-
-internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
-    if (has(key)) {
-        flatMap(key)
-    } else {
-        emptySequence()
-    }
 
 internal val JSONObject.typeParameter: JSONObject
     get() {
