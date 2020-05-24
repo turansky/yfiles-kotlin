@@ -3,7 +3,7 @@ version = "0.3.1-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("org.jetbrains.intellij") version "0.4.20"
+    id("org.jetbrains.intellij") version "0.4.21"
 }
 
 repositories {
