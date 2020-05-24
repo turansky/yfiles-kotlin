@@ -785,7 +785,8 @@ internal class Method(
             fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(
                 $delegateName: $delegateType
             )${getReturnSignature()} =
-                ${parent.name}.$AS_DYNAMIC.$name($delegateName)
+                ${parent.name}.$AS_DYNAMIC
+                    .$name($delegateName)
         """.trimIndent()
 
         return documentation + code
