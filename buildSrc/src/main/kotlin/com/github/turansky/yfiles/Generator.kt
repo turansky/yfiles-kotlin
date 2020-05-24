@@ -64,6 +64,8 @@ fun generateKotlinDeclarations(
     generateTimeSpanExtensions(context, timeSpanClass)
     generateLookupExtensions(context)
 
+    addIteratorSupport(context)
+
     generateResourceTypes(devguideFile.readJson(), context)
 }
 
