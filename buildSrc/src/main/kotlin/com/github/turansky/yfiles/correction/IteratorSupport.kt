@@ -10,6 +10,9 @@ internal fun addIteratorSupport(context: GeneratorContext) {
     context[IENUMERABLE, ITERATOR] = """
         operator fun <T> IEnumerable<T>.iterator(): Iterator<T> =
             EnumeratorIterator(getEnumerator())
+            
+        fun <T> IEnumerable<T>.asSequence(): Sequence<T> =
+            iterator().asSequence()
         
         private class EnumeratorIterator<T>(
             private val source: IEnumerator<T>
@@ -32,6 +35,9 @@ internal fun addIteratorSupport(context: GeneratorContext) {
     context[ICURSOR, ITERATOR] = """
         operator fun <T : Any> ICursor<T>.iterator(): Iterator<T> =
             CursorIterator(this)
+            
+        fun <T : Any> ICursor<T>.asSequence(): Sequence<T> =
+            iterator().asSequence()
         
         private class CursorIterator<T : Any>(
             private val source: ICursor<T>
