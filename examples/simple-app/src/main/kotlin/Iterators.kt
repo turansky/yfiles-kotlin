@@ -24,7 +24,7 @@ fun enumerableIterator() {
 }
 
 fun cursorIterator() {
-    val graph: LayoutGraph = DefaultLayoutGraph().apply {
+    val graph: LayoutGraph = DefaultLayoutGraph {
         createNode()
         createNode()
         createNode()
