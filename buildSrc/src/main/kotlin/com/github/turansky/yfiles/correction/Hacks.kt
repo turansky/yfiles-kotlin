@@ -176,6 +176,9 @@ private fun fixReturnType(source: Source) {
 
     source.type("SvgExport")
         .method("exportSvg")[RETURNS][TYPE] = JS_SVG_SVG_ELEMENT
+
+    source.type("PortCandidateSet")
+        .property("entries")[TYPE] = "$IENUMERABLE<IPortCandidateSetEntry>"
 }
 
 private fun fixPropertyType(source: Source) {
