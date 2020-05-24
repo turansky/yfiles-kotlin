@@ -330,6 +330,11 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "LayoutContext", methodName = "getPageEdge") to true,
     MethodDeclaration(className = "LayoutContext", methodName = "getPageNode") to true,
 
+    MethodDeclaration("CopiedLayoutGraph", "getCopiedEdge", mode = NORMAL) to true,
+    MethodDeclaration("CopiedLayoutGraph", "getCopiedNode", mode = NORMAL) to true,
+    MethodDeclaration("CopiedLayoutGraph", "getOriginalEdge", mode = NORMAL) to true,
+    MethodDeclaration("CopiedLayoutGraph", "getOriginalNode", mode = NORMAL) to true,
+
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "createVisual") to true,
