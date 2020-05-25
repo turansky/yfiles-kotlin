@@ -126,12 +126,13 @@ internal fun JSONObject.setTypeParameters(
 
 internal fun JSONObject.setKeyValueTypeParameters(
     keyName: String = "K",
-    valueName: String = "V"
+    valueName: String = "V",
+    keyBound: String = JS_OBJECT
 ) {
     set(
         TYPE_PARAMETERS,
         jArray(
-            typeParameter(keyName, JS_OBJECT),
+            typeParameter(keyName, keyBound),
             typeParameter(valueName, JS_OBJECT)
         )
     )

@@ -29,7 +29,7 @@ private fun fixGraph(source: Source) {
     val methods = source.type("Graph")[METHODS]
 
     methods["getDataProvider"].apply {
-        setKeyValueTypeParameters()
+        setKeyValueTypeParameters(keyBound = YOBJECT)
         firstParameter[TYPE] = GENERIC_DP_KEY
 
         get(RETURNS)
@@ -37,7 +37,7 @@ private fun fixGraph(source: Source) {
     }
 
     methods["addDataProvider"].apply {
-        setKeyValueTypeParameters()
+        setKeyValueTypeParameters(keyBound = YOBJECT)
         firstParameter[TYPE] = GENERIC_DP_KEY
 
         secondParameter.addGeneric("K,V")
@@ -78,7 +78,7 @@ private fun fixLayoutGraphAdapter(source: Source) {
     val methods = source.type("LayoutGraphAdapter")[METHODS]
 
     methods["getDataProvider"].apply {
-        setKeyValueTypeParameters()
+        setKeyValueTypeParameters(keyBound = YOBJECT)
         firstParameter[TYPE] = GENERIC_DP_KEY
 
         get(RETURNS)
@@ -86,6 +86,9 @@ private fun fixLayoutGraphAdapter(source: Source) {
     }
 
     methods["addDataProvider"].apply {
+        get(TYPE_PARAMETERS).getJSONObject(0)
+            .set(BOUNDS, arrayOf(YOBJECT))
+
         get(PARAMETERS)
             .get("dataKey")
             .set(TYPE, GENERIC_DP_KEY)
