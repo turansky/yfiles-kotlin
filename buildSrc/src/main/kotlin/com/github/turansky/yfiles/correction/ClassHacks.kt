@@ -511,6 +511,8 @@ private val JSONObject.classBoundPair: Pair<String, String>?
 
             val bound = when {
                 generic == "TInterface" -> YOBJECT
+                generic == "TContext" -> YOBJECT
+                generic == "TResult" -> YOBJECT
                 generic == "TModelItem" -> IMODEL_ITEM
                 generic == "TDecoratedType" -> IMODEL_ITEM
                 get(NAME) == "modelItemType" -> IMODEL_ITEM
