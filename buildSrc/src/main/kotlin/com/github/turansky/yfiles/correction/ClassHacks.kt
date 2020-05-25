@@ -429,17 +429,22 @@ private fun addClassBounds(source: Source) {
         .set(BOUNDS, arrayOf(IMODEL_ITEM))
 
     source.types(
+            "DelegateUndoUnit",
+            "ItemCopiedEventArgs"
+        ).map { it.flatMap(TYPE_PARAMETERS).single() }
+        .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
+
+    source.types(
             "ResultItemCollection",
 
             "IObservableCollection",
             "ObservableCollection",
 
-            "DelegateUndoUnit",
-            "ItemCopiedEventArgs",
+            "ItemEventArgs",
 
             "Future"
         ).map { it.flatMap(TYPE_PARAMETERS).single() }
-        .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
+        .forEach { it[BOUNDS] = arrayOf(YOBJECT) }
 
     source.types(
             "ResultItemMapping",
