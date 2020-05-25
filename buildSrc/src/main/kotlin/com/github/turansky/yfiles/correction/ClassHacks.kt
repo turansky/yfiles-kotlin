@@ -164,7 +164,8 @@ private fun addClassGeneric(source: Source) {
             "getOrCreateCopy"
         )
         .forEach {
-            it.setSingleTypeParameter()
+            val bound = if ("lookup" in it[NAME] || "Lookup" in it[NAME]) YOBJECT else null
+            it.setSingleTypeParameter(bound = bound)
 
             it.typeParameter.addGeneric("T")
 
