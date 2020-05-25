@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyDpKeyHacks(source: Source) {
@@ -127,12 +128,17 @@ private fun fixMethodParameters(source: Source) {
         ).forEach { it[TYPE] = edgeDpKey(JS_INT) }
     }
 
-    source.type("LabelingBase")
-        .flatMap(METHODS)
-        .filter { it[NAME] == "label" }
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "key" }
-        .set(TYPE, labelDpKey(JS_BOOLEAN))
+    source.type("LabelingBase").apply {
+        get(CONSTANTS)["LABEL_MODEL_DP_KEY"].also {
+            it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$YOBJECT>")
+        }
+
+        flatMap(METHODS)
+            .filter { it[NAME] == "label" }
+            .flatMap(PARAMETERS)
+            .single { it[NAME] == "key" }
+            .set(TYPE, labelDpKey(JS_BOOLEAN))
+    }
 }
 
 private fun JSONObject.updateDpKeyGeneric(
