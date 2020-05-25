@@ -24,6 +24,9 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
 * [Flags](#flags)
+* [`for` loop](#for-loop)
+  * [`IEnumerable`](#ienumerable)
+  * [`ICursor`](#icursor)
 * [TimeSpan extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
@@ -154,6 +157,46 @@ val inputMode = GraphViewerInputMode {
 }
 
 val nodesAreClickable = NODE in inputMode.clickableItems // true
+```
+
+## `for` loop
+
+#### `IEnumerable`
+```Kotlin
+import yfiles.collections.asSequence
+import yfiles.collections.iterator
+
+val graph: IGraph = DefaultGraph()
+// ...
+
+// iterator() extension allows for loops for IEnumerable
+for (node in graph.nodes) {
+    println("Node layout: ${node.layout}")
+}
+
+// asSequence() extension
+graph.nodes
+    .asSequence()
+    .forEach { println("Node layout: ${node.layout}")}
+```
+
+#### `ICursor`
+```Kotlin
+import yfiles.algorithms.asSequence
+import yfiles.algorithms.iterator
+
+val graph: Graph = DefaultLayoutGraph()
+// ...
+
+// iterator() extension allows for loops for ICursor
+for (node in graph.getNodeCursor()) {
+    println("Node index: ${node.index}")
+}
+
+// asSequence() extension
+graph.getNodeCursor()
+    .asSequence()
+    .forEach { println("Node index: ${node.index}") }
 ```
 
 ## `TimeSpan`
