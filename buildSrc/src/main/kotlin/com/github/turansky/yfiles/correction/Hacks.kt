@@ -148,7 +148,7 @@ private fun fixConstantGenerics(source: Source) {
         .get("EMPTY")
         .also {
             it[TYPE] = it[TYPE]
-                .replace("<T>", "<$JS_OBJECT>")
+                .replace("<T>", "<*>")
         }
 }
 
