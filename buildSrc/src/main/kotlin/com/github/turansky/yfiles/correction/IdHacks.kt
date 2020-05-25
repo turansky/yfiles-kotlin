@@ -18,8 +18,8 @@ internal fun generateIdUtils(context: GeneratorContext) {
 }
 
 private val ID_DP_KEYS = setOf(
-    "yfiles.algorithms.EdgeDpKey<$JS_ANY>",
-    "yfiles.algorithms.NodeDpKey<$JS_ANY>",
+    edgeDpKey(JS_ANY),
+    nodeDpKey(JS_ANY),
 
     "yfiles.algorithms.IEdgeLabelLayoutDpKey<$JS_ANY>",
     "yfiles.algorithms.INodeLabelLayoutDpKey<$JS_ANY>"

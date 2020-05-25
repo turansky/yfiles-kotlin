@@ -136,9 +136,9 @@ private fun fixComparerAsProperty(source: Source) {
         "SeriesParallelLayout"
     ).forEach {
         it[CONSTANTS]["OUT_EDGE_COMPARER_DP_KEY"].apply {
-            require(get(TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
+            require(get(TYPE) == nodeDpKey(comparer(JS_ANY)))
 
-            set(TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
+            set(TYPE, nodeDpKey(comparer("in $EDGE")))
         }
     }
 }
