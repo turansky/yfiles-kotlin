@@ -423,10 +423,9 @@ private fun addClassBounds(source: Source) {
 
     source.type("GraphModelManager")
         .flatMap(METHODS)
-        .first { it[NAME] == "createHitTester" }
+        .filter { it[NAME] == "createHitTester" || it[NAME] == "typedHitElementsAt" }
         .flatMap(TYPE_PARAMETERS)
-        .single()
-        .set(BOUNDS, arrayOf(IMODEL_ITEM))
+        .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
 
     source.types(
             "DelegateUndoUnit",
