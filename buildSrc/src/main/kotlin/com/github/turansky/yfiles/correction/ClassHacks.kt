@@ -306,7 +306,7 @@ private fun addMethodClassGeneric(source: Source) {
     source.type("ILookup")
         .method("createSingleLookup")
         .apply {
-            setSingleTypeParameter()
+            setSingleTypeParameter(bound = YOBJECT)
             firstParameter[TYPE] = "T"
             secondParameter.addGeneric("T")
         }
