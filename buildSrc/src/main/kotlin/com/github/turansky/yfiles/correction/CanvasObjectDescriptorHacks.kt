@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 internal fun applyCanvasObjectDescriptorHacks(source: Source) {
     source.type("ICanvasObjectDescriptor") {
-        setSingleTypeParameter("in T")
+        setSingleTypeParameter("in T", YOBJECT)
 
         fixUserObjectType("T")
 
@@ -16,7 +16,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             "DYNAMIC_DIRTY_INSTANCE" to IVISUAL_CREATOR,
             "DYNAMIC_DIRTY_LOOKUP" to ILOOKUP,
             "VISUAL" to VISUAL,
-            "VOID" to "$ANY?"
+            "VOID" to YOBJECT
         ).forEach { (name, typeParameter) ->
             get(CONSTANTS)[name].addGeneric(typeParameter)
         }
@@ -28,7 +28,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
 
     source.type("ICanvasObjectGroup")
         .method("addChild").apply {
-            setSingleTypeParameter()
+            setSingleTypeParameter(bound = YOBJECT)
 
             firstParameter[TYPE] = "T"
             firstParameter.changeNullability(false)
@@ -63,8 +63,14 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
     }
 
     source.type("ItemModelManager") {
+        get(TYPE_PARAMETERS).getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT)
+
         get(PROPERTIES)["descriptor"].addGeneric("T")
         method("getDescriptor")[RETURNS].addGeneric("T")
+    }
+
+    source.type("CollectionModelManager") {
+        get(TYPE_PARAMETERS).getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT)
     }
 
     source.type("GraphModelManager") {
