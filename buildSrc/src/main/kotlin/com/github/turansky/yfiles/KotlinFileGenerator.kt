@@ -143,14 +143,6 @@ internal class KotlinFileGenerator(
             return ": " + parentTypes.byComma()
         }
 
-        protected fun typealiasDeclaration(): String? =
-            if (data.name != data.jsName && !data.isYObject && !data.isYBase) {
-                val generics = declaration.generics.asAliasParameters()
-                "typealias ${data.jsName}$generics = ${data.name}$generics"
-            } else {
-                null
-            }
-
         open fun content(): String {
             return memberDeclarations
                 .lines { it.toCode() }
@@ -252,7 +244,6 @@ internal class KotlinFileGenerator(
             }
 
             var content = listOfNotNull(
-                typealiasDeclaration(),
                 declaration.toFactoryMethodCode(),
                 invokeExtension(
                     className = declaration.name,
@@ -332,11 +323,10 @@ internal class KotlinFileGenerator(
                     className = declaration.name,
                     generics = declaration.generics
                 ),
-                defaultDeclarations.run {
-                    if (isNotEmpty()) lines { it.toExtensionCode() } else null
-                },
-                declaration.getComponents(),
-                typealiasDeclaration()
+                defaultDeclarations
+                    .takeIf { it.isNotEmpty() }
+                    ?.lines { it.toExtensionCode() },
+                declaration.getComponents()
             ).takeIf { it.isNotEmpty() }
                 ?.joinToString("\n\n")
     }
@@ -368,7 +358,7 @@ internal class KotlinFileGenerator(
             get() = ENUM_METADATA
 
         override fun companionContent(): String? =
-            typealiasDeclaration()
+            null
     }
 }
 
