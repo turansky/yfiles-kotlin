@@ -339,7 +339,7 @@ private fun fixMaps(source: Source) {
 
 private fun fixLists(source: Source) {
     sequenceOf(
-        "YList" to "*",
+        "YList" to "T",
         "YNodeList" to NODE,
         "EdgeList" to EDGE
     ).forEach { (className, keyType) ->

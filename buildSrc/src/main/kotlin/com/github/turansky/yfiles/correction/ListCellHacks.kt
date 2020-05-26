@@ -1,14 +1,14 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.YOBJECT
 import org.json.JSONObject
 
 private const val LIST_CELL = "yfiles.algorithms.ListCell"
 
 internal fun applyListCellHacks(source: Source) {
     source.type("ListCell") {
-        setSingleTypeParameter(bound = JS_OBJECT)
+        setSingleTypeParameter(bound = YOBJECT)
 
         property("info")[TYPE] = "T"
 

@@ -1,16 +1,13 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.GeneratorContext
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_OBJECT
-import com.github.turansky.yfiles.YID
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun generateIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[YID] = """
-            |external interface Id
+            |external interface Id: $YOBJECT
             |
             |fun Id(source:Any):Id = 
             |    source.unsafeCast<Id>()

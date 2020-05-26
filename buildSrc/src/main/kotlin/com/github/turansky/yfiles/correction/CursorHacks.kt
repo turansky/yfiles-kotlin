@@ -42,7 +42,7 @@ private fun fixCursor(source: Source) {
 }
 
 private fun JSONObject.fixGeneric() {
-    setSingleTypeParameter("out T", JS_ANY)
+    setSingleTypeParameter("out T", YOBJECT)
 
     property("current")[TYPE] = "T"
 }
@@ -54,7 +54,7 @@ private fun fixCursorUtil(source: Source) {
                 val bound = when (it[NAME]) {
                     "createNodeCursor" -> NODE
                     "createEdgeCursor" -> EDGE
-                    else -> JS_ANY
+                    else -> YOBJECT
                 }
 
                 it.setSingleTypeParameter(bound = bound)
