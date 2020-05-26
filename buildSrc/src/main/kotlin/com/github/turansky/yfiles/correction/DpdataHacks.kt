@@ -195,6 +195,7 @@ private fun fixYGraphAdapter(source: Source) {
     source.type("YGraphAdapter").also {
         it.flatMap(METHODS)
             .filter { it[NAME] in dataNames }
+            .onEach { it[TYPE_PARAMETERS].getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT) }
             .map { it[RETURNS] }
             .forEach { it.addGeneric("K,V") }
 
@@ -262,7 +263,7 @@ private fun fixDataProviders(source: Source) {
 
             it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
                 if (keyType == "K") {
-                    add(typeParameter(keyType, JS_OBJECT))
+                    add(typeParameter(keyType, YOBJECT))
                 }
 
                 if (valueType == "V") {
@@ -309,7 +310,7 @@ private fun fixMaps(source: Source) {
 
             it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
                 if (keyType == "K") {
-                    add(typeParameter(keyType, JS_OBJECT))
+                    add(typeParameter(keyType, YOBJECT))
                 }
 
                 if (valueType == "V") {
@@ -338,7 +339,7 @@ private fun fixMaps(source: Source) {
 
 private fun fixLists(source: Source) {
     sequenceOf(
-        "YList" to "T",
+        "YList" to "*",
         "YNodeList" to NODE,
         "EdgeList" to EDGE
     ).forEach { (className, keyType) ->
@@ -375,7 +376,7 @@ private fun fixComparers(source: Source) {
 
             it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
                 if (keyType == "K") {
-                    add(typeParameter(keyType, JS_OBJECT))
+                    add(typeParameter(keyType, YOBJECT))
                 }
 
                 if (valueType == "V") {

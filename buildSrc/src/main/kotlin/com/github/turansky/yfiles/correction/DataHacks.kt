@@ -42,7 +42,7 @@ private val DATA_MAP_TYPE_MAP = mapOf(
 
 private fun fixDataProvider(source: Source) {
     source.type(IDATA_PROVIDER.substringAfterLast("."))
-        .setKeyValueTypeParameters("in K", "out V")
+        .setKeyValueTypeParameters("in K", "out V", YOBJECT)
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -50,10 +50,13 @@ private fun fixDataProvider(source: Source) {
         .forEach { it[TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
 
     source.type("DataProviderBase")
-        .setKeyValueTypeParameters("in K", "out V")
+        .setKeyValueTypeParameters("in K", "out V", YOBJECT)
 
     source.type("MapperDataProviderAdapter")
-        .setKeyValueTypeParameters("in TKey", "out TValue")
+        .setKeyValueTypeParameters("in TKey", "out TValue", YOBJECT)
+
+    source.type("DataMapAdapter")
+        .get(TYPE_PARAMETERS).getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT)
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
@@ -73,7 +76,7 @@ private fun JSONObject.getDataProviderTypeParameters(): String {
 
 private fun fixDataAcceptor(source: Source) {
     source.type(IDATA_ACCEPTOR.substringAfterLast("."))
-        .setKeyValueTypeParameters("in K", "in V")
+        .setKeyValueTypeParameters("in K", "in V", YOBJECT)
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -89,7 +92,7 @@ private fun fixDataAcceptor(source: Source) {
 
 private fun fixDataMap(source: Source) {
     source.type(IDATA_MAP.substringAfterLast("."))
-        .setKeyValueTypeParameters("in K", "V")
+        .setKeyValueTypeParameters("in K", "V", YOBJECT)
 
     source.types()
         .flatMap { it.getTypeHolders() }
