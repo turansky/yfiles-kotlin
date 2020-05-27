@@ -11,7 +11,7 @@ internal fun generateLookupExtensions(context: GeneratorContext) {
             lookup(type.yclass)
             
         inline fun <reified T : $YOBJECT> $ILOOKUP.lookup(): T? =
-            lookup(T::class.js.unsafeCast<$TYPE_METADATA<T>>())     
+            lookup(T::class.js.yclass)     
             
         inline infix fun <T : $YOBJECT> $ILOOKUP.lookupValue(type: $YCLASS<T>):T = 
             requireNotNull(lookup(type)) {
@@ -22,6 +22,6 @@ internal fun generateLookupExtensions(context: GeneratorContext) {
             lookupValue(type.yclass)
             
         inline fun <reified T : $YOBJECT> $ILOOKUP.lookupValue(): T =
-            lookupValue(T::class.js.unsafeCast<$TYPE_METADATA<T>>())      
+            lookupValue(T::class.js.yclass)      
     """.trimIndent()
 }
