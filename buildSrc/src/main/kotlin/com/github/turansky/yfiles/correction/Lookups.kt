@@ -1,10 +1,7 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.ContentMode.EXTENSIONS
-import com.github.turansky.yfiles.GeneratorContext
-import com.github.turansky.yfiles.ILOOKUP
-import com.github.turansky.yfiles.TYPE_METADATA
-import com.github.turansky.yfiles.YOBJECT
 
 internal fun generateLookupExtensions(context: GeneratorContext) {
     context[ILOOKUP, EXTENSIONS] = """
@@ -15,5 +12,16 @@ internal fun generateLookupExtensions(context: GeneratorContext) {
             
         inline fun <reified T : $YOBJECT> $ILOOKUP.lookup(): T? =
             lookup(T::class.js.unsafeCast<$TYPE_METADATA<T>>())     
+            
+        inline infix fun <T : $YOBJECT> $ILOOKUP.lookupValue(type: $YCLASS<T>):T = 
+            requireNotNull(lookup(type)) {
+                "Unable to lookup type ${'$'}type"
+            }
+            
+        inline infix fun <T : $YOBJECT> $ILOOKUP.lookupValue(type: $TYPE_METADATA<T>):T = 
+            lookupValue(type.yclass)
+            
+        inline fun <reified T : $YOBJECT> $ILOOKUP.lookupValue(): T =
+            lookupValue(T::class.js.unsafeCast<$TYPE_METADATA<T>>())      
     """.trimIndent()
 }

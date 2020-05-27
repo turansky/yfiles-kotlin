@@ -99,15 +99,24 @@ val graph: IGraph = DefaultGraph()
 val node = graph.createNode()
 
 // for classes
-val t1 = node lookup TimeSpan.yclass // 'TimeSpan?'
-val t2 = node lookup TimeSpan        // 'TimeSpan?'
+val t11 = node lookup TimeSpan.yclass // 'TimeSpan?'
+val t12 = node lookup TimeSpan        // 'TimeSpan?'
 
-val t3: TimeSpan? = node.lookup()    // reified lookup type 'TimeSpan'
-val t4 = node.lookup<TimeSpan>()     // 'TimeSpan?'
+val t13: TimeSpan? = node.lookup()    // reified lookup type
+val t14 = node.lookup<TimeSpan>()     // 'TimeSpan?'
+
+val t21 = node lookupValue TimeSpan.yclass // 'TimeSpan'
+val t22 = node lookupValue TimeSpan        // 'TimeSpan'
+
+val t23: TimeSpan = node.lookupValue()    // reified lookup type
+val t24 = node.lookupValue<TimeSpan>()    // 'TimeSpan'
 
 // for interfaces
-val h1 = node lookup IHitTestable.yclass // 'IHitTestable?'
-val h2 = node lookup IHitTestable        // 'IHitTestable?'
+val h11 = node lookup IHitTestable.yclass      // 'IHitTestable?'
+val h12 = node lookup IHitTestable             // 'IHitTestable?'
+
+val h21 = node lookupValue IHitTestable.yclass // 'IHitTestable'
+val h22 = node lookupValue IHitTestable        // 'IHitTestable'
 ```
 
 #### Type parameter
