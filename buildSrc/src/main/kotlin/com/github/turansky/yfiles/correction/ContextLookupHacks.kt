@@ -1,16 +1,18 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.IMODEL_ITEM
+import com.github.turansky.yfiles.YOBJECT
 import com.github.turansky.yfiles.json.get
 
 private const val ICONTEXT_LOOKUP = "yfiles.graph.IContextLookup"
+private const val T_ITEM = "TItem"
+private const val T_ITEM_BOUND = YOBJECT
 
 internal fun applyContextLookupHacks(source: Source) {
     source.type("IContextLookup") {
-        setSingleTypeParameter("in TItem", IMODEL_ITEM)
+        setSingleTypeParameter("in $T_ITEM", T_ITEM_BOUND)
 
         method("contextLookup")
-            .parameter("item")[TYPE] = "TItem"
+            .parameter("item")[TYPE] = T_ITEM
 
         get(CONSTANTS)["EMPTY_CONTEXT_LOOKUP"]
             .addGeneric("*")
@@ -62,20 +64,26 @@ internal fun applyContextLookupHacks(source: Source) {
 
     source.type("IContextLookupChainLink") {
         get(IMPLEMENTS).also {
-            it.put(0, it.getString(0) + "<$IMODEL_ITEM>")
+            it.put(0, it.getString(0) + "<$T_ITEM_BOUND>")
         }
 
         method("setNext")
             .parameter("next")
-            .addGeneric(IMODEL_ITEM)
+            .addGeneric(T_ITEM_BOUND)
     }
 
     source.type("LookupChain") {
+        setSingleTypeParameter(T_ITEM, T_ITEM_BOUND)
+
         get(IMPLEMENTS).also {
-            it.put(0, it.getString(0) + "<$IMODEL_ITEM>")
+            it.put(0, it.getString(0) + "<$T_ITEM>")
         }
 
         method("contextLookup")
-            .parameter("item")[TYPE] = IMODEL_ITEM
+            .parameter("item")[TYPE] = T_ITEM
     }
+
+    source.type("CanvasComponent")
+        .property("inputModeContextLookupChain")
+        .addGeneric("CanvasComponent")
 }
