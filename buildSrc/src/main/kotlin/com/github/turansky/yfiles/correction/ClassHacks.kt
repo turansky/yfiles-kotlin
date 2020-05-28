@@ -342,8 +342,7 @@ private fun addMapperMetadataGeneric(source: Source) {
         }
 
     source.type("MapperOutputHandler")
-        .get(PROPERTIES)
-        .get("mapperMetadata")
+        .property("mapperMetadata")
         .addGeneric("TKey,TData")
 
     source.types(

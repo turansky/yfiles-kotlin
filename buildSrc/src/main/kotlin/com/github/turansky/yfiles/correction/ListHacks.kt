@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 private val DEFAULT_LISTS = setOf(
@@ -32,8 +31,7 @@ private fun fixProperty(source: Source) {
         Triple("RotatableNodePlacerBase", "createdChildren", NODE)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .get(PROPERTIES)
-            .get(propertyName)
+            .property(propertyName)
             .fixTypeGeneric(generic)
     }
 }

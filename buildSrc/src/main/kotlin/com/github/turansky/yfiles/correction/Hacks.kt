@@ -195,15 +195,13 @@ private fun fixPropertyNullability(source: Source) {
         .asSequence()
         .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
         .forEach { (declaration, nullable) ->
-            source
-                .type(declaration.className)
+            source.type(declaration.className)
                 .property(declaration.propertyName)
                 .changeNullability(nullable)
         }
 
     source.type("SvgVisualGroup")
-        .get(PROPERTIES)
-        .get("children")
+        .property("children")
         .apply {
             require(get(TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
             set(TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")

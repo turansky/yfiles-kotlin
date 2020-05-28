@@ -126,8 +126,7 @@ private fun fixComparerAsProperty(source: Source) {
         Triple("SwimlaneDescriptor", "comparer", SWIMLANE_DESCRIPTOR)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .get(PROPERTIES)
-            .get(propertyName)
+            .property(propertyName)
             .fixTypeGeneric("in $generic")
     }
 
