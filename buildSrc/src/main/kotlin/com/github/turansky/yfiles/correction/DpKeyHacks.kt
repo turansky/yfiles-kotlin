@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyDpKeyHacks(source: Source) {
@@ -129,7 +128,7 @@ private fun fixMethodParameters(source: Source) {
     }
 
     source.type("LabelingBase").apply {
-        get(CONSTANTS)["LABEL_MODEL_DP_KEY"].also {
+        constant("LABEL_MODEL_DP_KEY").also {
             it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$YOBJECT>")
         }
 

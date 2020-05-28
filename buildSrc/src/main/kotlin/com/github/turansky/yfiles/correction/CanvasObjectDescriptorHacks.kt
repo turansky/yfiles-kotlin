@@ -18,7 +18,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             "VISUAL" to VISUAL,
             "VOID" to YOBJECT
         ).forEach { (name, typeParameter) ->
-            get(CONSTANTS)[name].addGeneric(typeParameter)
+            constant(name).addGeneric(typeParameter)
         }
     }
 

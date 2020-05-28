@@ -40,8 +40,8 @@ internal fun JSONObject.methodParameters(
     return result
 }
 
-internal fun JSONObject.method(methodName: String) =
-    get(METHODS)[methodName]
+internal fun JSONObject.method(name: String) =
+    get(METHODS)[name]
 
 internal fun JSONObject.constant(name: String): JSONObject =
     get(CONSTANTS)[name]

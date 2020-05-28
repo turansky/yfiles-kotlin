@@ -135,7 +135,7 @@ private fun fixComparerAsProperty(source: Source) {
         "TreeLayout",
         "SeriesParallelLayout"
     ).forEach {
-        it[CONSTANTS]["OUT_EDGE_COMPARER_DP_KEY"].apply {
+        it.constant("OUT_EDGE_COMPARER_DP_KEY").apply {
             require(get(TYPE) == nodeDpKey(comparer(JS_ANY)))
 
             set(TYPE, nodeDpKey(comparer("in $EDGE")))

@@ -2,7 +2,6 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.json.get
 
 internal const val INCREMENTAL_HINT = "yfiles.hierarchic.IncrementalHint"
 
@@ -28,7 +27,7 @@ internal fun applyIncrementalHintHacks(source: Source) {
     }
 
     source.types("HierarchicLayout", "HierarchicLayoutCore")
-        .map { it[CONSTANTS]["INCREMENTAL_HINTS_DP_KEY"] }
+        .map { it.constant("INCREMENTAL_HINTS_DP_KEY") }
         .forEach { it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$INCREMENTAL_HINT>") }
 
     source.type("INodeData")
