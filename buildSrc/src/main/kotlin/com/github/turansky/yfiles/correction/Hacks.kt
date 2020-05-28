@@ -24,6 +24,7 @@ internal fun applyHacks(api: JSONObject) {
 
     fixReturnType(source)
 
+    fixConstantType(source)
     fixPropertyType(source)
     fixPropertyNullability(source)
 
@@ -177,6 +178,11 @@ private fun fixReturnType(source: Source) {
     source.type("PortCandidateSet")
         .property("entries")
         .also { it.replaceInType("<$JS_ANY>", "<IPortCandidateSetEntry>") }
+}
+
+private fun fixConstantType(source: Source) {
+    source.type("GraphCopier")
+        .constant("NO_COPY")[TYPE] = JS_VOID
 }
 
 private fun fixPropertyType(source: Source) {
