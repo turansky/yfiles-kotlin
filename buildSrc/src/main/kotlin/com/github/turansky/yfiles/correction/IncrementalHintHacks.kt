@@ -23,12 +23,12 @@ internal fun applyIncrementalHintHacks(source: Source) {
 
         it.method("provideMapperForContext")
             .get(RETURNS)
-            .also { it[TYPE] = it[TYPE].replace(",$JS_ANY>", ",$INCREMENTAL_HINT>") }
+            .also { it.replaceInType(",$JS_ANY>", ",$INCREMENTAL_HINT>") }
     }
 
     source.types("HierarchicLayout", "HierarchicLayoutCore")
         .map { it.constant("INCREMENTAL_HINTS_DP_KEY") }
-        .forEach { it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$INCREMENTAL_HINT>") }
+        .forEach { it.replaceInType("<$JS_ANY>", "<$INCREMENTAL_HINT>") }
 
     source.type("INodeData")
         .property("incrementalHint")[TYPE] = INCREMENTAL_HINT

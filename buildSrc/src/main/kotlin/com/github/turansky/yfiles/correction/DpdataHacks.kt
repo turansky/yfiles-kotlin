@@ -62,10 +62,10 @@ private fun fixDefaultLayoutGraph(source: Source) {
     properties["edgeLabelMap"].addGeneric("Array<$IEDGE_LABEL_LAYOUT>")
 
     properties["nodeLabelFeatureMap"]
-        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$INODE_LABEL_LAYOUT,$NODE") }
+        .also { it.replaceInType("$JS_ANY,$JS_ANY", "$INODE_LABEL_LAYOUT,$NODE") }
 
     properties["edgeLabelFeatureMap"]
-        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$IEDGE_LABEL_LAYOUT,$EDGE") }
+        .also { it.replaceInType("$JS_ANY,$JS_ANY", "$IEDGE_LABEL_LAYOUT,$EDGE") }
 }
 
 private fun fixDfs(source: Source) {
@@ -227,7 +227,7 @@ private fun fixMISLabelingBase(source: Source) {
             .addGeneric(YID)
 
         it.property("boxesToNodes")
-            .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
+            .also { it.replaceInType("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
 
         it.method("assignProfit")
             .get(RETURNS)
@@ -277,7 +277,7 @@ private fun fixDataProviders(source: Source) {
                 it.flatMap(PARAMETERS)
                     .forEach {
                         when (it[NAME]) {
-                            "data", "objectData" -> it[TYPE] = it[TYPE].replace(JS_OBJECT, valueType)
+                            "data", "objectData" -> it.replaceInType(JS_OBJECT, valueType)
                             "nodeData" -> it.addGeneric("$NODE,$valueType")
                         }
                     }
@@ -322,9 +322,9 @@ private fun fixMaps(source: Source) {
             it.optFlatMap(PARAMETERS)
                 .forEach {
                     when (it[NAME]) {
-                        "map" -> it[TYPE] = it[TYPE].replace("$JS_OBJECT,$JS_OBJECT", typeParameters)
+                        "map" -> it.replaceInType("$JS_OBJECT,$JS_OBJECT", typeParameters)
                         "defaultValue" -> if (it[TYPE] == JS_OBJECT) it[TYPE] = "V"
-                        "data", "objectData" -> it[TYPE] = it[TYPE].replace("<$JS_OBJECT>", "<V>")
+                        "data", "objectData" -> it.replaceInType("<$JS_OBJECT>", "<V>")
                         else -> when (it[TYPE]) {
                             IDATA_PROVIDER,
                             IDATA_ACCEPTOR,

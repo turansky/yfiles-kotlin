@@ -146,7 +146,7 @@ internal fun applyCommandHacks(source: Source) {
             "NavigationInputMode",
             "OverviewInputMode"
         ).map { it.property("availableCommands") }
-        .forEach { it[TYPE] = it[TYPE].replace(">", "<*>>") }
+        .forEach { it.replaceInType(">", "<*>>") }
 
     source.types(
         "GraphInputMode",

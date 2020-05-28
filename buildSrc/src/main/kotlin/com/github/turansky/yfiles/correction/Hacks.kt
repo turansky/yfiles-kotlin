@@ -179,7 +179,7 @@ private fun fixReturnType(source: Source) {
 
     source.type("PortCandidateSet")
         .property("entries")
-        .also { it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<IPortCandidateSetEntry>") }
+        .also { it.replaceInType("<$JS_ANY>", "<IPortCandidateSetEntry>") }
 }
 
 private fun fixPropertyType(source: Source) {

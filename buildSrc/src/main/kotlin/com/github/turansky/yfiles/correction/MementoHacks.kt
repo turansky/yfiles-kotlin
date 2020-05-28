@@ -47,7 +47,7 @@ internal fun applyMementoHacks(source: Source) {
 
     source.type("TreeLayoutData")
         .property("compactNodePlacerStrategyMementos")
-        .also { it[TYPE] = it[TYPE].replace(",$JS_ANY>", ",$COMPACT_STRATEGY_MEMENTO>") }
+        .also { it.replaceInType(",$JS_ANY>", ",$COMPACT_STRATEGY_MEMENTO>") }
 
     source.type("CompactNodePlacer")
         .constant("STRATEGY_MEMENTO_DP_KEY")

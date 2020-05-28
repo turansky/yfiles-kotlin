@@ -63,6 +63,13 @@ internal fun JSONObject.addProperty(
         )
 }
 
+internal fun JSONObject.replaceInType(
+    oldValue: String,
+    newValue: String
+) {
+    set(TYPE, get(TYPE).replace(oldValue, newValue))
+}
+
 internal fun JSONObject.changeNullability(nullable: Boolean) =
     changeModifier(CANBENULL, nullable)
 

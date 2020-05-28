@@ -129,7 +129,7 @@ private fun fixMethodParameters(source: Source) {
 
     source.type("LabelingBase").apply {
         constant("LABEL_MODEL_DP_KEY").also {
-            it[TYPE] = it[TYPE].replace("<$JS_ANY>", "<$YOBJECT>")
+            it.replaceInType("<$JS_ANY>", "<$YOBJECT>")
         }
 
         flatMap(METHODS)
