@@ -471,6 +471,7 @@ private class TypeConstant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : Constant(source, parent) {
+    private val modifiers: ConstantModifiers by wrapStringList(::ConstantModifiers)
     private val dpdata: DpData? by optNamed(::DpData)
 
     private val documentation: String
@@ -480,9 +481,11 @@ private class TypeConstant(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String =
-        documentation +
-                "val $name: $type"
+    override fun toCode(): String {
+        val modifier = exp(modifiers.protected, "protected")
+        return documentation +
+                "$modifier val $name: $type"
+    }
 
     override fun toEnumValue(): String =
         documentation + name

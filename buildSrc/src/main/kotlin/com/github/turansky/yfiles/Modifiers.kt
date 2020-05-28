@@ -101,6 +101,22 @@ internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifie
     }
 }
 
+private val CONSTANT_MODIFIERS = setOf(
+    STATIC,
+    FINAL,
+    RO,
+
+    PROTECTED,
+
+    PUBLIC,
+    EXPERT,
+    NOTNULL
+)
+
+internal class ConstantModifiers(modifiers: List<String>) : Modifiers(modifiers, CONSTANT_MODIFIERS) {
+    val protected = has(PROTECTED)
+}
+
 internal enum class PropertyMode(
     val readable: Boolean,
     val writable: Boolean
