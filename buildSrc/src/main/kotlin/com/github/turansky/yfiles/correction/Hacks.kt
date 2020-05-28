@@ -146,10 +146,7 @@ private fun fixUnionMethods(source: Source) {
 private fun fixConstantGenerics(source: Source) {
     source.type("IListEnumerable")
         .constant("EMPTY")
-        .also {
-            it[TYPE] = it[TYPE]
-                .replace("<T>", "<*>")
-        }
+        .replaceInType("<T>", "<*>")
 }
 
 private fun fixFunctionGenerics(source: Source) {

@@ -69,9 +69,8 @@ private fun fixCursorUtil(source: Source) {
         method("toArray").apply {
             sequenceOf(secondParameter, get(RETURNS))
                 .forEach {
-                    it[TYPE] = it[TYPE]
-                        .replace("<$JS_ANY>", "<T>")
-                        .replace("<$JS_OBJECT>", "<T>")
+                    it.replaceInType("<$JS_ANY>", "<T>")
+                    it.replaceInType("<$JS_OBJECT>", "<T>")
                 }
 
             secondParameter[MODIFIERS]
