@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.JS_VOID
 import com.github.turansky.yfiles.YOBJECT
 import com.github.turansky.yfiles.json.get
 
@@ -98,7 +99,7 @@ internal fun applyContextLookupHacks(source: Source) {
         .filter { it[NAME] == "createInputModeContext" }
         .flatMap(PARAMETERS)
         .filter { it.opt(SIGNATURE) == LOOKUP_CALLBACK }
-        .forEach { it[SIGNATURE] = "$LOOKUP_CALLBACK<*>" }
+        .forEach { it[SIGNATURE] = "$LOOKUP_CALLBACK<$JS_VOID>" }
 
     source.type("IContextLookupChainLink") {
         setSingleTypeParameter(T_ITEM, T_ITEM_BOUND)
@@ -166,5 +167,5 @@ internal fun applyContextLookupHacks(source: Source) {
         .flatMap(METHODS)
         .optFlatMap(PARAMETERS)
         .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
-        .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<*>" }
+        .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<DefaultGraph>" }
 }
