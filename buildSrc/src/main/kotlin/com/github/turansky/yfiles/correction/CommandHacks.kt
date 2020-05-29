@@ -108,7 +108,7 @@ internal fun applyCommandHacks(source: Source) {
     }
 
     COMMAND_ALIASES
-        .map { source.functionSignatures.getJSONObject(it) }
+        .map { source.functionSignature(it) }
         .forEach {
             it.setSingleTypeParameter(bound = JS_OBJECT)
 

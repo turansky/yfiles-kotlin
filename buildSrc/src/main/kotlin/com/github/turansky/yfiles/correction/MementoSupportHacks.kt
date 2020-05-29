@@ -25,8 +25,7 @@ internal fun applyMementoSupportHacks(source: Source) {
 
     fixDecoratorProperties(source, IMEMENTO_SUPPORT, true)
 
-    source.functionSignatures
-        .getJSONObject("yfiles.graph.MementoSupportProvider")
+    source.functionSignature("yfiles.graph.MementoSupportProvider")
         .get(RETURNS)
         .addGeneric("T,*")
 }

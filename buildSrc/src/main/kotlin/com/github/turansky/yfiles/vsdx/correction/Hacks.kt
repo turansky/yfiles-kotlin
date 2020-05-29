@@ -260,8 +260,7 @@ private fun fixGeneric(source: VsdxSource) {
             .setSingleTypeParameter("TValue")
     }
 
-    source.functionSignatures
-        .getJSONObject("yfiles.vsdx.ComparisonFunction")
+    source.functionSignature("yfiles.vsdx.ComparisonFunction")
         .setSingleTypeParameter("T")
 }
 

@@ -8,6 +8,9 @@ internal abstract class SourceBase(private val api: JSONObject) {
     val functionSignatures: JSONObject
         get() = api[FUNCTION_SIGNATURES]
 
+    fun functionSignature(name: String): JSONObject =
+        functionSignatures.getJSONObject(name)
+
     private val types: List<JSONObject> = api.flatMap(TYPES).toList()
 
     private val typeMap = types.associateBy { it.uid }.toMutableMap()
