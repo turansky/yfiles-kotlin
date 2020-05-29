@@ -7,6 +7,8 @@ private const val ICONTEXT_LOOKUP = "yfiles.graph.IContextLookup"
 private const val T_ITEM = "TItem"
 private const val T_ITEM_BOUND = YOBJECT
 
+private const val LOOKUP_CALLBACK = "yfiles.graph.LookupCallback"
+
 internal fun applyContextLookupHacks(source: Source) {
     source.type("IContextLookup") {
         setSingleTypeParameter("in $T_ITEM", T_ITEM_BOUND)
@@ -70,6 +72,10 @@ internal fun applyContextLookupHacks(source: Source) {
         method("setNext")
             .parameter("next")
             .addGeneric(T_ITEM_BOUND)
+
+        method("createContextLookupChainLink")
+            .firstParameter
+            .also { it[SIGNATURE] = it[SIGNATURE] + "<*>" }
     }
 
     source.type("LookupChain") {
@@ -86,4 +92,17 @@ internal fun applyContextLookupHacks(source: Source) {
     source.type("CanvasComponent")
         .property("inputModeContextLookupChain")
         .addGeneric("CanvasComponent")
+
+    source.functionSignature(LOOKUP_CALLBACK).apply {
+        setSingleTypeParameter()
+
+        firstParameter[TYPE] = "T"
+    }
+
+    source.type("IInputModeContext")
+        .flatMap(METHODS)
+        .filter { it[NAME] == "createInputModeContext" }
+        .flatMap(PARAMETERS)
+        .filter { it.opt(SIGNATURE) == LOOKUP_CALLBACK }
+        .forEach { it[SIGNATURE] = "$LOOKUP_CALLBACK<*>" }
 }
