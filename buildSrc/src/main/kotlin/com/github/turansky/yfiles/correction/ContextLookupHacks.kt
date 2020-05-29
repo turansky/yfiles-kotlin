@@ -90,6 +90,7 @@ internal fun applyContextLookupHacks(source: Source) {
         setSingleTypeParameter()
 
         firstParameter[TYPE] = "T"
+        get(RETURNS)[TYPE] = YOBJECT
     }
 
     source.type("IInputModeContext")
@@ -147,6 +148,19 @@ internal fun applyContextLookupHacks(source: Source) {
         .flatMap { it.flatMap(PARAMETERS) + it[RETURNS] }
         .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
         .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<TDecoratedType>" }
+
+    source.type("ILookupDecorator").apply {
+        sequenceOf("addLookup", "removeLookup")
+            .map { method(it) }
+            .onEach { it.setSingleTypeParameter(bound = YOBJECT) }
+            .flatMap(PARAMETERS)
+            .forEach { it[TYPE] = it[TYPE] + "<T>" }
+
+        flatMap(METHODS)
+            .mapNotNull { it.opt(RETURNS) }
+            .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
+            .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<*>" }
+    }
 
     source.type("DefaultGraph")
         .flatMap(METHODS)
