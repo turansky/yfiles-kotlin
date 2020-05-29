@@ -67,6 +67,8 @@ internal fun JSONObject.opt(key: JArrayKey): JSONArray? = optJSONArray(key.name)
 
 internal operator fun JSONObject.get(key: JObjectKey): JSONObject = getJSONObject(key.name)
 
+internal fun JSONObject.opt(key: JObjectKey): JSONObject? = optJSONObject(key.name)
+
 internal operator fun JSONObject.get(key: JStringKey): String = getString(key.name)
 
 internal fun JSONObject.opt(key: JStringKey): String? = optString(key.name, null)

@@ -4,6 +4,8 @@ import com.github.turansky.yfiles.YOBJECT
 import com.github.turansky.yfiles.json.get
 
 private const val ICONTEXT_LOOKUP = "yfiles.graph.IContextLookup"
+private const val ICONTEXT_LOOKUP_CHAIN_LINK = "yfiles.graph.IContextLookupChainLink"
+
 private const val T_ITEM = "TItem"
 private const val T_ITEM_BOUND = YOBJECT
 
@@ -64,20 +66,6 @@ internal fun applyContextLookupHacks(source: Source) {
             .addGeneric(typeParameter)
     }
 
-    source.type("IContextLookupChainLink") {
-        get(IMPLEMENTS).also {
-            it.put(0, it.getString(0) + "<$T_ITEM_BOUND>")
-        }
-
-        method("setNext")
-            .parameter("next")
-            .addGeneric(T_ITEM_BOUND)
-
-        method("createContextLookupChainLink")
-            .firstParameter
-            .also { it[SIGNATURE] = it[SIGNATURE] + "<*>" }
-    }
-
     source.type("LookupChain") {
         setSingleTypeParameter(T_ITEM, T_ITEM_BOUND)
 
@@ -87,6 +75,11 @@ internal fun applyContextLookupHacks(source: Source) {
 
         method("contextLookup")
             .parameter("item")[TYPE] = T_ITEM
+
+        flatMap(METHODS)
+            .flatMap { it.optFlatMap(PARAMETERS) + sequenceOf(it.opt(RETURNS)).filterNotNull() }
+            .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
+            .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<$T_ITEM>" }
     }
 
     source.type("CanvasComponent")
@@ -105,4 +98,59 @@ internal fun applyContextLookupHacks(source: Source) {
         .flatMap(PARAMETERS)
         .filter { it.opt(SIGNATURE) == LOOKUP_CALLBACK }
         .forEach { it[SIGNATURE] = "$LOOKUP_CALLBACK<*>" }
+
+    source.type("IContextLookupChainLink") {
+        setSingleTypeParameter(T_ITEM, T_ITEM_BOUND)
+
+        get(IMPLEMENTS).also {
+            it.put(0, it.getString(0) + "<$T_ITEM>")
+        }
+
+        method("setNext")
+            .parameter("next")
+            .addGeneric(T_ITEM)
+
+        method("createContextLookupChainLink").apply {
+            setSingleTypeParameter(bound = YOBJECT)
+
+            firstParameter.also { it[SIGNATURE] = it[SIGNATURE] + "<T>" }
+            get(RETURNS).also { it[TYPE] = it[TYPE] + "<T>" }
+        }
+
+        flatMap(METHODS)
+            .mapNotNull { it.opt(RETURNS) }
+            .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
+            .forEach { it[TYPE] = it[TYPE] + "<*>" }
+    }
+
+    source.types(
+        "NodeDecorator",
+        "EdgeDecorator",
+        "PortDecorator",
+        "LabelDecorator",
+        "BendDecorator",
+        "StripeDecorator",
+        "StripeLabelDecorator"
+    ).forEach {
+        val typeParameter = it[NAME]
+            .replace("StripeLabel", "Label")
+            .removeSuffix("Decorator")
+            .let { "yfiles.graph.I$it" }
+
+        it.method("remove")
+            .firstParameter
+            .also { it[TYPE] = it[TYPE] + "<${typeParameter}>" }
+    }
+
+    source.type("LookupDecorator")
+        .flatMap(METHODS)
+        .flatMap { it.flatMap(PARAMETERS) + it[RETURNS] }
+        .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
+        .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<TDecoratedType>" }
+
+    source.type("DefaultGraph")
+        .flatMap(METHODS)
+        .optFlatMap(PARAMETERS)
+        .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
+        .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<*>" }
 }
