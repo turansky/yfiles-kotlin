@@ -183,13 +183,14 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     private val modifiers: ClassModifiers by wrapStringList(::ClassModifiers)
     val final: Boolean = modifiers.mode == ClassMode.FINAL
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
+    val enumLike: Boolean = classId == "yfiles.layout.Direction"
 
     val kotlinModifier: String = when (modifiers.mode) {
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
         ClassMode.SEALED -> "sealed"
         ClassMode.ABSTRACT -> "abstract"
-    }
+    } + exp(enumLike, "enum")
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
     val primaryConstructor: Constructor? = constructors.firstOrNull()

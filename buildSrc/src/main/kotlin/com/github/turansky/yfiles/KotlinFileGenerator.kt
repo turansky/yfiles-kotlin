@@ -55,13 +55,13 @@ internal class KotlinFileGenerator(
     abstract inner class GeneratedFile(private val declaration: Type) {
         val data = es6GeneratorData(declaration)
 
-        protected val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
-
         private val properties: List<Property>
             get() = declaration.memberProperties
 
+        protected open val hasConstants = true
+
         private val staticConstants: List<Constant>
-            get() = if (enumCompanionName == null) {
+            get() = if (hasConstants) {
                 declaration.constants
             } else {
                 emptyList()
@@ -171,6 +171,11 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
+        private val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
+
+        override val hasConstants: Boolean =
+            enumCompanionName == null && !declaration.enumLike
+
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
@@ -207,10 +212,17 @@ internal class KotlinFileGenerator(
                 ?.run { toPrimaryCode() }
                 ?: ""
 
+            val enumContent = if (declaration.enumLike) {
+                declaration.constants.toContent()
+            } else {
+                ""
+            }
+
             return documentation +
                     externalAnnotation +
                     "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
+                    enumContent +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
                     "}" +
