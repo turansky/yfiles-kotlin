@@ -194,6 +194,13 @@ internal val JSONObject.secondParameter: JSONObject
     get() = get(PARAMETERS)
         .get(1) as JSONObject
 
+internal fun JSONObject.returnsSequence(): Sequence<JSONObject> =
+    if (has(RETURNS)) {
+        sequenceOf(get(RETURNS))
+    } else {
+        emptySequence()
+    }
+
 internal fun JSONObject.addGeneric(generic: String) {
     val type = get(TYPE)
     set(TYPE, "$type<$generic>")

@@ -37,10 +37,3 @@ private fun JSONObject.getTypeHolders(): Sequence<JSONObject> =
     flatMap(METHODS)
         .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
         .plus(flatMap(PROPERTIES))
-
-private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(RETURNS)) {
-        sequenceOf(get(RETURNS))
-    } else {
-        emptySequence()
-    }

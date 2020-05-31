@@ -78,7 +78,7 @@ internal fun applyContextLookupHacks(source: Source) {
             .parameter("item")[TYPE] = T_ITEM
 
         flatMap(METHODS)
-            .flatMap { it.optFlatMap(PARAMETERS) + sequenceOf(it.opt(RETURNS)).filterNotNull() }
+            .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
             .filter { it[TYPE] == ICONTEXT_LOOKUP_CHAIN_LINK }
             .forEach { it[TYPE] = "$ICONTEXT_LOOKUP_CHAIN_LINK<$T_ITEM>" }
     }

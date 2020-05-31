@@ -47,13 +47,6 @@ private fun JSONObject.fixGeneric() {
         }
 }
 
-private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(RETURNS)) {
-        sequenceOf(get(RETURNS))
-    } else {
-        emptySequence()
-    }
-
 private fun fixMethodParameter(source: Source) {
     source.types(
             "YList",
