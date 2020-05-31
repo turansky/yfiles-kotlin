@@ -1,14 +1,20 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.ContentMode.CLASS
-import com.github.turansky.yfiles.ContentMode.INLINE
+import com.github.turansky.yfiles.ContentMode.*
 import com.github.turansky.yfiles.json.get
 import com.github.turansky.yfiles.json.removeAllObjects
 import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 internal fun generateClassUtils(context: GeneratorContext) {
+    // language=kotlin
+    context[YOBJECT, EXTENSIONS] =
+        """
+            inline fun <T: $YOBJECT> T.getClass(): $YCLASS<out T> =
+                $AS_DYNAMIC.getClass()
+        """.trimIndent()
+
     // language=kotlin
     context["yfiles.lang.BaseClass", CLASS] =
         """

@@ -147,6 +147,7 @@ private class SimpleGeneratorContext(
 
         val suppresses = when (mode) {
             INTERFACE -> NESTED_CLASS_IN_EXTERNAL_INTERFACE
+            EXTENSIONS -> if (classId == YOBJECT) NOTHING_TO_INLINE else ""
             INLINE -> NOTHING_TO_INLINE
             else -> ""
         }
