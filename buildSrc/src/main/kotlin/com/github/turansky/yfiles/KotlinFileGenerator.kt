@@ -154,9 +154,9 @@ internal class KotlinFileGenerator(
             get() {
                 val typeDeclaration: String = when {
                     data.isYBase -> ""
-                    data.isYObject -> ": yfiles.lang.TypeMetadata<$ANY>"
                     else -> {
-                        val generic = data.name + declaration.generics.placeholder
+                        val name = if (data.isYObject) data.jsName else data.name
+                        val generic = name + declaration.generics.placeholder
                         ": $metadataClass<$generic>"
                     }
                 }
