@@ -17,10 +17,10 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """.trimMargin()
 
     val primitiveTypeMetadata = sequenceOf(
-        BOOLEAN to "YBoolean",
-        DOUBLE to "YNumber",
-        INT to "YNumber",
-        STRING to "YString"
+        BOOLEAN to "__BOOLEAN__",
+        DOUBLE to "__NUMBER__",
+        INT to "__NUMBER__",
+        STRING to "__STRING__"
     ).joinToString("\n\n") { (type, alias) ->
         """
             inline val $type.Companion.yclass: $YCLASS<$type>

@@ -230,8 +230,16 @@ internal class KotlinFileGenerator(
         }
 
         private fun primitiveContent(): String {
+            val objectName = data.jsName
+                .removePrefix("Y")
+                .toUpperCase()
+                .let { "__${it}__" }
+
             return documentation +
-                    "external object ${data.jsName}"
+                    """
+                        @JsName("${data.jsName}")
+                        external object $objectName
+                    """.trimIndent()
         }
 
         private fun objectContent(): String {
