@@ -375,7 +375,7 @@ internal class KotlinFileGenerator(
                     externalAnnotation +
                     """
                         |sealed external class $name: $YFLAGS<$name> {
-                        |   companion object: $FLAGS_METADATA<$name> {
+                        |   companion object {
                         |   ${members.lines { it.toCode() }}
                         |   }
                         |}
