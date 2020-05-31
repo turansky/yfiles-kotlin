@@ -344,30 +344,46 @@ internal class KotlinFileGenerator(
     }
 
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
-        override fun content(): String {
-            val name = data.name
-
-            val baseInterface = if (declaration.flags) {
-                "$YFLAGS<$name>"
+        override fun content(): String =
+            if (declaration.flags) {
+                flagsContent()
             } else {
-                "$YENUM<$name>"
+                enumContent()
             }
+
+        private fun enumContent(): String {
+            val name = data.name
 
             return documentation +
                     externalAnnotation +
                     """
-                        |external enum class $name: $baseInterface {
+                        |external enum class $name: $YENUM<$name> {
                         |${declaration.constants.toContent()}
                         |
-                        |   companion object: $metadataClass<$name> {
-                        |   ${declaration.staticMethods.lines { it.toCode() }}
+                        |   companion object: $ENUM_METADATA<$name>
+                        |}
+                    """.trimMargin()
+        }
+
+
+        private fun flagsContent(): String {
+            val name = data.name
+
+            val members = declaration.constants + declaration.staticMethods
+
+            return documentation +
+                    externalAnnotation +
+                    """
+                        |sealed external class $name: $YFLAGS<$name> {
+                        |   companion object: $FLAGS_METADATA<$name> {
+                        |   ${members.lines { it.toCode() }}
                         |   }
                         |}
                     """.trimMargin()
         }
 
         override val metadataClass: String
-            get() = ENUM_METADATA
+            get() = TODO()
 
         override fun companionContent(): String? =
             null

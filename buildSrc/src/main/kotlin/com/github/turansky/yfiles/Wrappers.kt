@@ -506,7 +506,7 @@ private class EnumConstant(
         )
 
     override fun toCode(): String =
-        toEnumValue()
+        documentation + "val $name: ${parent.classId}"
 
     override fun toEnumValue(): String =
         documentation + name
