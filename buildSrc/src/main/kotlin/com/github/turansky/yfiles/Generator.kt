@@ -65,6 +65,7 @@ fun generateKotlinDeclarations(
     generateLookupExtensions(context)
 
     addIteratorSupport(context)
+    generateDpKeyDelegates(context)
 
     generateResourceTypes(devguideFile.readJson(), context)
 }
