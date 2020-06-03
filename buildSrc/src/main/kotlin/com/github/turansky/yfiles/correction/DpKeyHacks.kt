@@ -51,7 +51,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         }
 
         val classId = "yfiles.algorithms.$className"
-        val delegateName = className.decapitalize()
+        val delegateName = className.removePrefix("I").decapitalize()
         context[classId, DELEGATE] = """
             inline fun <reified T: Any> $delegateName(): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
                 dpKeyDelegate(::$className, T::class.js, $declaringType)
