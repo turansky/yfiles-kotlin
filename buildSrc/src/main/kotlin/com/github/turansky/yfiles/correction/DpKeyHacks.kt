@@ -11,7 +11,8 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         
         fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
             createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
-            valueClass: $JS_CLASS<V>
+            valueClass: $JS_CLASS<V>,
+            declaringType: $TYPE_METADATA<out $YOBJECT>
         ): $READ_ONLY_PROPERTY<Any?, T> {
             val valueType: $YCLASS<V> = when (valueClass) {
                 $BOOLEAN::class.js -> $BOOLEAN.yclass
@@ -19,10 +20,10 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
                 $INT::class.js -> $INT.yclass
                 $DOUBLE::class.js -> $DOUBLE.yclass
                 else -> $YOBJECT.yclass
-            }.unsafeCast<YClass<V>>()
+            }.unsafeCast<$YCLASS<V>>()
             
             return NamedDelegate { name -> 
-                 createKey(valueType, $YOBJECT.yclass, name)   
+                 createKey(valueType, declaringType.yclass, name)   
             }
         }
         
@@ -44,7 +45,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         }
     """.trimIndent()
 
-    for ((className, _) in DP_KEY_GENERIC_MAP) {
+    for ((className, declaringType) in DP_KEY_GENERIC_MAP) {
         if (className == DP_KEY_BASE_CLASS) {
             continue
         }
@@ -53,7 +54,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         val delegateName = className.decapitalize()
         context[classId, DELEGATE] = """
             inline fun <reified T: Any> $delegateName(): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
-                dpKeyDelegate(::$className, T::class.js)
+                dpKeyDelegate(::$className, T::class.js, $declaringType)
         """.trimIndent()
     }
 }
