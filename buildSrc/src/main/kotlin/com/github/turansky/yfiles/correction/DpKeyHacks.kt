@@ -12,7 +12,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
             createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
             valueClass: $KCLASS<V>,
-            declaringType: $TYPE_METADATA<out $YOBJECT>
+            declaringType: $YCLASS<out $YOBJECT>
         ): $READ_ONLY_PROPERTY<Any?, T> {
             val valueType: $YCLASS<V> = when (valueClass) {
                 $BOOLEAN::class -> $BOOLEAN.yclass
@@ -28,7 +28,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
             }.unsafeCast<$YCLASS<V>>()
             
             return NamedDelegate { name -> 
-                 createKey(valueType, declaringType.yclass, name)   
+                 createKey(valueType, declaringType, name)   
             }
         }
         
@@ -50,16 +50,23 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         }
     """.trimIndent()
 
-    for ((className, declaringType) in DP_KEY_GENERIC_MAP) {
+    for ((className, declaringClass) in DP_KEY_GENERIC_MAP) {
         if (className == DP_KEY_BASE_CLASS) {
             continue
         }
 
         val classId = "yfiles.algorithms.$className"
         val delegateName = className.removePrefix("I").decapitalize()
+
+        // language=kotlin
         context[classId, DELEGATE] = """
+            import yfiles.lang.yclass
+            
             inline fun <reified T: Any> $delegateName(): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
-                dpKeyDelegate(::$className, T::class, $declaringType)
+                $delegateName($declaringClass.yclass)
+                
+            inline fun <reified T: Any> $delegateName(declaringType: $YCLASS<out $YOBJECT>): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                dpKeyDelegate(::$className, T::class, declaringType)    
         """.trimIndent()
     }
 }
