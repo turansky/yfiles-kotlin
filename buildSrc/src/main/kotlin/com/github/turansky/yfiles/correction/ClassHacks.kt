@@ -386,7 +386,7 @@ private fun addClassBounds(source: Source) {
                 .filter { it[NAME] in typeNames }
                 .forEach {
                     val bound = when (type[ID]) {
-                        "yfiles.graph.ItemChangedEventArgs" -> "yfiles.graph.ITagOwner"
+                        "yfiles.graph.ItemChangedEventArgs" -> ITAG_OWNER
                         else -> IMODEL_ITEM
                     }
                     it[BOUNDS] = arrayOf(bound)
@@ -446,11 +446,20 @@ private fun addClassBounds(source: Source) {
             "IObservableCollection",
             "ObservableCollection",
 
-            "ItemEventArgs",
-
             "Future"
         ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(YOBJECT) }
+
+    source.type("ItemEventArgs")
+        .flatMap(TYPE_PARAMETERS)
+        .single()[BOUNDS] = arrayOf("$YOBJECT?")
+
+    source.type("HoveredItemChangedEventArgs") {
+        val validExtends = get(EXTENDS)
+            .replace("<$IMODEL_ITEM>", "<$IMODEL_ITEM?>")
+
+        set(EXTENDS, validExtends)
+    }
 
     source.types(
             "ResultItemMapping",

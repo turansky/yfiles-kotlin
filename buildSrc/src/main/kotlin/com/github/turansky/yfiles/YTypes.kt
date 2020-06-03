@@ -17,6 +17,7 @@ const val ICLONEABLE = "yfiles.lang.ICloneable"
 
 const val ILOOKUP = "yfiles.graph.ILookup"
 
+const val ITAG_OWNER = "yfiles.graph.ITagOwner"
 const val IMODEL_ITEM = "yfiles.graph.IModelItem"
 const val INODE = "yfiles.graph.INode"
 const val IEDGE = "yfiles.graph.IEdge"
