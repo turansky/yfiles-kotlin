@@ -10,6 +10,7 @@ internal val BOOLEAN: String = Boolean::class.simpleName!!
 
 internal const val PROMISE = "kotlin.js.Promise"
 internal const val READ_ONLY_PROPERTY = "kotlin.properties.ReadOnlyProperty"
+internal const val KCLASS = "kotlin.reflect.KClass"
 internal const val KPROPERTY = "kotlin.reflect.KProperty"
 
 internal const val ELEMENT = "org.w3c.dom.Element"
@@ -61,7 +62,9 @@ private val STANDARD_TYPE_MAP = mapOf(
 
 val STANDARD_IMPORTED_TYPES = STANDARD_TYPE_MAP
     .values
+    .asSequence()
     .filter { "." in it }
     .plus(READ_ONLY_PROPERTY)
+    .plus(KCLASS)
     .plus(KPROPERTY)
     .toSet()
