@@ -37,8 +37,10 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[ICLASS_METADATA] =
         """
+            |private const val YCLASS = "\${'$'}class"
+            |
             |external interface IClassMetadata<T: Any> {
-            |   @JsName("\${'$'}class")
+            |   @JsName(YCLASS)
             |   val yclass:$YCLASS<T>   
             |}
             |
