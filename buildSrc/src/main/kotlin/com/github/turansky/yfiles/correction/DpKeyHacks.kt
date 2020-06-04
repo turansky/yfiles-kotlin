@@ -72,8 +72,21 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
             inline fun <reified T: Any> $delegateName(): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
                 $delegateName($declaringClass.yclass)
                 
-            inline fun <reified T: Any> $delegateName(declaringType: $YCLASS<out $YOBJECT>): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
-                dpKeyDelegate(::$className, T::class, declaringType)    
+            inline fun <reified T: Any> $delegateName(
+                declaringType: $YCLASS<out $YOBJECT>
+            ): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                dpKeyDelegate(::$className, T::class, declaringType)   
+                 
+            inline fun <T: $YOBJECT> $delegateName(
+                valueType: $INTERFACE_METADATA<T>
+            ): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                $delegateName(valueType, $declaringClass.yclass)
+                
+            inline fun <T: $YOBJECT> $delegateName(
+                valueType: $INTERFACE_METADATA<T>,
+                declaringType: $YCLASS<out $YOBJECT>
+            ): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                dpKeyDelegate(::$className, valueType.yclass, declaringType)     
         """.trimIndent()
     }
 }
