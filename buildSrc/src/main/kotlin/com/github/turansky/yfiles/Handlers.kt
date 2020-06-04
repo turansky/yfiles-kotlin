@@ -38,20 +38,23 @@ private fun getEventHandlerData(eventType: String): HandlerData {
     }
 
     return when (eventType) {
-        "yfiles.lang.EventArgs" ->
-            EMPTY_HANDLER_DATA
+        "yfiles.lang.EventArgs"
+        -> EMPTY_HANDLER_DATA
 
-        "yfiles.lang.PropertyChangedEventArgs" ->
-            PROPERTY_HANDLER_DATA
+        "yfiles.lang.PropertyChangedEventArgs"
+        -> PROPERTY_HANDLER_DATA
 
-        "yfiles.input.InputModeEventArgs" ->
-            INPUT_MODE_HANDLER_DATA
+        "yfiles.input.InputModeEventArgs"
+        -> INPUT_MODE_HANDLER_DATA
 
-        "yfiles.input.MarqueeSelectionEventArgs" ->
-            MARQUEE_HANDLER_DATA
+        "yfiles.input.MarqueeSelectionEventArgs"
+        -> MARQUEE_HANDLER_DATA
 
-        "yfiles.input.LassoSelectionEventArgs" ->
-            LASSO_HANDLER_DATA
+        "yfiles.input.LassoSelectionEventArgs"
+        -> LASSO_HANDLER_DATA
+
+        "yfiles.input.HoveredItemChangedEventArgs"
+        -> HOVER_HANDLER_DATA
 
         else ->
             HandlerData(
@@ -89,6 +92,12 @@ private val LASSO_HANDLER_DATA =
     HandlerData(
         handlerType = "(selectionPath:yfiles.geometry.GeneralPath) -> Unit",
         listenerBody = "{ _, event -> handler(event.selectionPath) }"
+    )
+
+private val HOVER_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(item:$IMODEL_ITEM?, oldItem:$IMODEL_ITEM?) -> Unit",
+        listenerBody = "{ _, event -> handler(event.item, event.oldItem) }"
     )
 
 internal data class HandlerData(
