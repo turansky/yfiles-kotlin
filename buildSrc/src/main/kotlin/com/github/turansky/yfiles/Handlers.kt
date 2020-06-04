@@ -37,6 +37,14 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         )
     }
 
+    if (eventType.startsWith("yfiles.graph.ItemChangedEventArgs<")) {
+        val (itemType, valueType) = eventType.between("<", ">").split(",")
+        return HandlerData(
+            handlerType = "(item:$itemType, oldValue: $valueType?) -> Unit",
+            listenerBody = "{ _, event -> handler(event.item, event.oldValue) }"
+        )
+    }
+
     return when (eventType) {
         "yfiles.lang.EventArgs"
         -> EMPTY_HANDLER_DATA
