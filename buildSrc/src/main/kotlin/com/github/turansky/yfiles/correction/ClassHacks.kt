@@ -51,6 +51,20 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """.trimMargin()
 
     // language=kotlin
+    context[ICLASS_METADATA, DELEGATE] =
+        """
+            inline fun <reified T: $YOBJECT> classMetadata(): $ICLASS_METADATA<T> = 
+                classMetadata(T::class.js.yclass)
+                
+            fun <T: $YOBJECT> classMetadata(yclass: $YCLASS<T>): $ICLASS_METADATA<T> = 
+                SimpleClassMetadata(yclass)    
+                
+            private class SimpleClassMetadata<T: $YOBJECT>(
+                override val yclass: $YCLASS<T>
+            ): $ICLASS_METADATA<T>
+        """.trimIndent()
+
+    // language=kotlin
     context[CLASS_METADATA] = """
         @JsName("Object")
         abstract external class ClassMetadata<T: $YOBJECT> : $ICLASS_METADATA<T> {
