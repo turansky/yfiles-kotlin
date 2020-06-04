@@ -9,12 +9,8 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
     context[DP_KEY_BASE, DELEGATE] = """
         import yfiles.lang.yclass
         
-        fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
-            createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
-            valueClass: $KCLASS<V>,
-            declaringType: $YCLASS<out $YOBJECT>
-        ): $READ_ONLY_PROPERTY<Any?, T> {
-            val valueType: $YCLASS<V> = when (valueClass) {
+        private fun <T:Any> $KCLASS<T>.toValueType(): $YCLASS<T> = 
+            when (this) {
                 $BOOLEAN::class -> $BOOLEAN.yclass
                 $STRING::class -> $STRING.yclass
                 
@@ -25,12 +21,16 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
                 $DOUBLE::class -> $DOUBLE.yclass
                 
                 else -> $YOBJECT.yclass
-            }.unsafeCast<$YCLASS<V>>()
-            
-            return NamedDelegate { name -> 
-                 createKey(valueType, declaringType, name)   
+            }.unsafeCast<$YCLASS<T>>()
+        
+        fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
+            createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
+            valueClass: $KCLASS<V>,
+            declaringType: $YCLASS<out $YOBJECT>
+        ): $READ_ONLY_PROPERTY<Any?, T> =
+            NamedDelegate { name -> 
+                 createKey(valueClass.toValueType(), declaringType, name)   
             }
-        }
         
         private class NamedDelegate<T: Any>(
             private val create: (String) -> T
