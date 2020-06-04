@@ -67,8 +67,6 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
 
         // language=kotlin
         context[classId, DELEGATE] = """
-            import yfiles.lang.yclass
-            
             inline fun <reified T: Any> $delegateName(): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
                 $delegateName($declaringClass.yclass)
                 

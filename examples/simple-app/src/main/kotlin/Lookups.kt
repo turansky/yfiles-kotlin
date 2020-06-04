@@ -6,7 +6,6 @@ import yfiles.graph.lookup
 import yfiles.graph.lookupValue
 import yfiles.input.IHitTestable
 import yfiles.lang.TimeSpan
-import yfiles.lang.yclass
 
 fun lookups() {
     val graph: IGraph = DefaultGraph()
