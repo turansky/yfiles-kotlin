@@ -1,4 +1,5 @@
-import yfiles.lang.ClassMetadata
+import yfiles.lang.TypeMetadata
+import yfiles.lang.YClass
 import yfiles.lang.YObject
 import kotlin.browser.window
 
@@ -7,7 +8,10 @@ class CustomObject : YObject {
         window.alert("Hallo from CustomObject!")
     }
 
-    companion object : ClassMetadata<CustomObject>
+    companion object : TypeMetadata<CustomObject> {
+        override val yclass: YClass<CustomObject>
+            get() = TODO("not implemented")
+    }
 }
 
 class OtherCustomObject : YObject {

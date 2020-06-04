@@ -37,10 +37,10 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[TYPE_METADATA] =
         """
-            |external interface TypeMetadata<T: Any>
-            |
-            |inline val <T: Any> $TYPE_METADATA<T>.yclass:$YCLASS<T>
-            |    get() = asDynamic()["\${'$'}class"]
+            |external interface TypeMetadata<T: Any> {
+            |   @JsName("\${'$'}class")
+            |   val yclass:$YCLASS<T>   
+            |}
             |
             |inline val <T: $YOBJECT> JsClass<T>.yclass:$YCLASS<T>
             |    get() = unsafeCast<TypeMetadata<T>>().yclass    
@@ -49,17 +49,28 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """.trimMargin()
 
     // language=kotlin
-    context[CLASS_METADATA] =
-        "external interface ClassMetadata<T: $YOBJECT> : $TYPE_METADATA<T>"
+    context[CLASS_METADATA] = """
+        @JsName("Object")
+        abstract external class ClassMetadata<T: $YOBJECT> : $TYPE_METADATA<T> {
+            override val yclass: $YCLASS<T>
+        }
+    """.trimIndent()
 
     // language=kotlin
-    context[ENUM_METADATA] =
-        "external interface EnumMetadata<T: $YENUM<T>> : $TYPE_METADATA<T>"
+    context[ENUM_METADATA] = """
+        @JsName("Object")
+        abstract external class EnumMetadata<T: $YENUM<T>> : $TYPE_METADATA<T> {
+            override val yclass: $YCLASS<T>
+        }
+    """.trimIndent()
 
     // language=kotlin
     context[INTERFACE_METADATA, INLINE] =
         """
-            |external interface InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T>
+            |@JsName("Object")
+            |abstract external class InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T> {
+            |   override val yclass: $YCLASS<T>
+            |}
             |    
             |inline infix fun Any.yIs(type: $INTERFACE_METADATA<*>): Boolean =
             |    type.asDynamic().isInstance(this)
