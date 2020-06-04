@@ -7,6 +7,7 @@ import org.json.JSONObject
 internal fun generateDpKeyDelegates(context: GeneratorContext) {
     // language=kotlin
     context[DP_KEY_BASE, DELEGATE] = """
+        import yfiles.lang.findClass
         import yfiles.lang.yclass
         
         private fun <T:Any> $KCLASS<T>.toValueType(): $YCLASS<T> = 
@@ -20,7 +21,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
                 Float::class,
                 $DOUBLE::class -> $DOUBLE.yclass
                 
-                else -> $YOBJECT.yclass
+                else -> js.findClass() ?: $YOBJECT.yclass
             }.unsafeCast<$YCLASS<T>>()
         
         fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(

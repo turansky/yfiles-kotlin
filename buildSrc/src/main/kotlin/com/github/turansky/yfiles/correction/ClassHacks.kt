@@ -45,7 +45,10 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |}
             |
             |inline val <T: $YOBJECT> JsClass<T>.yclass:$YCLASS<T>
-            |    get() = unsafeCast<IClassMetadata<T>>().yclass    
+            |    get() = unsafeCast<IClassMetadata<T>>().yclass
+            |
+            |internal fun <T: $ANY> JsClass<T>.findClass():$YCLASS<T>? =
+            |    $AS_DYNAMIC[YCLASS] as? $YCLASS<T>
             |
             |$primitiveTypeMetadata    
         """.trimMargin()
