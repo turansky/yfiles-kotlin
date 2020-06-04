@@ -7,7 +7,7 @@ const val YCLASS = "yfiles.lang.YClass"
 const val YENUM = "yfiles.lang.YEnum"
 const val YFLAGS = "yfiles.lang.YFlags"
 
-const val TYPE_METADATA = "yfiles.lang.TypeMetadata"
+const val ICLASS_METADATA = "yfiles.lang.IClassMetadata"
 const val CLASS_METADATA = "yfiles.lang.ClassMetadata"
 const val ENUM_METADATA = "yfiles.lang.EnumMetadata"
 const val INTERFACE_METADATA = "yfiles.lang.InterfaceMetadata"

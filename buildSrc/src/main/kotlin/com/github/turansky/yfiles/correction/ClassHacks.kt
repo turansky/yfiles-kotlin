@@ -30,20 +30,20 @@ internal fun generateClassUtils(context: GeneratorContext) {
     ).joinToString("\n\n") { (type, alias) ->
         """
             inline val $type.Companion.yclass: $YCLASS<$type>
-                get() = $alias.unsafeCast<$TYPE_METADATA<$type>>().yclass
+                get() = $alias.unsafeCast<$ICLASS_METADATA<$type>>().yclass
         """.trimIndent()
     }
 
     // language=kotlin
-    context[TYPE_METADATA] =
+    context[ICLASS_METADATA] =
         """
-            |external interface TypeMetadata<T: Any> {
+            |external interface IClassMetadata<T: Any> {
             |   @JsName("\${'$'}class")
             |   val yclass:$YCLASS<T>   
             |}
             |
             |inline val <T: $YOBJECT> JsClass<T>.yclass:$YCLASS<T>
-            |    get() = unsafeCast<TypeMetadata<T>>().yclass    
+            |    get() = unsafeCast<IClassMetadata<T>>().yclass    
             |
             |$primitiveTypeMetadata    
         """.trimMargin()
@@ -51,7 +51,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[CLASS_METADATA] = """
         @JsName("Object")
-        abstract external class ClassMetadata<T: $YOBJECT> : $TYPE_METADATA<T> {
+        abstract external class ClassMetadata<T: $YOBJECT> : $ICLASS_METADATA<T> {
             override val yclass: $YCLASS<T>
         }
     """.trimIndent()
@@ -59,7 +59,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[ENUM_METADATA] = """
         @JsName("Object")
-        abstract external class EnumMetadata<T: $YENUM<T>> : $TYPE_METADATA<T> {
+        abstract external class EnumMetadata<T: $YENUM<T>> : $ICLASS_METADATA<T> {
             override val yclass: $YCLASS<T>
         }
     """.trimIndent()
@@ -68,7 +68,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     context[INTERFACE_METADATA, INLINE] =
         """
             |@JsName("Object")
-            |abstract external class InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T> {
+            |abstract external class InterfaceMetadata<T: $YOBJECT>: $ICLASS_METADATA<T> {
             |   override val yclass: $YCLASS<T>
             |}
             |    
