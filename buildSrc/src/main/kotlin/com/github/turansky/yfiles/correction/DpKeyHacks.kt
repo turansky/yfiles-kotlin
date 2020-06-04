@@ -25,12 +25,19 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         
         fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
             createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
-            valueClass: $KCLASS<V>,
+            valueType: $YCLASS<V>,
             declaringType: $YCLASS<out $YOBJECT>
         ): $READ_ONLY_PROPERTY<Any?, T> =
             NamedDelegate { name -> 
-                 createKey(valueClass.toValueType(), declaringType, name)   
+                 createKey(valueType, declaringType, name)   
             }
+        
+        fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
+            createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
+            valueClass: $KCLASS<V>,
+            declaringType: $YCLASS<out $YOBJECT>
+        ): $READ_ONLY_PROPERTY<Any?, T> =
+            dpKeyDelegate(createKey, valueClass.toValueType(), declaringType)
         
         private class NamedDelegate<T: Any>(
             private val create: (String) -> T
