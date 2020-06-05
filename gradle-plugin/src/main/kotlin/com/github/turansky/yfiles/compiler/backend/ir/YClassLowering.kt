@@ -2,7 +2,6 @@ package com.github.turansky.yfiles.compiler.backend.ir
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
@@ -23,10 +22,8 @@ private val ARROW_ID = ClassId(
 internal class YClassLowering(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid(), ClassLoweringPass {
-    private fun findClassSymbol(id: ClassId): IrClassSymbol {
-        val descriptor = context.moduleDescriptor.findClassAcrossModuleDependencies(id)!!
-        return context.symbolTable.referenceClass(descriptor)
-    }
+    private fun findClassSymbol(id: ClassId): IrClassSymbol =
+        context.referenceClass(id.asSingleFqName())!!
 
     override fun lower(irClass: IrClass) {
         if (irClass.isExternal) return
