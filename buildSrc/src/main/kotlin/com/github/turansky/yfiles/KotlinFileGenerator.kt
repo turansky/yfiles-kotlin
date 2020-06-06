@@ -55,9 +55,6 @@ internal class KotlinFileGenerator(
     abstract inner class GeneratedFile(private val declaration: Type) {
         val data = es6GeneratorData(declaration)
 
-        private val properties: List<Property>
-            get() = declaration.memberProperties
-
         protected open val hasConstants = true
 
         private val staticConstants: List<Constant>
@@ -82,8 +79,13 @@ internal class KotlinFileGenerator(
                     .toList()
             }
 
+        protected open fun isExtension(property: Property): Boolean = false
+
         protected val memberProperties: List<Property>
-            get() = properties.filter { !it.static }
+            get() = declaration.memberProperties.filter { !isExtension(it) }
+
+        protected val memberExtensionProperties: List<Property>
+            get() = declaration.memberProperties.filter { isExtension(it) }
 
         protected val memberFunctions: List<Method>
             get() = declaration.memberMethods
@@ -175,6 +177,9 @@ internal class KotlinFileGenerator(
 
         override val hasConstants: Boolean =
             enumCompanionName == null && !declaration.enumLike
+
+        override fun isExtension(property: Property): Boolean =
+            property.generated
 
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
@@ -270,6 +275,9 @@ internal class KotlinFileGenerator(
                     generics = declaration.generics,
                     final = declaration.final
                 ),
+                memberExtensionProperties
+                    .takeIf { it.isNotEmpty() }
+                    ?.run { lines { it.toExtensionCode() } },
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
                     ?.run { lines { it.toExtensionCode() } },

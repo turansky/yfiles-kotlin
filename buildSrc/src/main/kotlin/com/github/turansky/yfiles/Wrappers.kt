@@ -131,7 +131,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     abstract val constants: List<Constant>
 
-    val properties: List<Property> by declarationList(::Property)
+    private val properties: List<Property> by declarationList(::Property)
     val memberProperties: List<Property> = properties.filter { !it.static }
     val staticProperties: List<Property> = properties.filter { it.static }
 
@@ -532,6 +532,7 @@ internal class Property(
     val abstract = modifiers.abstract
     private val final = modifiers.final
     private val open = !static && !final
+    val generated = modifiers.generated
 
     private val preconditions: List<String> by stringList(::summary)
 
@@ -599,7 +600,7 @@ internal class Property(
 
         val generics = parent.generics.declaration
 
-        val body = if (!modifiers.generated) {
+        val body = if (!generated) {
             "$AS_DYNAMIC.$name"
         } else {
             require(!mode.writable)
