@@ -70,7 +70,8 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[CLASS_METADATA] = """
         @JsName("Object")
-        abstract external class ClassMetadata<T: $YOBJECT> : $ICLASS_METADATA<T> {
+        abstract external class ClassMetadata<T: $YOBJECT> 
+        internal constructor() : $ICLASS_METADATA<T> {
             override val yclass: $YCLASS<T>
         }
     """.trimIndent()
@@ -78,7 +79,8 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[ENUM_METADATA] = """
         @JsName("Object")
-        abstract external class EnumMetadata<T: $YENUM<T>> : $ICLASS_METADATA<T> {
+        abstract external class EnumMetadata<T: $YENUM<T>> 
+        internal constructor() : $ICLASS_METADATA<T> {
             override val yclass: $YCLASS<T>
         }
     """.trimIndent()
@@ -87,7 +89,8 @@ internal fun generateClassUtils(context: GeneratorContext) {
     context[INTERFACE_METADATA, INLINE] =
         """
             |@JsName("Object")
-            |abstract external class InterfaceMetadata<T: $YOBJECT>: $ICLASS_METADATA<T> {
+            |abstract external class InterfaceMetadata<T: $YOBJECT>
+            |internal constructor() : $ICLASS_METADATA<T> {
             |   override val yclass: $YCLASS<T>
             |}
             |    
