@@ -97,6 +97,7 @@ internal fun applyHacks(api: JSONObject) {
     fixConstructors(source)
 
     applyLayoutStrictTypes(source)
+    addSizeExtensions(source)
     markDeprecatedItems(source)
 }
 

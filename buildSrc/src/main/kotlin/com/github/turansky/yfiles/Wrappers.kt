@@ -604,15 +604,6 @@ internal class Property(
             str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
         }
 
-        if (name == "size" && type == INT) {
-            str += """
-                
-                
-                inline val $generics ${parent.classDeclaration}.lastIndex: $type${modifiers.nullability}
-                    get() = size - 1
-            """.trimIndent()
-        }
-
         return "$documentation$str"
     }
 }

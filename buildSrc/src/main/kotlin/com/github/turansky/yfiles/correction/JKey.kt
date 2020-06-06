@@ -59,6 +59,8 @@ internal object VALUES : JObjectKey("values")
 internal object CHILDREN : JArrayKey("children")
 internal object CONTENT : JStringKey("content")
 
+internal object BODY : JStringKey("body")
+
 internal fun JSONObject.has(key: JKey) = has(key.name)
 
 internal operator fun JSONObject.get(key: JArrayKey): JSONArray = getJSONArray(key.name)
