@@ -189,6 +189,10 @@ private fun fixEnum(source: Source) {
                 }
             }
     }
+
+    source.type("Direction")
+        .get(MODIFIERS)
+        .put(ENUM_LIKE)
 }
 
 private fun addClassGeneric(source: Source) {
