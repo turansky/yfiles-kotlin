@@ -12,6 +12,10 @@ internal fun addSizeExtensions(source: Source) {
         .addGeneratedProperty("lastIndex", JS_INT, "size - 1")
 
     source.types()
+        .filter { it.optFlatMap(PROPERTIES).any { it[NAME] == "empty" } }
+        .forEach { it.addGeneratedProperty("notEmpty", JS_BOOLEAN, "!empty") }
+
+    source.types()
         .filter { it.optFlatMap(PROPERTIES).any { it[NAME] == "isEmpty" } }
         .forEach { it.addGeneratedProperty("isNotEmpty", JS_BOOLEAN, "!isEmpty") }
 }
