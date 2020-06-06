@@ -26,6 +26,8 @@ private const val NOTNULL = "notnull"
 
 internal const val DEPRECATED = "deprecated"
 
+internal const val GENERATED = "generated"
+
 // for codegen
 internal const val HIDDEN = "hidden"
 
@@ -141,6 +143,8 @@ private val PROPERTY_MODIFIERS = setOf(
 
     CANBENULL,
 
+    GENERATED,
+
     DEPRECATED,
 
     PUBLIC,
@@ -153,6 +157,7 @@ private val PROPERTY_MODIFIERS = setOf(
 internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers, PROPERTY_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
+    val generated = has(GENERATED)
     val deprecated = has(DEPRECATED)
 
     val mode = when {

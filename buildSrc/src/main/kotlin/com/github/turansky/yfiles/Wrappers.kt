@@ -539,6 +539,8 @@ internal class Property(
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
 
+    private val body: String by string()
+
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverridden(parent.classId, name)
 
@@ -597,11 +599,18 @@ internal class Property(
 
         val generics = parent.generics.declaration
 
+        val body = if (!modifiers.generated) {
+            "$AS_DYNAMIC.$name"
+        } else {
+            require(!mode.writable)
+            this.body
+        }
+
         var str = "inline " + if (mode.writable) "var " else "val "
         str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
-                "    get() = $AS_DYNAMIC.$name"
+                "    get() = $body"
         if (mode.writable) {
-            str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
+            str += "\n    set(value) { $body = value }"
         }
 
         return "$documentation$str"

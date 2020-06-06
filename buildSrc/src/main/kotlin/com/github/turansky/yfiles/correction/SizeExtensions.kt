@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.GENERATED
 import com.github.turansky.yfiles.JS_INT
 import com.github.turansky.yfiles.RO
 import com.github.turansky.yfiles.json.jObject
@@ -18,7 +19,7 @@ private fun JSONObject.addGeneratedProperty(
     val property = jObject(
         NAME to name,
         TYPE to type,
-        MODIFIERS to listOf(RO),
+        MODIFIERS to listOf(RO, GENERATED),
         BODY to body
     )
 
