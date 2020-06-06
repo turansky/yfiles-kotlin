@@ -169,7 +169,7 @@ internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers,
     val abstract = has(ABSTRACT)
     val protected = has(PROTECTED)
 
-    private val canbenull = has(CANBENULL)
+    val canbenull = has(CANBENULL)
     val nullability = exp(canbenull, "?")
 }
 

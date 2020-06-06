@@ -532,6 +532,7 @@ internal class Property(
     val abstract = modifiers.abstract
     private val final = modifiers.final
     private val open = !static && !final
+    val nullable = modifiers.canbenull
     val generated = modifiers.generated
 
     private val preconditions: List<String> by stringList(::summary)
@@ -589,6 +590,10 @@ internal class Property(
 
         if (modifiers.deprecated) {
             str = DEPRECATED_ANNOTATION + "\n" + str
+        }
+
+        if (parent is Interface && !abstract) {
+            str += "\nget() = definedExternally"
         }
 
         return "$documentation$str"

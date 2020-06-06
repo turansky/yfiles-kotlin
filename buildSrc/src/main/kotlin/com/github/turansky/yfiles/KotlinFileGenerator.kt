@@ -313,8 +313,11 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
+        private val Property.extension: Boolean
+            get() = !abstract && !nullable
+
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties.filter { it.abstract } +
+            return memberProperties.filter { !it.extension } +
                     memberFunctions.filter { it.abstract } +
                     memberEvents
         }
@@ -336,7 +339,7 @@ internal class KotlinFileGenerator(
                     "}"
         }
 
-        private val defaultDeclarations = memberProperties.filter { !it.abstract } +
+        private val defaultDeclarations = memberProperties.filter { it.extension } +
                 memberFunctions.filter { !it.abstract } +
                 memberExtensionFunctions +
                 memberEvents.filter { !it.overriden }
