@@ -54,7 +54,7 @@ internal fun applyHacks(api: JSONObject) {
     applyPartitionCellHacks(source)
     applyIntersectionHacks(source)
 
-    applyDpataHacks(source)
+    applyDpdataHacks(source)
     applyDataHacks(source)
     applyDpKeyHacks(source)
 

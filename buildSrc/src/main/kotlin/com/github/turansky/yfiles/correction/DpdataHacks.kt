@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
-internal fun applyDpataHacks(source: Source) {
+internal fun applyDpdataHacks(source: Source) {
     fixGraph(source)
     fixDefaultLayoutGraph(source)
     fixDfs(source)
