@@ -29,7 +29,7 @@ internal class YClassLowering(
         if (irClass.isExternal) return
         if (irClass.isInline) return
         if (!irClass.isClass) return
-        // if (!irClass.implementsYFilesInterface) return
+        if (!irClass.implementsYFilesInterface) return
         if (irClass.name.identifier != "AbstractArrow2") return
 
         val arrow = findClassSymbol(ARROW_ID)
