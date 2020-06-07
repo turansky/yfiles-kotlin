@@ -1,7 +1,94 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.ContentMode.DELEGATE
 import org.json.JSONObject
+
+internal fun generateDpKeyDelegates(context: GeneratorContext) {
+    // language=kotlin
+    context[DP_KEY_BASE, DELEGATE] = """
+        import yfiles.lang.findClass
+        import yfiles.lang.yclass
+        
+        private fun <T:Any> $KCLASS<T>.toValueType(): $YCLASS<T> = 
+            when (this) {
+                $BOOLEAN::class -> $BOOLEAN.yclass
+                $STRING::class -> $STRING.yclass
+                
+                $INT::class -> $INT.yclass
+                
+                Number::class,
+                Float::class,
+                $DOUBLE::class -> $DOUBLE.yclass
+                
+                else -> js.findClass() ?: $YOBJECT.yclass
+            }.unsafeCast<$YCLASS<T>>()
+        
+        fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
+            createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
+            valueType: $YCLASS<V>,
+            declaringType: $YCLASS<out $YOBJECT>
+        ): $READ_ONLY_PROPERTY<Any?, T> =
+            NamedDelegate { name -> 
+                 createKey(valueType, declaringType, name)   
+            }
+        
+        fun <T: $DP_KEY_BASE<*, V>, V: Any> dpKeyDelegate(
+            createKey: ($YCLASS<V>, $YCLASS<*>, String) -> T,
+            valueClass: $KCLASS<V>,
+            declaringType: $YCLASS<out $YOBJECT>
+        ): $READ_ONLY_PROPERTY<Any?, T> =
+            dpKeyDelegate(createKey, valueClass.toValueType(), declaringType)
+        
+        private class NamedDelegate<T: Any>(
+            private val create: (String) -> T
+        ): $READ_ONLY_PROPERTY<Any?, T> {
+            private lateinit var value: T
+
+            override fun getValue(
+                thisRef: Any?,
+                property: $KPROPERTY<*>
+            ): T {
+                if (!::value.isInitialized) {
+                    value = create(property.name)
+                }
+                
+                return value
+            }
+        }
+    """.trimIndent()
+
+    for ((className, declaringClass) in DP_KEY_GENERIC_MAP) {
+        if (className == DP_KEY_BASE_CLASS) {
+            continue
+        }
+
+        val classId = "yfiles.algorithms.$className"
+        val delegateName = className.removePrefix("I").decapitalize()
+
+        // language=kotlin
+        context[classId, DELEGATE] = """
+            inline fun <reified T: Any> $delegateName(): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                $delegateName($declaringClass.yclass)
+                
+            inline fun <reified T: Any> $delegateName(
+                declaringType: $YCLASS<out $YOBJECT>
+            ): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                dpKeyDelegate(::$className, T::class, declaringType)   
+                 
+            inline fun <T: $YOBJECT> $delegateName(
+                valueType: $INTERFACE_METADATA<T>
+            ): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                $delegateName(valueType, $declaringClass.yclass)
+                
+            inline fun <T: $YOBJECT> $delegateName(
+                valueType: $INTERFACE_METADATA<T>,
+                declaringType: $YCLASS<out $YOBJECT>
+            ): $READ_ONLY_PROPERTY<Any?, $className<T>> = 
+                dpKeyDelegate(::$className, valueType.yclass, declaringType)     
+        """.trimIndent()
+    }
+}
 
 internal fun applyDpKeyHacks(source: Source) {
     fixClass(source)
@@ -29,8 +116,8 @@ private val DP_KEY_GENERIC_MAP = mapOf(
 )
 
 private fun fixClass(source: Source) {
-    source.type(DP_KEY_BASE_CLASS).apply {
-        addFirstTypeParameter(DP_KEY_BASE_KEY, JS_OBJECT)
+    source.type(DP_KEY_BASE_CLASS) {
+        addFirstTypeParameter(DP_KEY_BASE_KEY, YOBJECT)
 
         methodParameters(
             "equalsCore",
@@ -41,10 +128,12 @@ private fun fixClass(source: Source) {
     }
 
     for ((className, generic) in DP_KEY_GENERIC_MAP) {
-        if (className != DP_KEY_BASE_CLASS) {
-            source.type(className)
-                .updateDpKeyGeneric(EXTENDS, generic)
+        if (className == DP_KEY_BASE_CLASS) {
+            continue
         }
+
+        source.type(className)
+            .updateDpKeyGeneric(EXTENDS, generic)
     }
 
     source.type("DpKeyItemCollection")
@@ -127,12 +216,17 @@ private fun fixMethodParameters(source: Source) {
         ).forEach { it[TYPE] = edgeDpKey(JS_INT) }
     }
 
-    source.type("LabelingBase")
-        .flatMap(METHODS)
-        .filter { it[NAME] == "label" }
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "key" }
-        .set(TYPE, labelDpKey(JS_BOOLEAN))
+    source.type("LabelingBase").apply {
+        constant("LABEL_MODEL_DP_KEY").also {
+            it.replaceInType("<$JS_ANY>", "<$YOBJECT>")
+        }
+
+        flatMap(METHODS)
+            .filter { it[NAME] == "label" }
+            .flatMap(PARAMETERS)
+            .single { it[NAME] == "key" }
+            .set(TYPE, labelDpKey(JS_BOOLEAN))
+    }
 }
 
 private fun JSONObject.updateDpKeyGeneric(

@@ -11,37 +11,37 @@ internal fun applyLabelModelParameterHacks(source: Source) {
     ).forEach { it.property("modelParameter")[TYPE] = ILABEL_MODEL_PARAMETER }
 
     source.types(
-        "LabelCandidate",
+            "LabelCandidate",
 
-        "EdgeLabelCandidate",
-        "ExtendedEdgeLabelCandidate",
+            "EdgeLabelCandidate",
+            "ExtendedEdgeLabelCandidate",
 
-        "NodeLabelCandidate",
-        "ExtendedNodeLabelCandidate",
+            "NodeLabelCandidate",
+            "ExtendedNodeLabelCandidate",
 
-        "LayoutGraphUtilities"
-    ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+            "LayoutGraphUtilities"
+        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] == "param" }
         .forEach { it[TYPE] = ILABEL_MODEL_PARAMETER }
 
     source.types(
-        "IEdgeLabelLayoutModel",
-        "DiscreteEdgeLabelLayoutModel",
-        "FreeEdgeLabelLayoutModel",
-        "SliderEdgeLabelLayoutModel",
+            "IEdgeLabelLayoutModel",
+            "DiscreteEdgeLabelLayoutModel",
+            "FreeEdgeLabelLayoutModel",
+            "SliderEdgeLabelLayoutModel",
 
-        "INodeLabelLayoutModel",
-        "DiscreteNodeLabelLayoutModel",
-        "FreeNodeLabelLayoutModel"
-    ).onEach { it.property("defaultParameter")[TYPE] = ILABEL_MODEL_PARAMETER }
+            "INodeLabelLayoutModel",
+            "DiscreteNodeLabelLayoutModel",
+            "FreeNodeLabelLayoutModel"
+        ).onEach { it.property("defaultParameter")[TYPE] = ILABEL_MODEL_PARAMETER }
         .onEach { it.method("createModelParameter")[RETURNS][TYPE] = ILABEL_MODEL_PARAMETER }
-        .flatMap { it.flatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .flatMap(METHODS)
         .flatMap(PARAMETERS)
         .filter { it[NAME] == "parameter" }
         .forEach { it[TYPE] = ILABEL_MODEL_PARAMETER }
 
     source.type("DiscreteEdgeLabelLayoutModel")
-        .staticMethod("createPositionParameter")
+        .method("createPositionParameter")
         .get(RETURNS)[TYPE] = ILABEL_MODEL_PARAMETER
 }

@@ -6,7 +6,7 @@ import com.github.turansky.yfiles.JS_VOID
 import com.github.turansky.yfiles.json.get
 
 internal fun applyVisualTemplateHacks(source: Source) {
-    source.type("IVisualTemplate").apply {
+    source.type("IVisualTemplate") {
         setSingleTypeParameter("in T")
 
         flatMap(METHODS)

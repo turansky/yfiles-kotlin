@@ -35,7 +35,7 @@ internal fun applyCreationPropertyHacks(source: Source) {
         strictRemove(IMPLEMENTS)
 
         get(PROPERTIES)["entries"].also {
-            it[TYPE] = it[TYPE].replace("<$JS_ANY,", "<${propertyKey("*")},")
+            it.replaceInType("<$JS_ANY,", "<${propertyKey("*")},")
         }
 
         flatMap(METHODS)

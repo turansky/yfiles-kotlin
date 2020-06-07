@@ -8,7 +8,7 @@ private const val T = "T"
 private const val D = "D"
 
 internal fun applyClipboardHelperHacks(source: Source) {
-    source.type("IClipboardHelper").apply {
+    source.type("IClipboardHelper") {
         set(
             TYPE_PARAMETERS,
             arrayOf(

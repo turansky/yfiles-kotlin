@@ -1,9 +1,17 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.*
+import com.github.turansky.yfiles.json.removeAllObjects
+import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
+
+private const val FROM = "from"
+private const val CREATE = "create"
+
+private const val QII = "qii"
 
 internal fun File.readJson(): JSONObject =
     readText(UTF_8)
@@ -13,6 +21,11 @@ internal fun File.readJson(): JSONObject =
 
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
+        .apply { removeNamespaces() }
+        .apply { fixInsetsDeclaration() }
+        .apply { mergeDeclarations() }
+        .apply { removeFromFactories() }
+        .apply { removeRedundantCreateFactories() }
         .toString()
         .fixSystemPackage()
         .fixClassDeclaration()
@@ -35,7 +48,45 @@ private fun String.fixClassDeclaration(): String =
 
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
-        .replace(""".YInsets",name:"Insets"""", """.YInsets",name:"YInsets"""")
+
+private fun JSONObject.fixInsetsDeclaration() =
+    flatMap(TYPES)
+        .firstOrNull { it[ID] == "yfiles.algorithms.YInsets" }
+        ?.also { it[NAME] = "YInsets" }
+
+private fun JSONObject.mergeDeclarations() {
+    flatMap(TYPES)
+        .forEach {
+            it.merge(PROPERTIES, STATIC_PROPERTIES)
+            it.merge(METHODS, STATIC_METHODS)
+        }
+}
+
+private fun JSONObject.merge(
+    key: JArrayKey,
+    staticKey: JArrayKey
+) {
+    if (!has(staticKey)) {
+        return
+    }
+
+    if (has(key)) {
+        val items = get(key)
+        flatMap(staticKey).forEach { items.put(it) }
+    } else {
+        set(key, get(staticKey))
+    }
+
+    strictRemove(staticKey)
+}
+
+private fun JSONObject.removeNamespaces() {
+    val types = flatMap(NAMESPACES)
+        .flatMap { it.optFlatMap(NAMESPACES).flatMap(TYPES) + it.optFlatMap(TYPES) }
+        .toList()
+
+    set(TYPES, types)
+}
 
 private fun JSONObject.fixFunctionSignatures() {
     val signatureMap = getJSONObject("functionSignatures")
@@ -49,3 +100,34 @@ private fun JSONObject.fixFunctionSignatures() {
 
     put("functionSignatures", signatures)
 }
+
+private fun JSONObject.removeFromFactories() {
+    flatMap(TYPES)
+        .mapNotNull { it.opt(METHODS) }
+        .forEach { it.removeAllObjects { it.isFromFactory() } }
+}
+
+private fun JSONObject.isFromFactory(): Boolean =
+    isStaticMethod(FROM) && get(PARAMETERS).length() == 1
+
+private fun JSONObject.removeRedundantCreateFactories() {
+    flatMap(TYPES)
+        .filter { it[GROUP] == "interface" }
+        .mapNotNull { it.opt(METHODS) }
+        .forEach { methods ->
+            methods.removeAllObjects { it.isRedundantCreateFactory() }
+
+            methods.asSequence()
+                .filterIsInstance<JSONObject>()
+                .filter { it.isStaticMethod(CREATE) }
+                .forEach { it.put(QII, true) }
+        }
+}
+
+private fun JSONObject.isRedundantCreateFactory(): Boolean =
+    isStaticMethod(CREATE)
+            && optBoolean(QII)
+            && get(PARAMETERS).length() != 1
+
+private fun JSONObject.isStaticMethod(name: String): Boolean =
+    STATIC in get(MODIFIERS) && get(NAME) == name

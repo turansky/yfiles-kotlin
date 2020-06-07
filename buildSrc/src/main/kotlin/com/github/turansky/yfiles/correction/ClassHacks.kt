@@ -1,55 +1,98 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.ContentMode.CLASS
-import com.github.turansky.yfiles.ContentMode.INLINE
+import com.github.turansky.yfiles.ContentMode.*
 import com.github.turansky.yfiles.json.get
+import com.github.turansky.yfiles.json.removeAllObjects
 import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
 
 internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
+    context[YOBJECT, EXTENSIONS] =
+        """
+            inline fun <T: $YOBJECT> T.getClass(): $YCLASS<out T> =
+                $AS_DYNAMIC.getClass()
+        """.trimIndent()
+
+    // language=kotlin
     context["yfiles.lang.BaseClass", CLASS] =
         """
             |$HIDDEN_METHOD_ANNOTATION
-            |external fun BaseClass(vararg types: JsClass<$YOBJECT>):JsClass<out $YOBJECT>
+            |external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
     val primitiveTypeMetadata = sequenceOf(
-        BOOLEAN to "YBoolean",
-        DOUBLE to "YNumber",
-        INT to "YNumber",
-        STRING to "YString"
+        BOOLEAN to "__BOOLEAN__",
+        DOUBLE to "__NUMBER__",
+        INT to "__NUMBER__",
+        STRING to "__STRING__"
     ).joinToString("\n\n") { (type, alias) ->
         """
             inline val $type.Companion.yclass: $YCLASS<$type>
-                get() = $alias.unsafeCast<$TYPE_METADATA<$type>>().yclass
+                get() = $alias.unsafeCast<$ICLASS_METADATA<$type>>().yclass
         """.trimIndent()
     }
 
     // language=kotlin
-    context[TYPE_METADATA] =
+    context[ICLASS_METADATA] =
         """
-            |external interface TypeMetadata<T: Any>
+            |private const val YCLASS = "\${'$'}class"
             |
-            |inline val <T: Any> $TYPE_METADATA<T>.yclass:$YCLASS<T>
-            |    get() = asDynamic()["\${'$'}class"]
+            |external interface IClassMetadata<T: Any> {
+            |   @JsName(YCLASS)
+            |   val yclass:$YCLASS<T>   
+            |}
+            |
+            |inline val <T: $YOBJECT> JsClass<T>.yclass:$YCLASS<T>
+            |    get() = unsafeCast<IClassMetadata<T>>().yclass
+            |
+            |internal fun <T: $ANY> JsClass<T>.findClass():$YCLASS<T>? =
+            |    $AS_DYNAMIC[YCLASS] as? $YCLASS<T>
             |
             |$primitiveTypeMetadata    
         """.trimMargin()
 
     // language=kotlin
-    context[CLASS_METADATA] =
-        "external interface ClassMetadata<T: $YOBJECT> : $TYPE_METADATA<T>"
+    context[ICLASS_METADATA, DELEGATE] =
+        """
+            inline fun <reified T: $YOBJECT> classMetadata(): $ICLASS_METADATA<T> = 
+                classMetadata(T::class.js.yclass)
+                
+            fun <T: $YOBJECT> classMetadata(yclass: $YCLASS<T>): $ICLASS_METADATA<T> = 
+                SimpleClassMetadata(yclass)    
+                
+            private class SimpleClassMetadata<T: $YOBJECT>(
+                override val yclass: $YCLASS<T>
+            ): $ICLASS_METADATA<T>
+        """.trimIndent()
 
     // language=kotlin
-    context[ENUM_METADATA] =
-        "external interface EnumMetadata<T: $YENUM<T>> : $TYPE_METADATA<T>"
+    context[CLASS_METADATA] = """
+        @JsName("Object")
+        abstract external class ClassMetadata<T: $YOBJECT> 
+        internal constructor() : $ICLASS_METADATA<T> {
+            override val yclass: $YCLASS<T>
+        }
+    """.trimIndent()
+
+    // language=kotlin
+    context[ENUM_METADATA] = """
+        @JsName("Object")
+        abstract external class EnumMetadata<T: $YENUM<T>> 
+        internal constructor() : $ICLASS_METADATA<T> {
+            override val yclass: $YCLASS<T>
+        }
+    """.trimIndent()
 
     // language=kotlin
     context[INTERFACE_METADATA, INLINE] =
         """
-            |external interface InterfaceMetadata<T: $YOBJECT>: $TYPE_METADATA<T>
+            |@JsName("Object")
+            |abstract external class InterfaceMetadata<T: $YOBJECT>
+            |internal constructor() : $ICLASS_METADATA<T> {
+            |   override val yclass: $YCLASS<T>
+            |}
             |    
             |inline infix fun Any.yIs(type: $INTERFACE_METADATA<*>): Boolean =
             |    type.asDynamic().isInstance(this)
@@ -98,38 +141,26 @@ internal fun applyClassHacks(source: Source) {
 }
 
 private fun fixClass(source: Source) {
-    source.type("Class").apply {
+    source.type("Class") {
         setSingleTypeParameter(bound = JS_OBJECT)
 
         get(MODIFIERS).put(SEALED)
 
         get(METHODS).removeItem(method("getProperties"))
 
-        get(METHODS)
-            .get("newInstance")
+        method("newInstance")
             .get(RETURNS)
             .set(TYPE, "T")
 
-        get(STATIC_METHODS).apply {
-            removeAll { true }
+        get(METHODS).apply {
+            removeAllObjects {
+                STATIC in it[MODIFIERS] && it[NAME] != "fixType"
+            }
 
-            put(
-                mapOf(
-                    NAME to "fixType",
-                    MODIFIERS to listOf(STATIC, HIDDEN),
-                    PARAMETERS to listOf(
-                        mapOf(
-                            NAME to "type",
-                            TYPE to "$JS_CLASS<out $YOBJECT>"
-                        ),
-                        mapOf(
-                            NAME to "name",
-                            TYPE to JS_STRING,
-                            MODIFIERS to listOf(OPTIONAL)
-                        )
-                    )
-                )
-            )
+            get("fixType").apply {
+                firstParameter[TYPE] = "$JS_CLASS<out $YOBJECT>"
+                get(MODIFIERS).put(HIDDEN)
+            }
         }
     }
 }
@@ -137,14 +168,14 @@ private fun fixClass(source: Source) {
 private fun fixEnum(source: Source) {
     val ENUM = "yfiles.lang.Enum"
 
-    source.type("Enum").apply {
+    source.type("Enum") {
         set(ID, YENUM)
         set(NAME, "YEnum")
         set(ES6_NAME, "Enum")
         set(GROUP, "interface")
         setSingleTypeParameter(bound = "$YENUM<T>")
 
-        flatMap(STATIC_METHODS)
+        flatMap(METHODS)
             .onEach { it.setSingleTypeParameter(bound = "$YENUM<T>") }
             .onEach {
                 val returns = it[RETURNS]
@@ -161,21 +192,25 @@ private fun fixEnum(source: Source) {
                 }
             }
     }
+
+    source.type("Direction")
+        .get(MODIFIERS)
+        .put(ENUM_LIKE)
 }
 
 private fun addClassGeneric(source: Source) {
     source.allMethods(
-        "lookup",
-        "innerLookup",
-        "contextLookup",
-        "lookupContext",
-        "inputModeContextLookup",
-        "childInputModeContextLookup",
-        "getCopy",
-        "getOrCreateCopy"
-    )
+            "lookup",
+            "innerLookup",
+            "contextLookup",
+            "lookupContext",
+            "inputModeContextLookup",
+            "childInputModeContextLookup",
+            "getCopy",
+            "getOrCreateCopy"
+        )
         .forEach {
-            it.setSingleTypeParameter()
+            it.setSingleTypeParameter(bound = YOBJECT)
 
             it.typeParameter.addGeneric("T")
 
@@ -185,28 +220,27 @@ private fun addClassGeneric(source: Source) {
                 .put(CANBENULL)
         }
 
-    source.allMethods("getDecoratorFor")
-        .forEach {
-            it.firstParameter.addGeneric("TInterface")
-        }
+    source.allMethods("getDecoratorFor").forEach {
+        it.firstParameter.addGeneric("TInterface")
+    }
 
     source.allMethods(
-        "typedHitElementsAt",
-        "createHitTester",
+            "typedHitElementsAt",
+            "createHitTester",
 
-        "serializeCore",
-        "deserializeCore"
-    )
+            "serializeCore",
+            "deserializeCore"
+        )
         .forEach {
             it.firstParameter.addGeneric("T")
         }
 
     source.allMethods(
-        "getCurrent",
-        "serialize",
-        "deserialize",
-        "setLookup"
-    )
+            "getCurrent",
+            "serialize",
+            "deserialize",
+            "setLookup"
+        )
         .map { it.firstParameter }
         .filter { it[TYPE] == YCLASS }
         .forEach {
@@ -226,9 +260,9 @@ private fun addClassGeneric(source: Source) {
         .forEach { it.addGeneric("TResult") }
 
     source.allMethods(
-        "addGraphInputData",
-        "addGraphOutputData"
-    )
+            "addGraphInputData",
+            "addGraphOutputData"
+        )
         .forEach {
             it.firstParameter.addGeneric("TValue")
         }
@@ -258,18 +292,18 @@ private fun addClassGeneric(source: Source) {
         }
 
     source.allMethods(
-        "addMapper",
-        "addConstantMapper",
-        "addDelegateMapper",
+            "addMapper",
+            "addConstantMapper",
+            "addDelegateMapper",
 
-        "createMapper",
-        "createConstantMapper",
-        "createDelegateMapper",
+            "createMapper",
+            "createConstantMapper",
+            "createDelegateMapper",
 
-        "addDataProvider",
-        "createDataMap",
-        "createDataProvider"
-    )
+            "addDataProvider",
+            "createDataMap",
+            "createDataProvider"
+        )
         .filter { it.firstParameter[NAME] == "keyType" }
         .filter { it.secondParameter[NAME] == "valueType" }
         .forEach {
@@ -282,7 +316,7 @@ private fun addConstructorClassGeneric(source: Source) {
     source.types()
         .forEach { type ->
             val typeName = type[NAME]
-            type.optionalArray(CONSTRUCTORS)
+            type.optFlatMap(CONSTRUCTORS)
                 .optFlatMap(PARAMETERS)
                 .filter { it[TYPE] == YCLASS }
                 .forEach {
@@ -315,9 +349,9 @@ private fun addConstructorClassGeneric(source: Source) {
 
 private fun addMethodClassGeneric(source: Source) {
     source.type("ILookup")
-        .staticMethod("createSingleLookup")
+        .method("createSingleLookup")
         .apply {
-            setSingleTypeParameter()
+            setSingleTypeParameter(bound = YOBJECT)
             firstParameter[TYPE] = "T"
             secondParameter.addGeneric("T")
         }
@@ -341,7 +375,7 @@ private fun addMapperMetadataGeneric(source: Source) {
             }
         }
 
-    type.staticMethod("create")
+    type.method("create")
         .apply {
             parameter("keyType").addGeneric("TKey")
             parameter("valueType").addGeneric("TValue")
@@ -351,28 +385,24 @@ private fun addMapperMetadataGeneric(source: Source) {
         }
 
     source.type("MapperOutputHandler")
-        .get(PROPERTIES)
-        .get("mapperMetadata")
+        .property("mapperMetadata")
         .addGeneric("TKey,TData")
 
     source.types(
         "IMapperRegistry",
         "MapperRegistry"
     ).forEach {
-        val methods = it[METHODS]
-        methods["getMapperMetadata"]
-            .apply {
-                setTypeParameters("K", "V")
-                get(RETURNS)
-                    .addGeneric("K,V")
-            }
+        it.method("getMapperMetadata").apply {
+            setTypeParameters("K", "V")
+            get(RETURNS)
+                .addGeneric("K,V")
+        }
 
-        methods["setMapperMetadata"]
-            .apply {
-                setTypeParameters("K", "V")
-                parameter("metadata")
-                    .addGeneric("K,V")
-            }
+        it.method("setMapperMetadata").apply {
+            setTypeParameters("K", "V")
+            parameter("metadata")
+                .addGeneric("K,V")
+        }
     }
 }
 
@@ -393,7 +423,7 @@ private fun addClassBounds(source: Source) {
                 .filter { it[NAME] in typeNames }
                 .forEach {
                     val bound = when (type[ID]) {
-                        "yfiles.graph.ItemChangedEventArgs" -> "yfiles.graph.ITagOwner"
+                        "yfiles.graph.ItemChangedEventArgs" -> ITAG_OWNER
                         else -> IMODEL_ITEM
                     }
                     it[BOUNDS] = arrayOf(bound)
@@ -401,33 +431,33 @@ private fun addClassBounds(source: Source) {
         }
 
     source.types(
-        "DpKeyItemCollection",
+            "DpKeyItemCollection",
 
-        "ItemClickedEventArgs",
-        "TableItemClickedEventArgs",
+            "ItemClickedEventArgs",
+            "TableItemClickedEventArgs",
 
-        "ItemTappedEventArgs",
-        "TableItemTappedEventArgs",
+            "ItemTappedEventArgs",
+            "TableItemTappedEventArgs",
 
-        "IGridConstraintProvider",
-        "GridConstraintProvider",
+            "IGridConstraintProvider",
+            "GridConstraintProvider",
 
-        "IHitTester",
+            "IHitTester",
 
-        "ItemDropInputMode",
+            "ItemDropInputMode",
 
-        "ISelectionModel",
-        "DefaultSelectionModel",
+            "ISelectionModel",
+            "DefaultSelectionModel",
 
-        "ModelManager",
+            "ModelManager",
 
-        // replace mode
-        "SelectionIndicatorManager",
-        "FocusIndicatorManager",
-        "HighlightIndicatorManager",
+            // replace mode
+            "SelectionIndicatorManager",
+            "FocusIndicatorManager",
+            "HighlightIndicatorManager",
 
-        "ItemSelectionChangedEventArgs"
-    ).map { it.flatMap(TYPE_PARAMETERS).single() }
+            "ItemSelectionChangedEventArgs"
+        ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
 
     source.type("ResultItemMapping")
@@ -437,29 +467,41 @@ private fun addClassBounds(source: Source) {
 
     source.type("GraphModelManager")
         .flatMap(METHODS)
-        .first { it[NAME] == "createHitTester" }
+        .filter { it[NAME] == "createHitTester" || it[NAME] == "typedHitElementsAt" }
         .flatMap(TYPE_PARAMETERS)
-        .single()
-        .set(BOUNDS, arrayOf(IMODEL_ITEM))
+        .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
 
     source.types(
-        "ResultItemCollection",
-
-        "IObservableCollection",
-        "ObservableCollection",
-
-        "DelegateUndoUnit",
-        "ItemCopiedEventArgs",
-
-        "Future"
-    ).map { it.flatMap(TYPE_PARAMETERS).single() }
+            "DelegateUndoUnit",
+            "ItemCopiedEventArgs"
+        ).map { it.flatMap(TYPE_PARAMETERS).single() }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types(
-        "ResultItemMapping",
-        "GraphBuilderItemEventArgs",
-        "ItemChangedEventArgs"
-    ).map { it[TYPE_PARAMETERS].get(1) as JSONObject }
+            "ResultItemCollection",
+
+            "IObservableCollection",
+            "ObservableCollection",
+
+            "Future"
+        ).map { it.flatMap(TYPE_PARAMETERS).single() }
+        .forEach { it[BOUNDS] = arrayOf(YOBJECT) }
+
+    source.type("ItemEventArgs")
+        .flatMap(TYPE_PARAMETERS)
+        .single()[BOUNDS] = arrayOf("$YOBJECT?")
+
+    source.type("HoveredItemChangedEventArgs") {
+        val validExtends = get(EXTENDS)
+            .replace("<$IMODEL_ITEM>", "<$IMODEL_ITEM?>")
+
+        set(EXTENDS, validExtends)
+    }
+
+    source.types(
+            "ResultItemMapping",
+            "ItemChangedEventArgs"
+        ).map { it[TYPE_PARAMETERS].getJSONObject(1) }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 }
 
@@ -486,7 +528,7 @@ private fun addTypeParameterBounds(source: Source) {
         }
 
     source.types()
-        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .optFlatMap(METHODS)
         .filter { it.has(TYPE_PARAMETERS) }
         .forEach {
             val boundMap = it.flatMap(PARAMETERS)
@@ -507,9 +549,9 @@ private fun addTypeParameterBounds(source: Source) {
         }
 
     source.types(
-        "IMapperRegistry",
-        "MapperRegistry"
-    ).flatMap(METHODS)
+            "IMapperRegistry",
+            "MapperRegistry"
+        ).flatMap(METHODS)
         .filter { "Metadata" in it[NAME] }
         .flatMap(TYPE_PARAMETERS)
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
@@ -525,6 +567,9 @@ private val JSONObject.classBoundPair: Pair<String, String>?
             }
 
             val bound = when {
+                generic == "TInterface" -> YOBJECT
+                generic == "TContext" -> YOBJECT
+                generic == "TResult" -> YOBJECT
                 generic == "TModelItem" -> IMODEL_ITEM
                 generic == "TDecoratedType" -> IMODEL_ITEM
                 get(NAME) == "modelItemType" -> IMODEL_ITEM
@@ -548,18 +593,18 @@ private val JSONObject.classBoundPair: Pair<String, String>?
 
 private fun addMapClassBounds(source: Source) {
     source.types(
-        "MapEntry",
+            "MapEntry",
 
-        "IMap",
-        "HashMap",
+            "IMap",
+            "HashMap",
 
-        "IMapper",
-        "Mapper"
-    ).map { it.flatMap(TYPE_PARAMETERS).first() }
+            "IMapper",
+            "Mapper"
+        ).map { it.flatMap(TYPE_PARAMETERS).first() }
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types()
-        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+        .optFlatMap(METHODS)
         .filter { it.has(TYPE_PARAMETERS) }
         .map { it.flatMap(TYPE_PARAMETERS).first() }
         .filterNot { it.has(BOUNDS) }
@@ -567,9 +612,9 @@ private fun addMapClassBounds(source: Source) {
         .forEach { it[BOUNDS] = arrayOf(JS_OBJECT) }
 
     source.types(
-        "IMapperRegistry",
-        "MapperRegistry"
-    ).flatMap(METHODS)
+            "IMapperRegistry",
+            "MapperRegistry"
+        ).flatMap(METHODS)
         .filter { it[NAME] == "getMapper" }
         .flatMap(TYPE_PARAMETERS)
         .filter { it[NAME] == "V" }

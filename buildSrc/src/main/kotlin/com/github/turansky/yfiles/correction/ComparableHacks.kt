@@ -4,22 +4,21 @@ import com.github.turansky.yfiles.ICOMPARABLE
 import org.json.JSONObject
 
 internal fun applyComparableHacks(source: Source) {
-    source.type("IComparable")
-        .apply {
-            setSingleTypeParameter(bound = "IComparable<T>")
-            configureCompareTo("T")
-        }
+    source.type("IComparable") {
+        setSingleTypeParameter(bound = "IComparable<T>")
+        configureCompareTo("T")
+    }
 
     source.types(
-        "ColumnDescriptor",
-        "PartitionCellIdEntry",
-        "RowDescriptor",
-        "SnapResult",
-        "SwimlaneDescriptor",
-        "TimeSpan",
-        "YDimension",
-        "YPoint"
-    )
+            "ColumnDescriptor",
+            "PartitionCellIdEntry",
+            "RowDescriptor",
+            "SnapResult",
+            "SwimlaneDescriptor",
+            "TimeSpan",
+            "YDimension",
+            "YPoint"
+        )
         .forEach {
             val id = it[ID]
 
@@ -33,11 +32,11 @@ internal fun applyComparableHacks(source: Source) {
         }
 
     source.types(
-        "IComparer",
-        "DefaultOutEdgeComparer",
-        "NodeOrderComparer",
-        "NodeWeightComparer"
-    ).flatMap(METHODS)
+            "IComparer",
+            "DefaultOutEdgeComparer",
+            "NodeOrderComparer",
+            "NodeWeightComparer"
+        ).flatMap(METHODS)
         .filter { it[NAME] == "compare" }
         .flatMap(PARAMETERS)
         .forEach { it.changeNullability(false) }

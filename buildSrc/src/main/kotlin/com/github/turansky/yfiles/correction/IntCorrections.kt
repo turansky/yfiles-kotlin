@@ -38,6 +38,11 @@ internal val INT_METHODS = setOf(
     "getDepth",
     "getPreferredChildWedge",
 
+    "getAverageDegree",
+    "kCore",
+    "labelPropagation",
+    "louvainModularity",
+
     // ???
     "translateDirectionToReal",
     "translateDirectionToModel",
@@ -79,6 +84,7 @@ internal val INT_PROPERTIES = setOf(
     "segmentIndex",
     "snapPanningThreshold",
     "pinchZoomThreshold",
+    "pinchLockZoomThreshold",
     "maxRowLevel",
     "maxColumnLevel",
     "connections",
@@ -112,6 +118,10 @@ internal val INT_PROPERTIES = setOf(
     "maximumNodesBeforeBus",
     "maximumNodesAfterBus",
     "randomizationRounds",
+
+    "minimumClusterSize",
+    "maximumClusterSize",
+    "toolTipLeaveAnimationMaximumDuration",
 
     // ???
     "maximumIterations",

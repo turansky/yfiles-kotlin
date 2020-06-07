@@ -26,26 +26,24 @@ private fun fixComparerInheritors(source: Source) {
         "NodeOrderComparer" to NODE,
         "NodeWeightComparer" to NODE
     ).forEach { (className, generic) ->
-        source.type(className)
-            .apply {
-                get(IMPLEMENTS).apply {
-                    require(length() == 1)
-                    require(get(0) in DEFAULT_COMPARERS)
+        source.type(className) {
+            get(IMPLEMENTS).apply {
+                require(length() == 1)
+                require(get(0) in DEFAULT_COMPARERS)
 
-                    put(0, comparer(generic))
-                }
+                put(0, comparer(generic))
+            }
 
-                get(METHODS)
-                    .get("compare")
-                    .flatMap(PARAMETERS)
-                    .forEach { it[TYPE] = generic }
+            method("compare")
+                .flatMap(PARAMETERS)
+                .forEach { it[TYPE] = generic }
             }
     }
 }
 
 private fun fixComparerUtilMethods(source: Source) {
     val staticMethods = source.type("Comparers")
-        .get(STATIC_METHODS)
+        .get(METHODS)
 
     sequenceOf(
         "createIntDataComparer" to GRAPH_OBJECT,
@@ -63,19 +61,19 @@ private fun fixComparerUtilMethods(source: Source) {
 
 private fun fixComparerAsMethodParameter(source: Source) {
     source.types(
-        "Graph",
-        "YNode",
+            "Graph",
+            "YNode",
 
-        "PortCandidateOptimizer",
-        "PortConstraintOptimizerBase",
+            "PortCandidateOptimizer",
+            "PortConstraintOptimizerBase",
 
-        "AssistantNodePlacer",
-        "ChannelBasedPathRouting",
-        "GivenSequenceSequencer",
-        "MultiComponentLayerer",
+            "AssistantNodePlacer",
+            "ChannelBasedPathRouting",
+            "GivenSequenceSequencer",
+            "MultiComponentLayerer",
 
-        "SwimlaneDescriptor"
-    ).flatMap { it.flatMap(METHODS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(CONSTRUCTORS) }
+            "SwimlaneDescriptor"
+        ).flatMap { it.flatMap(METHODS) + it.optFlatMap(CONSTRUCTORS) }
         .forEach {
             val methodName = it[NAME]
 
@@ -128,8 +126,7 @@ private fun fixComparerAsProperty(source: Source) {
         Triple("SwimlaneDescriptor", "comparer", SWIMLANE_DESCRIPTOR)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .get(PROPERTIES)
-            .get(propertyName)
+            .property(propertyName)
             .fixTypeGeneric("in $generic")
     }
 
@@ -137,10 +134,10 @@ private fun fixComparerAsProperty(source: Source) {
         "TreeLayout",
         "SeriesParallelLayout"
     ).forEach {
-        it[CONSTANTS]["OUT_EDGE_COMPARER_DP_KEY"].apply {
-            require(get(TYPE) == "yfiles.algorithms.NodeDpKey<${comparer(JS_ANY)}>")
+        it.constant("OUT_EDGE_COMPARER_DP_KEY").apply {
+            require(get(TYPE) == nodeDpKey(comparer(JS_ANY)))
 
-            set(TYPE, "yfiles.algorithms.NodeDpKey<${comparer("in $EDGE")}>")
+            set(TYPE, nodeDpKey(comparer("in $EDGE")))
         }
     }
 }
@@ -171,7 +168,7 @@ private fun fixReturnType(source: Source) {
     }
 
     source.type("AssistantNodePlacer")
-        .staticMethod("createCompoundComparer")
+        .method("createCompoundComparer")
         .fixReturnTypeGeneric(EDGE)
 
     source.method("EdgeRouter", "createDefaultEdgeOrderComparer")

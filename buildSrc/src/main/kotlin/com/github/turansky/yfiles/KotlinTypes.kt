@@ -9,6 +9,9 @@ internal val DOUBLE: String = Double::class.simpleName!!
 internal val BOOLEAN: String = Boolean::class.simpleName!!
 
 internal const val PROMISE = "kotlin.js.Promise"
+internal const val READ_ONLY_PROPERTY = "kotlin.properties.ReadOnlyProperty"
+internal const val KCLASS = "kotlin.reflect.KClass"
+internal const val KPROPERTY = "kotlin.reflect.KProperty"
 
 internal const val ELEMENT = "org.w3c.dom.Element"
 internal const val HTML_ELEMENT = "org.w3c.dom.HTMLElement"
@@ -24,7 +27,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     JS_ANY to ANY,
     JS_OBJECT to ANY,
     JS_BOOLEAN to "Boolean",
-    JS_STRING to "String",
+    JS_STRING to STRING,
     JS_NUMBER to "Number",
     "Date" to "kotlin.js.Date",
     "Function" to "() -> $UNIT",
@@ -59,5 +62,9 @@ private val STANDARD_TYPE_MAP = mapOf(
 
 val STANDARD_IMPORTED_TYPES = STANDARD_TYPE_MAP
     .values
+    .asSequence()
     .filter { "." in it }
+    .plus(READ_ONLY_PROPERTY)
+    .plus(KCLASS)
+    .plus(KPROPERTY)
     .toSet()

@@ -16,6 +16,6 @@ internal fun fixDecoratorProperties(
             if (addExtraTypeParameter) {
                 typeParameters += ",*"
             }
-            it[TYPE] = it[TYPE].replace(">", "<$typeParameters>>")
+            it.replaceInType(">", "<$typeParameters>>")
         }
 }

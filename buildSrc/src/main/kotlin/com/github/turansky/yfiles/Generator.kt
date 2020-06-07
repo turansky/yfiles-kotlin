@@ -62,6 +62,10 @@ fun generateKotlinDeclarations(
 
     val timeSpanClass = types.first { it.classId == "yfiles.lang.TimeSpan" } as Class
     generateTimeSpanExtensions(context, timeSpanClass)
+    generateLookupExtensions(context)
+
+    addIteratorSupport(context)
+    generateDpKeyDelegates(context)
 
     generateResourceTypes(devguideFile.readJson(), context)
 }
@@ -76,7 +80,7 @@ fun generateVsdxKotlinDeclarations(
     }
 
     val apiRoot = ApiRoot(source)
-    val types = apiRoot.rootTypes
+    val types = apiRoot.types
 
     ClassRegistry.instance = ClassRegistry(types + fakeVsdxInterfaces())
 
@@ -96,6 +100,8 @@ enum class ContentMode {
     CLASS,
     INTERFACE,
     EXTENSIONS,
+    DELEGATE,
+    ITERATOR,
     ALIASES,
     INLINE
 }
@@ -126,12 +132,15 @@ private class SimpleGeneratorContext(
         content: String
     ) {
         val packageId = classId.substringBeforeLast(".")
+        val className = classId.substringAfterLast(".")
         val dirPath = packageId.replace(".", "/")
         val fileName = when (mode) {
-            EXTENSIONS -> classId.substringAfterLast(".") + ".ext"
+            EXTENSIONS -> "$className.ext"
+            DELEGATE -> "$className.delegate"
+            ITERATOR -> "$className.iterator"
             ALIASES -> "Aliases"
 
-            else -> classId.substringAfterLast(".")
+            else -> className
         } + ".kt"
 
         val moduleDeclaration = when (mode) {
@@ -141,6 +150,8 @@ private class SimpleGeneratorContext(
 
         val suppresses = when (mode) {
             INTERFACE -> NESTED_CLASS_IN_EXTERNAL_INTERFACE
+            EXTENSIONS -> if (classId == YOBJECT) NOTHING_TO_INLINE else ""
+            DELEGATE -> if (classId != DP_KEY_BASE) NOTHING_TO_INLINE else ""
             INLINE -> NOTHING_TO_INLINE
             else -> ""
         }
@@ -152,10 +163,12 @@ private class SimpleGeneratorContext(
                 content.clear(classId)
                     .replace(DOC_BASE_URL, docBaseUrl)
 
-        sourceDir.resolve(dirPath)
+        val file = sourceDir.resolve(dirPath)
             .also { it.mkdirs() }
             .resolve(fileName)
-            .writeText(text)
+
+        check(!file.exists())
+        file.writeText(text)
     }
 
     override fun clean() {

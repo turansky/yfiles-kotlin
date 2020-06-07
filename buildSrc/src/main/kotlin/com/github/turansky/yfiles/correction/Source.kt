@@ -2,17 +2,18 @@ package com.github.turansky.yfiles.correction
 
 import org.json.JSONObject
 
-internal class Source(private val api: JSONObject) {
+internal class Source(api: JSONObject) : SourceBase(api)
+
+internal abstract class SourceBase(private val api: JSONObject) {
     val functionSignatures: JSONObject
         get() = api[FUNCTION_SIGNATURES]
 
-    private val types: List<JSONObject> = api
-        .flatMap(NAMESPACES)
-        .optFlatMap(NAMESPACES)
-        .flatMap(TYPES)
-        .toList()
+    fun functionSignature(name: String): JSONObject =
+        functionSignatures.getJSONObject(name)
 
-    private val typeMap = types.associateBy { it.uid }
+    private val types: List<JSONObject> = api.flatMap(TYPES).toList()
+
+    private val typeMap = types.associateBy { it.uid }.toMutableMap()
 
     fun types(): Sequence<JSONObject> =
         types.asSequence()
@@ -20,16 +21,23 @@ internal class Source(private val api: JSONObject) {
     fun type(className: String): JSONObject =
         typeMap.getValue(className)
 
+    fun type(className: String, action: JSONObject.() -> Unit): JSONObject =
+        typeMap.getValue(className).apply(action)
+
     fun types(vararg classNames: String): Sequence<JSONObject> =
         classNames.asSequence()
             .map { type(it) }
 
     fun allMethods(vararg methodNames: String): Sequence<JSONObject> =
         types.asSequence()
-            .map { it.optionalArray(METHODS) + it.optionalArray(STATIC_METHODS) }
-            .flatMap { it.asSequence() }
+            .optFlatMap(METHODS)
             .filter { it[NAME] in methodNames }
 
     private val JSONObject.uid: String
         get() = opt(ES6_NAME) ?: get(NAME)
+
+    fun add(type: JSONObject) {
+        api[TYPES].put(type)
+        typeMap[type[NAME]] = type
+    }
 }

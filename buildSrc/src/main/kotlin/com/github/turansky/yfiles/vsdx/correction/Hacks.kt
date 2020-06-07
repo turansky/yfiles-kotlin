@@ -189,7 +189,7 @@ private fun fixTypes(source: VsdxSource) {
 
     source.types()
         .flatMap {
-            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(METHODS))
+            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS))
                 .flatMap {
                     it.optFlatMap(PARAMETERS) + if (it.has(RETURNS)) {
                         sequenceOf(it[RETURNS])
@@ -235,7 +235,7 @@ private fun fixOptionTypes(source: VsdxSource) {
         .parameter("edgeStyleType")
         .addGeneric("yfiles.styles.IEdgeStyle")
 
-    source.type("VssxStencilProviderFactory").apply {
+    source.type("VssxStencilProviderFactory") {
         sequenceOf(
             "createMappedEdgeProvider" to "yfiles.styles.IEdgeStyle",
             "createMappedLabelProvider" to "yfiles.styles.ILabelStyle",
@@ -249,19 +249,18 @@ private fun fixOptionTypes(source: VsdxSource) {
 }
 
 private fun fixGeneric(source: VsdxSource) {
-    source.type("Value").apply {
-        staticMethod("fetch")
+    source.type("Value") {
+        method("fetch")
             .apply {
                 setSingleTypeParameter("TValue")
                 firstParameter[NAME] = "o"
             }
 
-        staticMethod("formula")
+        method("formula")
             .setSingleTypeParameter("TValue")
     }
 
-    source.functionSignatures
-        .getJSONObject("yfiles.vsdx.ComparisonFunction")
+    source.functionSignature("yfiles.vsdx.ComparisonFunction")
         .setSingleTypeParameter("T")
 }
 
@@ -307,7 +306,7 @@ private fun fixSummary(source: VsdxSource) {
     source.types()
         .onEach { it.fixSummary() }
         .onEach { it.optFlatMap(PROPERTIES).forEach { it.fixSummary() } }
-        .flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(STATIC_METHODS) + it.optFlatMap(METHODS) }
+        .flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .onEach { it.fixSummary() }
         .flatMap { it.optFlatMap(PARAMETERS) }
         .forEach { it.fixSummary() }

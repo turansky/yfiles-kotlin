@@ -1,5 +1,6 @@
-import yfiles.lang.ClassMetadata
+import yfiles.lang.IClassMetadata
 import yfiles.lang.YObject
+import yfiles.lang.classMetadata
 import kotlin.browser.window
 
 class CustomObject : YObject {
@@ -7,7 +8,7 @@ class CustomObject : YObject {
         window.alert("Hallo from CustomObject!")
     }
 
-    companion object : ClassMetadata<CustomObject>
+    companion object : IClassMetadata<CustomObject> by classMetadata()
 }
 
 class OtherCustomObject : YObject {

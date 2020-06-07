@@ -1,14 +1,13 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
-import com.github.turansky.yfiles.json.jObject
-import com.github.turansky.yfiles.json.removeItem
-import com.github.turansky.yfiles.json.strictRemove
+import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
 internal fun applyHacks(api: JSONObject) {
     val source = Source(api)
+
+    fieldToProperties(source)
 
     cleanYObject(source)
 
@@ -25,6 +24,7 @@ internal fun applyHacks(api: JSONObject) {
 
     fixReturnType(source)
 
+    fixConstantType(source)
     fixPropertyType(source)
     fixPropertyNullability(source)
 
@@ -41,7 +41,6 @@ internal fun applyHacks(api: JSONObject) {
 
     addMissedProperties(source)
     addMissedMethods(source)
-    fieldToProperties(source)
 
     applyIdHacks(source)
     applyBindingHacks(source)
@@ -55,7 +54,7 @@ internal fun applyHacks(api: JSONObject) {
     applyPartitionCellHacks(source)
     applyIntersectionHacks(source)
 
-    applyDpataHacks(source)
+    applyDpdataHacks(source)
     applyDataHacks(source)
     applyDpKeyHacks(source)
 
@@ -78,10 +77,13 @@ internal fun applyHacks(api: JSONObject) {
     applyDataTagHacks(source)
     applyStyleTagHacks(source)
     applyResourceHacks(source)
+    applyTemplatesHacks(source)
+    applyTemplateLoadersHacks(source)
     applyConvertersHacks(source)
     applyEventDispatcherHacks(source)
     applyCommandHacks(source)
 
+    applyContextLookupHacks(source)
     applyCanvasObjectDescriptorHacks(source)
     applyCanvasObjectInstallerHacks(source)
     applyVisualTemplateHacks(source)
@@ -93,13 +95,16 @@ internal fun applyHacks(api: JSONObject) {
     applyExtensionHacks(source)
     applySingletonHacks(source)
     fixConstructors(source)
+
+    applyLayoutStrictTypes(source)
+    addSizeExtensions(source)
+    markDeprecatedItems(source)
 }
 
 private fun cleanYObject(source: Source) {
-    source.type("YObject").apply {
+    source.type("YObject") {
         set(GROUP, "interface")
 
-        strictRemove(STATIC_METHODS)
         strictRemove(METHODS)
     }
 }
@@ -113,6 +118,10 @@ private fun removeUnusedFunctionSignatures(source: Source) {
 }
 
 private fun fixUnionMethods(source: Source) {
+    if (!CorrectionMode.isNormal()) {
+        return
+    }
+
     val methods = source.type("GraphModelManager")
         .get(METHODS)
 
@@ -139,26 +148,22 @@ private fun fixUnionMethods(source: Source) {
 
 private fun fixConstantGenerics(source: Source) {
     source.type("IListEnumerable")
-        .get(CONSTANTS)
-        .get("EMPTY")
-        .also {
-            it[TYPE] = it[TYPE]
-                .replace("<T>", "<$JS_OBJECT>")
-        }
+        .constant("EMPTY")
+        .replaceInType("<T>", "<*>")
 }
 
 private fun fixFunctionGenerics(source: Source) {
     source.type("List")
-        .staticMethod("fromArray")
+        .method("fromArray")
         .setSingleTypeParameter()
 
     source.type("List")
-        .staticMethod("from")
+        .method("from")
         .get(TYPE_PARAMETERS)
         .put(jObject(NAME to "T"))
 
     source.type("IContextLookupChainLink")
-        .staticMethod("addingLookupChainLink")
+        .method("addingLookupChainLink")
         .apply {
             setSingleTypeParameter("TResult")
             firstParameter.addGeneric("TResult")
@@ -167,14 +172,19 @@ private fun fixFunctionGenerics(source: Source) {
 
 private fun fixReturnType(source: Source) {
     source.type("DiscreteEdgeLabelLayoutModel")
-        .staticMethod("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
+        .method("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 
-    source.type("SvgExport").apply {
-        get(METHODS)
-            .get("exportSvg")
-            .get(RETURNS)
-            .set(TYPE, JS_SVG_SVG_ELEMENT)
-    }
+    source.type("SvgExport")
+        .method("exportSvg")[RETURNS][TYPE] = JS_SVG_SVG_ELEMENT
+
+    source.type("PortCandidateSet")
+        .property("entries")
+        .also { it.replaceInType("<$JS_ANY>", "<IPortCandidateSetEntry>") }
+}
+
+private fun fixConstantType(source: Source) {
+    source.type("GraphCopier")
+        .constant("NO_COPY")[TYPE] = JS_VOID
 }
 
 private fun fixPropertyType(source: Source) {
@@ -186,16 +196,17 @@ private fun fixPropertyType(source: Source) {
 }
 
 private fun fixPropertyNullability(source: Source) {
-    PROPERTY_NULLABILITY_CORRECTION.forEach { (className, propertyName), nullable ->
-        source
-            .type(className)
-            .property(propertyName)
-            .changeNullability(nullable)
-    }
+    PROPERTY_NULLABILITY_CORRECTION
+        .asSequence()
+        .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
+        .forEach { (declaration, nullable) ->
+            source.type(declaration.className)
+                .property(declaration.propertyName)
+                .changeNullability(nullable)
+        }
 
     source.type("SvgVisualGroup")
-        .get(PROPERTIES)
-        .get("children")
+        .property("children")
         .apply {
             require(get(TYPE) == "yfiles.collections.IList<yfiles.view.SvgVisual>")
             set(TYPE, "yfiles.collections.IList<yfiles.view.SvgVisual?>")
@@ -211,15 +222,21 @@ private fun fixConstructorParameterName(source: Source) {
 }
 
 private fun fixMethodParameterName(source: Source) {
-    PARAMETERS_CORRECTION.forEach { (data, fixedName) ->
-        source.type(data.className)
-            .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
-            .first()
-            .set(NAME, fixedName)
+    PARAMETERS_CORRECTION
+        .filter { (data) -> CorrectionMode.test(data.mode) }
+        .forEach { (data, fixedName) ->
+            source.type(data.className)
+                .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
+                .first()
+                .set(NAME, fixedName)
+        }
+
+    if (!CorrectionMode.isNormal()) {
+        return
     }
 
     source.type("RankAssignmentAlgorithm")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .filter { it[NAME] == "simplex" }
         .flatMap(PARAMETERS)
         .single { it[NAME] == "_root" }
@@ -236,6 +253,35 @@ private fun fixMethodParameterOptionality(source: Source) {
         .filter { it[NAME] == "content" }
         .map { it[MODIFIERS] }
         .forEach { it.removeItem(OPTIONAL) }
+
+    if (!CorrectionMode.isNormal()) {
+        return
+    }
+
+    source.type("GridNodePlacer") {
+        val constructor = flatMap(CONSTRUCTORS)
+            .filter { it.has(PARAMETERS) }
+            .maxBy { it[PARAMETERS].length() }!!
+
+        constructor.flatMap(PARAMETERS)
+            .forEach { it.changeOptionality(true) }
+
+        set(CONSTRUCTORS, listOf(constructor))
+    }
+
+    source.type("PortCandidate") {
+        get(METHODS).removeAllObjects {
+            it[NAME] == "createCandidate" &&
+                    it[PARAMETERS].length() == 1 &&
+                    it.firstParameter[NAME] == "directionMask"
+        }
+
+        flatMap(METHODS)
+            .filter { it[NAME] == "createCandidate" }
+            .single { it[PARAMETERS].length() == 2 }
+            .secondParameter
+            .changeOptionality(true)
+    }
 }
 
 private fun fixMethodParameterNullability(source: Source) {
@@ -268,11 +314,11 @@ private fun fixMethodParameterNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     source.types(
-        "ModelManager",
-        "FocusIndicatorManager",
-        "HighlightIndicatorManager",
-        "SelectionIndicatorManager"
-    ).flatMap { it.flatMap(METHODS) }
+            "ModelManager",
+            "FocusIndicatorManager",
+            "HighlightIndicatorManager",
+            "SelectionIndicatorManager"
+        ).flatMap { it.flatMap(METHODS) }
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
@@ -285,16 +331,16 @@ private fun fixMethodParameterType(source: Source) {
         .set(TYPE, "$IENUMERABLE<T>")
 
     source.type("IContextLookupChainLink")
-        .staticMethod("addingLookupChainLink")
+        .method("addingLookupChainLink")
         .parameter("instance")
         .set(TYPE, "TResult")
 
     source.type("DiscreteEdgeLabelLayoutModel")
-        .staticMethod("createPositionParameter")
+        .method("createPositionParameter")
         .parameter("position")[TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 
     source.type("SvgExport")
-        .staticMethod("exportSvgString")
+        .method("exportSvgString")
         .parameter("svg")
         .set(TYPE, JS_SVG_ELEMENT)
 
@@ -307,19 +353,13 @@ private fun fixMethodParameterType(source: Source) {
 }
 
 private fun fixMethodNullability(source: Source) {
-    STATIC_METHOD_NULLABILITY_MAP
-        .forEach { (className, methodName), nullable ->
-            source.type(className)
-                .flatMap(STATIC_METHODS)
-                .filter { it[NAME] == methodName }
-                .forEach { it.changeNullability(nullable) }
-        }
-
     METHOD_NULLABILITY_MAP
-        .forEach { (className, methodName), nullable ->
-            source.type(className)
+        .asSequence()
+        .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
+        .forEach { (declaration, nullable) ->
+            source.type(declaration.className)
                 .flatMap(METHODS)
-                .filter { it[NAME] == methodName }
+                .filter { it[NAME] == declaration.methodName }
                 .forEach { it.changeNullability(nullable) }
         }
 }
@@ -402,7 +442,7 @@ private const val FUNC_RUDIMENT = ",number,$IENUMERABLE<T>"
 private const val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
 
 private fun removeThisParameters(source: Source) {
-    sequenceOf(CONSTRUCTORS, STATIC_METHODS, METHODS)
+    sequenceOf(CONSTRUCTORS, METHODS)
         .flatMap { parameter ->
             THIS_TYPES.asSequence()
                 .map { source.type(it) }
@@ -438,19 +478,38 @@ private fun fieldToProperties(source: Source) {
     source.types()
         .filter { it.has(FIELDS) }
         .forEach { type ->
-            val fields = type[FIELDS].apply {
-                asSequence()
-                    .map { it as JSONObject }
-                    .map { it[MODIFIERS] }
-                    .forEach { it.put(if (FINAL in it) RO else FINAL) }
+            if (type[GROUP] == "enum") {
+                require(!type.has(CONSTANTS))
+                type[CONSTANTS] = type[FIELDS]
+                type.strictRemove(FIELDS)
+                return@forEach
             }
+
+            val noneIsProperty = CorrectionMode.isProgressive() && type[NAME] == "IArrow"
+            val additionalProperties = type.flatMap(FIELDS)
+                .filter { STATIC !in it[MODIFIERS] || (noneIsProperty && it[NAME] == "NONE") }
+                .onEach {
+                    val modifiers = it[MODIFIERS]
+                    modifiers.put(if (FINAL in modifiers) RO else FINAL)
+                }
+                .toList()
 
             if (type.has(PROPERTIES)) {
                 val properties = type[PROPERTIES]
-                fields.forEach { properties.put(it) }
+                additionalProperties.forEach { properties.put(it) }
             } else {
-                type[PROPERTIES] = fields
+                type[PROPERTIES] = additionalProperties
             }
+
+            val additionalConstants = type.flatMap(FIELDS)
+                .filter { it !in additionalProperties }
+                .toList()
+
+            if (additionalConstants.isNotEmpty()) {
+                require(!type.has(CONSTANTS))
+                type[CONSTANTS] = additionalConstants
+            }
+
             type.strictRemove(FIELDS)
         }
 }
@@ -512,4 +571,34 @@ private fun fixMethodGenericBounds(source: Source) {
         .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
+}
+
+private fun markDeprecatedItems(source: Source) {
+    if (!CorrectionMode.isNormal()) {
+        return
+    }
+
+    source.type("HierarchicLayout").apply {
+        flatMap(METHODS)
+            .filter { it[NAME] == "createLayerConstraintFactory" || it[NAME] == "createSequenceConstraintFactory" }
+            .filter { it.firstParameter[TYPE] == "yfiles.graph.IGraph" }
+            .forEach { it[MODIFIERS].put(DEPRECATED) }
+    }
+
+    source.type("HierarchicLayoutData").apply {
+        sequenceOf(
+            "layerConstraintFactory",
+            "sequenceConstraintFactory"
+        ).map { get(PROPERTIES)[it] }
+            .forEach { it[MODIFIERS].put(DEPRECATED) }
+    }
+
+    source.type("EdgeRouter").apply {
+        sequenceOf(
+            "maximumPolylineSegmentRatio",
+            "polylineRouting",
+            "preferredPolylineSegmentLength"
+        ).map { get(PROPERTIES)[it] }
+            .forEach { it[MODIFIERS].put(DEPRECATED) }
+    }
 }

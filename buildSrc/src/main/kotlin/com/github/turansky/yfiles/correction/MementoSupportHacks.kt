@@ -6,7 +6,7 @@ private const val T = "T"
 private const val S = "S"
 
 internal fun applyMementoSupportHacks(source: Source) {
-    source.type("IMementoSupport").apply {
+    source.type("IMementoSupport") {
         setTypeParameters("in $T", S)
 
         flatMap(METHODS)
@@ -25,8 +25,7 @@ internal fun applyMementoSupportHacks(source: Source) {
 
     fixDecoratorProperties(source, IMEMENTO_SUPPORT, true)
 
-    source.functionSignatures
-        .getJSONObject("yfiles.graph.MementoSupportProvider")
+    source.functionSignature("yfiles.graph.MementoSupportProvider")
         .get(RETURNS)
         .addGeneric("T,*")
 }

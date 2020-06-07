@@ -55,13 +55,10 @@ internal class KotlinFileGenerator(
     abstract inner class GeneratedFile(private val declaration: Type) {
         val data = es6GeneratorData(declaration)
 
-        protected val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
-
-        private val properties: List<Property>
-            get() = declaration.properties
+        protected open val hasConstants = true
 
         private val staticConstants: List<Constant>
-            get() = if (enumCompanionName == null) {
+            get() = if (hasConstants) {
                 declaration.constants
             } else {
                 emptyList()
@@ -82,11 +79,16 @@ internal class KotlinFileGenerator(
                     .toList()
             }
 
+        protected open fun isExtension(property: Property): Boolean = false
+
         protected val memberProperties: List<Property>
-            get() = properties.filter { !it.static }
+            get() = declaration.memberProperties.filter { !isExtension(it) }
+
+        protected val memberExtensionProperties: List<Property>
+            get() = declaration.memberProperties.filter { isExtension(it) }
 
         protected val memberFunctions: List<Method>
-            get() = declaration.methods
+            get() = declaration.memberMethods
 
         protected val memberExtensionFunctions: List<Method>
             get() = declaration.extensionMethods
@@ -143,14 +145,6 @@ internal class KotlinFileGenerator(
             return ": " + parentTypes.byComma()
         }
 
-        protected fun typealiasDeclaration(): String? =
-            if (data.name != data.jsName && !data.isYObject && !data.isYBase) {
-                val generics = declaration.generics.asAliasParameters()
-                "typealias ${data.jsName}$generics = ${data.name}$generics"
-            } else {
-                null
-            }
-
         open fun content(): String {
             return memberDeclarations
                 .lines { it.toCode() }
@@ -162,9 +156,9 @@ internal class KotlinFileGenerator(
             get() {
                 val typeDeclaration: String = when {
                     data.isYBase -> ""
-                    data.isYObject -> ": yfiles.lang.TypeMetadata<$ANY>"
                     else -> {
-                        val generic = data.name + declaration.generics.placeholder
+                        val name = if (data.isYObject) data.jsName else data.name
+                        val generic = name + declaration.generics.placeholder
                         ": $metadataClass<$generic>"
                     }
                 }
@@ -179,6 +173,14 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
+        private val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
+
+        override val hasConstants: Boolean =
+            enumCompanionName == null && !declaration.enumLike
+
+        override fun isExtension(property: Property): Boolean =
+            property.generated
+
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
         private fun constructors(): String {
@@ -215,10 +217,17 @@ internal class KotlinFileGenerator(
                 ?.run { toPrimaryCode() }
                 ?: ""
 
+            val enumContent = if (declaration.enumLike) {
+                declaration.constants.toContent()
+            } else {
+                ""
+            }
+
             return documentation +
                     externalAnnotation +
                     "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
+                    enumContent +
                     super.content() + "\n\n" +
                     companionObjectContent + "\n" +
                     "}" +
@@ -226,8 +235,16 @@ internal class KotlinFileGenerator(
         }
 
         private fun primitiveContent(): String {
+            val objectName = data.jsName
+                .removePrefix("Y")
+                .toUpperCase()
+                .let { "__${it}__" }
+
             return documentation +
-                    "external val ${data.jsName} : $ANY"
+                    """
+                        @JsName("${data.jsName}")
+                        external object $objectName
+                    """.trimIndent()
         }
 
         private fun objectContent(): String {
@@ -252,16 +269,19 @@ internal class KotlinFileGenerator(
             }
 
             var content = listOfNotNull(
-                typealiasDeclaration(),
                 declaration.toFactoryMethodCode(),
                 invokeExtension(
                     className = declaration.name,
                     generics = declaration.generics,
                     final = declaration.final
                 ),
+                memberExtensionProperties
+                    .takeIf { it.isNotEmpty() }
+                    ?.run { lines { it.toExtensionCode() } },
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
-                    ?.run { lines { it.toExtensionCode() } }
+                    ?.run { lines { it.toExtensionCode() } },
+                declaration.getComponents()
             )
 
             val events = memberEvents
@@ -293,8 +313,11 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
+        private val Property.extension: Boolean
+            get() = !abstract && !nullable
+
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties.filter { it.abstract } +
+            return memberProperties.filter { !it.extension } +
                     memberFunctions.filter { it.abstract } +
                     memberEvents
         }
@@ -316,7 +339,7 @@ internal class KotlinFileGenerator(
                     "}"
         }
 
-        private val defaultDeclarations = memberProperties.filter { !it.abstract } +
+        private val defaultDeclarations = memberProperties.filter { it.extension } +
                 memberFunctions.filter { !it.abstract } +
                 memberExtensionFunctions +
                 memberEvents.filter { !it.overriden }
@@ -326,46 +349,63 @@ internal class KotlinFileGenerator(
 
         override fun companionContent(): String? =
             listOfNotNull(
+                declaration.qiiMethod?.toQiiCode(),
                 invokeExtension(
                     className = declaration.name,
                     generics = declaration.generics
                 ),
-                defaultDeclarations.run {
-                    if (isNotEmpty()) lines { it.toExtensionCode() } else null
-                },
-                typealiasDeclaration()
+                defaultDeclarations
+                    .takeIf { it.isNotEmpty() }
+                    ?.lines { it.toExtensionCode() },
+                declaration.getComponents()
             ).takeIf { it.isNotEmpty() }
                 ?.joinToString("\n\n")
     }
 
     inner class EnumFile(private val declaration: Enum) : GeneratedFile(declaration) {
-        override fun content(): String {
-            val name = data.name
-
-            val baseInterface = if (declaration.flags) {
-                "$YFLAGS<$name>"
+        override fun content(): String =
+            if (declaration.flags) {
+                flagsContent()
             } else {
-                "$YENUM<$name>"
+                enumContent()
             }
+
+        private fun enumContent(): String {
+            val name = data.name
 
             return documentation +
                     externalAnnotation +
                     """
-                        |external enum class $name: $baseInterface {
+                        |external enum class $name: $YENUM<$name> {
                         |${declaration.constants.toContent()}
                         |
-                        |   companion object: $metadataClass<$name> {
-                        |   ${declaration.staticMethods.lines { it.toCode() }}
+                        |   companion object: $ENUM_METADATA<$name>
+                        |}
+                    """.trimMargin()
+        }
+
+
+        private fun flagsContent(): String {
+            val name = data.name
+
+            val members = declaration.constants + declaration.staticMethods
+
+            return documentation +
+                    externalAnnotation +
+                    """
+                        |sealed external class $name: $YFLAGS<$name> {
+                        |   companion object {
+                        |   ${members.lines { it.toCode() }}
                         |   }
                         |}
                     """.trimMargin()
         }
 
         override val metadataClass: String
-            get() = ENUM_METADATA
+            get() = TODO()
 
         override fun companionContent(): String? =
-            typealiasDeclaration()
+            null
     }
 }
 

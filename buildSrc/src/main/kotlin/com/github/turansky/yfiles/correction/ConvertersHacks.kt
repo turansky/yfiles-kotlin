@@ -13,18 +13,25 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
             |@JsName("Object")
             |sealed external class Converters
             |
-            |operator fun <V, R : Any> Converters.set(
+            |inline operator fun Converters.invoke(
+            |    block: Converters.() -> Unit
+            |): Converters =
+            |   apply(block)
+            |
+            |fun <V, R : Any> Converters.put(
             |    name: String,
             |    converter: (value: V) -> R
-            |) {
+            |): Converters {
             |    asDynamic()[name] = converter
+            |    return this
             |}
             |
-            |operator fun <V, P, R : Any> Converters.set(
+            |fun <V, P, R : Any> Converters.put(
             |    name: String,
             |    converter: (value: V, parameter: P) -> R
-            |) {
+            |): Converters {
             |    asDynamic()[name] = converter
+            |    return this
             |}
         """.trimMargin()
 }
@@ -35,10 +42,9 @@ internal fun applyConvertersHacks(source: Source) {
         JS_ANY
     )
 
-    source.types()
-        .filter { it[ID].startsWith("yfiles.styles.") }
-        .optFlatMap(CONSTANTS)
-        .filter { it[NAME] == "CONVERTERS" }
-        .filter { it[TYPE] in likeObjectTypes }
-        .forEach { it[TYPE] = CONVERTERS }
+    source.type(TEMPLATES_NAME)
+        .flatMap(CorrectionMode.getValue(CONSTANTS, PROPERTIES))
+        .first { it[NAME] == "CONVERTERS" }
+        .also { check(it[TYPE] in likeObjectTypes) }
+        .set(TYPE, CONVERTERS)
 }

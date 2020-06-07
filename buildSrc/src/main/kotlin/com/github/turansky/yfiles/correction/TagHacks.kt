@@ -33,6 +33,19 @@ internal fun applyTagHacks(source: Source) {
         .flatMap(METHODS)
         .filter { it[NAME].run { startsWith("copy") && endsWith("Tag") } }
         .forEach { it[RETURNS][TYPE] = TAG }
+
+    source.types("GraphWrapperBase")
+        .flatMap(METHODS)
+        .filter { it[NAME].endsWith("TagChanged") }
+        .map { it.firstParameter }
+        .forEach { it.replaceInType(",$JS_OBJECT>", ",$TAG>") }
+
+    source.types()
+        .optFlatMap(EVENTS)
+        .filter { "TagChanged" in it[NAME] }
+        .flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+        .map { it.firstParameter }
+        .forEach { it[SIGNATURE] = it[SIGNATURE].replace(",$JS_OBJECT>>", ",$TAG>>") }
 }
 
 private fun looksLikeTag(name: String): Boolean =
@@ -42,7 +55,7 @@ private fun typedItems(source: Source): Sequence<JSONObject> =
     source.types()
         .filterNot { it[NAME] == "GraphMLIOHandler" }
         .flatMap {
-            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS))
+            (it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS))
                 .optFlatMap(PARAMETERS)
                 .plus(it.optFlatMap(PROPERTIES))
         }

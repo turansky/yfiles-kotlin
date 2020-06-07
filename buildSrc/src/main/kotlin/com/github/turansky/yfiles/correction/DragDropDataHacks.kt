@@ -10,7 +10,7 @@ internal fun generateDragDropData(context: GeneratorContext) {
 }
 
 internal fun applyDragDropDataHacks(source: Source) {
-    source.type("DragDropItem").apply {
+    source.type("DragDropItem") {
         (flatMap(CONSTRUCTORS) + flatMap(METHODS))
             .flatMap(PARAMETERS)
             .filter { it[NAME] == "data" }
@@ -21,7 +21,7 @@ internal fun applyDragDropDataHacks(source: Source) {
     source.type("DropInputMode")
         .property("dropData")[TYPE] = DRAG_DROP_DATA
 
-    source.functionSignatures.getJSONObject("yfiles.input.DropCreationCallback")
+    source.functionSignature("yfiles.input.DropCreationCallback")
         .parameter("dropData")[TYPE] = DRAG_DROP_DATA
 
     source.type("DragSource")

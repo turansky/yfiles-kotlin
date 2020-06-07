@@ -25,7 +25,7 @@ private fun fixYList(source: Source) {
 }
 
 private fun JSONObject.fixGeneric() {
-    setSingleTypeParameter(bound = JS_ANY)
+    setSingleTypeParameter(bound = YOBJECT)
 
     get(IMPLEMENTS).apply {
         put(0, getString(0).replace("<$JS_ANY>", "<T>"))
@@ -47,33 +47,26 @@ private fun JSONObject.fixGeneric() {
         }
 }
 
-private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(RETURNS)) {
-        sequenceOf(get(RETURNS))
-    } else {
-        emptySequence()
-    }
-
 private fun fixMethodParameter(source: Source) {
     source.types(
-        "YList",
+            "YList",
 
-        "Geom",
-        "TriangulationAlgorithm",
-        "LayoutGraph",
+            "Geom",
+            "TriangulationAlgorithm",
+            "LayoutGraph",
 
-        "LabelingBase",
-        "SelfLoopCalculator",
-        "IntersectionAlgorithm",
-        "ChannelBasedPathRouting",
-        "OrthogonalPatternEdgeRouter",
+            "LabelingBase",
+            "SelfLoopCalculator",
+            "IntersectionAlgorithm",
+            "ChannelBasedPathRouting",
+            "OrthogonalPatternEdgeRouter",
 
-        "ILayer",
+            "ILayer",
 
-        "IElementFactory",
-        "DefaultElementFactory",
-        "MultiPageLayout"
-    ).flatMap { it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+            "IElementFactory",
+            "DefaultElementFactory",
+            "MultiPageLayout"
+        ).optFlatMap(METHODS)
         .forEach {
             val methodName = it[NAME]
 
@@ -156,7 +149,7 @@ private fun fixReturnType(source: Source) {
         Triple("ShortestPathAlgorithm", "kShortestPaths", EDGE_LIST)
     ).forEach { (className, methodName, generic) ->
         source.type(className)
-            .staticMethod(methodName)
+            .method(methodName)
             .fixReturnTypeGeneric(generic)
     }
 }

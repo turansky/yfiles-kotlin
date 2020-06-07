@@ -8,7 +8,10 @@ private val HAS_FACTORY_METHOD = setOf(
 
     "DashStyle",
     "GraphComponent",
-    "Stroke"
+    "Stroke",
+
+    "DefaultLayoutGraph",
+    "HierarchicLayoutRoutingStyle"
 )
 
 internal fun Class.toFactoryMethodCode(): String? {
@@ -40,7 +43,7 @@ private fun Class.canHaveFactoryMethod(): Boolean =
     when {
         abstract -> false
         generics.isNotEmpty() -> false
-        extendedType() == null && properties.none { it.public && it.mode.writable } -> false
+        extendedType() == null && memberProperties.none { it.public && it.mode.writable } -> false
         else -> true
     }
 

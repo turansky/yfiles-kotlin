@@ -1,10 +1,12 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.PropertyMode.WRITE_ONLY
+import com.github.turansky.yfiles.correction.CorrectionMode
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
+
+private const val DEPRECATED_ANNOTATION = """@Deprecated("Read documentation for more information")"""
 
 internal sealed class JsonWrapper(override val source: JSONObject) : HasSource {
     open fun toCode(): String =
@@ -22,43 +24,27 @@ internal sealed class Declaration(source: JSONObject) : JsonWrapper(source), Com
 
     protected val summary: String? by summary()
     protected val remarks: String? by remarks()
-    protected val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
+    protected val seeAlso: List<SeeAlso> by seeAlso()
 
     override fun compareTo(other: Declaration): Int =
         name.compareTo(other.name)
 }
 
 internal class ApiRoot(source: JSONObject) : JsonWrapper(source) {
-    private val namespaces: List<Namespace> by list(::Namespace)
-    val rootTypes: List<Type>
-        get() = namespaces
-            .flatMap { it.types }
-
-    val types: List<Type>
-        get() = namespaces
-            .asSequence()
-            .flatMap { it.namespaces.asSequence() }
-            .flatMap { it.types.asSequence() }
-            .toList()
-
-    val functionSignatures: List<FunctionSignature> by list(::FunctionSignature)
-}
-
-private class Namespace(source: JSONObject) : JsonWrapper(source) {
     companion object {
+        private val FACTORY_MAP = mapOf(
+            "class" to ::Class,
+            "interface" to ::Interface,
+            "enum" to ::Enum
+        )
+
         fun parseType(source: JSONObject): Type =
-            when (val group = source[GROUP]) {
-                "class" -> Class(source)
-                "interface" -> Interface(source)
-                "enum" -> Enum(source)
-                else -> throw IllegalArgumentException("Undefined type group '$group'")
-            }
+            FACTORY_MAP.getValue(source[GROUP])(source)
     }
 
-    val name: String by string()
-
-    val namespaces: List<Namespace> by list(::Namespace)
     val types: List<Type> by list(::parseType)
+
+    val functionSignatures: List<FunctionSignature> by list(::FunctionSignature)
 }
 
 internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasClassId {
@@ -66,7 +52,7 @@ internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasC
     override val classId = id
 
     private val summary: String? by summary()
-    private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
+    private val seeAlso: List<SeeAlso> by seeAlso()
 
     private val parameters: List<SignatureParameter> by list(::SignatureParameter)
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -145,20 +131,22 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
     abstract val constants: List<Constant>
 
-    val properties: List<Property> by declarationList(::Property)
-    val staticProperties: List<Property> by declarationList(::Property)
+    private val properties: List<Property> by declarationList(::Property)
+    val memberProperties: List<Property> = properties.filter { !it.static }
+    val staticProperties: List<Property> = properties.filter { it.static }
 
-    val methods: List<Method> by declarationList(::Method)
-    val extensionMethods: List<Method> by lazy { methods.mapNotNull { it.toOperatorExtension() } }
-    val staticMethods: List<Method> by declarationList(::Method)
+    protected val methods: List<Method> by declarationList(::Method)
+    val memberMethods: List<Method> = methods.filter { !it.static }
+    val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
+    val extensionMethods: List<Method> by lazy {
+        memberMethods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+    }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
 
     private val extends: String? by optString()
     private val implements: List<String> by stringList()
-
-    private val relatedDemos: List<Demo> by list(::Demo)
 
     final override val docId: String = es6name ?: name
     final override val classDeclaration = name + generics.asParameters()
@@ -171,7 +159,6 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
         get() = getDocumentation(
             summary = summary,
             typeparameters = typeparameters,
-            relatedDemos = relatedDemos,
             seeAlso = seeAlso + seeAlsoDoc,
             additionalDocumentation = additionalDocumentation
         )
@@ -196,8 +183,10 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     private val modifiers: ClassModifiers by wrapStringList(::ClassModifiers)
     val final: Boolean = modifiers.mode == ClassMode.FINAL
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
+    val enumLike: Boolean = modifiers.mode == ClassMode.ENUM
 
     val kotlinModifier: String = when (modifiers.mode) {
+        ClassMode.ENUM -> "enum"
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
         ClassMode.SEALED -> "sealed"
@@ -212,7 +201,27 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         get() = primaryConstructor?.getPrimaryDocumentation()
 }
 
-internal class Interface(source: JSONObject) : ExtendedType(source)
+val NON_FUNCTIONAL = setOf(
+    "ICloneable",
+    "IComparable",
+    "IEnumerable"
+)
+
+internal class Interface(source: JSONObject) : ExtendedType(source) {
+    val qiiMethod: Method?
+        get() = methods.singleOrNull { it.qii }
+
+    val functionalMethod: Method?
+        get() = when {
+            implementedTypes().isNotEmpty() -> null
+            events.isNotEmpty() -> null
+            memberProperties.any { it.abstract } -> null
+            name in NON_FUNCTIONAL -> null
+            else -> memberMethods
+                .singleOrNull { it.abstract }
+                ?.takeIf { it.functional }
+        }
+}
 
 internal class Enum(source: JSONObject) : Type(source) {
     private val modifiers: EnumModifiers by wrapStringList(::EnumModifiers)
@@ -306,16 +315,6 @@ private class ExceptionDescription(override val source: JSONObject) : HasSource 
         } ?: name
 }
 
-internal class Demo(override val source: JSONObject) : HasSource {
-    private val path: String by string()
-    private val text: String by string()
-    private val summary: String by string()
-
-    fun toDoc(): String {
-        return link("$text 🚀", path)
-    }
-}
-
 internal sealed class SeeAlso {
     abstract fun toDoc(): String
 }
@@ -351,15 +350,8 @@ private class SeeAlsoType(override val source: JSONObject) : SeeAlso(), HasSourc
     }
 }
 
-private class SeeAlsoGuide(override val source: JSONObject) : SeeAlso(), HasSource {
-    private val section: String by string()
-    private val name: String by string()
-
-    override fun toDoc(): String =
-        link(
-            text = name,
-            href = "$DOC_BASE_URL/#/dguide/$section"
-        )
+private object EmptySeeAlso : SeeAlso() {
+    override fun toDoc() = TODO()
 }
 
 private class SeeAlsoDoc(private val id: String) : SeeAlso() {
@@ -372,10 +364,13 @@ private class SeeAlsoDoc(private val id: String) : SeeAlso() {
         )
 }
 
+private fun seeAlso() = list(::parseSeeAlso)
+
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
     when {
+        CorrectionMode.isProgressive() -> SeeAlsoType(source)
         source.has("type") -> SeeAlsoType(source)
-        source.has("section") -> SeeAlsoGuide(source)
+        source.has("section") -> EmptySeeAlso
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
     }
 
@@ -478,6 +473,7 @@ private class TypeConstant(
     source: JSONObject,
     parent: TypeDeclaration
 ) : Constant(source, parent) {
+    private val modifiers: ConstantModifiers by wrapStringList(::ConstantModifiers)
     private val dpdata: DpData? by optNamed(::DpData)
 
     private val documentation: String
@@ -487,9 +483,11 @@ private class TypeConstant(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String =
-        documentation +
-                "val $name: $type"
+    override fun toCode(): String {
+        val modifier = exp(modifiers.protected, "protected")
+        return documentation +
+                "$modifier val $name: $type"
+    }
 
     override fun toEnumValue(): String =
         documentation + name
@@ -509,7 +507,7 @@ private class EnumConstant(
         )
 
     override fun toCode(): String =
-        toEnumValue()
+        documentation + "val $name: ${parent.classId}"
 
     override fun toEnumValue(): String =
         documentation + name
@@ -534,12 +532,16 @@ internal class Property(
     val abstract = modifiers.abstract
     private val final = modifiers.final
     private val open = !static && !final
+    val nullable = modifiers.canbenull
+    val generated = modifiers.generated
 
     private val preconditions: List<String> by stringList(::summary)
 
     private val defaultValue: DefaultValue? by defaultValue()
 
     private val throws: List<ExceptionDescription> by list(::ExceptionDescription)
+
+    private val body: String by string()
 
     private val overridden: Boolean
         get() = !static && ClassRegistry.instance.propertyOverridden(parent.classId, name)
@@ -578,7 +580,7 @@ internal class Property(
         str += if (mode.writable) "var " else "val "
 
         str += "$name: $type${modifiers.nullability}"
-        if (mode == WRITE_ONLY) {
+        if (!mode.readable) {
             str += """
                 |
                 |   @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
@@ -586,20 +588,35 @@ internal class Property(
             """.trimMargin()
         }
 
+        if (modifiers.deprecated) {
+            str = DEPRECATED_ANNOTATION + "\n" + str
+        }
+
+        if (parent is Interface && !abstract) {
+            str += "\nget() = definedExternally"
+        }
+
         return "$documentation$str"
     }
 
     override fun toExtensionCode(): String {
         require(!protected)
-        require(mode != WRITE_ONLY)
+        require(mode.readable)
 
         val generics = parent.generics.declaration
 
+        val body = if (!generated) {
+            "$AS_DYNAMIC.$name"
+        } else {
+            require(!mode.writable)
+            this.body
+        }
+
         var str = "inline " + if (mode.writable) "var " else "val "
         str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
-                "    get() = $AS_DYNAMIC.$name"
+                "    get() = $body"
         if (mode.writable) {
-            str += "\n    set(value) { $AS_DYNAMIC.$name = value }"
+            str += "\n    set(value) { $body = value }"
         }
 
         return "$documentation$str"
@@ -614,8 +631,14 @@ private val OPERATOR_MAP = mapOf(
 )
 
 private val OPERATOR_NAME_MAP = mapOf(
+    "elementAt" to "get",
+
     "add" to "plus",
-    "subtrack" to "minus",
+    "getEnlarged" to "plus",
+
+    "subtract" to "minus",
+    "getReduced" to "minus",
+
     "multiply" to "times",
 
     "includes" to "contains"
@@ -624,6 +647,28 @@ private val OPERATOR_NAME_MAP = mapOf(
 private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
     "add" to "plusAssign",
     "remove" to "minusAssign"
+)
+
+private val INFIX_METHODS = setOf(
+    "intersects",
+    "distance",
+    "distanceSq",
+    "distanceTo",
+    "indexOf",
+    "scalarProduct",
+    "supports",
+    "lookup",
+    "canDecorate",
+    "combineWith",
+    "isGreaterThan",
+    "isLessThan",
+    "coveredBy",
+    "crosses",
+    "hasSameRange",
+    "manhattanDistanceTo",
+    "equalValues",
+    "above",
+    "below"
 )
 
 internal class Method(
@@ -635,14 +680,16 @@ internal class Method(
 
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
-    private val static = modifiers.static
+    val static = modifiers.static
     private val protected = modifiers.protected
 
     private val final = modifiers.final
     private val open = !static && !final
 
+    private val deprecated = modifiers.deprecated
     private val hidden = modifiers.hidden
 
+    val qii by boolean()
     private val isExtension by boolean()
 
     private val postconditions: List<String> by stringList(::summary)
@@ -656,6 +703,9 @@ internal class Method(
 
     override val overridden: Boolean
         get() = !static && ClassRegistry.instance.functionOverridden(parent.classId, name)
+
+    val functional: Boolean
+        get() = typeparameters.isEmpty()
 
     private val documentation: String
         get() = getDocumentation(
@@ -681,17 +731,24 @@ internal class Method(
             return exp(final, "final ") + exp(abstract, "abstract ") + "override "
         }
 
+        val infix = when {
+            parameters.size != 1 -> ""
+            returns == null -> ""
+            name !in INFIX_METHODS -> ""
+            else -> "infix "
+        }
+
         return when {
             abstract -> "abstract "
             final -> "final "
             open -> "open "
             else -> ""
-        } + exp(protected, "protected ")
+        } + exp(protected, "protected ") + infix
     }
 
     private fun nullablePromiseResult(generic: String): Boolean =
         when (generic) {
-            "String" -> name == "editLabelCore" || name == "edit"
+            STRING -> name == "editLabelCore" || name == "edit"
             IEDGE,
             ILABEL,
             "$IENUMERABLE<$IMODEL_ITEM>" -> true
@@ -700,17 +757,13 @@ internal class Method(
 
     // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(): String {
-        var type = returns?.type
-            ?: return ""
+        var type = returns?.type ?: return ""
 
         if (type.startsWith("$PROMISE<")) {
-            val generic = type.between("<", ">")
-            val newGeneric = if (generic == ANY) {
-                "Nothing?"
-            } else if (generic == ELEMENT) {
-                SVG_SVG_ELEMENT
-            } else {
-                generic + exp(nullablePromiseResult(generic), "?")
+            val newGeneric = when (val generic = type.between("<", ">")) {
+                ANY -> "Nothing?"
+                ELEMENT -> SVG_SVG_ELEMENT
+                else -> generic + exp(nullablePromiseResult(generic), "?")
             }
             type = "$PROMISE<$newGeneric>"
         }
@@ -726,11 +779,53 @@ internal class Method(
         val operator = exp(isOperatorMode(), "operator")
 
         var code = "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
-        if (hidden) {
-            code = HIDDEN_METHOD_ANNOTATION + "\n" + code
+        when {
+            deprecated ->
+                code = DEPRECATED_ANNOTATION + "\n" + code
+            hidden ->
+                code = HIDDEN_METHOD_ANNOTATION + "\n" + code
         }
 
         return documentation + code
+    }
+
+    fun toQiiCode(): String? {
+        require(qii)
+        parent as Interface
+
+        val functionalMethod = parent.functionalMethod ?: return null
+        val delegateName = functionalMethod.name
+        val delegateType = """(
+            ${functionalMethod.parameters.byCommaLine { it.declaration }}
+            ) -> ${(functionalMethod.returns?.type ?: UNIT)} 
+        """.trimIndent()
+
+        val factoryGenerics = parent.generics
+        val code = """
+            fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(
+                $delegateName: $delegateType
+            )${getReturnSignature()} =
+                ${parent.name}.$AS_DYNAMIC
+                    .$name($delegateName)
+        """.trimIndent()
+
+        return documentation + code
+    }
+
+    fun toStaticOperatorExtension(): Method? {
+        val operatorName = OPERATOR_NAME_MAP[name] ?: return null
+        if (parameters.size != 2) return null
+        val returns = returns ?: return null
+
+        setOf(
+            parent.classId,
+            parameters[0].type,
+            parameters[1].type,
+            returns.type
+        ).singleOrNull() ?: return null
+
+        return Method(source, parent)
+            .also { it.operatorName = operatorName }
     }
 
     fun toOperatorExtension(): Method? {
@@ -740,17 +835,31 @@ internal class Method(
             overridden -> return null
         }
 
-        val operatorName = if (returns != null) {
-            OPERATOR_NAME_MAP[name]
-        } else {
+        val removeMethod = name == "remove"
+        if (removeMethod && parameters[0].type == INT) return null
+
+        val assignMode = returns.let { it == null || (removeMethod && it.type == BOOLEAN) }
+        val operatorName = if (assignMode) {
             ASSIGN_OPERATOR_NAME_MAP[name]
+        } else {
+            OPERATOR_NAME_MAP[name]
         } ?: return null
 
-        return Method(source, parent)
+        val newSource = if (assignMode && returns != null) {
+            JSONObject(source, (source.keySet() - "returns").toTypedArray())
+        } else {
+            source
+        }
+
+        return Method(newSource, parent)
             .also { it.operatorName = operatorName }
     }
 
     override fun toExtensionCode(): String {
+        if (static) {
+            return toStaticExtensionCode()
+        }
+
         require(!protected)
 
         val extParameters = kotlinParametersString(extensionMode = true)
@@ -775,6 +884,17 @@ internal class Method(
                 "inline $operator fun $genericDeclaration ${parent.classDeclaration}.$extensionName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
+    }
+
+    private fun toStaticExtensionCode(): String {
+        val type = parent.name
+        val parameter = parameters[1]
+
+        return """
+            inline operator fun $type.$operatorName(${parameter.declaration}): $type {
+                return $type.$name(this, ${parameter.name})
+            }
+        """.trimIndent()
     }
 }
 
@@ -812,7 +932,7 @@ internal sealed class MethodBase(
                     ""
                 }
 
-                "$modifiers ${it.name}: ${it.type}${it.modifiers.nullability}" + body
+                "$modifiers ${it.declaration}" + body
             }
     }
 
@@ -842,12 +962,8 @@ internal class Parameter(
     val type: String by type { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
-}
 
-internal interface ITypeParameter {
-    val name: String
-
-    fun toCode(): String
+    val declaration: String by lazy { name + ": " + type + modifiers.nullability }
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter, ITypeParameter {
@@ -876,44 +992,6 @@ internal class CustomTypeParameter(
         "$name : $bound"
 }
 
-internal class Generics(private val parameters: List<ITypeParameter>) {
-    val declaration: String
-        get() = if (parameters.isNotEmpty()) {
-            "<${parameters.byComma { it.toCode() }}> "
-        } else {
-            ""
-        }
-
-    fun asParameters(): String =
-        asParameters { it }
-
-    fun asAliasParameters(): String =
-        asParameters { it.removePrefix("in ").removePrefix("out ") }
-
-    private fun asParameters(transform: (String) -> String): String =
-        if (parameters.isNotEmpty()) {
-            "<${parameters.byComma { transform(it.name) }}> "
-        } else {
-            ""
-        }
-
-    val placeholder: String
-        get() = if (parameters.isNotEmpty()) {
-            "<" + (1..parameters.size).map { "*" }.joinToString(",") + ">"
-        } else {
-            ""
-        }
-
-    fun isEmpty(): Boolean =
-        parameters.isEmpty()
-
-    fun isNotEmpty(): Boolean =
-        !isEmpty()
-
-    operator fun plus(other: Generics): Generics =
-        Generics(parameters + other.parameters)
-}
-
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by optString()
     val type: String by type { parse(it, signature).asReadOnly() }
@@ -927,7 +1005,7 @@ internal class Event(
     private val id: String by string()
     val name: String by string()
     private val summary: String? by summary()
-    private val seeAlso: List<SeeAlso> by list(::parseSeeAlso)
+    private val seeAlso: List<SeeAlso> by seeAlso()
     private val add: EventListener by eventListener(parent)
     private val remove: EventListener by eventListener(parent)
     private val listeners = listOf(add, remove)
@@ -995,9 +1073,10 @@ private class EventListener(
         }
     }
 
+    // TODO: update after nullability fix
     override fun toCode(): String {
         val parametersString = parameters
-            .byComma { "${it.name}: ${it.type}" }
+            .byComma { it.name + ": " + it.type }
 
         return "${kotlinModificator()}fun $name($parametersString)"
     }
@@ -1026,7 +1105,10 @@ private fun remarks(): Prop<String?> = RemarksDelegate()
 
 private class RemarksDelegate : PropDelegate<String?>() {
     private fun String.isSummaryLike(): Boolean =
-        startsWith("The default ") or startsWith("By default ") or endsWith("then <code>null</code> is returned.")
+        startsWith("The default ") or
+                startsWith("By default ") or
+                startsWith("<p>This property is deprecated") or
+                endsWith("then <code>null</code> is returned.")
 
     private fun JSONObject.isRequiredRemarks(): Boolean =
         optString("id")?.startsWith("ICommand-field-") ?: false
@@ -1075,7 +1157,6 @@ private fun getDocumentation(
     value: Value? = null,
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
-    relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     additionalDocumentation: String? = null
 ): String {
@@ -1091,8 +1172,7 @@ private fun getDocumentation(
         value = value,
         defaultValue = defaultValue,
         exceptions = exceptions,
-        relatedDemos = relatedDemos,
-        seeAlso = seeAlso
+        seeAlso = seeAlso?.filter { it !is EmptySeeAlso }
     )
 
     additionalDocumentation?.apply {
@@ -1124,7 +1204,6 @@ private fun getDocumentationLines(
     value: Value? = null,
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
-    relatedDemos: List<Demo>? = null,
     seeAlso: List<SeeAlso>? = null,
     primaryConstructor: Boolean = false
 ): List<String> {
@@ -1189,10 +1268,6 @@ private fun getDocumentationLines(
 
     exceptions?.mapTo(lines) {
         throws(it.toDoc())
-    }
-
-    relatedDemos?.mapTo(lines) {
-        see(it.toDoc())
     }
 
     seeAlso?.apply {

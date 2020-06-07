@@ -7,11 +7,8 @@ import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.objects
 import org.json.JSONObject
 
-internal fun JSONObject.staticMethod(name: String): JSONObject =
-    get(STATIC_METHODS)[name]
-
 internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
-    (optionalArray(METHODS) + optionalArray(STATIC_METHODS))
+    optFlatMap(METHODS)
         .optFlatMap(PARAMETERS)
 
 internal fun JSONObject.methodParameters(
@@ -43,8 +40,8 @@ internal fun JSONObject.methodParameters(
     return result
 }
 
-internal fun JSONObject.method(methodName: String) =
-    get(METHODS)[methodName]
+internal fun JSONObject.method(name: String) =
+    get(METHODS)[name]
 
 internal fun JSONObject.constant(name: String): JSONObject =
     get(CONSTANTS)[name]
@@ -66,6 +63,13 @@ internal fun JSONObject.addProperty(
         )
 }
 
+internal fun JSONObject.replaceInType(
+    oldValue: String,
+    newValue: String
+) {
+    set(TYPE, get(TYPE).replace(oldValue, newValue))
+}
+
 internal fun JSONObject.changeNullability(nullable: Boolean) =
     changeModifier(CANBENULL, nullable)
 
@@ -76,7 +80,12 @@ private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
     val modifiers = get(MODIFIERS)
     val index = modifiers.indexOf(modifier)
 
-    require((index == -1) == value)
+    val hasEffect = (index == -1) == value
+    if (CorrectionMode.isNormal()) {
+        require(hasEffect)
+    } else if (!hasEffect) {
+        println("MODIFIER CHANGE FAILED")
+    }
 
     if (value) {
         modifiers.put(modifier)
@@ -124,12 +133,13 @@ internal fun JSONObject.setTypeParameters(
 
 internal fun JSONObject.setKeyValueTypeParameters(
     keyName: String = "K",
-    valueName: String = "V"
+    valueName: String = "V",
+    keyBound: String = JS_OBJECT
 ) {
     set(
         TYPE_PARAMETERS,
         jArray(
-            typeParameter(keyName, JS_OBJECT),
+            typeParameter(keyName, keyBound),
             typeParameter(valueName, JS_OBJECT)
         )
     )
@@ -164,13 +174,6 @@ internal fun Sequence<JSONObject>.optFlatMap(key: JArrayKey): Sequence<JSONObjec
     filter { it.has(key) }
         .flatMap(key)
 
-internal fun JSONObject.optionalArray(key: JArrayKey): Sequence<JSONObject> =
-    if (has(key)) {
-        flatMap(key)
-    } else {
-        emptySequence()
-    }
-
 internal val JSONObject.typeParameter: JSONObject
     get() {
         val typeNames = setOf("type", "tType", "itemType")
@@ -190,6 +193,13 @@ internal val JSONObject.firstParameter: JSONObject
 internal val JSONObject.secondParameter: JSONObject
     get() = get(PARAMETERS)
         .get(1) as JSONObject
+
+internal fun JSONObject.returnsSequence(): Sequence<JSONObject> =
+    if (has(RETURNS)) {
+        sequenceOf(get(RETURNS))
+    } else {
+        emptySequence()
+    }
 
 internal fun JSONObject.addGeneric(generic: String) {
     val type = get(TYPE)

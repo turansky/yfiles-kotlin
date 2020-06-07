@@ -65,6 +65,14 @@ internal val DOUBLE_METHODS = setOf(
     "getStress",
     "getCurrentLocation",
 
+    "pageRank",
+    "getAverageWeightedDegree",
+    "getDiameter",
+    "getDensity",
+    "getModularity",
+    "getClusteringCoefficient",
+    "getProjection", // TODO: fix nullability
+
     // ???
     "getChannelCoordinate",
     "getSubchannelRank",
@@ -309,6 +317,21 @@ internal val DOUBLE_PROPERTIES = setOf(
     "portBorderGapRatios",
     "cutoff",
 
+    "descendantWeightSum",
+    "maximumDescendantWeight",
+    "averageCoefficient",
+    "precision",
+    "maximumK",
+    "dampingFactor",
+    "rankSum",
+    "preferredAngle",
+    "preferredCurveLength",
+    "smoothness",
+
+    "modularity",
+    "mouseWheelDeltaX",
+    "wheelDeltaX",
+
     "Eps",
 
     // static
@@ -318,6 +341,7 @@ internal val DOUBLE_PROPERTIES = setOf(
 
 internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "eps",
+    "t",
     "x", "y",
     "x1", "y1",
     "x2", "y2",

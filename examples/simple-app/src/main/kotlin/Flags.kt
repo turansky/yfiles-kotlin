@@ -1,6 +1,8 @@
 @file:Suppress("unused")
 
-import yfiles.graph.GraphItemTypes.*
+import yfiles.graph.GraphItemTypes.Companion.EDGE
+import yfiles.graph.GraphItemTypes.Companion.LABEL
+import yfiles.graph.GraphItemTypes.Companion.NODE
 import yfiles.input.GraphViewerInputMode
 import yfiles.lang.contains
 import yfiles.lang.or

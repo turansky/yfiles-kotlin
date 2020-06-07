@@ -97,18 +97,18 @@ internal fun applyCommandHacks(source: Source) {
         setSingleTypeParameter(name = "in T", bound = JS_ANY)
 
         flatMap(METHODS)
-            .flatMap(PARAMETERS)
+            .optFlatMap(PARAMETERS)
             .filter { it[NAME] == "parameter" }
             .forEach { it[TYPE] = "T" }
 
         flatMap(CONSTANTS)
             .forEach { it.addGeneric(PARAMETER_MAP.getValue(it[NAME])) }
 
-        staticMethod("createCommand")[RETURNS].addGeneric("*")
+        method("createCommand")[RETURNS].addGeneric("*")
     }
 
     COMMAND_ALIASES
-        .map { source.functionSignatures.getJSONObject(it) }
+        .map { source.functionSignature(it) }
         .forEach {
             it.setSingleTypeParameter(bound = JS_OBJECT)
 
@@ -142,11 +142,11 @@ internal fun applyCommandHacks(source: Source) {
         .addGeneric("*")
 
     source.types(
-        "GraphInputMode",
-        "NavigationInputMode",
-        "OverviewInputMode"
-    ).map { it.property("availableCommands") }
-        .forEach { it[TYPE] = it[TYPE].replace(">", "<*>>") }
+            "GraphInputMode",
+            "NavigationInputMode",
+            "OverviewInputMode"
+        ).map { it.property("availableCommands") }
+        .forEach { it.replaceInType(">", "<*>>") }
 
     source.types(
         "GraphInputMode",

@@ -1,7 +1,7 @@
 plugins {
     `java-gradle-plugin`
 
-    id("com.gradle.plugin-publish") version "0.11.0"
+    id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.turansky.kfc.plugin-publish") version "0.8.5"
 
     kotlin("jvm") version "1.4.20-dev-122"
@@ -55,6 +55,6 @@ tasks.compileKotlin {
 }
 
 tasks.wrapper {
-    gradleVersion = "6.3"
+    gradleVersion = "6.5"
     distributionType = Wrapper.DistributionType.ALL
 }

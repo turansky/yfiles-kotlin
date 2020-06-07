@@ -7,8 +7,10 @@ internal const val FLAGS = "flags"
 
 internal const val STATIC = "static"
 internal const val FINAL = "final"
+internal const val VIRTUAL = "virtual"
 internal const val RO = "ro"
 internal const val WO = "wo"
+internal const val ENUM_LIKE = "enum"
 internal const val SEALED = "sealed"
 internal const val ABSTRACT = "abstract"
 internal const val INTERNAL = "internal"
@@ -21,6 +23,10 @@ internal const val CONVERSION = "conversion"
 
 internal const val CANBENULL = "canbenull"
 private const val NOTNULL = "notnull"
+
+internal const val DEPRECATED = "deprecated"
+
+internal const val GENERATED = "generated"
 
 // for codegen
 internal const val HIDDEN = "hidden"
@@ -42,6 +48,7 @@ sealed class Modifiers(
 }
 
 internal enum class ClassMode {
+    ENUM,
     FINAL,
     OPEN,
     SEALED,
@@ -49,6 +56,7 @@ internal enum class ClassMode {
 }
 
 private val CLASS_MODIFIERS = setOf(
+    ENUM_LIKE,
     SEALED,
     ABSTRACT,
     FINAL,
@@ -59,6 +67,7 @@ private val CLASS_MODIFIERS = setOf(
 
 internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CLASS_MODIFIERS) {
     val mode: ClassMode = when {
+        has(ENUM_LIKE) -> ClassMode.ENUM
         has(SEALED) -> ClassMode.SEALED
         has(ABSTRACT) -> ClassMode.ABSTRACT
         has(FINAL) -> ClassMode.FINAL
@@ -98,6 +107,22 @@ internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifie
     }
 }
 
+private val CONSTANT_MODIFIERS = setOf(
+    STATIC,
+    FINAL,
+    RO,
+
+    PROTECTED,
+
+    PUBLIC,
+    EXPERT,
+    NOTNULL
+)
+
+internal class ConstantModifiers(modifiers: List<String>) : Modifiers(modifiers, CONSTANT_MODIFIERS) {
+    val protected = has(PROTECTED)
+}
+
 internal enum class PropertyMode(
     val readable: Boolean,
     val writable: Boolean
@@ -118,15 +143,22 @@ private val PROPERTY_MODIFIERS = setOf(
 
     CANBENULL,
 
+    GENERATED,
+
+    DEPRECATED,
+
     PUBLIC,
     EXPERT,
     NOTNULL,
-    CONVERSION
+    CONVERSION,
+    VIRTUAL
 )
 
 internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers, PROPERTY_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
+    val generated = has(GENERATED)
+    val deprecated = has(DEPRECATED)
 
     val mode = when {
         has(RO) -> READ_ONLY
@@ -137,7 +169,7 @@ internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers,
     val abstract = has(ABSTRACT)
     val protected = has(PROTECTED)
 
-    private val canbenull = has(CANBENULL)
+    val canbenull = has(CANBENULL)
     val nullability = exp(canbenull, "?")
 }
 
@@ -150,16 +182,20 @@ private val METHOD_MODIFIERS = setOf(
 
     CANBENULL,
 
+    DEPRECATED,
+
     HIDDEN,
 
     PUBLIC,
     EXPERT,
-    NOTNULL
+    NOTNULL,
+    VIRTUAL
 )
 
 internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, METHOD_MODIFIERS) {
     val static = has(STATIC)
     val final = has(FINAL)
+    val deprecated = has(DEPRECATED)
 
     val abstract = has(ABSTRACT)
     val protected = has(PROTECTED)

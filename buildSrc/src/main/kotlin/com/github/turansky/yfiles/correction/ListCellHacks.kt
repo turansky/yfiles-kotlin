@@ -1,14 +1,14 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.YOBJECT
 import org.json.JSONObject
 
 private const val LIST_CELL = "yfiles.algorithms.ListCell"
 
 internal fun applyListCellHacks(source: Source) {
-    source.type("ListCell").apply {
-        setSingleTypeParameter(bound = JS_OBJECT)
+    source.type("ListCell") {
+        setSingleTypeParameter(bound = YOBJECT)
 
         property("info")[TYPE] = "T"
 
@@ -37,10 +37,3 @@ private fun JSONObject.getTypeHolders(): Sequence<JSONObject> =
     flatMap(METHODS)
         .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
         .plus(flatMap(PROPERTIES))
-
-private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(RETURNS)) {
-        sequenceOf(get(RETURNS))
-    } else {
-        emptySequence()
-    }

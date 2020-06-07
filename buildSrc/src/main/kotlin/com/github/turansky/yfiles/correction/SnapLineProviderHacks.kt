@@ -12,6 +12,12 @@ internal fun applySnapLineProviderHacks(source: Source) {
         setSingleTypeParameter("in T", IMODEL_ITEM)
 
         fixItemType("T")
+
+        if (CorrectionMode.isProgressive()) {
+            method("create")
+                .get(RETURNS)
+                .addGeneric("T")
+        }
     }
 
     sequenceOf(

@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
 
 private fun cursor(generic: String): String =
@@ -23,27 +24,37 @@ private fun fixCursor(source: Source) {
         "INodeCursor" to NODE,
         "IPointCursor" to YPOINT
     ).forEach { (className, generic) ->
-        source.type(className)
-            .get(IMPLEMENTS).apply {
+        source.type(className) {
+            get(IMPLEMENTS).apply {
                 put(0, getString(0) + "<$generic>")
             }
+
+            val duplicatedPropertyName = className
+                .removePrefix("I")
+                .removeSuffix("Cursor")
+                .decapitalize()
+
+            get(PROPERTIES).removeAllObjects {
+                it[NAME] == duplicatedPropertyName
+            }
+        }
     }
 }
 
 private fun JSONObject.fixGeneric() {
-    setSingleTypeParameter("out T", JS_ANY)
+    setSingleTypeParameter("out T", YOBJECT)
 
     property("current")[TYPE] = "T"
 }
 
 private fun fixCursorUtil(source: Source) {
     source.type("Cursors").apply {
-        flatMap(STATIC_METHODS)
+        flatMap(METHODS)
             .onEach {
                 val bound = when (it[NAME]) {
                     "createNodeCursor" -> NODE
                     "createEdgeCursor" -> EDGE
-                    else -> JS_ANY
+                    else -> YOBJECT
                 }
 
                 it.setSingleTypeParameter(bound = bound)
@@ -55,12 +66,11 @@ private fun fixCursorUtil(source: Source) {
                     .forEach { it[TYPE] = cursor("T") }
             }
 
-        staticMethod("toArray").apply {
+        method("toArray").apply {
             sequenceOf(secondParameter, get(RETURNS))
                 .forEach {
-                    it[TYPE] = it[TYPE]
-                        .replace("<$JS_ANY>", "<T>")
-                        .replace("<$JS_OBJECT>", "<T>")
+                    it.replaceInType("<$JS_ANY>", "<T>")
+                    it.replaceInType("<$JS_OBJECT>", "<T>")
                 }
 
             secondParameter[MODIFIERS]
@@ -76,18 +86,18 @@ private fun fixMethodParameter(source: Source) {
     )
 
     source.types(
-        "Graph",
-        "LayoutGraph",
-        "DefaultLayoutGraph"
-    ).flatMap(CONSTRUCTORS)
+            "Graph",
+            "LayoutGraph",
+            "DefaultLayoutGraph"
+        ).flatMap(CONSTRUCTORS)
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] in nodeParameterNames }
         .forEach { it.fixTypeGeneric(NODE) }
 
     source.types(
-        "GraphPartitionManager",
-        "LayoutGraphHider"
-    ).map { it.method("hideItemCursor") }
+            "GraphPartitionManager",
+            "LayoutGraphHider"
+        ).map { it.method("hideItemCursor") }
         .map { it.firstParameter }
         .forEach { it.fixTypeGeneric(GRAPH_OBJECT) }
 }
@@ -98,11 +108,11 @@ private fun fixReturnType(source: Source) {
         .fixReturnTypeGeneric(YPOINT)
 
     source.type("PathAlgorithm")
-        .staticMethod("findAllPathsCursor")
+        .method("findAllPathsCursor")
         .fixReturnTypeGeneric(EDGE_LIST)
 
     source.type("ShortestPathAlgorithm")
-        .staticMethod("kShortestPathsCursor")
+        .method("kShortestPathsCursor")
         .fixReturnTypeGeneric(EDGE_LIST)
 }
 

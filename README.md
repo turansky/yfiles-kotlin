@@ -20,9 +20,13 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Metadata](#metadata)
   * [Primitive types](#primitive-types)
   * [Cast extensions](#cast-extensions)
+  * [Lookup extensions](#lookup-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
 * [Flags](#flags)
+* [`for` loop](#for-loop)
+  * [`IEnumerable`](#ienumerable)
+  * [`ICursor`](#icursor)
 * [TimeSpan extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
@@ -89,6 +93,32 @@ fun (o:Any?) {
 }
 ```
 
+#### Lookup extensions
+```Kotlin
+val graph: IGraph = DefaultGraph()
+val node = graph.createNode()
+
+// for classes
+val t11 = node lookup TimeSpan.yclass // 'TimeSpan?'
+val t12 = node lookup TimeSpan        // 'TimeSpan?'
+
+val t13: TimeSpan? = node.lookup()    // reified lookup type
+val t14 = node.lookup<TimeSpan>()     // 'TimeSpan?'
+
+val t21 = node lookupValue TimeSpan.yclass // 'TimeSpan'
+val t22 = node lookupValue TimeSpan        // 'TimeSpan'
+
+val t23: TimeSpan = node.lookupValue()    // reified lookup type
+val t24 = node.lookupValue<TimeSpan>()    // 'TimeSpan'
+
+// for interfaces
+val h11 = node lookup IHitTestable.yclass      // 'IHitTestable?'
+val h12 = node lookup IHitTestable             // 'IHitTestable?'
+
+val h21 = node lookupValue IHitTestable.yclass // 'IHitTestable'
+val h22 = node lookupValue IHitTestable        // 'IHitTestable'
+```
+
 #### Type parameter
 ```Kotlin
 val clazz:YClass<IVisibilityTestable> = IVisibilityTestable.yclass
@@ -136,6 +166,46 @@ val inputMode = GraphViewerInputMode {
 }
 
 val nodesAreClickable = NODE in inputMode.clickableItems // true
+```
+
+## `for` loop
+
+#### `IEnumerable`
+```Kotlin
+import yfiles.collections.asSequence
+import yfiles.collections.iterator
+
+val graph: IGraph = DefaultGraph()
+// ...
+
+// iterator() extension allows for loops for IEnumerable
+for (node in graph.nodes) {
+    println("Node layout: ${node.layout}")
+}
+
+// asSequence() extension
+graph.nodes
+    .asSequence()
+    .forEach { println("Node layout: ${node.layout}")}
+```
+
+#### `ICursor`
+```Kotlin
+import yfiles.algorithms.asSequence
+import yfiles.algorithms.iterator
+
+val graph: Graph = DefaultLayoutGraph()
+// ...
+
+// iterator() extension allows for loops for ICursor
+for (node in graph.getNodeCursor()) {
+    println("Node index: ${node.index}")
+}
+
+// asSequence() extension
+graph.getNodeCursor()
+    .asSequence()
+    .forEach { println("Node index: ${node.index}") }
 ```
 
 ## `TimeSpan`

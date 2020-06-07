@@ -5,8 +5,8 @@ import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun applyCanvasObjectDescriptorHacks(source: Source) {
-    source.type("ICanvasObjectDescriptor").apply {
-        setSingleTypeParameter("in T")
+    source.type("ICanvasObjectDescriptor") {
+        setSingleTypeParameter("in T", YOBJECT)
 
         fixUserObjectType("T")
 
@@ -16,9 +16,9 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             "DYNAMIC_DIRTY_INSTANCE" to IVISUAL_CREATOR,
             "DYNAMIC_DIRTY_LOOKUP" to ILOOKUP,
             "VISUAL" to VISUAL,
-            "VOID" to "$ANY?"
+            "VOID" to YOBJECT
         ).forEach { (name, typeParameter) ->
-            get(CONSTANTS)[name].addGeneric(typeParameter)
+            constant(name).addGeneric(typeParameter)
         }
     }
 
@@ -28,7 +28,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
 
     source.type("ICanvasObjectGroup")
         .method("addChild").apply {
-            setSingleTypeParameter()
+            setSingleTypeParameter(bound = YOBJECT)
 
             firstParameter[TYPE] = "T"
             firstParameter.changeNullability(false)
@@ -36,7 +36,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         }
 
     val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
-    source.type("DefaultPortCandidateDescriptor").apply {
+    source.type("DefaultPortCandidateDescriptor") {
         get(IMPLEMENTS).apply {
             put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$IPORT_CANDIDATE>")
         }
@@ -62,12 +62,18 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             .forEach { it.addGeneric(typeParameter) }
     }
 
-    source.type("ItemModelManager").apply {
+    source.type("ItemModelManager") {
+        get(TYPE_PARAMETERS).getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT)
+
         get(PROPERTIES)["descriptor"].addGeneric("T")
         method("getDescriptor")[RETURNS].addGeneric("T")
     }
 
-    source.type("GraphModelManager").apply {
+    source.type("CollectionModelManager") {
+        get(TYPE_PARAMETERS).getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT)
+    }
+
+    source.type("GraphModelManager") {
         flatMap(PROPERTIES)
             .filter { it[TYPE] == ICANVAS_OBJECT_DESCRIPTOR }
             .forEach {

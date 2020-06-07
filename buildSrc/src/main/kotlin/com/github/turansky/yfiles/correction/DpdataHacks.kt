@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
-internal fun applyDpataHacks(source: Source) {
+internal fun applyDpdataHacks(source: Source) {
     fixGraph(source)
     fixDefaultLayoutGraph(source)
     fixDfs(source)
@@ -29,7 +29,7 @@ private fun fixGraph(source: Source) {
     val methods = source.type("Graph")[METHODS]
 
     methods["getDataProvider"].apply {
-        setKeyValueTypeParameters()
+        setKeyValueTypeParameters(keyBound = YOBJECT)
         firstParameter[TYPE] = GENERIC_DP_KEY
 
         get(RETURNS)
@@ -37,7 +37,7 @@ private fun fixGraph(source: Source) {
     }
 
     methods["addDataProvider"].apply {
-        setKeyValueTypeParameters()
+        setKeyValueTypeParameters(keyBound = YOBJECT)
         firstParameter[TYPE] = GENERIC_DP_KEY
 
         secondParameter.addGeneric("K,V")
@@ -62,10 +62,10 @@ private fun fixDefaultLayoutGraph(source: Source) {
     properties["edgeLabelMap"].addGeneric("Array<$IEDGE_LABEL_LAYOUT>")
 
     properties["nodeLabelFeatureMap"]
-        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$INODE_LABEL_LAYOUT,$NODE") }
+        .also { it.replaceInType("$JS_ANY,$JS_ANY", "$INODE_LABEL_LAYOUT,$NODE") }
 
     properties["edgeLabelFeatureMap"]
-        .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "$IEDGE_LABEL_LAYOUT,$EDGE") }
+        .also { it.replaceInType("$JS_ANY,$JS_ANY", "$IEDGE_LABEL_LAYOUT,$EDGE") }
 }
 
 private fun fixDfs(source: Source) {
@@ -78,7 +78,7 @@ private fun fixLayoutGraphAdapter(source: Source) {
     val methods = source.type("LayoutGraphAdapter")[METHODS]
 
     methods["getDataProvider"].apply {
-        setKeyValueTypeParameters()
+        setKeyValueTypeParameters(keyBound = YOBJECT)
         firstParameter[TYPE] = GENERIC_DP_KEY
 
         get(RETURNS)
@@ -86,6 +86,9 @@ private fun fixLayoutGraphAdapter(source: Source) {
     }
 
     methods["addDataProvider"].apply {
+        get(TYPE_PARAMETERS).getJSONObject(0)
+            .set(BOUNDS, arrayOf(YOBJECT))
+
         get(PARAMETERS)
             .get("dataKey")
             .set(TYPE, GENERIC_DP_KEY)
@@ -109,15 +112,13 @@ private fun fixTreeLayout(source: Source) {
     }
 
     source.type("TreeComponentLayout")
-        .get(METHODS)
-        .get("applyLayoutUsingDummies")
+        .method("applyLayoutUsingDummies")
         .get(PARAMETERS)
         .get("dummyDp")
         .addGeneric("$NODE,$JS_BOOLEAN")
 
     source.type("LeftRightNodePlacer")
-        .get(STATIC_METHODS)
-        .get("createLeftRightDataProvider")
+        .method("createLeftRightDataProvider")
         .also {
             it.firstParameter.addGeneric("$NODE,yfiles.tree.INodePlacer")
             it[RETURNS].addGeneric("$NODE,$JS_BOOLEAN")
@@ -163,7 +164,8 @@ private fun fixHierarchic(source: Source) {
 
 private fun fixTriangulator(source: Source) {
     source.type("TriangulationAlgorithm")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
+        .filter { STATIC in it[MODIFIERS] }
         .flatMap(PARAMETERS)
         .forEach {
             when (it[NAME]) {
@@ -193,6 +195,7 @@ private fun fixYGraphAdapter(source: Source) {
     source.type("YGraphAdapter").also {
         it.flatMap(METHODS)
             .filter { it[NAME] in dataNames }
+            .onEach { it[TYPE_PARAMETERS].getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT) }
             .map { it[RETURNS] }
             .forEach { it.addGeneric("K,V") }
 
@@ -224,7 +227,7 @@ private fun fixMISLabelingBase(source: Source) {
             .addGeneric(YID)
 
         it.property("boxesToNodes")
-            .also { it[TYPE] = it[TYPE].replace("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
+            .also { it.replaceInType("$JS_ANY,$JS_ANY", "yfiles.layout.LabelCandidate,$NODE") }
 
         it.method("assignProfit")
             .get(RETURNS)
@@ -240,7 +243,7 @@ private fun fixParallelEdgeRouter(source: Source) {
 
 private fun fixDataProviders(source: Source) {
     source.type("DataProviders")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .forEach {
             val name = it[NAME]
 
@@ -260,7 +263,7 @@ private fun fixDataProviders(source: Source) {
 
             it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
                 if (keyType == "K") {
-                    add(typeParameter(keyType, JS_OBJECT))
+                    add(typeParameter(keyType, YOBJECT))
                 }
 
                 if (valueType == "V") {
@@ -274,7 +277,7 @@ private fun fixDataProviders(source: Source) {
                 it.flatMap(PARAMETERS)
                     .forEach {
                         when (it[NAME]) {
-                            "data", "objectData" -> it[TYPE] = it[TYPE].replace(JS_OBJECT, valueType)
+                            "data", "objectData" -> it.replaceInType(JS_OBJECT, valueType)
                             "nodeData" -> it.addGeneric("$NODE,$valueType")
                         }
                     }
@@ -286,7 +289,7 @@ private fun fixDataProviders(source: Source) {
 
 private fun fixMaps(source: Source) {
     source.type("Maps")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .forEach {
             val returns = it[RETURNS]
 
@@ -307,7 +310,7 @@ private fun fixMaps(source: Source) {
 
             it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
                 if (keyType == "K") {
-                    add(typeParameter(keyType, JS_OBJECT))
+                    add(typeParameter(keyType, YOBJECT))
                 }
 
                 if (valueType == "V") {
@@ -319,9 +322,9 @@ private fun fixMaps(source: Source) {
             it.optFlatMap(PARAMETERS)
                 .forEach {
                     when (it[NAME]) {
-                        "map" -> it[TYPE] = it[TYPE].replace("$JS_OBJECT,$JS_OBJECT", typeParameters)
+                        "map" -> it.replaceInType("$JS_OBJECT,$JS_OBJECT", typeParameters)
                         "defaultValue" -> if (it[TYPE] == JS_OBJECT) it[TYPE] = "V"
-                        "data", "objectData" -> it[TYPE] = it[TYPE].replace("<$JS_OBJECT>", "<V>")
+                        "data", "objectData" -> it.replaceInType("<$JS_OBJECT>", "<V>")
                         else -> when (it[TYPE]) {
                             IDATA_PROVIDER,
                             IDATA_ACCEPTOR,
@@ -350,7 +353,7 @@ private fun fixLists(source: Source) {
 
 private fun fixComparers(source: Source) {
     source.type("Comparers")
-        .flatMap(STATIC_METHODS)
+        .flatMap(METHODS)
         .filter { it.has(PARAMETERS) }
         .filter { it.firstParameter[TYPE] == IDATA_PROVIDER }
         .forEach {
@@ -373,7 +376,7 @@ private fun fixComparers(source: Source) {
 
             it[TYPE_PARAMETERS] = mutableListOf<JSONObject>().apply {
                 if (keyType == "K") {
-                    add(typeParameter(keyType, JS_OBJECT))
+                    add(typeParameter(keyType, YOBJECT))
                 }
 
                 if (valueType == "V") {

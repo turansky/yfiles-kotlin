@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 private val DEFAULT_LISTS = setOf(
@@ -32,32 +31,31 @@ private fun fixProperty(source: Source) {
         Triple("RotatableNodePlacerBase", "createdChildren", NODE)
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
-            .get(PROPERTIES)
-            .get(propertyName)
+            .property(propertyName)
             .fixTypeGeneric(generic)
     }
 }
 
 private fun fixMethodParameter(source: Source) {
     source.types(
-        "YPointPath",
+            "YPointPath",
 
-        "ChannelBasedPathRouting",
-        "DynamicObstacleDecomposition",
-        "GraphPartition",
-        "GraphPartitionExtensionAdapter",
+            "ChannelBasedPathRouting",
+            "DynamicObstacleDecomposition",
+            "GraphPartition",
+            "GraphPartitionExtensionAdapter",
 
-        "IDecompositionListener",
-        "IEnterIntervalCalculator",
-        "IObstaclePartition",
+            "IDecompositionListener",
+            "IEnterIntervalCalculator",
+            "IObstaclePartition",
 
-        "EdgeRouterPath",
-        "PathSearchExtension",
-        "SegmentGroup",
-        "SegmentInfo",
+            "EdgeRouterPath",
+            "PathSearchExtension",
+            "SegmentGroup",
+            "SegmentInfo",
 
-        "RootNodeAlignment"
-    ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) + it.optFlatMap(STATIC_METHODS) }
+            "RootNodeAlignment"
+        ).flatMap { it.optFlatMap(CONSTRUCTORS) + it.optFlatMap(METHODS) }
         .flatMap { it.optFlatMap(PARAMETERS) }
         .filter { it[TYPE] in DEFAULT_LISTS }
         .forEach {
@@ -82,11 +80,11 @@ private fun fixMethodParameter(source: Source) {
 
 private fun fixReturnType(source: Source) {
     source.types(
-        "IPartition",
-        "IObstaclePartition",
-        "DynamicObstacleDecomposition",
-        "GraphPartition"
-    ).flatMap(METHODS)
+            "IPartition",
+            "IObstaclePartition",
+            "DynamicObstacleDecomposition",
+            "GraphPartition"
+        ).flatMap(METHODS)
         .forEach {
             val generic = when (it[NAME]) {
                 "getCells",

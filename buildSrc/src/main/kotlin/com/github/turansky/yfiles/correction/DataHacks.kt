@@ -42,7 +42,7 @@ private val DATA_MAP_TYPE_MAP = mapOf(
 
 private fun fixDataProvider(source: Source) {
     source.type(IDATA_PROVIDER.substringAfterLast("."))
-        .setKeyValueTypeParameters("in K", "out V")
+        .setKeyValueTypeParameters("in K", "out V", YOBJECT)
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -50,10 +50,13 @@ private fun fixDataProvider(source: Source) {
         .forEach { it[TYPE] = "$IDATA_PROVIDER<${it.getDataProviderTypeParameters()}>" }
 
     source.type("DataProviderBase")
-        .setKeyValueTypeParameters("in K", "out V")
+        .setKeyValueTypeParameters("in K", "out V", YOBJECT)
 
     source.type("MapperDataProviderAdapter")
-        .setKeyValueTypeParameters("in TKey", "out TValue")
+        .setKeyValueTypeParameters("in TKey", "out TValue", YOBJECT)
+
+    source.type("DataMapAdapter")
+        .get(TYPE_PARAMETERS).getJSONObject(0)[BOUNDS] = arrayOf(YOBJECT)
 
     for ((className, typeParameters) in DATA_PROVIDER_TYPE_MAP) {
         source.type(className)
@@ -73,7 +76,7 @@ private fun JSONObject.getDataProviderTypeParameters(): String {
 
 private fun fixDataAcceptor(source: Source) {
     source.type(IDATA_ACCEPTOR.substringAfterLast("."))
-        .setKeyValueTypeParameters("in K", "in V")
+        .setKeyValueTypeParameters("in K", "in V", YOBJECT)
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -89,7 +92,7 @@ private fun fixDataAcceptor(source: Source) {
 
 private fun fixDataMap(source: Source) {
     source.type(IDATA_MAP.substringAfterLast("."))
-        .setKeyValueTypeParameters("in K", "V")
+        .setKeyValueTypeParameters("in K", "V", YOBJECT)
 
     source.types()
         .flatMap { it.getTypeHolders() }
@@ -157,7 +160,11 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "normalizedLayerId",
         "uCapDP",
         "w",
-        "weight" -> INT
+        "weight",
+        "initialLabel",
+        "edgeDirectedness",
+        "communityIndex"
+        -> INT
 
         "cost",
         "cost0DP",
@@ -165,8 +172,12 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "edgeCost",
         "edgeCosts",
         "edgeWeights",
+        "nodeWeight",
+        "edgeWeight",
         "heuristicCost",
-        "supplyDP" -> DOUBLE
+        "supplyDP",
+        "initialPageRank"
+        -> DOUBLE
 
         else -> throw IllegalArgumentException("No type parameter for data map: $name")
     }
@@ -223,7 +234,11 @@ private fun getDataMapsNumberTypeParameter(name: String): String =
         "rank",
         "result",
         "subtreeDepthMap",
-        "subtreeSizeMap" -> INT
+        "subtreeSizeMap",
+        "kValue",
+        "finalLabel",
+        "communityIndex"
+        -> INT
 
         "centrality",
         "closeness",
@@ -231,7 +246,11 @@ private fun getDataMapsNumberTypeParameter(name: String): String =
         "edgeCentrality",
         "map",
         "maxDist",
-        "nodeCentrality" -> DOUBLE
+        "nodeCentrality",
+        "centralityMap",
+        "pageRank",
+        "coefficientMap"
+        -> DOUBLE
 
         else -> throw IllegalArgumentException("No type parameter for data map: $name")
     }
@@ -272,13 +291,7 @@ private fun JSONObject.getTypeParameterName(index: Int): String =
         .removePrefix("out ")
 
 private fun JSONObject.getTypeHolders(): Sequence<JSONObject> =
-    (optFlatMap(CONSTRUCTORS) + optFlatMap(STATIC_METHODS) + optFlatMap(METHODS))
+    (optFlatMap(CONSTRUCTORS) + optFlatMap(METHODS))
         .flatMap { it.optFlatMap(PARAMETERS) + it.returnsSequence() }
         .plus(optFlatMap(PROPERTIES))
 
-private fun JSONObject.returnsSequence(): Sequence<JSONObject> =
-    if (has(RETURNS)) {
-        sequenceOf(get(RETURNS))
-    } else {
-        emptySequence()
-    }

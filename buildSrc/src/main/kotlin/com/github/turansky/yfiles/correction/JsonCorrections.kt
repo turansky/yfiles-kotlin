@@ -1,6 +1,8 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.correction.CorrectionMode.NORMAL
+import com.github.turansky.yfiles.correction.CorrectionMode.PROGRESSIVE
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.lang.Action3",
@@ -8,10 +10,19 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.lang.Func1",
     "yfiles.lang.Func4",
     "yfiles.lang.Func5",
+    "yfiles.input.HitTestableHandler",
     "yfiles.input.KeyEventHandler"
 )
 
 internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
+    PropertyDeclaration("YList", "firstCell", mode = NORMAL) to true,
+    PropertyDeclaration("YList", "lastCell", mode = NORMAL) to true,
+
+    PropertyDeclaration("Graph", "firstEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Graph", "firstNode", mode = NORMAL) to true,
+    PropertyDeclaration("Graph", "lastEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Graph", "lastNode", mode = NORMAL) to true,
+
     PropertyDeclaration("DefaultGraph", "tag") to true,
     PropertyDeclaration("GraphWrapperBase", "tag") to true,
     PropertyDeclaration("SimpleBend", "tag") to true,
@@ -20,15 +31,17 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleNode", "tag") to true,
     PropertyDeclaration("SimplePort", "tag") to true,
 
-    PropertyDeclaration("YNode", "firstInEdge") to true,
-    PropertyDeclaration("YNode", "firstOutEdge") to true,
-    PropertyDeclaration("YNode", "lastInEdge") to true,
-    PropertyDeclaration("YNode", "lastOutEdge") to true,
+    PropertyDeclaration("YNode", "graph", mode = NORMAL) to true,
+    PropertyDeclaration("YNode", "firstInEdge", mode = NORMAL) to true,
+    PropertyDeclaration("YNode", "firstOutEdge", mode = NORMAL) to true,
+    PropertyDeclaration("YNode", "lastInEdge", mode = NORMAL) to true,
+    PropertyDeclaration("YNode", "lastOutEdge", mode = NORMAL) to true,
 
-    PropertyDeclaration("Edge", "nextInEdge") to true,
-    PropertyDeclaration("Edge", "nextOutEdge") to true,
-    PropertyDeclaration("Edge", "prevInEdge") to true,
-    PropertyDeclaration("Edge", "prevOutEdge") to true,
+    PropertyDeclaration("Edge", "graph", mode = NORMAL) to true,
+    PropertyDeclaration("Edge", "nextInEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Edge", "nextOutEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Edge", "prevInEdge", mode = NORMAL) to true,
+    PropertyDeclaration("Edge", "prevOutEdge", mode = NORMAL) to true,
 
     PropertyDeclaration("SimpleBend", "owner") to true,
     PropertyDeclaration("SimpleEdge", "sourcePort") to true,
@@ -39,6 +52,8 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("INodeData", "firstSameLayerEdgeCell") to true,
     PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
     PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
+
+    PropertyDeclaration("HierarchicalClusteringResult", "dendrogramRoot", mode = PROGRESSIVE) to false,
 
     PropertyDeclaration("ClickInputMode", "inputModeContext") to true,
     PropertyDeclaration("ContextMenuInputMode", "inputModeContext") to true,
@@ -73,7 +88,7 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("TimeSpan", "compareTo", "obj") to "o",
     ParameterData("IEnumerable", "includes", "value") to "item",
 
-    ParameterData("YList", "indexOf", "obj") to "item",
+    ParameterData("YList", "indexOf", "obj", mode = NORMAL) to "item",
     ParameterData("YList", "insert", "element") to "item",
     ParameterData("YList", "remove", "o") to "item",
 
@@ -121,7 +136,7 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
     ParameterData("LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("MultiStageLayout", "applyLayout", "layoutGraph") to "graph",
+    ParameterData("MultiStageLayout", "applyLayout", "layoutGraph", mode = NORMAL) to "graph",
 
     ParameterData("DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
     ParameterData("IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
@@ -135,7 +150,13 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
     ParameterData("PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
     ParameterData("IArrow", "getBoundsProvider", "directionVector") to "direction",
-    ParameterData("StripeSelection", "isSelected", "stripe") to "item"
+    ParameterData("StripeSelection", "isSelected", "stripe") to "item",
+
+    ParameterData("NodeReshapeHandleProvider", "getHandle", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "dragFinished", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "handleMove", "inputModeContext", mode = PROGRESSIVE) to "context",
+    ParameterData("NodeReshapeHandlerHandle", "initializeDrag", "inputModeContext", mode = PROGRESSIVE) to "context"
 )
 
 internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
@@ -149,19 +170,30 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("IGraph", "contains", "item") to false,
     ParameterData("IGraph", "isGroupNode", "node") to false,
     ParameterData("IGraph", "setIsGroupNode", "node") to false,
+    ParameterData("IGraph", "addPort", "locationParameter", mode = NORMAL) to true,
+    ParameterData("IGraph", "addPort", "style", mode = NORMAL) to true,
+
     ParameterData("DefaultGraph", "contains", "item") to false,
     ParameterData("DefaultGraph", "isGroupNode", "node") to false,
     ParameterData("DefaultGraph", "setIsGroupNode", "node") to false,
+    ParameterData("DefaultGraph", "addPort", "locationParameter", mode = NORMAL) to true,
+    ParameterData("DefaultGraph", "addPort", "style", mode = NORMAL) to true,
+
     ParameterData("FilteredGraphWrapper", "contains", "item") to false,
     ParameterData("FilteredGraphWrapper", "isGroupNode", "node") to false,
     ParameterData("FilteredGraphWrapper", "setIsGroupNode", "node") to false,
     ParameterData("GraphWrapperBase", "contains", "item") to false,
     ParameterData("GraphWrapperBase", "isGroupNode", "node") to false,
     ParameterData("GraphWrapperBase", "setIsGroupNode", "node") to false,
+    ParameterData("GraphWrapperBase", "addPort", "locationParameter", mode = NORMAL) to true,
+    ParameterData("GraphWrapperBase", "addPort", "style", mode = NORMAL) to true,
 
     ParameterData("IGraph", "addPortAt", "style") to true,
     ParameterData("ILookupDecorator", "add", "nullIsFallback") to true,
     ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
+
+    ParameterData("DefaultLayoutGraph", "setLayout", "layout", mode = NORMAL) to false,
+    ParameterData("DefaultLayoutGraph", "setLayout", "layout", true, mode = NORMAL) to false,
 
     ParameterData("GraphClipboard", "isDummy", "item") to false,
     ParameterData("GraphModelManager", "update", "item") to false,
@@ -210,21 +242,27 @@ internal val BROKEN_NULLABILITY_METHODS = setOf(
     "applyLayoutCore"
 )
 
-internal val STATIC_METHOD_NULLABILITY_MAP = mapOf(
+internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Geom", methodName = "calcIntersection") to true,
     MethodDeclaration(className = "ShortestPathAlgorithm", methodName = "shortestPair") to true,
     MethodDeclaration(className = "YOrientedRectangle", methodName = "intersectionPoint") to true,
 
     MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true,
 
+    MethodDeclaration("HierarchicalClusteringResult", "getDendrogramNode", mode = PROGRESSIVE) to false,
+
     MethodDeclaration(className = "PartitionGrid", methodName = "getPartitionGrid") to true,
     MethodDeclaration(className = "PortConstraint", methodName = "getSPC") to true,
-    MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true
-)
+    MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true,
 
-internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
+    MethodDeclaration(className = "Graph", methodName = "firstOutEdge", mode = NORMAL) to true,
+    MethodDeclaration(className = "YNode", methodName = "getEdge", mode = NORMAL) to true,
+    MethodDeclaration(className = "YNode", methodName = "getEdgeFrom", mode = NORMAL) to true,
+    MethodDeclaration(className = "YNode", methodName = "getEdgeTo", mode = NORMAL) to true,
+
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
+    MethodDeclaration(className = "IEnumerable", methodName = "elementAt") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "last") to false,
     MethodDeclaration(className = "ListCell", methodName = "pred") to true,
@@ -291,6 +329,11 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "LayoutContext", methodName = "getOriginalNode") to true,
     MethodDeclaration(className = "LayoutContext", methodName = "getPageEdge") to true,
     MethodDeclaration(className = "LayoutContext", methodName = "getPageNode") to true,
+
+    MethodDeclaration("CopiedLayoutGraph", "getCopiedEdge", mode = NORMAL) to true,
+    MethodDeclaration("CopiedLayoutGraph", "getCopiedNode", mode = NORMAL) to true,
+    MethodDeclaration("CopiedLayoutGraph", "getOriginalEdge", mode = NORMAL) to true,
+    MethodDeclaration("CopiedLayoutGraph", "getOriginalNode", mode = NORMAL) to true,
 
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
@@ -693,7 +736,7 @@ internal val MISSED_METHODS = listOf(
     ),
     MethodData(
         className = "VoidPathGeometry",
-        methodName = "getTangent",
+        methodName = CorrectionMode.getValue("getTangent", "getTangentForSegment"),
         parameters = listOf(
             MethodParameterData("segmentIndex", JS_NUMBER),
             MethodParameterData("ratio", JS_NUMBER)
@@ -774,12 +817,14 @@ internal data class ParameterData(
     val className: String,
     val methodName: String,
     val parameterName: String,
-    val last: Boolean = false
+    val last: Boolean = false,
+    val mode: CorrectionMode? = null
 )
 
 internal data class PropertyDeclaration(
     val className: String,
-    val propertyName: String
+    val propertyName: String,
+    val mode: CorrectionMode? = null
 )
 
 internal data class PropertyData(
@@ -790,7 +835,8 @@ internal data class PropertyData(
 
 internal data class MethodDeclaration(
     val className: String,
-    val methodName: String
+    val methodName: String,
+    val mode: CorrectionMode? = null
 )
 
 internal data class MethodData(
