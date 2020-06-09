@@ -19,8 +19,7 @@ internal fun generateBindingUtils(context: GeneratorContext) {
 internal fun applyBindingHacks(source: Source) {
     source.types(
             "GraphBuilder",
-            "TreeBuilder",
-            "AdjacentNodesGraphBuilder"
+            "TreeBuilder"
         ).flatMap(PROPERTIES)
         .filter { it[NAME].endsWith("Binding") }
         .filter { it[TYPE] == JS_ANY }
