@@ -759,6 +759,11 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("oldVisual", "yfiles.view.Visual", true)
         ),
         result = ResultData("yfiles.view.Visual", true)
+    ),
+    MethodData(
+        className = "NodeLabelModelStripeLabelModelAdapter",
+        methodName = "createDefaultParameter",
+        result = ResultData(ILABEL_MODEL_PARAMETER)
     )
 )
 
