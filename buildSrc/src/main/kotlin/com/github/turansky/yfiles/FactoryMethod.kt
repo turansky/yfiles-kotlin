@@ -10,8 +10,7 @@ private val HAS_FACTORY_METHOD = setOf(
     "GraphComponent",
     "Stroke",
 
-    "DefaultLayoutGraph",
-    "HierarchicLayoutRoutingStyle"
+    "DefaultLayoutGraph"
 )
 
 internal fun Class.toFactoryMethodCode(): String? {
