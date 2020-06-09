@@ -13,11 +13,9 @@ internal fun applySnapLineProviderHacks(source: Source) {
 
         fixItemType("T")
 
-        if (CorrectionMode.isProgressive()) {
-            method("create")
-                .get(RETURNS)
-                .addGeneric("T")
-        }
+        method("create")
+            .get(RETURNS)
+            .addGeneric("T")
     }
 
     sequenceOf(

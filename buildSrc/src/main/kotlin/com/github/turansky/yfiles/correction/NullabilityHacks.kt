@@ -201,10 +201,6 @@ private fun fixCollectionsNullability(source: Source) {
         .filterNot { it[NAME] in excludedParameters }
         .forEach { it.changeNullability(false) }
 
-    if (!CorrectionMode.isProgressive()) {
-        return
-    }
-
     source.type("IEnumerable")
         .method("indexOf")
         .get(PARAMETERS)
@@ -240,10 +236,6 @@ private fun fixGraphNullability(source: Source) {
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
-
-    if (!CorrectionMode.isProgressive()) {
-        return
-    }
 
     source.type("IGraph")
         .method("applyLayout")

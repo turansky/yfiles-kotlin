@@ -408,9 +408,8 @@ private fun fieldToProperties(source: Source) {
                 return@forEach
             }
 
-            val noneIsProperty = CorrectionMode.isProgressive() && type[NAME] == "IArrow"
             val additionalProperties = type.flatMap(FIELDS)
-                .filter { STATIC !in it[MODIFIERS] || (noneIsProperty && it[NAME] == "NONE") }
+                .filter { STATIC !in it[MODIFIERS] }
                 .onEach {
                     val modifiers = it[MODIFIERS]
                     modifiers.put(if (FINAL in modifiers) RO else FINAL)

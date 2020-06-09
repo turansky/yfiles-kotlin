@@ -10,9 +10,6 @@ internal enum class CorrectionMode {
         fun isNormal(): Boolean =
             CURRENT_MODE == NORMAL
 
-        fun isProgressive(): Boolean =
-            CURRENT_MODE == PROGRESSIVE
-
         fun <T : Any> getValue(nv: T, pv: T): T =
             when (CURRENT_MODE) {
                 NORMAL -> nv
