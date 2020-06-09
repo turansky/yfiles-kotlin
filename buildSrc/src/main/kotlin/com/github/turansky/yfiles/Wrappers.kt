@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.correction.CorrectionMode
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -368,7 +367,6 @@ private fun seeAlso() = list(::parseSeeAlso)
 
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
     when {
-        CorrectionMode.isProgressive() -> SeeAlsoType(source)
         source.has("type") -> SeeAlsoType(source)
         source.has("section") -> EmptySeeAlso
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
@@ -1172,7 +1170,7 @@ private fun getDocumentation(
         value = value,
         defaultValue = defaultValue,
         exceptions = exceptions,
-        seeAlso = seeAlso?.filter { it !is EmptySeeAlso }
+        seeAlso = seeAlso
     )
 
     additionalDocumentation?.apply {
@@ -1270,7 +1268,7 @@ private fun getDocumentationLines(
         throws(it.toDoc())
     }
 
-    seeAlso?.apply {
+    seeAlso?.filter { it !is EmptySeeAlso }?.apply {
         asSequence()
             .distinct()
             .mapTo(lines) {
