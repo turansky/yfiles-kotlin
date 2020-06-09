@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-private val CURRENT_MODE: CorrectionMode = CorrectionMode.NORMAL
+private val CURRENT_MODE: CorrectionMode = CorrectionMode.PROGRESSIVE
 
 internal enum class CorrectionMode {
     NORMAL,

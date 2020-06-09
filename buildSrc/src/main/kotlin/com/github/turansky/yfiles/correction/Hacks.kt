@@ -423,6 +423,7 @@ private fun removeArtifitialParameters(source: Source) {
         .filter { it.has(PARAMETERS) }
         .forEach {
             val artifitialParameters = it.flatMap(PARAMETERS)
+                .filter { it.has(MODIFIERS) }
                 .filter { it[MODIFIERS].contains(ARTIFICIAL) }
                 .toList()
 

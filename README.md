@@ -46,7 +46,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 | :---                        |         :---:         |      :---:        |
 | Documentation               |        [API][12]      |     [API][22]     |
 | Module                      |        `yfiles`       |   `yfiles/vsdx`   |
-| Version                     |         `22.0.3`      |      `1.1.1`      |
+| Version                     |         `23.0.0`      |      `1.1.1`      |
 | Module format               |         `ES6`         |       `ES6`       |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
 | Nullability fixes           |         2500+         |         -         |
