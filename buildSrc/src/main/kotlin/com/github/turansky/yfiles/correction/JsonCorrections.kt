@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.correction.CorrectionMode.PROGRESSIVE
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
     "yfiles.lang.Action3",
@@ -32,7 +31,7 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
     PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
 
-    PropertyDeclaration("HierarchicalClusteringResult", "dendrogramRoot", mode = PROGRESSIVE) to false,
+    PropertyDeclaration("HierarchicalClusteringResult", "dendrogramRoot") to false,
 
     PropertyDeclaration("ClickInputMode", "inputModeContext") to true,
     PropertyDeclaration("ContextMenuInputMode", "inputModeContext") to true,
@@ -129,11 +128,11 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("IArrow", "getBoundsProvider", "directionVector") to "direction",
     ParameterData("StripeSelection", "isSelected", "stripe") to "item",
 
-    ParameterData("NodeReshapeHandleProvider", "getHandle", "inputModeContext", mode = PROGRESSIVE) to "context",
-    ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext", mode = PROGRESSIVE) to "context",
-    ParameterData("NodeReshapeHandlerHandle", "dragFinished", "inputModeContext", mode = PROGRESSIVE) to "context",
-    ParameterData("NodeReshapeHandlerHandle", "handleMove", "inputModeContext", mode = PROGRESSIVE) to "context",
-    ParameterData("NodeReshapeHandlerHandle", "initializeDrag", "inputModeContext", mode = PROGRESSIVE) to "context"
+    ParameterData("NodeReshapeHandleProvider", "getHandle", "inputModeContext") to "context",
+    ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext") to "context",
+    ParameterData("NodeReshapeHandlerHandle", "dragFinished", "inputModeContext") to "context",
+    ParameterData("NodeReshapeHandlerHandle", "handleMove", "inputModeContext") to "context",
+    ParameterData("NodeReshapeHandlerHandle", "initializeDrag", "inputModeContext") to "context"
 )
 
 internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
@@ -217,7 +216,7 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
 
     MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true,
 
-    MethodDeclaration("HierarchicalClusteringResult", "getDendrogramNode", mode = PROGRESSIVE) to false,
+    MethodDeclaration("HierarchicalClusteringResult", "getDendrogramNode") to false,
 
     MethodDeclaration(className = "PartitionGrid", methodName = "getPartitionGrid") to true,
     MethodDeclaration(className = "PortConstraint", methodName = "getSPC") to true,
@@ -695,7 +694,7 @@ internal val MISSED_METHODS = listOf(
     ),
     MethodData(
         className = "VoidPathGeometry",
-        methodName = CorrectionMode.getValue("getTangent", "getTangentForSegment"),
+        methodName = "getTangentForSegment",
         parameters = listOf(
             MethodParameterData("segmentIndex", JS_NUMBER),
             MethodParameterData("ratio", JS_NUMBER)
@@ -781,14 +780,12 @@ internal data class ParameterData(
     val className: String,
     val methodName: String,
     val parameterName: String,
-    val last: Boolean = false,
-    val mode: CorrectionMode? = null
+    val last: Boolean = false
 )
 
 internal data class PropertyDeclaration(
     val className: String,
-    val propertyName: String,
-    val mode: CorrectionMode? = null
+    val propertyName: String
 )
 
 internal data class PropertyData(
@@ -799,8 +796,7 @@ internal data class PropertyData(
 
 internal data class MethodDeclaration(
     val className: String,
-    val methodName: String,
-    val mode: CorrectionMode? = null
+    val methodName: String
 )
 
 internal data class MethodData(

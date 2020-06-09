@@ -158,14 +158,11 @@ private fun fixPropertyType(source: Source) {
 }
 
 private fun fixPropertyNullability(source: Source) {
-    PROPERTY_NULLABILITY_CORRECTION
-        .asSequence()
-        .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
-        .forEach { (declaration, nullable) ->
-            source.type(declaration.className)
-                .property(declaration.propertyName)
-                .changeNullability(nullable)
-        }
+    PROPERTY_NULLABILITY_CORRECTION.forEach { (declaration, nullable) ->
+        source.type(declaration.className)
+            .property(declaration.propertyName)
+            .changeNullability(nullable)
+    }
 
     source.type("SvgVisualGroup")
         .property("children")
@@ -184,14 +181,12 @@ private fun fixConstructorParameterName(source: Source) {
 }
 
 private fun fixMethodParameterName(source: Source) {
-    PARAMETERS_CORRECTION
-        .filter { (data) -> CorrectionMode.test(data.mode) }
-        .forEach { (data, fixedName) ->
-            source.type(data.className)
-                .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
-                .first()
-                .set(NAME, fixedName)
-        }
+    PARAMETERS_CORRECTION.forEach { (data, fixedName) ->
+        source.type(data.className)
+            .methodParameters(data.methodName, data.parameterName, { it[NAME] != fixedName })
+            .first()
+            .set(NAME, fixedName)
+    }
 }
 
 private fun fixMethodParameterOptionality(source: Source) {
@@ -236,11 +231,11 @@ private fun fixMethodParameterNullability(source: Source) {
         .forEach { it.changeNullability(false) }
 
     source.types(
-            "ModelManager",
-            "FocusIndicatorManager",
-            "HighlightIndicatorManager",
-            "SelectionIndicatorManager"
-        ).flatMap { it.flatMap(METHODS) }
+        "ModelManager",
+        "FocusIndicatorManager",
+        "HighlightIndicatorManager",
+        "SelectionIndicatorManager"
+    ).flatMap { it.flatMap(METHODS) }
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
@@ -275,15 +270,12 @@ private fun fixMethodParameterType(source: Source) {
 }
 
 private fun fixMethodNullability(source: Source) {
-    METHOD_NULLABILITY_MAP
-        .asSequence()
-        .filter { (declaration) -> CorrectionMode.test(declaration.mode) }
-        .forEach { (declaration, nullable) ->
-            source.type(declaration.className)
-                .flatMap(METHODS)
-                .filter { it[NAME] == declaration.methodName }
-                .forEach { it.changeNullability(nullable) }
-        }
+    METHOD_NULLABILITY_MAP.forEach { (declaration, nullable) ->
+        source.type(declaration.className)
+            .flatMap(METHODS)
+            .filter { it[NAME] == declaration.methodName }
+            .forEach { it.changeNullability(nullable) }
+    }
 }
 
 private fun addMissedProperties(source: Source) {
