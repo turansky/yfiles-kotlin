@@ -2,7 +2,6 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.get
-import com.github.turansky.yfiles.json.removeAllObjects
 import com.github.turansky.yfiles.json.removeItem
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
@@ -21,7 +20,6 @@ internal fun applyHacks(api: JSONObject) {
     removeArtifitialParameters(source)
     removeThisParameters(source)
 
-    fixUnionMethods(source)
     fixConstantGenerics(source)
     fixFunctionGenerics(source)
 
@@ -101,7 +99,6 @@ internal fun applyHacks(api: JSONObject) {
 
     applyLayoutStrictTypes(source)
     addSizeExtensions(source)
-    markDeprecatedItems(source)
 }
 
 private fun cleanYObject(source: Source) {
@@ -118,35 +115,6 @@ private fun removeUnusedFunctionSignatures(source: Source) {
             strictRemove(it)
         }
     }
-}
-
-private fun fixUnionMethods(source: Source) {
-    if (!CorrectionMode.isNormal()) {
-        return
-    }
-
-    val methods = source.type("GraphModelManager")
-        .get(METHODS)
-
-    val unionMethods = methods
-        .asSequence()
-        .map { it as JSONObject }
-        .filter { it[NAME] == "getCanvasObjectGroup" }
-        .toList()
-
-    unionMethods
-        .asSequence()
-        .drop(1)
-        .forEach { methods.removeItem(it) }
-
-    unionMethods.first()
-        .firstParameter
-        .apply {
-            set(NAME, "item")
-            set(TYPE, IMODEL_ITEM)
-        }
-
-    // TODO: remove documentation
 }
 
 private fun fixConstantGenerics(source: Source) {
@@ -224,17 +192,6 @@ private fun fixMethodParameterName(source: Source) {
                 .first()
                 .set(NAME, fixedName)
         }
-
-    if (!CorrectionMode.isNormal()) {
-        return
-    }
-
-    source.type("RankAssignmentAlgorithm")
-        .flatMap(METHODS)
-        .filter { it[NAME] == "simplex" }
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "_root" }
-        .set(NAME, "root")
 }
 
 private fun fixMethodParameterOptionality(source: Source) {
@@ -247,35 +204,6 @@ private fun fixMethodParameterOptionality(source: Source) {
         .filter { it[NAME] == "content" }
         .map { it[MODIFIERS] }
         .forEach { it.removeItem(OPTIONAL) }
-
-    if (!CorrectionMode.isNormal()) {
-        return
-    }
-
-    source.type("GridNodePlacer") {
-        val constructor = flatMap(CONSTRUCTORS)
-            .filter { it.has(PARAMETERS) }
-            .maxBy { it[PARAMETERS].length() }!!
-
-        constructor.flatMap(PARAMETERS)
-            .forEach { it.changeOptionality(true) }
-
-        set(CONSTRUCTORS, listOf(constructor))
-    }
-
-    source.type("PortCandidate") {
-        get(METHODS).removeAllObjects {
-            it[NAME] == "createCandidate" &&
-                    it[PARAMETERS].length() == 1 &&
-                    it.firstParameter[NAME] == "directionMask"
-        }
-
-        flatMap(METHODS)
-            .filter { it[NAME] == "createCandidate" }
-            .single { it[PARAMETERS].length() == 2 }
-            .secondParameter
-            .changeOptionality(true)
-    }
 }
 
 private fun fixMethodParameterNullability(source: Source) {
@@ -566,34 +494,4 @@ private fun fixMethodGenericBounds(source: Source) {
         .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
-}
-
-private fun markDeprecatedItems(source: Source) {
-    if (!CorrectionMode.isNormal()) {
-        return
-    }
-
-    source.type("HierarchicLayout").apply {
-        flatMap(METHODS)
-            .filter { it[NAME] == "createLayerConstraintFactory" || it[NAME] == "createSequenceConstraintFactory" }
-            .filter { it.firstParameter[TYPE] == "yfiles.graph.IGraph" }
-            .forEach { it[MODIFIERS].put(DEPRECATED) }
-    }
-
-    source.type("HierarchicLayoutData").apply {
-        sequenceOf(
-            "layerConstraintFactory",
-            "sequenceConstraintFactory"
-        ).map { get(PROPERTIES)[it] }
-            .forEach { it[MODIFIERS].put(DEPRECATED) }
-    }
-
-    source.type("EdgeRouter").apply {
-        sequenceOf(
-            "maximumPolylineSegmentRatio",
-            "polylineRouting",
-            "preferredPolylineSegmentLength"
-        ).map { get(PROPERTIES)[it] }
-            .forEach { it[MODIFIERS].put(DEPRECATED) }
-    }
 }
