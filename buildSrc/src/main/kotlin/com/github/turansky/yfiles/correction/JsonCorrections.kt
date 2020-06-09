@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.correction.CorrectionMode.NORMAL
 import com.github.turansky.yfiles.correction.CorrectionMode.PROGRESSIVE
 
 internal val UNUSED_FUNCTION_SIGNATURES = setOf(
@@ -15,14 +14,6 @@ internal val UNUSED_FUNCTION_SIGNATURES = setOf(
 )
 
 internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
-    PropertyDeclaration("YList", "firstCell", mode = NORMAL) to true,
-    PropertyDeclaration("YList", "lastCell", mode = NORMAL) to true,
-
-    PropertyDeclaration("Graph", "firstEdge", mode = NORMAL) to true,
-    PropertyDeclaration("Graph", "firstNode", mode = NORMAL) to true,
-    PropertyDeclaration("Graph", "lastEdge", mode = NORMAL) to true,
-    PropertyDeclaration("Graph", "lastNode", mode = NORMAL) to true,
-
     PropertyDeclaration("DefaultGraph", "tag") to true,
     PropertyDeclaration("GraphWrapperBase", "tag") to true,
     PropertyDeclaration("SimpleBend", "tag") to true,
@@ -30,18 +21,6 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleLabel", "tag") to true,
     PropertyDeclaration("SimpleNode", "tag") to true,
     PropertyDeclaration("SimplePort", "tag") to true,
-
-    PropertyDeclaration("YNode", "graph", mode = NORMAL) to true,
-    PropertyDeclaration("YNode", "firstInEdge", mode = NORMAL) to true,
-    PropertyDeclaration("YNode", "firstOutEdge", mode = NORMAL) to true,
-    PropertyDeclaration("YNode", "lastInEdge", mode = NORMAL) to true,
-    PropertyDeclaration("YNode", "lastOutEdge", mode = NORMAL) to true,
-
-    PropertyDeclaration("Edge", "graph", mode = NORMAL) to true,
-    PropertyDeclaration("Edge", "nextInEdge", mode = NORMAL) to true,
-    PropertyDeclaration("Edge", "nextOutEdge", mode = NORMAL) to true,
-    PropertyDeclaration("Edge", "prevInEdge", mode = NORMAL) to true,
-    PropertyDeclaration("Edge", "prevOutEdge", mode = NORMAL) to true,
 
     PropertyDeclaration("SimpleBend", "owner") to true,
     PropertyDeclaration("SimpleEdge", "sourcePort") to true,
@@ -88,7 +67,6 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("TimeSpan", "compareTo", "obj") to "o",
     ParameterData("IEnumerable", "includes", "value") to "item",
 
-    ParameterData("YList", "indexOf", "obj", mode = NORMAL) to "item",
     ParameterData("YList", "insert", "element") to "item",
     ParameterData("YList", "remove", "o") to "item",
 
@@ -136,7 +114,6 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
     ParameterData("LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("MultiStageLayout", "applyLayout", "layoutGraph", mode = NORMAL) to "graph",
 
     ParameterData("DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
     ParameterData("IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
@@ -170,14 +147,10 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("IGraph", "contains", "item") to false,
     ParameterData("IGraph", "isGroupNode", "node") to false,
     ParameterData("IGraph", "setIsGroupNode", "node") to false,
-    ParameterData("IGraph", "addPort", "locationParameter", mode = NORMAL) to true,
-    ParameterData("IGraph", "addPort", "style", mode = NORMAL) to true,
 
     ParameterData("DefaultGraph", "contains", "item") to false,
     ParameterData("DefaultGraph", "isGroupNode", "node") to false,
     ParameterData("DefaultGraph", "setIsGroupNode", "node") to false,
-    ParameterData("DefaultGraph", "addPort", "locationParameter", mode = NORMAL) to true,
-    ParameterData("DefaultGraph", "addPort", "style", mode = NORMAL) to true,
 
     ParameterData("FilteredGraphWrapper", "contains", "item") to false,
     ParameterData("FilteredGraphWrapper", "isGroupNode", "node") to false,
@@ -185,15 +158,10 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("GraphWrapperBase", "contains", "item") to false,
     ParameterData("GraphWrapperBase", "isGroupNode", "node") to false,
     ParameterData("GraphWrapperBase", "setIsGroupNode", "node") to false,
-    ParameterData("GraphWrapperBase", "addPort", "locationParameter", mode = NORMAL) to true,
-    ParameterData("GraphWrapperBase", "addPort", "style", mode = NORMAL) to true,
 
     ParameterData("IGraph", "addPortAt", "style") to true,
     ParameterData("ILookupDecorator", "add", "nullIsFallback") to true,
     ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
-
-    ParameterData("DefaultLayoutGraph", "setLayout", "layout", mode = NORMAL) to false,
-    ParameterData("DefaultLayoutGraph", "setLayout", "layout", true, mode = NORMAL) to false,
 
     ParameterData("GraphClipboard", "isDummy", "item") to false,
     ParameterData("GraphModelManager", "update", "item") to false,
@@ -256,10 +224,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true,
 
     MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
-    MethodDeclaration(className = "Graph", methodName = "firstOutEdge", mode = NORMAL) to true,
-    MethodDeclaration(className = "YNode", methodName = "getEdge", mode = NORMAL) to true,
-    MethodDeclaration(className = "YNode", methodName = "getEdgeFrom", mode = NORMAL) to true,
-    MethodDeclaration(className = "YNode", methodName = "getEdgeTo", mode = NORMAL) to true,
 
     MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
     MethodDeclaration(className = "IEnumerable", methodName = "elementAt") to false,
@@ -329,11 +293,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "LayoutContext", methodName = "getOriginalNode") to true,
     MethodDeclaration(className = "LayoutContext", methodName = "getPageEdge") to true,
     MethodDeclaration(className = "LayoutContext", methodName = "getPageNode") to true,
-
-    MethodDeclaration("CopiedLayoutGraph", "getCopiedEdge", mode = NORMAL) to true,
-    MethodDeclaration("CopiedLayoutGraph", "getCopiedNode", mode = NORMAL) to true,
-    MethodDeclaration("CopiedLayoutGraph", "getOriginalEdge", mode = NORMAL) to true,
-    MethodDeclaration("CopiedLayoutGraph", "getOriginalNode", mode = NORMAL) to true,
 
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "createVisual") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "updateVisual") to true,
