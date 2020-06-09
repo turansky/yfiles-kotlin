@@ -1,7 +1,10 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.*
+import com.github.turansky.yfiles.json.get
+import com.github.turansky.yfiles.json.removeAllObjects
+import com.github.turansky.yfiles.json.removeItem
+import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
 
 internal fun applyHacks(api: JSONObject) {
@@ -153,15 +156,6 @@ private fun fixConstantGenerics(source: Source) {
 }
 
 private fun fixFunctionGenerics(source: Source) {
-    source.type("List")
-        .method("fromArray")
-        .setSingleTypeParameter()
-
-    source.type("List")
-        .method("from")
-        .get(TYPE_PARAMETERS)
-        .put(jObject(NAME to "T"))
-
     source.type("IContextLookupChainLink")
         .method("addingLookupChainLink")
         .apply {
