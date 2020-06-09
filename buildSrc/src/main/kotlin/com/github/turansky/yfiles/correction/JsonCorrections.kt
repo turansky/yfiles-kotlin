@@ -205,7 +205,6 @@ internal val MODEL_MANAGER_ITEM_METHODS = setOf(
 )
 
 internal val BROKEN_NULLABILITY_METHODS = setOf(
-    "applyLayout",
     "applyLayoutCore"
 )
 
