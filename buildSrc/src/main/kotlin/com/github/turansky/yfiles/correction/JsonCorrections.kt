@@ -214,22 +214,15 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "ShortestPathAlgorithm", methodName = "shortestPair") to true,
     MethodDeclaration(className = "YOrientedRectangle", methodName = "intersectionPoint") to true,
 
-    MethodDeclaration(className = "GeomUtilities", methodName = "findEllipseLineIntersection") to true,
-
     MethodDeclaration("HierarchicalClusteringResult", "getDendrogramNode") to false,
 
     MethodDeclaration(className = "PartitionGrid", methodName = "getPartitionGrid") to true,
     MethodDeclaration(className = "PortConstraint", methodName = "getSPC") to true,
     MethodDeclaration(className = "PortConstraint", methodName = "getTPC") to true,
 
-    MethodDeclaration(className = "Graph", methodName = "getDataProvider") to true,
-
-    MethodDeclaration(className = "ViewportLimiter", methodName = "getCurrentBounds") to true,
     MethodDeclaration(className = "IEnumerable", methodName = "elementAt") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "first") to false,
     MethodDeclaration(className = "IEnumerable", methodName = "last") to false,
-    MethodDeclaration(className = "ListCell", methodName = "pred") to true,
-    MethodDeclaration(className = "ListCell", methodName = "succ") to true,
 
     MethodDeclaration(className = "Dendrogram", methodName = "getNodeAtLevel") to true,
     MethodDeclaration(className = "Dendrogram", methodName = "getOriginalNode") to true,
@@ -238,9 +231,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "DataProviderBase", methodName = "get") to true,
     MethodDeclaration(className = "MapperDataProviderAdapter", methodName = "get") to true,
     MethodDeclaration(className = "YList", methodName = "findCell") to true,
-
-    MethodDeclaration(className = "GeneralPath", methodName = "getTangent") to true,
-    MethodDeclaration(className = "Rect", methodName = "findLineIntersection") to true,
 
     MethodDeclaration(className = "ConstantLabelCandidateDescriptorProvider", methodName = "getDescriptor") to true,
     MethodDeclaration(className = "DefaultFoldingEdgeConverter", methodName = "addFoldingEdge") to true,
@@ -278,8 +268,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getNodeLayoutDescriptors") to true,
     MethodDeclaration(className = "HierarchicLayoutCore", methodName = "getSwimLaneDescriptors") to true,
     MethodDeclaration(className = "INodeData", methodName = "getNormalizedBorderLine") to true,
-
-    MethodDeclaration(className = "EditLabelHelper", methodName = "getPreferredSize") to true,
 
     MethodDeclaration(className = "FixNodeLayoutStage", methodName = "calculateFixPoint") to true,
     MethodDeclaration(className = "LayoutGroupingSupport", methodName = "getParent") to true,
@@ -328,25 +316,15 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "VoidVisualCreator", methodName = "createVisual") to true,
     MethodDeclaration(className = "VoidVisualCreator", methodName = "updateVisual") to true,
 
-    MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "getOutline") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "getIntersection") to true,
-    MethodDeclaration(className = "GeneralPathNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "GeneralPathNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "ImageNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "ImageNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "PanelNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "PanelNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "ShapeNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "ShapeNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "ShinyPlateNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "ShinyPlateNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "TableNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "TableNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "getIntersection") to true,
     MethodDeclaration(className = "TemplateNodeStyleRenderer", methodName = "getOutline") to true,
-    MethodDeclaration(className = "VoidShapeGeometry", methodName = "getIntersection") to true,
     MethodDeclaration(className = "VoidShapeGeometry", methodName = "getOutline") to true,
 
     MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getTargetArrow") to true,
@@ -355,13 +333,9 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getSourceArrow") to true,
 
     MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getStroke") to true,
-    MethodDeclaration(className = "ArcEdgeStyleRenderer", methodName = "getTangent") to true,
-    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getTangent") to true,
-    MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getTargetArrowAnchor") to true,
     MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getObstacles") to true,
     MethodDeclaration(className = "PathBasedEdgeStyleRenderer", methodName = "getPath") to true,
     MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getStroke") to true,
-    MethodDeclaration(className = "PolylineEdgeStyleRenderer", methodName = "getTangent") to true,
 
     MethodDeclaration(className = "ColorExtension", methodName = "provideValue") to true,
     MethodDeclaration(className = "EdgeDecorationInstaller", methodName = "addCanvasObject") to true,
