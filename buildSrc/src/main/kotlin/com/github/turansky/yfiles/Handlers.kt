@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
 internal fun getHandlerData(listenerType: String): HandlerData {
-    if (listenerType.startsWith("yfiles.lang.EventHandler1<")) {
+    if (listenerType.startsWith("$EVENT_HANDLER1<")) {
         return getEventHandlerData(listenerType.between("<", ">"))
     }
 

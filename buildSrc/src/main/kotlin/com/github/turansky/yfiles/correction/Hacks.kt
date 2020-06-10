@@ -267,6 +267,22 @@ private fun fixMethodParameterType(source: Source) {
         .filter { it[NAME] == "localRoot" }
         .filter { it[TYPE] == JS_OBJECT }
         .forEach { it[TYPE] = NODE }
+
+    source.type("CreateEdgeInputMode") {
+        val PCC = "$ITEM_EVENT_ARGS<$IPORT_CANDIDATE>"
+
+        flatMap(METHODS)
+            .optFlatMap(PARAMETERS)
+            .filter { it[TYPE] == PCC }
+            .forEach { it.replaceInType(">", "?>") }
+
+        val PCC_HANDLER = "$EVENT_HANDLER1<$PCC>"
+        flatMap(EVENTS)
+            .flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+            .flatMap(PARAMETERS)
+            .filter { it[SIGNATURE] == PCC_HANDLER }
+            .forEach { it.replaceInSignature(">>", "?>>") }
+    }
 }
 
 private fun fixMethodNullability(source: Source) {

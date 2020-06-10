@@ -14,6 +14,7 @@ const val INTERFACE_METADATA = "yfiles.lang.InterfaceMetadata"
 
 const val ICOMPARABLE = "yfiles.lang.IComparable"
 const val ICLONEABLE = "yfiles.lang.ICloneable"
+const val EVENT_HANDLER1 = "yfiles.lang.EventHandler1"
 
 const val ILOOKUP = "yfiles.graph.ILookup"
 

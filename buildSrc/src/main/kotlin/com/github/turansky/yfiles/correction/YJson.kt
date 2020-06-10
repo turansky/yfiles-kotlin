@@ -70,6 +70,13 @@ internal fun JSONObject.replaceInType(
     set(TYPE, get(TYPE).replace(oldValue, newValue))
 }
 
+internal fun JSONObject.replaceInSignature(
+    oldValue: String,
+    newValue: String
+) {
+    set(SIGNATURE, get(SIGNATURE).replace(oldValue, newValue))
+}
+
 internal fun JSONObject.changeNullability(nullable: Boolean) =
     changeModifier(CANBENULL, nullable)
 
