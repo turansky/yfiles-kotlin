@@ -133,23 +133,16 @@ private fun fixCollectionsNullability(source: Source) {
         "addLast",
         "addLastCell",
         "containsAll",
-        "cyclicPred",
-        "cyclicSucc",
         "findCell",
         "getInfo",
         "insertAfter",
         "insertBefore",
         "lastIndexOf",
-        "predCell",
         "push",
         "removeAll",
-        "removeAtCursor",
-        "removeCell",
-        "retainAll",
         "setInfo",
         "sort",
-        "splice",
-        "succCell"
+        "splice"
     )
 
     val excludedTypes = setOf(
