@@ -49,7 +49,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 | Version                     |         `23.0.0`      |      `1.1.1`      |
 | Module format               |         `ES6`         |       `ES6`       |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
-| Nullability fixes           |         2500+         |         -         |
+| Nullability fixes           |         3200+         |         -         |
 | Numberability*              |           ✔           |         ✔         |
 | Strict [`Class`][31] generic  |           ✔           |         ✔         |
 | Trait support**             |           ✔           |         ✔         |
