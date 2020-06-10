@@ -139,8 +139,6 @@ private fun fixCollectionsNullability(source: Source) {
         "getInfo",
         "insertAfter",
         "insertBefore",
-        "insertCellAfter",
-        "insertCellBefore",
         "lastIndexOf",
         "predCell",
         "push",
@@ -160,7 +158,8 @@ private fun fixCollectionsNullability(source: Source) {
     )
 
     val excludedParameters = setOf(
-        "match"
+        "match",
+        "refCell"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
