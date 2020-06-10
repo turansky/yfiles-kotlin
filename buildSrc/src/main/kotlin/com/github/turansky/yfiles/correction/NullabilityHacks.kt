@@ -372,8 +372,6 @@ private fun fixAlgorithmsNullability(source: Source) {
             "BorderLine",
             "Dendrogram",
             "DfsAlgorithm",
-            "Edge",
-            "Graph",
             "GraphPartitionManager",
             "IIntersectionHandler",
             "INodeDistanceProvider",
@@ -383,7 +381,6 @@ private fun fixAlgorithmsNullability(source: Source) {
             "PlanarEmbedding",
             "Point2D",
             "Rectangle2D",
-            "YNode",
             "YPoint",
             "YRectangle"
         ).flatMap { getAffectedMethods(it) }
