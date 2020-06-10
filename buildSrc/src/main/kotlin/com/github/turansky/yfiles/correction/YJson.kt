@@ -49,6 +49,9 @@ internal fun JSONObject.constant(name: String): JSONObject =
 internal fun JSONObject.property(name: String): JSONObject =
     get(PROPERTIES)[name]
 
+internal fun Sequence<JSONObject>.eventListeners(): Sequence<JSONObject> =
+    flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+
 internal fun JSONObject.addProperty(
     propertyName: String,
     type: String

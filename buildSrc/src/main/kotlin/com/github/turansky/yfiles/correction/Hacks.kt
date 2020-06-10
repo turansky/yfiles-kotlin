@@ -278,7 +278,7 @@ private fun fixMethodParameterType(source: Source) {
 
         val PCC_HANDLER = "$EVENT_HANDLER1<$PCC>"
         flatMap(EVENTS)
-            .flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+            .eventListeners()
             .flatMap(PARAMETERS)
             .filter { it[SIGNATURE] == PCC_HANDLER }
             .forEach { it.replaceInSignature(">>", "?>>") }
