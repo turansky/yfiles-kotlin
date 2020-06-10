@@ -129,9 +129,7 @@ private fun fixCollectionsNullability(source: Source) {
         "onItemRemoved",
 
         "addFirst",
-        "addFirstCell",
         "addLast",
-        "addLastCell",
         "containsAll",
         "findCell",
         "getInfo",
@@ -291,7 +289,9 @@ private fun fixAlgorithmsNullability(source: Source) {
 
         "getValueAt",
 
-        "compareTo"
+        "compareTo",
+
+        "create"
     )
 
     val excludedParameters = setOf(
@@ -425,7 +425,9 @@ private fun fixLayoutNullability(source: Source) {
         "getBoundingBoxOfNodes",
         "routeEdgesParallel",
 
-        "SliderEdgeLabelLayoutModel"
+        "SliderEdgeLabelLayoutModel",
+
+        "create"
     )
 
     val excludedTypes = setOf(
