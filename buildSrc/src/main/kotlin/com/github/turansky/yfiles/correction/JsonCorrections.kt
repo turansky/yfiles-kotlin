@@ -139,9 +139,7 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("LineSegment", "contains", "point") to false,
     ParameterData("Rectangle2D", "contains", "rect") to false,
 
-    ParameterData("YList", "copyTo", "array") to false,
     ParameterData("List", "binarySearch", "item") to false,
-    ParameterData("ObservableCollection", "copyTo", "array") to false,
 
     ParameterData("IGraph", "contains", "item") to false,
     ParameterData("IGraph", "isGroupNode", "node") to false,
@@ -158,7 +156,6 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("GraphWrapperBase", "isGroupNode", "node") to false,
     ParameterData("GraphWrapperBase", "setIsGroupNode", "node") to false,
 
-    ParameterData("IGraph", "addPortAt", "style") to true,
     ParameterData("ILookupDecorator", "add", "nullIsFallback") to true,
     ParameterData("ILookupDecorator", "add", "decorateNull", true) to true,
 
