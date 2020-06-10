@@ -29,7 +29,7 @@ internal fun getHandlerData(listenerType: String): HandlerData {
 }
 
 private fun getEventHandlerData(eventType: String): HandlerData {
-    if (eventType.startsWith("yfiles.collections.ItemEventArgs<")) {
+    if (eventType.startsWith("$ITEM_EVENT_ARGS<")) {
         val itemType = eventType.between("<", ">")
         return HandlerData(
             handlerType = "(item:$itemType) -> Unit",

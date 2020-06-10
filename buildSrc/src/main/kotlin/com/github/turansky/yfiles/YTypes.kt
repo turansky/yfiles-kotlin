@@ -32,6 +32,8 @@ const val ILABEL_MODEL_PARAMETER = "yfiles.graph.ILabelModelParameter"
 const val ICLIPBOARD_HELPER = "yfiles.graph.IClipboardHelper"
 const val IMEMENTO_SUPPORT = "yfiles.graph.IMementoSupport"
 
+const val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
+
 const val ICURSOR = "yfiles.algorithms.ICursor"
 const val YLIST = "yfiles.algorithms.YList"
 const val YPOINT = "yfiles.algorithms.YPoint"
@@ -46,6 +48,7 @@ const val DP_KEY_BASE = "yfiles.algorithms.DpKeyBase"
 const val IENUMERABLE = "yfiles.collections.IEnumerable"
 const val ICOLLECTION = "yfiles.collections.ICollection"
 const val ILIST = "yfiles.collections.IList"
+const val ITEM_EVENT_ARGS = "yfiles.collections.ItemEventArgs"
 
 const val SEGMENT_INFO = "yfiles.router.SegmentInfo"
 const val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
