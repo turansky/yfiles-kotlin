@@ -477,7 +477,6 @@ private fun fixLayoutNullability(source: Source) {
     source.types(
             "LayoutGraph",
             "DefaultLayoutGraph",
-            "CopiedLayoutGraph",
 
             "ILayoutGroupBoundsCalculator",
             "InsetsGroupBoundsCalculator",
