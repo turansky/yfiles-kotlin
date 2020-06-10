@@ -135,7 +135,6 @@ private fun fixCollectionsNullability(source: Source) {
         "insertAfter",
         "insertBefore",
         "lastIndexOf",
-        "push",
         "setInfo",
         "sort"
     )
@@ -153,7 +152,7 @@ private fun fixCollectionsNullability(source: Source) {
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
         var includedMethods = INCLUDED_METHODS
         when (type[NAME]) {
-            "List" -> includedMethods = includedMethods - listOf("push", "sort", "splice")
+            "List" -> includedMethods = includedMethods - listOf("sort", "splice")
             "Mapper" -> includedMethods = includedMethods - "delete"
         }
 
