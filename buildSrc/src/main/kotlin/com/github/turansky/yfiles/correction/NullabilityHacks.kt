@@ -131,11 +131,9 @@ private fun fixCollectionsNullability(source: Source) {
         "addFirst",
         "addLast",
         "findCell",
-        "getInfo",
         "insertAfter",
         "insertBefore",
         "lastIndexOf",
-        "setInfo",
         "sort"
     )
 
