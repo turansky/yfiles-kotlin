@@ -139,6 +139,16 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("LineSegment", "contains", "point") to false,
     ParameterData("Rectangle2D", "contains", "rect") to false,
 
+    ParameterData("Edge", "opposite", "v") to false,
+    ParameterData("Graph", "disposeEdgeMap", "map") to false,
+    ParameterData("Graph", "disposeNodeMap", "map") to false,
+    ParameterData("Graph", "sortEdges", "comparer") to false,
+    ParameterData("Graph", "sortEdges", "inComparer", true) to false,
+    ParameterData("Graph", "sortEdges", "outComparer", true) to false,
+    ParameterData("Graph", "sortNodes", "comparer") to false,
+    ParameterData("YNode", "sortInEdges", "c") to false,
+    ParameterData("YNode", "sortOutEdges", "c") to false,
+
     ParameterData("YList", "setInfo", "value") to false,
     ParameterData("List", "binarySearch", "item") to false,
 
