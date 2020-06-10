@@ -336,7 +336,6 @@ private fun fixAlgorithmsNullability(source: Source) {
             "GroupAlgorithm",
             "IndependentSetAlgorithm",
             "IntersectionAlgorithm",
-            "Maps",
             "NetworkFlowAlgorithm",
             "NodeOrderAlgorithm",
             "PathAlgorithm",
