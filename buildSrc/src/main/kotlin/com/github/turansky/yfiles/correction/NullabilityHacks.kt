@@ -475,9 +475,6 @@ private fun fixLayoutNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "LayoutGraph",
-            "DefaultLayoutGraph",
-
             "ILayoutGroupBoundsCalculator",
             "InsetsGroupBoundsCalculator",
             "MinimumSizeGroupBoundsCalculator",
