@@ -130,17 +130,14 @@ private fun fixCollectionsNullability(source: Source) {
 
         "addFirst",
         "addLast",
-        "containsAll",
         "findCell",
         "getInfo",
         "insertAfter",
         "insertBefore",
         "lastIndexOf",
         "push",
-        "removeAll",
         "setInfo",
-        "sort",
-        "splice"
+        "sort"
     )
 
     val excludedTypes = setOf(
@@ -584,7 +581,9 @@ private fun fixStageNullability(source: Source) {
 private fun fixMultipageNullability(source: Source) {
     val excludedMethods = setOf(
         "applyLayout",
-        "applyLayoutCore"
+        "applyLayoutCore",
+
+        "create"
     )
 
     val excludedTypes = setOf(
