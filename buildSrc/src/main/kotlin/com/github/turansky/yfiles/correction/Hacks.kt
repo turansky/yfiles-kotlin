@@ -239,6 +239,12 @@ private fun fixMethodParameterNullability(source: Source) {
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
+
+    source.types()
+        .optFlatMap(EVENTS)
+        .eventListeners()
+        .flatMap(PARAMETERS)
+        .forEach { it.changeNullability(false) }
 }
 
 private fun fixMethodParameterType(source: Source) {

@@ -1074,7 +1074,7 @@ private class EventListener(
     // TODO: update after nullability fix
     override fun toCode(): String {
         val parametersString = parameters
-            .byComma { it.name + ": " + it.type }
+            .byComma { it.declaration }
 
         return "${kotlinModificator()}fun $name($parametersString)"
     }
