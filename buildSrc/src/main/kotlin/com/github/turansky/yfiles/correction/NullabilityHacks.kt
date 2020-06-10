@@ -104,10 +104,6 @@ private fun fixPropertyNullability(source: Source) {
 }
 
 private fun fixCollectionsNullability(source: Source) {
-    val includedMethodIds = setOf(
-        "YList-method-addAll(number,yfiles.collections.ICollection)"
-    )
-
     val INCLUDED_METHODS = setOf(
         "get",
 
@@ -175,7 +171,7 @@ private fun fixCollectionsNullability(source: Source) {
         }
 
         return type.flatMap(METHODS)
-            .filter { it[ID] in includedMethodIds || it.get(NAME) in includedMethods }
+            .filter { it[NAME] in includedMethods }
     }
 
     source.types(
