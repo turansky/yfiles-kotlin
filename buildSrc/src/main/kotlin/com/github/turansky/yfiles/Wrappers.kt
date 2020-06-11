@@ -631,6 +631,8 @@ private val OPERATOR_MAP = mapOf(
 private val OPERATOR_NAME_MAP = mapOf(
     "elementAt" to "get",
 
+    "combineWith" to "plus",
+
     "add" to "plus",
     "getEnlarged" to "plus",
 
@@ -657,7 +659,6 @@ private val INFIX_METHODS = setOf(
     "supports",
     "lookup",
     "canDecorate",
-    "combineWith",
     "isGreaterThan",
     "isLessThan",
     "coveredBy",
