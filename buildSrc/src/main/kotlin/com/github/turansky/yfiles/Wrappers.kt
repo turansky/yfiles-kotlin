@@ -388,7 +388,6 @@ internal sealed class TypedDeclaration(
     source: JSONObject,
     protected val parent: TypeDeclaration
 ) : Declaration(source) {
-    private val id: String? by optString()
     private val signature: String? by optString()
     protected val type: String by type {
         parse(it, signature).run {
@@ -397,7 +396,7 @@ internal sealed class TypedDeclaration(
     }
 
     protected val seeAlsoDocs: List<SeeAlso>
-        get() = seeAlsoDocs(parent, id)
+        get() = seeAlsoDocs(parent, name)
 
     protected open val fixGeneric: Boolean
         get() = true
@@ -1001,7 +1000,6 @@ internal class Event(
     source: JSONObject,
     private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
-    private val id: String by string()
     val name: String by string()
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by seeAlso()
@@ -1014,7 +1012,7 @@ internal class Event(
     }
 
     private val seeAlsoDocs: List<SeeAlso>
-        get() = seeAlsoDocs(parent, id)
+        get() = seeAlsoDocs(parent, name)
 
     val listenerNames: List<String>
         get() = listeners.map { it.name }
