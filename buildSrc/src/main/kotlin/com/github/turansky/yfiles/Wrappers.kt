@@ -666,7 +666,8 @@ private val INFIX_METHODS = setOf(
     "manhattanDistanceTo",
     "equalValues",
     "above",
-    "below"
+    "below",
+    "hasSameValue"
 )
 
 internal class Method(
