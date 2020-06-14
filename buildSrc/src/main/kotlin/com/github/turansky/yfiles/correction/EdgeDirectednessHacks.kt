@@ -7,7 +7,17 @@ internal const val EDGE_DIRECTEDNESS = "yfiles.algorithms.EdgeDirectedness"
 
 internal fun generateEdgeDirectednessUtils(context: GeneratorContext) {
     context[EDGE_DIRECTEDNESS] = """
-        typealias EdgeDirectedness = Double
+        @JsName("Number")
+        sealed class EdgeDirectedness
+        
+        fun EdgeDirectedness(value: Double): $EDGE_DIRECTEDNESS = 
+            value.unsafeCast<$EDGE_DIRECTEDNESS>()
+        
+        object EdgeDirectednesses {
+            val SOURCE_TO_TARGET: $EDGE_DIRECTEDNESS = EdgeDirectedness(1.0)
+            val TARGET_TO_SOURCE: $EDGE_DIRECTEDNESS = EdgeDirectedness(-1.0)
+            val UNDIRECTED: $EDGE_DIRECTEDNESS = EdgeDirectedness(0.0)
+        }
     """.trimIndent()
 }
 
