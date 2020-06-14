@@ -92,6 +92,7 @@ internal fun applyHacks(api: JSONObject) {
     applyElementIdHacks(source)
     applySerializationHacks(source)
     applyCreationPropertyHacks(source)
+    applyEdgeDirectednessHacks(source)
 
     applyExtensionHacks(source)
     applySingletonHacks(source)
