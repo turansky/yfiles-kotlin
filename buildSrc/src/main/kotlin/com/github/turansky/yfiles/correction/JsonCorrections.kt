@@ -31,8 +31,6 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
     PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
 
-    PropertyDeclaration("HierarchicalClusteringResult", "dendrogramRoot") to false,
-
     PropertyDeclaration("ClickInputMode", "inputModeContext") to true,
     PropertyDeclaration("ContextMenuInputMode", "inputModeContext") to true,
     PropertyDeclaration("CreateBendInputMode", "inputModeContext") to true,
