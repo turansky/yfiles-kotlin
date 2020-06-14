@@ -16,4 +16,9 @@ internal fun applyEdgeDirectednessHacks(source: Source) {
         .optFlatMap(PROPERTIES)
         .filter { it[NAME] == "edgeDirectedness" }
         .forEach { it.replaceInType(",$JS_NUMBER>", ",$EDGE_DIRECTEDNESS>") }
+
+    source.types()
+        .optFlatMap(CONSTANTS)
+        .filter { it[NAME] == "EDGE_DIRECTEDNESS_DP_KEY" }
+        .forEach { it.replaceInType("<$JS_NUMBER>", "<$EDGE_DIRECTEDNESS>") }
 }
