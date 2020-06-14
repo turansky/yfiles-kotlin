@@ -231,35 +231,10 @@ fun main() {
 ```
 
 ## KDoc
-#### Supported blocks
-* Summary
-* Remarks
-  * Only for properties/methods
-  * Started with "The default "
-* Preconditions
-* Postconditions
-* Parameters
-* Returns
-* Default value
-* Throws
-* Links
-  * Developer Guide
-  * Demo
+Generated!
 
 #### Online Documentation
-Fast navigation to online documentation supported for:
-* Type
-* Constructor
-* Method
-* Constant
-* Property
-* Event
-  * Listener
-  * Handler
-  
-_Example:_
-
-![Example](assets/online-documentation.png)
+![Example](assets/online-documentation.gif)
 
 #### Related issues
 * [`KT-32815`](https://youtrack.jetbrains.com/issue/KT-32815) - Broken links with double anchor `#`
