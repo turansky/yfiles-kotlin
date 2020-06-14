@@ -150,6 +150,7 @@ private fun getDefaultObjectTypeParameter(name: String): String =
 private fun getDefaultNumberTypeParameter(name: String): String =
     when (name) {
         "connectorMap" -> "yfiles.tree.ParentConnectorDirection"
+        "edgeDirectedness" -> EDGE_DIRECTEDNESS
 
         "eCapDP",
         "edgeLength",
@@ -162,7 +163,6 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "w",
         "weight",
         "initialLabel",
-        "edgeDirectedness",
         "communityIndex"
         -> INT
 
