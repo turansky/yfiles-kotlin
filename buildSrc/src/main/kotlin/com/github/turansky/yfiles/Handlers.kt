@@ -45,6 +45,14 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         )
     }
 
+    if (eventType.startsWith("yfiles.input.SelectionEventArgs<")) {
+        val itemType = eventType.between("<", ">")
+        return HandlerData(
+            handlerType = "(context:$IINPUT_MODE_CONTEXT, selection: yfiles.view.ISelectionModel<$itemType>) -> Unit",
+            listenerBody = "{ _, event -> handler(event.context, event.selection) }"
+        )
+    }
+
     return when (eventType) {
         "yfiles.lang.EventArgs"
         -> EMPTY_HANDLER_DATA
