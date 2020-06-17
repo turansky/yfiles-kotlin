@@ -611,7 +611,7 @@ internal val MISSED_METHODS = listOf(
         className = "DefaultPortCandidateDescriptor",
         methodName = "isInBox",
         parameters = listOf(
-            MethodParameterData("context", "yfiles.input.IInputModeContext"),
+            MethodParameterData("context", IINPUT_MODE_CONTEXT),
             MethodParameterData("rectangle", "yfiles.geometry.Rect")
         ),
         result = ResultData(JS_BOOLEAN)
@@ -637,7 +637,7 @@ internal val MISSED_METHODS = listOf(
         className = "DefaultPortCandidateDescriptor",
         methodName = "isHit",
         parameters = listOf(
-            MethodParameterData("context", "yfiles.input.IInputModeContext"),
+            MethodParameterData("context", IINPUT_MODE_CONTEXT),
             MethodParameterData("location", "yfiles.geometry.Point")
         ),
         result = ResultData(JS_BOOLEAN)
@@ -646,7 +646,7 @@ internal val MISSED_METHODS = listOf(
         className = "DefaultPortCandidateDescriptor",
         methodName = "isInPath",
         parameters = listOf(
-            MethodParameterData("context", "yfiles.input.IInputModeContext"),
+            MethodParameterData("context", IINPUT_MODE_CONTEXT),
             MethodParameterData("lassoPath", "yfiles.geometry.GeneralPath")
         ),
         result = ResultData(JS_BOOLEAN)

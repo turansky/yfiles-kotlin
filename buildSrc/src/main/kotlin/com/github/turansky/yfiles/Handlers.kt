@@ -55,6 +55,9 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         "yfiles.input.InputModeEventArgs"
         -> INPUT_MODE_HANDLER_DATA
 
+        "yfiles.input.TextEventArgs"
+        -> TEXT_HANDLER_DATA
+
         "yfiles.input.MarqueeSelectionEventArgs"
         -> MARQUEE_HANDLER_DATA
 
@@ -86,8 +89,14 @@ private val PROPERTY_HANDLER_DATA =
 
 private val INPUT_MODE_HANDLER_DATA =
     HandlerData(
-        handlerType = "(context:yfiles.input.IInputModeContext) -> Unit",
+        handlerType = "(context:$IINPUT_MODE_CONTEXT) -> Unit",
         listenerBody = "{ _, event -> handler(event.context) }"
+    )
+
+private val TEXT_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(context:$IINPUT_MODE_CONTEXT, text:String) -> Unit",
+        listenerBody = "{ _, event -> handler(event.context, event.text) }"
     )
 
 private val MARQUEE_HANDLER_DATA =

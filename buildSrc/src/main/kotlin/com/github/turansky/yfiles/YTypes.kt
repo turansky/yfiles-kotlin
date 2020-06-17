@@ -34,6 +34,7 @@ const val ICLIPBOARD_HELPER = "yfiles.graph.IClipboardHelper"
 const val IMEMENTO_SUPPORT = "yfiles.graph.IMementoSupport"
 
 const val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
+const val IINPUT_MODE_CONTEXT = "yfiles.input.IInputModeContext"
 
 const val ICURSOR = "yfiles.algorithms.ICursor"
 const val YLIST = "yfiles.algorithms.YList"
