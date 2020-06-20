@@ -801,11 +801,10 @@ internal class Method(
 
         val factoryGenerics = parent.generics
         val code = """
-            fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(
+            @JsName("$name")
+            operator fun ${factoryGenerics.wrapperDeclaration} invoke(
                 $delegateName: $delegateType
-            )${getReturnSignature()} =
-                ${parent.name}.$AS_DYNAMIC
-                    .$name($delegateName)
+            )${getReturnSignature()}
         """.trimIndent()
 
         return documentation + code
