@@ -775,9 +775,13 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val operator = exp(isOperatorMode(), "operator")
+        val staticCreate = static && name == "create"
+        val operator = exp(staticCreate || isOperatorMode(), "operator")
 
-        var code = "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
+        val methodName = if (staticCreate) "invoke" else name
+        val annotation = if (staticCreate) "@JsName(\"$name\")\n" else ""
+
+        var code = "$annotation${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code
