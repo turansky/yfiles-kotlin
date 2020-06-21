@@ -639,6 +639,7 @@ private val OPERATOR_NAME_MAP = mapOf(
     "getReduced" to "minus",
 
     "multiply" to "times",
+    "divide" to "div",
 
     "includes" to "contains"
 )
@@ -824,12 +825,14 @@ internal class Method(
         if (parameters.size != 2) return null
         val returns = returns ?: return null
 
-        setOf(
+        val type = setOf(
             parent.classId,
             parameters[0].type,
-            parameters[1].type,
             returns.type
         ).singleOrNull() ?: return null
+
+        val secondParameterType = parameters[1].type
+        if (secondParameterType != type && secondParameterType != DOUBLE) return null
 
         return Method(source, parent)
             .also { it.operatorName = operatorName }
