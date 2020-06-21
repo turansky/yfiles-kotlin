@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.correction.CorrectionMode
 import com.github.turansky.yfiles.correction.GROUP
 import com.github.turansky.yfiles.correction.get
 import com.github.turansky.yfiles.json.*
@@ -368,7 +367,6 @@ private fun seeAlso() = list(::parseSeeAlso)
 
 private fun parseSeeAlso(source: JSONObject): SeeAlso =
     when {
-        CorrectionMode.isProgressive() -> SeeAlsoType(source)
         source.has("type") -> SeeAlsoType(source)
         source.has("section") -> EmptySeeAlso
         else -> throw IllegalArgumentException("Invalid SeeAlso source: $source")
@@ -390,7 +388,6 @@ internal sealed class TypedDeclaration(
     source: JSONObject,
     protected val parent: TypeDeclaration
 ) : Declaration(source) {
-    private val id: String? by optString()
     private val signature: String? by optString()
     protected val type: String by type {
         parse(it, signature).run {
@@ -399,7 +396,7 @@ internal sealed class TypedDeclaration(
     }
 
     protected val seeAlsoDocs: List<SeeAlso>
-        get() = seeAlsoDocs(parent, id)
+        get() = seeAlsoDocs(parent, name)
 
     protected open val fixGeneric: Boolean
         get() = true
@@ -633,6 +630,8 @@ private val OPERATOR_MAP = mapOf(
 private val OPERATOR_NAME_MAP = mapOf(
     "elementAt" to "get",
 
+    "combineWith" to "plus",
+
     "add" to "plus",
     "getEnlarged" to "plus",
 
@@ -640,6 +639,7 @@ private val OPERATOR_NAME_MAP = mapOf(
     "getReduced" to "minus",
 
     "multiply" to "times",
+    "divide" to "div",
 
     "includes" to "contains"
 )
@@ -659,7 +659,6 @@ private val INFIX_METHODS = setOf(
     "supports",
     "lookup",
     "canDecorate",
-    "combineWith",
     "isGreaterThan",
     "isLessThan",
     "coveredBy",
@@ -668,7 +667,18 @@ private val INFIX_METHODS = setOf(
     "manhattanDistanceTo",
     "equalValues",
     "above",
-    "below"
+    "below",
+    "hasSameValue"
+)
+
+private val FACTORY_METHODS = setOf(
+    "create",
+    "createCandidate",
+
+    "createCanvasContext",
+    "createInputModeContext",
+
+    "combine"
 )
 
 internal class Method(
@@ -776,9 +786,13 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val operator = exp(isOperatorMode(), "operator")
+        val staticCreate = static && name in FACTORY_METHODS
+        val operator = exp(staticCreate || isOperatorMode(), "operator")
 
-        var code = "${kotlinModificator()} $operator fun ${generics.declaration}$name(${kotlinParametersString()})${getReturnSignature()}"
+        val methodName = if (staticCreate) "invoke" else name
+        val annotation = if (staticCreate) "@JsName(\"$name\")\n" else ""
+
+        var code = "$annotation${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code
@@ -802,11 +816,10 @@ internal class Method(
 
         val factoryGenerics = parent.generics
         val code = """
-            fun ${factoryGenerics.wrapperDeclaration} ${parent.name}(
+            @JsName("$name")
+            operator fun ${factoryGenerics.wrapperDeclaration} invoke(
                 $delegateName: $delegateType
-            )${getReturnSignature()} =
-                ${parent.name}.$AS_DYNAMIC
-                    .$name($delegateName)
+            )${getReturnSignature()}
         """.trimIndent()
 
         return documentation + code
@@ -817,12 +830,14 @@ internal class Method(
         if (parameters.size != 2) return null
         val returns = returns ?: return null
 
-        setOf(
+        val type = setOf(
             parent.classId,
             parameters[0].type,
-            parameters[1].type,
             returns.type
         ).singleOrNull() ?: return null
+
+        val secondParameterType = parameters[1].type
+        if (secondParameterType != type && secondParameterType != DOUBLE) return null
 
         return Method(source, parent)
             .also { it.operatorName = operatorName }
@@ -1002,7 +1017,6 @@ internal class Event(
     source: JSONObject,
     private val parent: TypeDeclaration
 ) : JsonWrapper(source) {
-    private val id: String by string()
     val name: String by string()
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by seeAlso()
@@ -1015,7 +1029,7 @@ internal class Event(
     }
 
     private val seeAlsoDocs: List<SeeAlso>
-        get() = seeAlsoDocs(parent, id)
+        get() = seeAlsoDocs(parent, name)
 
     val listenerNames: List<String>
         get() = listeners.map { it.name }
@@ -1076,7 +1090,7 @@ private class EventListener(
     // TODO: update after nullability fix
     override fun toCode(): String {
         val parametersString = parameters
-            .byComma { it.name + ": " + it.type }
+            .byComma { it.declaration }
 
         return "${kotlinModificator()}fun $name($parametersString)"
     }
@@ -1172,7 +1186,7 @@ private fun getDocumentation(
         value = value,
         defaultValue = defaultValue,
         exceptions = exceptions,
-        seeAlso = seeAlso?.filter { it !is EmptySeeAlso }
+        seeAlso = seeAlso
     )
 
     additionalDocumentation?.apply {
@@ -1270,7 +1284,7 @@ private fun getDocumentationLines(
         throws(it.toDoc())
     }
 
-    seeAlso?.apply {
+    seeAlso?.filter { it !is EmptySeeAlso }?.apply {
         asSequence()
             .distinct()
             .mapTo(lines) {

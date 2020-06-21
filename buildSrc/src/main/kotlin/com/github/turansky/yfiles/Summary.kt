@@ -46,10 +46,6 @@ private val ENCODED_GENERIC_START = Regex("(<code>[^<]*)&lt;")
 
 private fun String.fixMarkdown(): String {
     return replace(ENCODED_GENERIC_START, "$1<")
-        .replace("<y-dataprovider-doc>", "A data provider key ")
-        .replace("</y-dataprovider-doc>", ".")
-        .replace("<y-dataacceptor-doc>", "A data acceptor key ")
-        .replace("</y-dataacceptor-doc>", ".")
         .replace(" &lt;default> ", " `<default>` ")
         .replace(" &lt;img> ", " `<img>` ")
         .replace(" IEnumerable>TSource<)", " IEnumerable<TSource>)")

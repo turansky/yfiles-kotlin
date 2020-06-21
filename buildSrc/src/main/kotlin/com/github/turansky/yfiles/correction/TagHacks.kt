@@ -43,9 +43,9 @@ internal fun applyTagHacks(source: Source) {
     source.types()
         .optFlatMap(EVENTS)
         .filter { "TagChanged" in it[NAME] }
-        .flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+        .eventListeners()
         .map { it.firstParameter }
-        .forEach { it[SIGNATURE] = it[SIGNATURE].replace(",$JS_OBJECT>>", ",$TAG>>") }
+        .forEach { it.replaceInSignature(",$JS_OBJECT>>", ",$TAG>>") }
 }
 
 private fun looksLikeTag(name: String): Boolean =

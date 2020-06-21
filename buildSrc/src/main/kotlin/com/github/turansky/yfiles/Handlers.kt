@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
 internal fun getHandlerData(listenerType: String): HandlerData {
-    if (listenerType.startsWith("yfiles.lang.EventHandler1<")) {
+    if (listenerType.startsWith("$EVENT_HANDLER1<")) {
         return getEventHandlerData(listenerType.between("<", ">"))
     }
 
@@ -29,7 +29,7 @@ internal fun getHandlerData(listenerType: String): HandlerData {
 }
 
 private fun getEventHandlerData(eventType: String): HandlerData {
-    if (eventType.startsWith("yfiles.collections.ItemEventArgs<")) {
+    if (eventType.startsWith("$ITEM_EVENT_ARGS<")) {
         val itemType = eventType.between("<", ">")
         return HandlerData(
             handlerType = "(item:$itemType) -> Unit",
@@ -45,6 +45,14 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         )
     }
 
+    if (eventType.startsWith("yfiles.input.SelectionEventArgs<")) {
+        val itemType = eventType.between("<", ">")
+        return HandlerData(
+            handlerType = "(context:$IINPUT_MODE_CONTEXT, selection: yfiles.view.ISelectionModel<$itemType>) -> Unit",
+            listenerBody = "{ _, event -> handler(event.context, event.selection) }"
+        )
+    }
+
     return when (eventType) {
         "yfiles.lang.EventArgs"
         -> EMPTY_HANDLER_DATA
@@ -54,6 +62,9 @@ private fun getEventHandlerData(eventType: String): HandlerData {
 
         "yfiles.input.InputModeEventArgs"
         -> INPUT_MODE_HANDLER_DATA
+
+        "yfiles.input.TextEventArgs"
+        -> TEXT_HANDLER_DATA
 
         "yfiles.input.MarqueeSelectionEventArgs"
         -> MARQUEE_HANDLER_DATA
@@ -86,8 +97,14 @@ private val PROPERTY_HANDLER_DATA =
 
 private val INPUT_MODE_HANDLER_DATA =
     HandlerData(
-        handlerType = "(context:yfiles.input.IInputModeContext) -> Unit",
+        handlerType = "(context:$IINPUT_MODE_CONTEXT) -> Unit",
         listenerBody = "{ _, event -> handler(event.context) }"
+    )
+
+private val TEXT_HANDLER_DATA =
+    HandlerData(
+        handlerType = "(context:$IINPUT_MODE_CONTEXT, text:String) -> Unit",
+        listenerBody = "{ _, event -> handler(event.context, event.text) }"
     )
 
 private val MARQUEE_HANDLER_DATA =

@@ -31,9 +31,9 @@ internal fun applyBusinessObjectHacks(source: Source) {
                 .forEach { it[RETURNS][TYPE] = BUSINESS_OBJECT }
 
             it.flatMap(EVENTS)
-                .flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+                .eventListeners()
                 .map { it.firstParameter }
                 .filter { "GraphBuilderItemEventArgs" in it[SIGNATURE] }
-                .forEach { it[SIGNATURE] = it[SIGNATURE].replace(",$JS_OBJECT>>", ",$BUSINESS_OBJECT>>") }
+                .forEach { it.replaceInSignature(",$JS_OBJECT>>", ",$BUSINESS_OBJECT>>") }
         }
 }

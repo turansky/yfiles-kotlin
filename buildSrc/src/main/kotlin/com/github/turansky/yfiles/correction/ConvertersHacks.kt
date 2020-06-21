@@ -43,7 +43,7 @@ internal fun applyConvertersHacks(source: Source) {
     )
 
     source.type(TEMPLATES_NAME)
-        .flatMap(CorrectionMode.getValue(CONSTANTS, PROPERTIES))
+        .flatMap(CONSTANTS)
         .first { it[NAME] == "CONVERTERS" }
         .also { check(it[TYPE] in likeObjectTypes) }
         .set(TYPE, CONVERTERS)

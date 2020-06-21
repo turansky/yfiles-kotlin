@@ -42,8 +42,7 @@ private fun JSONObject.correctConstants() {
         .forEach {
             if (it.has(SIGNATURE)) {
                 check(className == "HierarchicalClustering")
-                it[SIGNATURE] = it[SIGNATURE]
-                    .replace(",$JS_NUMBER>", ",$JS_DOUBLE>")
+                it.replaceInSignature(",$JS_NUMBER>", ",$JS_DOUBLE>")
                 return@forEach
             }
 

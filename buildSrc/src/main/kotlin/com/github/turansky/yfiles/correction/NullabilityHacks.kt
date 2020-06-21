@@ -104,10 +104,6 @@ private fun fixPropertyNullability(source: Source) {
 }
 
 private fun fixCollectionsNullability(source: Source) {
-    val includedMethodIds = setOf(
-        "YList-method-addAll(number,yfiles.collections.ICollection)"
-    )
-
     val INCLUDED_METHODS = setOf(
         "get",
 
@@ -133,29 +129,12 @@ private fun fixCollectionsNullability(source: Source) {
         "onItemRemoved",
 
         "addFirst",
-        "addFirstCell",
         "addLast",
-        "addLastCell",
-        "containsAll",
-        "cyclicPred",
-        "cyclicSucc",
         "findCell",
-        "getInfo",
         "insertAfter",
         "insertBefore",
-        "insertCellAfter",
-        "insertCellBefore",
         "lastIndexOf",
-        "predCell",
-        "push",
-        "removeAll",
-        "removeAtCursor",
-        "removeCell",
-        "retainAll",
-        "setInfo",
-        "sort",
-        "splice",
-        "succCell"
+        "sort"
     )
 
     val excludedTypes = setOf(
@@ -164,18 +143,19 @@ private fun fixCollectionsNullability(source: Source) {
     )
 
     val excludedParameters = setOf(
-        "match"
+        "match",
+        "refCell"
     )
 
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> {
         var includedMethods = INCLUDED_METHODS
         when (type[NAME]) {
-            "List" -> includedMethods = includedMethods - listOf("push", "sort", "splice")
+            "List" -> includedMethods = includedMethods - listOf("sort", "splice")
             "Mapper" -> includedMethods = includedMethods - "delete"
         }
 
         return type.flatMap(METHODS)
-            .filter { it[ID] in includedMethodIds || it.get(NAME) in includedMethods }
+            .filter { it[NAME] in includedMethods }
     }
 
     source.types(
@@ -200,10 +180,6 @@ private fun fixCollectionsNullability(source: Source) {
         .filterNot { it[TYPE] in excludedTypes }
         .filterNot { it[NAME] in excludedParameters }
         .forEach { it.changeNullability(false) }
-
-    if (!CorrectionMode.isProgressive()) {
-        return
-    }
 
     source.type("IEnumerable")
         .method("indexOf")
@@ -240,10 +216,6 @@ private fun fixGraphNullability(source: Source) {
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
-
-    if (!CorrectionMode.isProgressive()) {
-        return
-    }
 
     source.type("IGraph")
         .method("applyLayout")
@@ -311,7 +283,9 @@ private fun fixAlgorithmsNullability(source: Source) {
 
         "getValueAt",
 
-        "compareTo"
+        "compareTo",
+
+        "create"
     )
 
     val excludedParameters = setOf(
@@ -348,7 +322,6 @@ private fun fixAlgorithmsNullability(source: Source) {
             "GroupAlgorithm",
             "IndependentSetAlgorithm",
             "IntersectionAlgorithm",
-            "Maps",
             "NetworkFlowAlgorithm",
             "NodeOrderAlgorithm",
             "PathAlgorithm",
@@ -380,8 +353,6 @@ private fun fixAlgorithmsNullability(source: Source) {
             "BorderLine",
             "Dendrogram",
             "DfsAlgorithm",
-            "Edge",
-            "Graph",
             "GraphPartitionManager",
             "IIntersectionHandler",
             "INodeDistanceProvider",
@@ -391,7 +362,6 @@ private fun fixAlgorithmsNullability(source: Source) {
             "PlanarEmbedding",
             "Point2D",
             "Rectangle2D",
-            "YNode",
             "YPoint",
             "YRectangle"
         ).flatMap { getAffectedMethods(it) }
@@ -449,7 +419,9 @@ private fun fixLayoutNullability(source: Source) {
         "getBoundingBoxOfNodes",
         "routeEdgesParallel",
 
-        "SliderEdgeLabelLayoutModel"
+        "SliderEdgeLabelLayoutModel",
+
+        "create"
     )
 
     val excludedTypes = setOf(
@@ -492,10 +464,6 @@ private fun fixLayoutNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "LayoutGraph",
-            "DefaultLayoutGraph",
-            "CopiedLayoutGraph",
-
             "ILayoutGroupBoundsCalculator",
             "InsetsGroupBoundsCalculator",
             "MinimumSizeGroupBoundsCalculator",
@@ -610,7 +578,9 @@ private fun fixStageNullability(source: Source) {
 private fun fixMultipageNullability(source: Source) {
     val excludedMethods = setOf(
         "applyLayout",
-        "applyLayoutCore"
+        "applyLayoutCore",
+
+        "create"
     )
 
     val excludedTypes = setOf(

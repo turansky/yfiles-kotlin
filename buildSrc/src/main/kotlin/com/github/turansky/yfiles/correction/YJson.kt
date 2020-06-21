@@ -49,6 +49,9 @@ internal fun JSONObject.constant(name: String): JSONObject =
 internal fun JSONObject.property(name: String): JSONObject =
     get(PROPERTIES)[name]
 
+internal fun Sequence<JSONObject>.eventListeners(): Sequence<JSONObject> =
+    flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+
 internal fun JSONObject.addProperty(
     propertyName: String,
     type: String
@@ -70,6 +73,13 @@ internal fun JSONObject.replaceInType(
     set(TYPE, get(TYPE).replace(oldValue, newValue))
 }
 
+internal fun JSONObject.replaceInSignature(
+    oldValue: String,
+    newValue: String
+) {
+    set(SIGNATURE, get(SIGNATURE).replace(oldValue, newValue))
+}
+
 internal fun JSONObject.changeNullability(nullable: Boolean) =
     changeModifier(CANBENULL, nullable)
 
@@ -80,12 +90,7 @@ private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
     val modifiers = get(MODIFIERS)
     val index = modifiers.indexOf(modifier)
 
-    val hasEffect = (index == -1) == value
-    if (CorrectionMode.isNormal()) {
-        require(hasEffect)
-    } else if (!hasEffect) {
-        println("MODIFIER CHANGE FAILED")
-    }
+    require((index == -1) == value)
 
     if (value) {
         modifiers.put(modifier)

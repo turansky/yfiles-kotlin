@@ -126,7 +126,7 @@ private fun JSONObject.removeRedundantCreateFactories() {
 
 private fun JSONObject.isRedundantCreateFactory(): Boolean =
     isStaticMethod(CREATE)
-            && optBoolean(QII)
+            && optString(QII) == "!0"
             && get(PARAMETERS).length() != 1
 
 private fun JSONObject.isStaticMethod(name: String): Boolean =

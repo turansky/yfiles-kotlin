@@ -63,6 +63,7 @@ private fun mergeConstructors(type: JSONObject) {
     secondConstructor
         .get(PARAMETERS)
         .let { it.getJSONObject(it.length() - 1) }
+        .also { if (!it.has(MODIFIERS)) it[MODIFIERS] = emptyList<String>() }
         .get(MODIFIERS)
         .put(OPTIONAL)
 }

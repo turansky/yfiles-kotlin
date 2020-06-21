@@ -35,7 +35,6 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
             secondParameter.addGeneric("T")
         }
 
-    val IPORT_CANDIDATE = "yfiles.input.IPortCandidate"
     source.type("DefaultPortCandidateDescriptor") {
         get(IMPLEMENTS).apply {
             put(indexOf(ICANVAS_OBJECT_DESCRIPTOR), "$ICANVAS_OBJECT_DESCRIPTOR<$IPORT_CANDIDATE>")

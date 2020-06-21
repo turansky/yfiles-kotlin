@@ -152,6 +152,8 @@ internal class KotlinFileGenerator(
 
         protected abstract val metadataClass: String
 
+        protected open val factoryMethod: String = ""
+
         protected val companionObjectContent: String
             get() {
                 val typeDeclaration: String = when {
@@ -164,7 +166,7 @@ internal class KotlinFileGenerator(
                 }
                 return """
                     |companion object $typeDeclaration {
-                    |${staticDeclarations.lines { it.toCode() }}
+                    |${staticDeclarations.lines { it.toCode() } + factoryMethod}
                     |}
                 """.trimMargin()
             }
@@ -347,9 +349,11 @@ internal class KotlinFileGenerator(
         override val metadataClass: String
             get() = INTERFACE_METADATA
 
+        override val factoryMethod: String
+            get() = declaration.qiiMethod?.toQiiCode() ?: ""
+
         override fun companionContent(): String? =
             listOfNotNull(
-                declaration.qiiMethod?.toQiiCode(),
                 invokeExtension(
                     className = declaration.name,
                     generics = declaration.generics

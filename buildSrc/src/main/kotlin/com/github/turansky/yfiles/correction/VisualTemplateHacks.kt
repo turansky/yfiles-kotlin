@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.IBEND
 import com.github.turansky.yfiles.IVISUAL_TEMPLATE
 import com.github.turansky.yfiles.JS_VOID
+import com.github.turansky.yfiles.STATIC
 import com.github.turansky.yfiles.json.get
 
 internal fun applyVisualTemplateHacks(source: Source) {
@@ -10,6 +11,7 @@ internal fun applyVisualTemplateHacks(source: Source) {
         setSingleTypeParameter("in T")
 
         flatMap(METHODS)
+            .filter { STATIC !in it[MODIFIERS] }
             .map { it[PARAMETERS]["dataObject"] }
             .onEach { it.changeNullability(false) }
             .forEach { it[TYPE] = "T" }

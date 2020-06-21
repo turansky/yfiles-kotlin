@@ -20,7 +20,8 @@ internal fun Class.getComponents(): String? =
         "yfiles.geometry.Rect",
         "yfiles.geometry.OrientedRectangle",
 
-        "yfiles.geometry.Insets"
+        "yfiles.geometry.Insets",
+        "yfiles.geometry.Tangent"
         -> constructorComponents()
 
         "yfiles.algorithms.YVector"
