@@ -670,6 +670,11 @@ private val INFIX_METHODS = setOf(
     "hasSameValue"
 )
 
+private val FACTORY_METHODS = setOf(
+    "create",
+    "createCandidate"
+)
+
 internal class Method(
     source: JSONObject,
     private val parent: Type
@@ -775,7 +780,7 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val staticCreate = static && name == "create"
+        val staticCreate = static && name in FACTORY_METHODS
         val operator = exp(staticCreate || isOperatorMode(), "operator")
 
         val methodName = if (staticCreate) "invoke" else name
