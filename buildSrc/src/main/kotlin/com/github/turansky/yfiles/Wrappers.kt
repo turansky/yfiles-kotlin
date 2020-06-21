@@ -673,7 +673,12 @@ private val INFIX_METHODS = setOf(
 
 private val FACTORY_METHODS = setOf(
     "create",
-    "createCandidate"
+    "createCandidate",
+
+    "createCanvasContext",
+    "createInputModeContext",
+
+    "combine"
 )
 
 internal class Method(
