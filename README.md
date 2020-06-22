@@ -23,6 +23,7 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Lookup extensions](#lookup-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
+* [Quick interface implementation](#quick-interface-implementation)
 * [Flags](#flags)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
@@ -152,6 +153,17 @@ val layout = HierarchicLayout {
 #### Related issues
 * [`KT-31126`](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
+## Quick interface implementation
+```
+val mode = CreateEdgeInputMode {
+    startHitTestable = IHitTestable { _, location -> location.x > 0.0 }
+    endHitTestable = IHitTestable { _, location -> location.x < 0.0 }
+}
+```
+
+#### Related issues
+- [KT-39580](https://youtrack.jetbrains.com/issue/KT-39580) - Custom lambda wrapper for `fun interface`
+                                                             
 ## Flags
 Some yFiles enums are marked as `flags`.
 * Use `or` infix method to combine `flags`
