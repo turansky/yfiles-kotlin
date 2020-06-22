@@ -178,6 +178,7 @@ private val METHOD_MODIFIERS = setOf(
     FINAL,
 
     ABSTRACT,
+    INTERNAL,
     PROTECTED,
 
     CANBENULL,
@@ -198,6 +199,7 @@ internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, M
     val deprecated = has(DEPRECATED)
 
     val abstract = has(ABSTRACT)
+    val internal = has(INTERNAL)
     val protected = has(PROTECTED)
 
     private val canbenull = has(CANBENULL)

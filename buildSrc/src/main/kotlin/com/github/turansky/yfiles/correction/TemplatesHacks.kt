@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.INTERNAL
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
@@ -55,7 +56,7 @@ private fun createTemplates(sourceType: JSONObject): JSONObject {
     }
 
     type.method("makeObservable")
-        .get(RETURNS)[TYPE] = IPROPERTY_OBSERVER
+        .get(MODIFIERS).put(INTERNAL)
 
     return type
 }

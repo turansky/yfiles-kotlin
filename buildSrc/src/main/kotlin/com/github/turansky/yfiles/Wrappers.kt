@@ -693,6 +693,7 @@ internal class Method(
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
     val static = modifiers.static
+    private val internal = modifiers.internal
     private val protected = modifiers.protected
 
     private val final = modifiers.final
@@ -743,6 +744,12 @@ internal class Method(
             return exp(final, "final ") + exp(abstract, "abstract ") + "override "
         }
 
+        val visibility = when {
+            internal -> "internal "
+            protected -> "protected "
+            else -> ""
+        }
+
         val infix = when {
             parameters.size != 1 -> ""
             returns == null -> ""
@@ -755,7 +762,7 @@ internal class Method(
             final -> "final "
             open -> "open "
             else -> ""
-        } + exp(protected, "protected ") + infix
+        } + visibility + infix
     }
 
     private fun nullablePromiseResult(generic: String): Boolean =
