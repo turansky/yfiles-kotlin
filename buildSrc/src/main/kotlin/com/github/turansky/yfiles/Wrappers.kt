@@ -674,8 +674,9 @@ private val INFIX_METHODS = setOf(
 
 private val FACTORY_METHODS = setOf(
     "create",
-    "createCandidate",
+    "from",
 
+    "createCandidate",
     "createCanvasContext",
     "createInputModeContext",
 
@@ -787,7 +788,7 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val staticCreate = static && name in FACTORY_METHODS
+        val staticCreate = static && name in FACTORY_METHODS && parent.name != "List"
         val operator = exp(staticCreate || isOperatorMode(), "operator")
 
         val methodName = if (staticCreate) "invoke" else name
