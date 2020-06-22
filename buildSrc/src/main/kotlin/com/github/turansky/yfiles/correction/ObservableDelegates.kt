@@ -10,7 +10,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
     // language=kotlin
     context[OBSERVABLE] =
         """
-        fun <P : Any, T> P.observable(initialValue: T): $READ_WRITE_PROPERTY<P, T> {
+        fun <T> Any.observable(initialValue: T): $READ_WRITE_PROPERTY<Any, T> {
             if (firePropertyChangedDeclared) {
                 yfiles.styles.Templates.makeObservable(this)
             }
