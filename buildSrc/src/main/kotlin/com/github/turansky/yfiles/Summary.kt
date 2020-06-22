@@ -89,13 +89,20 @@ private val HOTKEY_SUMMARY_DESCRIPTION = setOf(
 )
 
 private fun String.addHotkeyHighlight(): String {
-    val description = HOTKEY_SUMMARY_DESCRIPTION
-        .firstOrNull { startsWith(it) }
-        ?: return this
+    if (HOTKEY_SUMMARY_DESCRIPTION.none { it in this })
+        return this
 
-    return removePrefix(description)
-        .removeSuffix(".")
-        .replace(" and ", "` and `")
-        .replace(" or ", "` or `")
-        .let { "$description`$it`." }
+    return split("\n")
+        .map { line ->
+            val description = HOTKEY_SUMMARY_DESCRIPTION
+                .firstOrNull { line.startsWith(it) }
+                ?: return@map line
+
+            line.removePrefix(description)
+                .removeSuffix(".")
+                .replace(" and ", "` and `")
+                .replace(" or ", "` or `")
+                .let { "$description`$it`." }
+        }
+        .joinToString("\n")
 }
