@@ -27,6 +27,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)
+* [Observable <sup>**new**</sup>](#observable)  
 * [TimeSpan extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
@@ -207,6 +208,42 @@ graph.getNodeCursor()
     .asSequence()
     .forEach { println("Node index: ${node.index}") }
 ```
+
+## Observable
+```Kotlin
+import yfiles.lang.observable
+
+class User {
+    var name by observable("Frodo")
+}
+```
+
+will have the same effect as
+
+```JavaScript
+class User {
+  #name = 'Frodo'
+
+  constructor() {
+    makeObservable(this)
+  }
+    
+  get name() {
+    return this.#name 
+  }
+  
+  set name(value) {
+    if (this.#name !== value) {
+      this.#name = value
+      this.firePropertyChanged('name') 
+    } 
+  }
+}
+```
+
+##### Details
+- [`makeObservable`](https://docs.yworks.com/yfileshtml/#/search/makeObservable)
+- [`firePropertyChanged`](https://docs.yworks.com/yfileshtml/#/dguide/custom-styles_template-styles%23_notifying_of_property_changes)
 
 ## `TimeSpan`
 ```Kotlin
