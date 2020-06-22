@@ -68,6 +68,6 @@ private fun String.fixMarkdown(): String {
         .replace("</em>", "*")
         .replace("<ul><li>", "\n$LIST_MARKER ")
         .replace("</li><li>", "\n$LIST_MARKER ")
-        .replace("</li></ul>", "")
+        .replace("</li></ul>", "\n\n")
         .replace(DIGIT_CLEAN_REGEX, "$1")
 }

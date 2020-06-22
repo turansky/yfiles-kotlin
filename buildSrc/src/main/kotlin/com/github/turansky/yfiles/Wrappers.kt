@@ -157,6 +157,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val documentation: String
         get() = getDocumentation(
             summary = summary,
+            remarks = remarks,
             typeparameters = typeparameters,
             seeAlso = seeAlso + seeAlsoDoc,
             additionalDocumentation = additionalDocumentation
@@ -1122,7 +1123,8 @@ private class RemarksDelegate : PropDelegate<String?>() {
         startsWith("The default ") or
                 startsWith("By default ") or
                 startsWith("<p>This property is deprecated") or
-                endsWith("then <code>null</code> is returned.")
+                endsWith("then <code>null</code> is returned.") or
+                contains(" are converted to ")
 
     private fun JSONObject.isRequiredRemarks(): Boolean =
         optString("id")?.startsWith("ICommand-field-") ?: false
