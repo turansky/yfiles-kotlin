@@ -70,4 +70,13 @@ private fun String.fixMarkdown(): String {
         .replace("</li><li>", "\n$LIST_MARKER ")
         .replace("</li></ul>", "\n\n")
         .replace(DIGIT_CLEAN_REGEX, "$1")
+        .removeRedundantEndLines()
 }
+
+private fun String.removeRedundantEndLines(): String =
+    if (endsWith("\n")) {
+        removeSuffix("\n")
+            .removeRedundantEndLines()
+    } else {
+        this
+    }
