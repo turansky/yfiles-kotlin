@@ -23,7 +23,7 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Lookup extensions](#lookup-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
-* [Quick interface implementation](#quick-interface-implementation)
+* [Quick interface implementation <sup>**new**</sup>](#quick-interface-implementation)
 * [Flags](#flags)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
