@@ -14,7 +14,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             observable(null)
         
         fun <P : Any, T> P.observable(initialValue: T): $READ_WRITE_PROPERTY<P, T> {
-            if (firePropertyChanged == null) {
+            if (firePropertyChangedDeclared) {
                 yfiles.styles.Templates.makeObservable(this)
             }
         
@@ -48,7 +48,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             asDynamic().firePropertyChanged(propertyName)
         }
         
-        private val Any.firePropertyChanged: Any?
-            get() = asDynamic().firePropertyChanged
+        private val Any.firePropertyChangedDeclared: Boolean
+            get() = !!asDynamic().firePropertyChanged
         """.trimIndent()
 }
