@@ -55,7 +55,7 @@ private fun createTemplates(sourceType: JSONObject): JSONObject {
     }
 
     type.method("makeObservable")
-        .get(RETURNS)[TYPE] = "yfiles.lang.IPropertyObservable"
+        .get(RETURNS)[TYPE] = IPROPERTY_OBSERVER
 
     return type
 }

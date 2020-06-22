@@ -38,6 +38,7 @@ fun generateKotlinDeclarations(
     fileGenerator.generate(context)
 
     generateIdUtils(context)
+    generatePropertyObserver(context)
     generateBindingUtils(context)
     generateBusinessObjectUtils(context)
     generateTagUtils(context)
