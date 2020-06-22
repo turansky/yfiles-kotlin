@@ -41,18 +41,21 @@ private fun JSONObject.removeCommonItems() {
 }
 
 private fun createTemplates(sourceType: JSONObject): JSONObject {
-    return jObject(
+    val type = jObject(
         ID to TEMPLATES,
         NAME to TEMPLATES_NAME,
         ES6_NAME to TEMPLATES_ALIAS,
         GROUP to "class"
-    ).also { type ->
-        COPIED_KEYS
-            .filter { sourceType.has(it) }
-            .forEach { key ->
-                type[key] = sourceType.flatMap(key)
-                    .filter { it[NAME] in COPIED_NAMES }
-                    .toList()
-            }
+    )
+
+    COPIED_KEYS.forEach { key ->
+        type[key] = sourceType.flatMap(key)
+            .filter { it[NAME] in COPIED_NAMES }
+            .toList()
     }
+
+    type.method("makeObservable")
+        .get(RETURNS)[TYPE] = "yfiles.lang.IPropertyObservable"
+
+    return type
 }
