@@ -48,6 +48,7 @@ internal object TYPE : JStringKey("type")
 internal object SIGNATURE : JStringKey("signature")
 internal object MODIFIERS : JArrayKey("modifiers")
 internal object SUMMARY : JStringKey("summary")
+internal object REMARKS : JStringKey("remarks")
 
 internal object DEFAULT : JObjectKey("y.default")
 internal object VALUE : JStringKey("value")

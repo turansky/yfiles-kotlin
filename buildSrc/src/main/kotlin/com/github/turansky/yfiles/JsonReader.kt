@@ -102,9 +102,17 @@ private fun JSONObject.fixFunctionSignatures() {
 }
 
 private fun JSONObject.removeFromFactories() {
-    flatMap(TYPES)
-        .mapNotNull { it.opt(METHODS) }
-        .forEach { it.removeAllObjects { it.isFromFactory() } }
+    flatMap(TYPES).forEach { type ->
+        val fromFactory = type.optFlatMap(METHODS)
+            .firstOrNull { it.isFromFactory() }
+            ?: return@forEach
+
+        if (" are converted to " in type[REMARKS]) {
+            fromFactory.firstParameter[TYPE] = JS_STRING
+        } else {
+            type[METHODS].removeAll { it === fromFactory }
+        }
+    }
 }
 
 private fun JSONObject.isFromFactory(): Boolean =
