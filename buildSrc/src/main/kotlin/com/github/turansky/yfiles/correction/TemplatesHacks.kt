@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.INTERNAL
+import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
@@ -55,8 +56,13 @@ private fun createTemplates(sourceType: JSONObject): JSONObject {
             .toList()
     }
 
-    type.method("makeObservable")
-        .get(MODIFIERS).put(INTERNAL)
+    type.method("makeObservable").apply {
+        get(MODIFIERS).put(INTERNAL)
+
+        setSingleTypeParameter(bound = JS_OBJECT)
+        firstParameter[TYPE] = "T"
+        get(RETURNS)[TYPE] = "T"
+    }
 
     return type
 }
