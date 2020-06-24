@@ -1,5 +1,7 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.INTERNAL
+import com.github.turansky.yfiles.JS_OBJECT
 import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeAllObjects
 import org.json.JSONObject
@@ -41,18 +43,26 @@ private fun JSONObject.removeCommonItems() {
 }
 
 private fun createTemplates(sourceType: JSONObject): JSONObject {
-    return jObject(
+    val type = jObject(
         ID to TEMPLATES,
         NAME to TEMPLATES_NAME,
         ES6_NAME to TEMPLATES_ALIAS,
         GROUP to "class"
-    ).also { type ->
-        COPIED_KEYS
-            .filter { sourceType.has(it) }
-            .forEach { key ->
-                type[key] = sourceType.flatMap(key)
-                    .filter { it[NAME] in COPIED_NAMES }
-                    .toList()
-            }
+    )
+
+    COPIED_KEYS.forEach { key ->
+        type[key] = sourceType.flatMap(key)
+            .filter { it[NAME] in COPIED_NAMES }
+            .toList()
     }
+
+    type.method("makeObservable").apply {
+        get(MODIFIERS).put(INTERNAL)
+
+        setSingleTypeParameter(bound = JS_OBJECT)
+        firstParameter[TYPE] = "T"
+        get(RETURNS)[TYPE] = "T"
+    }
+
+    return type
 }

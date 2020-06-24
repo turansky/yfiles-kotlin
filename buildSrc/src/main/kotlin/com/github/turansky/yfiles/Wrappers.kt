@@ -157,6 +157,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val documentation: String
         get() = getDocumentation(
             summary = summary,
+            remarks = remarks,
             typeparameters = typeparameters,
             seeAlso = seeAlso + seeAlsoDoc,
             additionalDocumentation = additionalDocumentation
@@ -673,8 +674,9 @@ private val INFIX_METHODS = setOf(
 
 private val FACTORY_METHODS = setOf(
     "create",
-    "createCandidate",
+    "from",
 
+    "createCandidate",
     "createCanvasContext",
     "createInputModeContext",
 
@@ -691,6 +693,7 @@ internal class Method(
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
     val static = modifiers.static
+    private val internal = modifiers.internal
     private val protected = modifiers.protected
 
     private val final = modifiers.final
@@ -741,6 +744,12 @@ internal class Method(
             return exp(final, "final ") + exp(abstract, "abstract ") + "override "
         }
 
+        val visibility = when {
+            internal -> "internal "
+            protected -> "protected "
+            else -> ""
+        }
+
         val infix = when {
             parameters.size != 1 -> ""
             returns == null -> ""
@@ -753,7 +762,7 @@ internal class Method(
             final -> "final "
             open -> "open "
             else -> ""
-        } + exp(protected, "protected ") + infix
+        } + visibility + infix
     }
 
     private fun nullablePromiseResult(generic: String): Boolean =
@@ -786,7 +795,7 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val staticCreate = static && name in FACTORY_METHODS
+        val staticCreate = static && name in FACTORY_METHODS && parent.name != "List"
         val operator = exp(staticCreate || isOperatorMode(), "operator")
 
         val methodName = if (staticCreate) "invoke" else name
@@ -1122,7 +1131,8 @@ private class RemarksDelegate : PropDelegate<String?>() {
         startsWith("The default ") or
                 startsWith("By default ") or
                 startsWith("<p>This property is deprecated") or
-                endsWith("then <code>null</code> is returned.")
+                endsWith("then <code>null</code> is returned.") or
+                contains(" are converted to ")
 
     private fun JSONObject.isRequiredRemarks(): Boolean =
         optString("id")?.startsWith("ICommand-field-") ?: false

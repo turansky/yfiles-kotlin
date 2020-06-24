@@ -68,6 +68,41 @@ private fun String.fixMarkdown(): String {
         .replace("</em>", "*")
         .replace("<ul><li>", "\n$LIST_MARKER ")
         .replace("</li><li>", "\n$LIST_MARKER ")
-        .replace("</li></ul>", "")
+        .replace("</li></ul>", "\n\n")
         .replace(DIGIT_CLEAN_REGEX, "$1")
+        .removeRedundantEndLines()
+        .addHotkeyHighlight()
+}
+
+private fun String.removeRedundantEndLines(): String =
+    if (endsWith("\n")) {
+        removeSuffix("\n")
+            .removeRedundantEndLines()
+    } else {
+        this
+    }
+
+private val HOTKEY_SUMMARY_DESCRIPTION = setOf(
+    "The default shortcut for this command is ",
+    "The default shortcuts for this command are ",
+    "The default shortcut for this is "
+)
+
+private fun String.addHotkeyHighlight(): String {
+    if (HOTKEY_SUMMARY_DESCRIPTION.none { it in this })
+        return this
+
+    return split("\n")
+        .map { line ->
+            val description = HOTKEY_SUMMARY_DESCRIPTION
+                .firstOrNull { line.startsWith(it) }
+                ?: return@map line
+
+            line.removePrefix(description)
+                .removeSuffix(".")
+                .replace(" and ", "` and `")
+                .replace(" or ", "` or `")
+                .let { "$description`$it`." }
+        }
+        .joinToString("\n")
 }

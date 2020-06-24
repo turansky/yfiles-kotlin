@@ -23,10 +23,12 @@ Check [inheritance rules](gradle-plugin) on the fly
   * [Lookup extensions](#lookup-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
+* [Quick interface implementation <sup>**new**</sup>](#quick-interface-implementation)
 * [Flags](#flags)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)
+* [Observable <sup>**new**</sup>](#observable)  
 * [TimeSpan extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
@@ -151,6 +153,17 @@ val layout = HierarchicLayout {
 #### Related issues
 * [`KT-31126`](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
+## Quick interface implementation
+```
+val mode = CreateEdgeInputMode {
+    startHitTestable = IHitTestable { _, location -> location.x > 0.0 }
+    endHitTestable = IHitTestable { _, location -> location.x < 0.0 }
+}
+```
+
+#### Related issues
+- [KT-39580](https://youtrack.jetbrains.com/issue/KT-39580) - Custom lambda wrapper for `fun interface`
+                                                             
 ## Flags
 Some yFiles enums are marked as `flags`.
 * Use `or` infix method to combine `flags`
@@ -207,6 +220,42 @@ graph.getNodeCursor()
     .asSequence()
     .forEach { println("Node index: ${node.index}") }
 ```
+
+## Observable
+```Kotlin
+import yfiles.lang.observable
+
+class User {
+    var name by observable("Frodo")
+}
+```
+
+will have the same effect as
+
+```JavaScript
+class User {
+  #name = 'Frodo'
+
+  constructor() {
+    makeObservable(this)
+  }
+    
+  get name() {
+    return this.#name 
+  }
+  
+  set name(value) {
+    if (this.#name !== value) {
+      this.#name = value
+      this.firePropertyChanged('name') 
+    } 
+  }
+}
+```
+
+##### Details
+- [`makeObservable`](https://docs.yworks.com/yfileshtml/#/search/makeObservable)
+- [`firePropertyChanged`](https://docs.yworks.com/yfileshtml/#/dguide/custom-styles_template-styles%23_notifying_of_property_changes)
 
 ## `TimeSpan`
 ```Kotlin
