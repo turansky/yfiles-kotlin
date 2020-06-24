@@ -18,9 +18,17 @@ abstract class AbstractArrow2 : AbstractArrow() {
 
     fun castTest() {
         val i = js("({})")
+
         val t1 = i as IHitTestable
         val t2 = i as IVisualCreator
         val t3 = i as INode
+
+        /*
+        val is1 = i is IHitTestable
+        val is2 = i is IVisualCreator
+        val is3 = i is INode
+        */
+
         println(t1)
         println(t2)
     }
