@@ -28,7 +28,7 @@ val kotlinSourceDir: File
         .get("main")
         .kotlin
         .sourceDirectories
-        .singleFile
+        .first()
 
 tasks {
     clean {
