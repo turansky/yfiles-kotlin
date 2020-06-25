@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("js") version "1.4.20-dev-977" apply false
+    kotlin("js") version "1.4.20-dev-1207" apply false
     id("com.github.turansky.kfc.webpack") version "0.8.5" apply false
     id("de.undercouch.download") version "4.0.4" apply false
 }
