@@ -1,3 +1,9 @@
+@file:Suppress(
+    "CANNOT_CHECK_FOR_EXTERNAL_INTERFACE",
+    "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE",
+    "USELESS_IS_CHECK"
+)
+
 import yfiles.graph.INode
 import yfiles.input.IHitTestable
 import yfiles.styles.IArrow
@@ -23,11 +29,9 @@ abstract class AbstractArrow2 : AbstractArrow() {
         val t2 = i as IVisualCreator
         val t3 = i as INode
 
-        /*
         val is1 = i is IHitTestable
         val is2 = i is IVisualCreator
         val is3 = i is INode
-        */
 
         println(t1)
         println(t2)
