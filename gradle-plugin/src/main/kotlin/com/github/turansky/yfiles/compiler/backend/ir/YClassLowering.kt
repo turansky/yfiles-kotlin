@@ -5,14 +5,9 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrTypeOperatorCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
-import org.jetbrains.kotlin.ir.util.companionObject
-import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.ClassId
@@ -59,18 +54,4 @@ internal class YClassLowering(
             type = context.irBuiltIns.anyNType
         )
     }
-
-    override fun visitTypeOperator(expression: IrTypeOperatorCall): IrExpression {
-        val type = expression.typeOperand.getClass()
-            ?.takeIf { it.isYFilesInterface() }
-            ?.companionObject() as? IrClass
-            ?: return super.visitTypeOperator(expression)
-
-        return IrTypeOperatorCallDelegate(expression, type.defaultType)
-    }
 }
-
-private class IrTypeOperatorCallDelegate(
-    source: IrTypeOperatorCall,
-    override val typeOperand: IrType
-) : IrTypeOperatorCall by source

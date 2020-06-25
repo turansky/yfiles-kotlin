@@ -1,9 +1,10 @@
 package com.github.turansky.yfiles.compiler.extensions
 
+import com.github.turansky.yfiles.compiler.backend.ir.YCastLowering
 import com.github.turansky.yfiles.compiler.backend.ir.YClassLowering
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.backend.common.runOnFilePostfix
+import org.jetbrains.kotlin.backend.common.lower
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
 internal class YLoweringExtension : IrGenerationExtension {
@@ -12,8 +13,10 @@ internal class YLoweringExtension : IrGenerationExtension {
         pluginContext: IrPluginContext
     ) {
         val classLowering = YClassLowering(pluginContext)
-        for (file in moduleFragment.files) {
-            classLowering.runOnFilePostfix(file)
-        }
+        classLowering.lower(moduleFragment)
+
+        // TODO: check why order is important
+        val castLowering = YCastLowering()
+        castLowering.lower(moduleFragment)
     }
 }
