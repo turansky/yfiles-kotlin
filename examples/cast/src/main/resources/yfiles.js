@@ -1,0 +1,5 @@
+function YObject () {}
+
+export {
+  YObject
+}

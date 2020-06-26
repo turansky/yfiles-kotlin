@@ -15,4 +15,5 @@ include("gradle-plugin-test")
 
 include("examples:simple-app")
 include("examples:data-classes")
+include("examples:cast")
 include("examples:configurable-properties")
