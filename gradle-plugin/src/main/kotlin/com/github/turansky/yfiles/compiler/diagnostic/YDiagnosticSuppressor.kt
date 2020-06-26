@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.Errors.USELESS_IS_CHECK
@@ -9,6 +10,7 @@ import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtIsExpression
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.isInterface
 
 private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
@@ -26,8 +28,8 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(diagnostic: Diagnostic, bindingContext: BindingContext?): Boolean {
         bindingContext ?: return false
 
-        val factory = diagnostic.factory
         val psiElement = diagnostic.psiElement
+        val factory = diagnostic.factory
 
         val typeReference = when {
             psiElement is KtIsExpression && factory in IS_FACTORIES
@@ -42,8 +44,9 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         val type = bindingContext[BindingContext.TYPE, typeReference]
             ?: return false
 
-        if (!type.isInterface()) return false
-
-        return true
+        return type.isInterface() && type.isExternal()
     }
 }
+
+private fun KotlinType.isExternal(): Boolean =
+    (constructor.declarationDescriptor as? ClassDescriptor)?.isExternal == true
