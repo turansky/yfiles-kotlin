@@ -1,9 +1,3 @@
-@file:Suppress(
-    "CANNOT_CHECK_FOR_EXTERNAL_INTERFACE",
-    "UNCHECKED_CAST_TO_EXTERNAL_INTERFACE",
-    "USELESS_IS_CHECK"
-)
-
 import yfiles.graph.INode
 import yfiles.input.IHitTestable
 import yfiles.styles.IArrow
