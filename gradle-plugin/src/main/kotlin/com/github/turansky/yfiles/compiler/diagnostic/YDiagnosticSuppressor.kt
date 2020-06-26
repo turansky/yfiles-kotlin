@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
+import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
@@ -11,7 +12,6 @@ import org.jetbrains.kotlin.psi.KtIsExpression
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.typeUtil.isInterface
 
 private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
     CANNOT_CHECK_FOR_EXTERNAL_INTERFACE,
@@ -44,9 +44,13 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         val type = bindingContext[BindingContext.TYPE, typeReference]
             ?: return false
 
-        return type.isInterface() && type.isExternal()
+        return type.isYFilesInterface()
     }
 }
 
-private fun KotlinType.isExternal(): Boolean =
-    (constructor.declarationDescriptor as? ClassDescriptor)?.isExternal == true
+private fun KotlinType.isYFilesInterface(): Boolean {
+    val descriptor = constructor.declarationDescriptor as? ClassDescriptor
+        ?: return false
+
+    return descriptor.isYFilesInterface()
+}
