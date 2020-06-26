@@ -7,9 +7,9 @@ import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.CANNOT_CHECK_FOR_EXT
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtIsExpression
-import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
+import org.jetbrains.kotlin.types.typeUtil.isInterface
 
 private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
     CANNOT_CHECK_FOR_EXTERNAL_INTERFACE,
@@ -29,17 +29,21 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         val factory = diagnostic.factory
         val psiElement = diagnostic.psiElement
 
-        return when (psiElement) {
-            is KtIsExpression
-            -> factory in IS_FACTORIES && psiElement.typeReference.isYFilesInterface
+        val typeReference = when {
+            psiElement is KtIsExpression && factory in IS_FACTORIES
+            -> psiElement.typeReference
 
-            is KtBinaryExpressionWithTypeRHS
-            -> factory in AS_FACTORIES && psiElement.right.isYFilesInterface
+            psiElement is KtBinaryExpressionWithTypeRHS && factory in AS_FACTORIES
+            -> psiElement.right
 
-            else -> false
+            else -> return false
         }
+
+        val type = bindingContext[BindingContext.TYPE, typeReference]
+            ?: return false
+
+        if (!type.isInterface()) return false
+
+        return true
     }
 }
-
-private val KtTypeReference?.isYFilesInterface: Boolean
-    get() = true
