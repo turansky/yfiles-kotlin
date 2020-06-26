@@ -7,6 +7,8 @@ import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.CANNOT_CHECK_FOR_EXT
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtIsExpression
+import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 
 private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
@@ -25,12 +27,20 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
 
         return when (psiElement) {
             is KtIsExpression
-            -> factory in IS_FACTORIES
+            -> factory in IS_FACTORIES && psiElement.typeReference.isYFilesInterface
 
             is KtBinaryExpressionWithTypeRHS
-            -> factory in AS_FACTORIES
+            -> factory in AS_FACTORIES && psiElement.right.isYFilesInterface
 
             else -> false
         }
     }
 }
+
+private val KtTypeReference?.isYFilesInterface: Boolean
+    get() {
+        this?.typeElement as? KtUserType
+            ?: return false
+
+        return true
+    }
