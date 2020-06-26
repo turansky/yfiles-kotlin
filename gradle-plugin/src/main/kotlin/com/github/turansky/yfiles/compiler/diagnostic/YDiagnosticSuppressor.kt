@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.UNCHECKED_CAST_TO_EX
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtIsExpression
 import org.jetbrains.kotlin.psi.KtTypeReference
-import org.jetbrains.kotlin.psi.KtUserType
+import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 
 private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
@@ -21,7 +21,11 @@ private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
 )
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
-    override fun isSuppressed(diagnostic: Diagnostic): Boolean {
+    override fun isSuppressed(diagnostic: Diagnostic): Boolean = false
+
+    override fun isSuppressed(diagnostic: Diagnostic, bindingContext: BindingContext?): Boolean {
+        bindingContext ?: return false
+
         val factory = diagnostic.factory
         val psiElement = diagnostic.psiElement
 
@@ -38,9 +42,4 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
 }
 
 private val KtTypeReference?.isYFilesInterface: Boolean
-    get() {
-        this?.typeElement as? KtUserType
-            ?: return false
-
-        return true
-    }
+    get() = true
