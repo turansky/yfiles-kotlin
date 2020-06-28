@@ -25,7 +25,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                 $MAKE_OBSERVABLE(this)
             }
         
-            return Observable(initialValue)
+            return Property(initialValue)
         }
         
         interface IPropertyProvider<P:Any, T:Any> {
@@ -63,7 +63,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                 value
         }
         
-        private class Observable<T>(
+        private class Property<T>(
             initialValue: T
         ) : $READ_WRITE_PROPERTY<Any, T> {
             private var value: T = initialValue
