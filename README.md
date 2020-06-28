@@ -226,8 +226,8 @@ graph.getNodeCursor()
 import yfiles.graph.observable
 
 class User: Tag {
-    var name by observable("Frodo")
-    var age by observable(50)
+    var name:String by observable("Frodo")
+    var age:Int by observable(50)
 }
 ```
 
