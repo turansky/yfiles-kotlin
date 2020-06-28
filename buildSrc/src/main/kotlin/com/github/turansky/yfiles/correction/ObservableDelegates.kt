@@ -12,12 +12,14 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
     // language=kotlin
     context[OBSERVABLE] =
         """
-        fun <T: Any> $TAG.observable(o: T): IPropertyProvider<$TAG, T> {
+        fun <T: Any> $TAG.deepObservable(value: T): IPropertyProvider<$TAG, T> {
+            check(jsTypeOf(value) == "object")
+        
             if (firePropertyChangedDeclared) {
                 $MAKE_OBSERVABLE(this)
             }
             
-            return TagPropertyProvider(o)
+            return TagPropertyProvider(value)
         }    
             
         fun <T> Any.observable(initialValue: T): $READ_WRITE_PROPERTY<Any, T> {
@@ -42,11 +44,9 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                 thisRef: $TAG,
                 property: $KPROPERTY<*>
             ): $READ_ONLY_PROPERTY<$TAG, T> {
-                if (jsTypeOf(value) == "object") {
-                    val propertyName = property.name
-                    value.firePropertyChanged = { 
-                        thisRef.firePropertyChanged(propertyName)
-                    }
+                val propertyName = property.name
+                value.firePropertyChanged = { 
+                    thisRef.firePropertyChanged(propertyName)
                 }
                 
                 return Constant(value)
