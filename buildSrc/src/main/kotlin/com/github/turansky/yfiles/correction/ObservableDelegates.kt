@@ -21,12 +21,16 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             
             return TagPropertyProvider(value)
         }    
-            
-        fun <T> Any.observable(initialValue: T): $READ_WRITE_PROPERTY<Any, T> {
+        
+        fun <T> $TAG.observable(initialValue: T): $READ_WRITE_PROPERTY<$TAG, T> {
             if (firePropertyChangedDeclared) {
                 $MAKE_OBSERVABLE(this)
             }
         
+            return Property(initialValue)
+        }    
+            
+        fun <T> Any.observable(initialValue: T): $READ_WRITE_PROPERTY<Any, T> {
             return Property(initialValue)
         }
         
@@ -63,19 +67,19 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                 value
         }
         
-        private class Property<T>(
+        private class Property<P:Any, T>(
             initialValue: T
-        ) : $READ_WRITE_PROPERTY<Any, T> {
+        ) : $READ_WRITE_PROPERTY<P, T> {
             private var value: T = initialValue
         
             override fun getValue(
-                thisRef: Any,
+                thisRef: P,
                 property: $KPROPERTY<*>
             ): T =
                 value
         
             override fun setValue(
-                thisRef: Any,
+                thisRef: P,
                 property: $KPROPERTY<*>,
                 value: T
             ) {
