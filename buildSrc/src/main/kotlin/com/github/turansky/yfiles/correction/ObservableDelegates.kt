@@ -14,19 +14,12 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
         """
         fun <T: Any> $TAG.deepObservable(value: T): IPropertyProvider<$TAG, T> {
             check(jsTypeOf(value) == "object")
-        
-            if (firePropertyChangedDeclared) {
-                $MAKE_OBSERVABLE(this)
-            }
-            
+            makeObservable()            
             return TagPropertyProvider(value)
         }    
         
         fun <T> $TAG.observable(initialValue: T): $READ_WRITE_PROPERTY<$TAG, T> {
-            if (firePropertyChangedDeclared) {
-                $MAKE_OBSERVABLE(this)
-            }
-        
+            makeObservable()
             return Property(initialValue)
         }    
             
@@ -90,9 +83,15 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             }
         }
          
+        private inline fun $TAG.makeObservable() {
+            if (firePropertyChangedDeclared) {
+                $MAKE_OBSERVABLE(this)
+            }
+        }
+         
         private inline var Any.firePropertyChanged: (propertyName: String) -> Unit
             get() = asDynamic().firePropertyChanged
-            set(value) {
+            set(noinline value) {
                 asDynamic().firePropertyChanged = value
             }
         
