@@ -14,19 +14,12 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
         """
         fun <T: Any> $TAG.deepObservable(value: T): IPropertyProvider<$TAG, T> {
             check(jsTypeOf(value) == "object")
-        
-            if (firePropertyChangedDeclared) {
-                $MAKE_OBSERVABLE(this)
-            }
-            
+            makeObservable()            
             return TagPropertyProvider(value)
         }    
         
         fun <T> $TAG.observable(initialValue: T): $READ_WRITE_PROPERTY<$TAG, T> {
-            if (firePropertyChangedDeclared) {
-                $MAKE_OBSERVABLE(this)
-            }
-        
+            makeObservable()
             return Property(initialValue)
         }    
             
@@ -49,7 +42,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                 property: $KPROPERTY<*>
             ): $READ_ONLY_PROPERTY<$TAG, T> {
                 val propertyName = property.name
-                value.firePropertyChanged = { 
+                value.asDynamic().firePropertyChanged = { 
                     thisRef.firePropertyChanged(propertyName)
                 }
                 
@@ -90,13 +83,17 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             }
         }
          
-        private var Any.firePropertyChanged: (propertyName: String) -> Unit
-            get() = asDynamic().firePropertyChanged
-            set(value) {
-                asDynamic().firePropertyChanged = value
+        private inline fun $TAG.makeObservable() {
+            if (firePropertyChangedDeclared) {
+                $MAKE_OBSERVABLE(this)
             }
+        }
+         
+        private fun Any.firePropertyChanged(propertyName: String) {
+            asDynamic().firePropertyChanged(propertyName)
+        }
         
-        private val Any.firePropertyChangedDeclared: Boolean
+        private inline val Any.firePropertyChangedDeclared: Boolean
             get() = !!asDynamic().firePropertyChanged
         """.trimIndent()
 }

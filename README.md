@@ -226,8 +226,8 @@ graph.getNodeCursor()
 import yfiles.graph.observable
 
 class User: Tag {
-    var name by observable("Frodo")
-    var age by observable(50)
+    var name:String by observable("Frodo")
+    var age:Int by observable(50)
 }
 ```
 
@@ -236,6 +236,7 @@ will have the same effect as
 ```JavaScript
 class User {
   #name = 'Frodo'
+  #age = 50
 
   constructor() {
     makeObservable(this)
@@ -249,6 +250,17 @@ class User {
     if (this.#name !== value) {
       this.#name = value
       this.firePropertyChanged('name') 
+    } 
+  }
+
+  get age() {
+    return this.#age 
+  }
+  
+  set age(value) {
+    if (this.#age !== value) {
+      this.#age = value
+      this.firePropertyChanged('age') 
     } 
   }
 }
