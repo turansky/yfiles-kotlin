@@ -1,6 +1,6 @@
 @file:Suppress("unused", "UNUSED_VARIABLE")
 
-import yfiles.lang.observable
+import yfiles.graph.observable
 
 class Point3D {
     var x: Double by observable(0.0)

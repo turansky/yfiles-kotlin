@@ -223,10 +223,11 @@ graph.getNodeCursor()
 
 ## Observable
 ```Kotlin
-import yfiles.lang.observable
+import yfiles.graph.observable
 
-class User {
+class User: Tag {
     var name by observable("Frodo")
+    var age by observable(50)
 }
 ```
 
