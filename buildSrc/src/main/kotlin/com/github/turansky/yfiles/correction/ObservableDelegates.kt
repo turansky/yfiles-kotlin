@@ -90,13 +90,13 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             }
         }
          
-        private var Any.firePropertyChanged: (propertyName: String) -> Unit
+        private inline var Any.firePropertyChanged: (propertyName: String) -> Unit
             get() = asDynamic().firePropertyChanged
             set(value) {
                 asDynamic().firePropertyChanged = value
             }
         
-        private val Any.firePropertyChangedDeclared: Boolean
+        private inline val Any.firePropertyChangedDeclared: Boolean
             get() = !!asDynamic().firePropertyChanged
         """.trimIndent()
 }
