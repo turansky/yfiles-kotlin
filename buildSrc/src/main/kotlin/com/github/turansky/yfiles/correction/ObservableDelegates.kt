@@ -42,7 +42,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                 property: $KPROPERTY<*>
             ): $READ_ONLY_PROPERTY<$TAG, T> {
                 val propertyName = property.name
-                value.firePropertyChanged = { 
+                value.asDynamic().firePropertyChanged = { 
                     thisRef.firePropertyChanged(propertyName)
                 }
                 
@@ -89,11 +89,9 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
             }
         }
          
-        private inline var Any.firePropertyChanged: (propertyName: String) -> Unit
-            get() = asDynamic().firePropertyChanged
-            set(noinline value) {
-                asDynamic().firePropertyChanged = value
-            }
+        private fun Any.firePropertyChanged(propertyName: String) {
+            asDynamic().firePropertyChanged(propertyName)
+        }
         
         private inline val Any.firePropertyChangedDeclared: Boolean
             get() = !!asDynamic().firePropertyChanged
