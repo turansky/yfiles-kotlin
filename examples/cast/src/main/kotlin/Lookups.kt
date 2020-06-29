@@ -7,6 +7,8 @@ import yfiles.graph.lookupValue
 import yfiles.input.IHitTestable
 import yfiles.lang.TimeSpan
 
+@JsExport
+@ExperimentalJsExport
 fun lookups() {
     val graph: IGraph = DefaultGraph()
     val node = graph.createNode()
