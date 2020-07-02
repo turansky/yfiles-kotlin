@@ -23,6 +23,6 @@ class YRegistrar : ComponentRegistrar {
 
         Extensions.getRootArea()
             .getExtensionPoint(DiagnosticSuppressor.EP_NAME)
-            .registerExtension(YDiagnosticSuppressor())
+            .registerExtension(YDiagnosticSuppressor()) { /* do nothing */ }
     }
 }
