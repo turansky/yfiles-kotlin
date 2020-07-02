@@ -1,15 +1,14 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
+import org.jetbrains.kotlin.codegen.kotlinType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
-import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
-import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtIsExpression
-import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.NESTED_CLASS_IN_EXTERNAL_INTERFACE
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 import org.jetbrains.kotlin.types.KotlinType
@@ -62,6 +61,10 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             -> factory in REIFIED_TYPE_FACTORIES
                     && diagnostic.reifiedType.isYFilesInterface()
 
+            is KtObjectDeclaration
+            -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
+                    && psiElement.isYFilesInterfaceCompanion(bindingContext)
+
             else -> false
         }
     }
@@ -86,4 +89,12 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
         ?: return false
 
     return descriptor.isYFilesInterface()
+}
+
+private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
+    bindingContext: BindingContext
+): Boolean {
+    if (!isCompanion()) return false
+    val klass = parent as? KtClass ?: return false
+    return klass.kotlinType(bindingContext).isYFilesInterface()
 }
