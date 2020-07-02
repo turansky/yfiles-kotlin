@@ -46,11 +46,11 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         return when (psiElement) {
             is KtIsExpression
             -> factory in IS_FACTORIES
-                    && psiElement.typeReference.isYFilesInterface(bindingContext)
+                    && bindingContext.isYFilesInterface(psiElement.typeReference)
 
             is KtBinaryExpressionWithTypeRHS
             -> factory in AS_FACTORIES
-                    && psiElement.right.isYFilesInterface(bindingContext)
+                    && bindingContext.isYFilesInterface(psiElement.right)
 
             is KtCallExpression,
             is KtTypeReference
@@ -62,20 +62,21 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
     }
 }
 
-private val Diagnostic.reifiedType: KotlinType
-    get() {
-        this as DiagnosticWithParameters1<*, *>
-        return a as KotlinType
+private val Diagnostic.reifiedType: KotlinType?
+    get() = when (this) {
+        is DiagnosticWithParameters1<*, *> -> a as? KotlinType
+        else -> null
     }
 
-private fun KtTypeReference?.isYFilesInterface(
-    context: BindingContext
+private fun BindingContext.isYFilesInterface(
+    typeReference: KtTypeReference?
 ): Boolean =
-    context[BindingContext.TYPE, this]
-        ?.isYFilesInterface()
-        ?: false
+    get(BindingContext.TYPE, typeReference)
+        .isYFilesInterface()
 
-private fun KotlinType.isYFilesInterface(): Boolean {
+private fun KotlinType?.isYFilesInterface(): Boolean {
+    this ?: return false
+
     val descriptor = constructor.declarationDescriptor as? ClassDescriptor
         ?: return false
 
