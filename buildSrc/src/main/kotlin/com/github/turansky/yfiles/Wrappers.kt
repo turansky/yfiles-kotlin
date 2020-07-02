@@ -658,7 +658,6 @@ private val INFIX_METHODS = setOf(
     "indexOf",
     "scalarProduct",
     "supports",
-    "lookup",
     "canDecorate",
     "isGreaterThan",
     "isLessThan",
