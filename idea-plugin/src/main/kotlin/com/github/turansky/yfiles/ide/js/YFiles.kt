@@ -8,9 +8,13 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
 private val YOBJECT = FqName("yfiles.lang.YObject")
+private val YENUM = FqName("yfiles.lang.YEnum")
 
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT
+
+internal val ClassDescriptor.isYEnum: Boolean
+    get() = isExternal && fqNameSafe == YENUM
 
 internal fun ClassDescriptor.isYFilesInterface(): Boolean =
     isExternal and (isYObject or implementsYObject)
