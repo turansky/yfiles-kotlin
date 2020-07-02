@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
 import org.jetbrains.kotlin.diagnostics.Errors.USELESS_IS_CHECK
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtIsExpression
 import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -28,24 +29,33 @@ private val REIFIED_TYPE_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
 )
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
-    override fun isSuppressed(diagnostic: Diagnostic): Boolean = false
+    override fun isSuppressed(
+        diagnostic: Diagnostic
+    ): Boolean =
+        false
 
-    override fun isSuppressed(diagnostic: Diagnostic, bindingContext: BindingContext?): Boolean {
+    override fun isSuppressed(
+        diagnostic: Diagnostic,
+        bindingContext: BindingContext?
+    ): Boolean {
         bindingContext ?: return false
 
         val psiElement = diagnostic.psiElement
         val factory = diagnostic.factory
 
-        return when {
-            psiElement is KtIsExpression && factory in IS_FACTORIES
-            -> psiElement.typeReference.isYFilesInterface(bindingContext)
+        return when (psiElement) {
+            is KtIsExpression
+            -> factory in IS_FACTORIES
+                    && psiElement.typeReference.isYFilesInterface(bindingContext)
 
-            psiElement is KtBinaryExpressionWithTypeRHS && factory in AS_FACTORIES
-            -> psiElement.right.isYFilesInterface(bindingContext)
+            is KtBinaryExpressionWithTypeRHS
+            -> factory in AS_FACTORIES
+                    && psiElement.right.isYFilesInterface(bindingContext)
 
-            // TODO: specify psi elements
-            factory in REIFIED_TYPE_FACTORIES
-            -> diagnostic.reifiedType.isYFilesInterface()
+            is KtCallExpression,
+            is KtTypeReference
+            -> factory in REIFIED_TYPE_FACTORIES
+                    && diagnostic.reifiedType.isYFilesInterface()
 
             else -> false
         }
