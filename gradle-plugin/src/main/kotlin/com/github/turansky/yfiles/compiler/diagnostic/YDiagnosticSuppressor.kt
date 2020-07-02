@@ -5,8 +5,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
-import org.jetbrains.kotlin.diagnostics.Errors.USELESS_IS_CHECK
-import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
+import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
 import org.jetbrains.kotlin.psi.KtBinaryExpressionWithTypeRHS
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtIsExpression
@@ -16,12 +15,18 @@ import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 import org.jetbrains.kotlin.types.KotlinType
 
 private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
+    // TODO: use in IR
+    /*
     CANNOT_CHECK_FOR_EXTERNAL_INTERFACE,
     USELESS_IS_CHECK
+    */
 )
 
 private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
+    // TODO: use in IR
+    /*
     UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
+    */
 )
 
 private val REIFIED_TYPE_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
