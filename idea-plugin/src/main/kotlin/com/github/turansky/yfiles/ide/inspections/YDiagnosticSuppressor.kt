@@ -67,9 +67,11 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
     }
 }
 
+// HACK: for verification
+@Suppress("UsePropertyAccessSyntax")
 private val Diagnostic.reifiedType: KotlinType?
     get() = when (this) {
-        is DiagnosticWithParameters1<*, *> -> a as? KotlinType
+        is DiagnosticWithParameters1<*, *> -> getA() as? KotlinType
         else -> null
     }
 
