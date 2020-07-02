@@ -6,6 +6,8 @@ version = "23.0.1-SNAPSHOT"
 
 plugins {
     kotlin("js")
+    id("com.github.turansky.yfiles")
+
     id("de.undercouch.download")
 
     id("maven-publish")
