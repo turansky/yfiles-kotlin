@@ -33,4 +33,8 @@
             enabledByDefault="true"
             implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
     </extensions>
+
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <diagnosticSuppressor implementation="com.github.turansky.yfiles.ide.inspections.YDiagnosticSuppressor"/>
+    </extensions>
 </idea-plugin>
