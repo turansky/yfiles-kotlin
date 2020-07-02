@@ -15,7 +15,7 @@ kotlin.js {
 
 dependencies {
     implementation(kotlin("stdlib-js"))
-    implementation("com.yworks.yfiles:yfiles-kotlin:23.0.0-SNAPSHOT")
+    implementation("com.yworks.yfiles:yfiles-kotlin:23.0.1-SNAPSHOT")
 }
 
 tasks {
@@ -27,7 +27,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.5"
+        gradleVersion = "6.5.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
