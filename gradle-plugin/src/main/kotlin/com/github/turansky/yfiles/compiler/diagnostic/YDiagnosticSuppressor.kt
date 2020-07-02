@@ -28,10 +28,6 @@ private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
     */
 )
 
-private val REIFIED_TYPE_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
-    EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
-)
-
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
         diagnostic: Diagnostic
@@ -58,7 +54,7 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
 
             is KtCallExpression,
             is KtTypeReference
-            -> factory in REIFIED_TYPE_FACTORIES
+            -> factory === EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
                     && diagnostic.reifiedType.isYFilesInterface()
 
             is KtObjectDeclaration
