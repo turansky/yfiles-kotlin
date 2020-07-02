@@ -50,11 +50,11 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         return when (psiElement) {
             is KtIsExpression
             -> factory in IS_FACTORIES
-                    && bindingContext.isYFilesInterface(psiElement.typeReference)
+                    && psiElement.typeReference.isYFilesInterface(bindingContext)
 
             is KtBinaryExpressionWithTypeRHS
             -> factory in AS_FACTORIES
-                    && bindingContext.isYFilesInterface(psiElement.right)
+                    && psiElement.right.isYFilesInterface(bindingContext)
 
             is KtCallExpression,
             is KtTypeReference
@@ -76,10 +76,10 @@ private val Diagnostic.reifiedType: KotlinType?
         else -> null
     }
 
-private fun BindingContext.isYFilesInterface(
-    typeReference: KtTypeReference?
+private fun KtTypeReference?.isYFilesInterface(
+    context: BindingContext
 ): Boolean =
-    get(BindingContext.TYPE, typeReference)
+    context[BindingContext.TYPE, this]
         .isYFilesInterface()
 
 private fun KotlinType?.isYFilesInterface(): Boolean {
