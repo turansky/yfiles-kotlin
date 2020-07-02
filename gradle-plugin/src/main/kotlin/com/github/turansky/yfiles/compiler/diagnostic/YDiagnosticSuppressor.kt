@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
+import com.github.turansky.yfiles.compiler.backend.common.isYEnum
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
-import org.jetbrains.kotlin.codegen.kotlinType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
@@ -88,9 +88,9 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
 }
 
 private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
-    bindingContext: BindingContext
+    context: BindingContext
 ): Boolean {
     if (!isCompanion()) return false
-    val klass = parent as? KtClass ?: return false
-    return klass.kotlinType(bindingContext).isYFilesInterface()
+    val descriptor = context[BindingContext.CLASS, parent?.parent] ?: return false
+    return descriptor.isYFilesInterface() || descriptor.isYEnum
 }
