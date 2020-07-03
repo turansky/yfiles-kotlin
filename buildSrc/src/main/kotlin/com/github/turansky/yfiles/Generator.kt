@@ -88,7 +88,7 @@ fun generateVsdxKotlinDeclarations(
 
     val context: GeneratorContext = SimpleGeneratorContext(
         sourceDir = sourceDir,
-        moduleName = "yfiles/vsdx",
+        moduleName = "vsdx-export-for-yfiles-for-html",
         docBaseUrl = "https://docs.yworks.com/vsdx-html"
     )
 
