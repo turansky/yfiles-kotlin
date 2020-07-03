@@ -93,34 +93,22 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |internal constructor() : $ICLASS_METADATA<T> {
             |   override val yclass: $YCLASS<T>
             |}
-            |    
-            |inline infix fun Any.yIs(type: $INTERFACE_METADATA<*>): Boolean =
-            |    type.asDynamic().isInstance(this)
             |
             |inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
-            |    this != null && this yIs type
+            |    !!type.asDynamic().isInstance(this)
             |
-            |inline infix fun <T : $YOBJECT> Any.yOpt(type: $INTERFACE_METADATA<T>): T? =
-            |    if (this yIs type) {
+            |inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? =
+            |    if (yIs(type)) {
             |        unsafeCast<T>()
             |    } else {
             |        null
             |    }
             |
-            |inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? {
-            |    this ?: return null
+            |inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T {
+            |   require(this yIs type)
             |
-            |    return this yOpt type
+            |   return unsafeCast<T>()
             |}
-            |
-            |inline infix fun <T : $YOBJECT> Any.yAs(type: $INTERFACE_METADATA<T>): T {
-            |    require(this yIs type)
-            |
-            |    return unsafeCast<T>()
-            |}
-            |
-            |inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T =
-            |    requireNotNull(this) yAs type
         """.trimMargin()
 }
 
