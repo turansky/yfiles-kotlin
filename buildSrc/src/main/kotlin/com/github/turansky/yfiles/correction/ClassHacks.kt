@@ -94,8 +94,15 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |   override val yclass: $YCLASS<T>
             |}
             |
+            |@Suppress("UNUSED_PARAMETER")
+            |inline fun jsInstanceOf(
+            |   o: Any?, 
+            |   type: $INTERFACE_METADATA<*>
+            |): Boolean =
+            |    js("o instanceof type")
+            |
             |inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
-            |    !!type.asDynamic().isInstance(this)
+            |    jsInstanceOf(this, type)
             |
             |inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? =
             |    if (yIs(type)) {
