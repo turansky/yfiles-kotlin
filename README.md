@@ -4,7 +4,7 @@
 [![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/d/13384-yfiles?logo=intellij-idea)](https://plugins.jetbrains.com/plugin/13384-yfiles/)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
-# Kotlin/JS declarations generator for yFiles
+# Kotlin/JS support for yFiles
 
 ## [Gradle Plugin](gradle-plugin)
 Resolve inheritance problems
