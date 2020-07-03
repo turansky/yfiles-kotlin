@@ -118,7 +118,6 @@ internal interface GeneratorContext {
     fun clean()
 }
 
-private const val NESTED_CLASS_IN_EXTERNAL_INTERFACE = "@file:Suppress(\"NESTED_CLASS_IN_EXTERNAL_INTERFACE\")\n"
 private const val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
 
 private class SimpleGeneratorContext(
@@ -151,7 +150,6 @@ private class SimpleGeneratorContext(
         }
 
         val suppresses = when (mode) {
-            INTERFACE -> NESTED_CLASS_IN_EXTERNAL_INTERFACE
             EXTENSIONS -> if (classId == YOBJECT) NOTHING_TO_INLINE else ""
             DELEGATE -> if (classId != DP_KEY_BASE) NOTHING_TO_INLINE else ""
             INLINE -> NOTHING_TO_INLINE

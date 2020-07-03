@@ -9,12 +9,16 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 internal val YFILES_PACKAGE = FqName("yfiles")
 internal val LANG_PACKAGE = YFILES_PACKAGE.child(identifier("lang"))
 internal val YOBJECT = LANG_PACKAGE.child(identifier("YObject"))
+internal val YENUM = LANG_PACKAGE.child(identifier("YEnum"))
 
 internal val YCLASS_NAME = identifier("YClass")
 internal val BASE_CLASS_NAME = identifier("BaseClass")
 
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT
+
+internal val ClassDescriptor.isYEnum: Boolean
+    get() = isExternal && fqNameSafe == YENUM
 
 internal fun ClassDescriptor.isYFilesInterface(): Boolean =
     isExternal and (isYObject or implementsYObject)
