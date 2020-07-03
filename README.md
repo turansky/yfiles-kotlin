@@ -47,7 +47,7 @@ Check [inheritance rules](gradle-plugin) on the fly
 | JS library                  | [yFiles for HTML][11] | [VSDX Export][21] |
 | :---                        |         :---:         |      :---:        |
 | Documentation               |        [API][12]      |     [API][22]     |
-| Module                      |        `yfiles`       |   `yfiles/vsdx`   |
+| Module                      |        `yfiles`       | `vsdx-export-for-yfiles-for-html` |
 | Version                     |         `23.0.1`      |      `1.2.0`      |
 | Module format               |         `ES6`         |       `ES6`       |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
