@@ -10,15 +10,15 @@ internal fun applyComparableHacks(source: Source) {
     }
 
     source.types(
-            "ColumnDescriptor",
-            "PartitionCellIdEntry",
-            "RowDescriptor",
-            "SnapResult",
-            "SwimlaneDescriptor",
-            "TimeSpan",
-            "YDimension",
-            "YPoint"
-        )
+        "ColumnDescriptor",
+        "PartitionCellIdEntry",
+        "RowDescriptor",
+        "SnapResult",
+        "SwimlaneDescriptor",
+        "TimeSpan",
+        "YDimension",
+        "YPoint"
+    )
         .forEach {
             val id = it[ID]
 
@@ -32,11 +32,11 @@ internal fun applyComparableHacks(source: Source) {
         }
 
     source.types(
-            "IComparer",
-            "DefaultOutEdgeComparer",
-            "NodeOrderComparer",
-            "NodeWeightComparer"
-        ).flatMap(METHODS)
+        "IComparer",
+        "DefaultOutEdgeComparer",
+        "NodeOrderComparer",
+        "NodeWeightComparer"
+    ).flatMap(METHODS)
         .filter { it[NAME] == "compare" }
         .flatMap(PARAMETERS)
         .forEach { it.changeNullability(false) }

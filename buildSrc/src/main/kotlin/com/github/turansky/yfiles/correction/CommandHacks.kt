@@ -142,10 +142,10 @@ internal fun applyCommandHacks(source: Source) {
         .addGeneric("*")
 
     source.types(
-            "GraphInputMode",
-            "NavigationInputMode",
-            "OverviewInputMode"
-        ).map { it.property("availableCommands") }
+        "GraphInputMode",
+        "NavigationInputMode",
+        "OverviewInputMode"
+    ).map { it.property("availableCommands") }
         .forEach { it.replaceInType(">", "<*>>") }
 
     source.types(
