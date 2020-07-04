@@ -19,8 +19,8 @@ internal fun applyIntersectionHacks(source: Source) {
             .flatMap(PARAMETERS)
             .forEach { it[TYPE] = "T" }
 
-            method("create")
-                .get(RETURNS)
-                .addGeneric("T")
+        method("create")
+            .get(RETURNS)
+            .addGeneric("T")
     }
 }

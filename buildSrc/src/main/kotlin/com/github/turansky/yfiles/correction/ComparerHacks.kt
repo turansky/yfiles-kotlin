@@ -37,7 +37,7 @@ private fun fixComparerInheritors(source: Source) {
             method("compare")
                 .flatMap(PARAMETERS)
                 .forEach { it[TYPE] = generic }
-            }
+        }
     }
 }
 
@@ -61,19 +61,19 @@ private fun fixComparerUtilMethods(source: Source) {
 
 private fun fixComparerAsMethodParameter(source: Source) {
     source.types(
-            "Graph",
-            "YNode",
+        "Graph",
+        "YNode",
 
-            "PortCandidateOptimizer",
-            "PortConstraintOptimizerBase",
+        "PortCandidateOptimizer",
+        "PortConstraintOptimizerBase",
 
-            "AssistantNodePlacer",
-            "ChannelBasedPathRouting",
-            "GivenSequenceSequencer",
-            "MultiComponentLayerer",
+        "AssistantNodePlacer",
+        "ChannelBasedPathRouting",
+        "GivenSequenceSequencer",
+        "MultiComponentLayerer",
 
-            "SwimlaneDescriptor"
-        ).flatMap { it.flatMap(METHODS) + it.optFlatMap(CONSTRUCTORS) }
+        "SwimlaneDescriptor"
+    ).flatMap { it.flatMap(METHODS) + it.optFlatMap(CONSTRUCTORS) }
         .forEach {
             val methodName = it[NAME]
 

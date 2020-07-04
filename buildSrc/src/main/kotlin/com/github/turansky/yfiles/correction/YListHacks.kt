@@ -49,24 +49,24 @@ private fun JSONObject.fixGeneric() {
 
 private fun fixMethodParameter(source: Source) {
     source.types(
-            "YList",
+        "YList",
 
-            "Geom",
-            "TriangulationAlgorithm",
-            "LayoutGraph",
+        "Geom",
+        "TriangulationAlgorithm",
+        "LayoutGraph",
 
-            "LabelingBase",
-            "SelfLoopCalculator",
-            "IntersectionAlgorithm",
-            "ChannelBasedPathRouting",
-            "OrthogonalPatternEdgeRouter",
+        "LabelingBase",
+        "SelfLoopCalculator",
+        "IntersectionAlgorithm",
+        "ChannelBasedPathRouting",
+        "OrthogonalPatternEdgeRouter",
 
-            "ILayer",
+        "ILayer",
 
-            "IElementFactory",
-            "DefaultElementFactory",
-            "MultiPageLayout"
-        ).optFlatMap(METHODS)
+        "IElementFactory",
+        "DefaultElementFactory",
+        "MultiPageLayout"
+    ).optFlatMap(METHODS)
         .forEach {
             val methodName = it[NAME]
 

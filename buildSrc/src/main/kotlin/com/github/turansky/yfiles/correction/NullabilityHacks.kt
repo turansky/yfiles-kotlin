@@ -27,23 +27,23 @@ private fun fixConstructorNullability(source: Source) {
     )
 
     source.types(
-            "DpKeyBase",
-            "EdgeDpKey",
-            "GraphDpKey",
-            "GraphObjectDpKey",
-            "IEdgeLabelLayoutDpKey",
-            "ILabelLayoutDpKey",
-            "INodeLabelLayoutDpKey",
-            "NodeDpKey",
+        "DpKeyBase",
+        "EdgeDpKey",
+        "GraphDpKey",
+        "GraphObjectDpKey",
+        "IEdgeLabelLayoutDpKey",
+        "ILabelLayoutDpKey",
+        "INodeLabelLayoutDpKey",
+        "NodeDpKey",
 
-            "MapEntry",
+        "MapEntry",
 
-            "GraphWrapperBase",
-            "CompositeLayoutStage",
+        "GraphWrapperBase",
+        "CompositeLayoutStage",
 
-            "AspectRatioComponentLayerer",
-            "ConstraintIncrementalLayerer"
-        ).flatMap { it.flatMap(CONSTRUCTORS) }
+        "AspectRatioComponentLayerer",
+        "ConstraintIncrementalLayerer"
+    ).flatMap { it.flatMap(CONSTRUCTORS) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -55,34 +55,34 @@ private fun fixConstructorNullability(source: Source) {
         .changeNullability(false)
 
     source.types(
-            "LookupDecorator",
-            "StripeDecorator",
+        "LookupDecorator",
+        "StripeDecorator",
 
-            "MapperInputHandler",
-            "MapperOutputHandler",
-            "InputHandlerBase",
-            "OutputHandlerBase",
+        "MapperInputHandler",
+        "MapperOutputHandler",
+        "InputHandlerBase",
+        "OutputHandlerBase",
 
-            "DataMapAdapter",
-            "MapperDataProviderAdapter",
+        "DataMapAdapter",
+        "MapperDataProviderAdapter",
 
-            "PathBasedEdgeStyleRenderer",
+        "PathBasedEdgeStyleRenderer",
 
-            "ItemModelManager",
-            "CollectionModelManager"
-        ).flatMap { it.flatMap(CONSTRUCTORS) }
+        "ItemModelManager",
+        "CollectionModelManager"
+    ).flatMap { it.flatMap(CONSTRUCTORS) }
         .flatMap(PARAMETERS)
         .filter { it[TYPE].startsWith(YCLASS) }
         .filter { it[NAME] != "deserializerTargetType" }
         .forEach { it.changeNullability(false) }
 
     source.types(
-            "ItemClickedEventArgs",
-            "ItemTappedEventArgs",
-            "TableItemClickedEventArgs",
-            "TableItemTappedEventArgs",
-            "ItemSelectionChangedEventArgs"
-        ).flatMap { it.flatMap(CONSTRUCTORS) }
+        "ItemClickedEventArgs",
+        "ItemTappedEventArgs",
+        "TableItemClickedEventArgs",
+        "TableItemTappedEventArgs",
+        "ItemSelectionChangedEventArgs"
+    ).flatMap { it.flatMap(CONSTRUCTORS) }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
 }
@@ -159,23 +159,23 @@ private fun fixCollectionsNullability(source: Source) {
     }
 
     source.types(
-            "IEnumerable",
+        "IEnumerable",
 
-            "ICollection",
-            "ObservableCollection",
+        "ICollection",
+        "ObservableCollection",
 
-            "IList",
-            "List",
-            "YList",
+        "IList",
+        "List",
+        "YList",
 
-            "IMap",
-            "HashMap",
+        "IMap",
+        "HashMap",
 
-            "IMapper",
-            "Mapper",
-            "CreationProperties",
-            "ResultItemMapping"
-        ).flatMap { getAffectedMethods(it) }
+        "IMapper",
+        "Mapper",
+        "CreationProperties",
+        "ResultItemMapping"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .filterNot { it[NAME] in excludedParameters }
@@ -205,13 +205,13 @@ private fun fixGraphNullability(source: Source) {
     )
 
     source.types(
-            "ISelectionModel",
-            "DefaultSelectionModel",
-            "GraphSelection",
-            "StripeSelection",
+        "ISelectionModel",
+        "DefaultSelectionModel",
+        "GraphSelection",
+        "StripeSelection",
 
-            "GroupingSupport"
-        ).flatMap { it.flatMap(METHODS) }
+        "GroupingSupport"
+    ).flatMap { it.flatMap(METHODS) }
         .filter { it[NAME] in INCLUDED_METHODS }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
@@ -237,8 +237,8 @@ private fun fixGraphmlNullability(source: Source) {
     )
 
     source.types(
-            "GraphMLIOHandler"
-        ).flatMap { it.flatMap(METHODS) }
+        "GraphMLIOHandler"
+    ).flatMap { it.flatMap(METHODS) }
         .filterNot { it[NAME] in EXCLUDED_METHODS }
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] in INCLUDED_PARAMETERS }
@@ -309,30 +309,30 @@ private fun fixAlgorithmsNullability(source: Source) {
     )
 
     source.types(
-            "AbortHandler",
-            "BipartitionAlgorithm",
-            "CentralityAlgorithm",
-            "Comparers",
-            "Cursors",
-            "CycleAlgorithm",
-            "DataProviders",
-            "Geom",
-            "GraphChecker",
-            "GraphConnectivity",
-            "GroupAlgorithm",
-            "IndependentSetAlgorithm",
-            "IntersectionAlgorithm",
-            "NetworkFlowAlgorithm",
-            "NodeOrderAlgorithm",
-            "PathAlgorithm",
-            "RankAssignmentAlgorithm",
-            "SortingAlgorithm",
-            "ShortestPathAlgorithm",
-            "SpanningTreeAlgorithm",
-            "TransitivityAlgorithm",
-            "TreeAlgorithm",
-            "TriangulationAlgorithm"
-        ).flatMap(METHODS)
+        "AbortHandler",
+        "BipartitionAlgorithm",
+        "CentralityAlgorithm",
+        "Comparers",
+        "Cursors",
+        "CycleAlgorithm",
+        "DataProviders",
+        "Geom",
+        "GraphChecker",
+        "GraphConnectivity",
+        "GroupAlgorithm",
+        "IndependentSetAlgorithm",
+        "IntersectionAlgorithm",
+        "NetworkFlowAlgorithm",
+        "NodeOrderAlgorithm",
+        "PathAlgorithm",
+        "RankAssignmentAlgorithm",
+        "SortingAlgorithm",
+        "ShortestPathAlgorithm",
+        "SpanningTreeAlgorithm",
+        "TransitivityAlgorithm",
+        "TreeAlgorithm",
+        "TriangulationAlgorithm"
+    ).flatMap(METHODS)
         .filter { STATIC in it[MODIFIERS] }
         .filter { it.has(PARAMETERS) }
         .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
@@ -349,22 +349,22 @@ private fun fixAlgorithmsNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "AffineLine",
-            "BorderLine",
-            "Dendrogram",
-            "DfsAlgorithm",
-            "GraphPartitionManager",
-            "IIntersectionHandler",
-            "INodeDistanceProvider",
-            "INodeSequencer",
-            "LayoutGraphHider",
-            "LineSegment",
-            "PlanarEmbedding",
-            "Point2D",
-            "Rectangle2D",
-            "YPoint",
-            "YRectangle"
-        ).flatMap { getAffectedMethods(it) }
+        "AffineLine",
+        "BorderLine",
+        "Dendrogram",
+        "DfsAlgorithm",
+        "GraphPartitionManager",
+        "IIntersectionHandler",
+        "INodeDistanceProvider",
+        "INodeSequencer",
+        "LayoutGraphHider",
+        "LineSegment",
+        "PlanarEmbedding",
+        "Point2D",
+        "Rectangle2D",
+        "YPoint",
+        "YRectangle"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -391,9 +391,9 @@ private fun fixAlgorithmsNullability(source: Source) {
     )
 
     source.types(
-            "YOrientedRectangle",
-            "YVector"
-        ).flatMap { it.flatMap(METHODS) + it.flatMap(CONSTRUCTORS) }
+        "YOrientedRectangle",
+        "YVector"
+    ).flatMap { it.flatMap(METHODS) + it.flatMap(CONSTRUCTORS) }
         .filter { it[ID] in yMethodIds || it.get(NAME) in yMethods }
         .flatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
@@ -443,13 +443,13 @@ private fun fixLayoutNullability(source: Source) {
     )
 
     source.types(
-            "GraphTransformer",
-            "LayoutGraphUtilities",
-            "NodeHalo",
-            "NormalizeGraphElementOrderStage",
-            "PortConstraint",
-            "Swimlanes"
-        ).flatMap(METHODS)
+        "GraphTransformer",
+        "LayoutGraphUtilities",
+        "NodeHalo",
+        "NormalizeGraphElementOrderStage",
+        "PortConstraint",
+        "Swimlanes"
+    ).flatMap(METHODS)
         .filter { STATIC in it[MODIFIERS] }
         .filter { it.has(PARAMETERS) }
         .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
@@ -464,37 +464,37 @@ private fun fixLayoutNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "ILayoutGroupBoundsCalculator",
-            "InsetsGroupBoundsCalculator",
-            "MinimumSizeGroupBoundsCalculator",
+        "ILayoutGroupBoundsCalculator",
+        "InsetsGroupBoundsCalculator",
+        "MinimumSizeGroupBoundsCalculator",
 
-            "EdgeLabelOrientationSupport",
-            "LayoutGroupingSupport",
-            "PartitionGrid",
-            "PortConstraintConfigurator",
-            "PortCandidateSet",
-            "ItemCollectionMapping",
+        "EdgeLabelOrientationSupport",
+        "LayoutGroupingSupport",
+        "PartitionGrid",
+        "PortConstraintConfigurator",
+        "PortCandidateSet",
+        "ItemCollectionMapping",
 
-            "INodeLabelLayoutModel",
-            "DiscreteNodeLabelLayoutModel",
-            "FreeNodeLabelLayoutModel",
+        "INodeLabelLayoutModel",
+        "DiscreteNodeLabelLayoutModel",
+        "FreeNodeLabelLayoutModel",
 
-            "IEdgeLabelLayoutModel",
-            "DiscreteEdgeLabelLayoutModel",
-            "FreeEdgeLabelLayoutModel",
-            "SliderEdgeLabelLayoutModel",
+        "IEdgeLabelLayoutModel",
+        "DiscreteEdgeLabelLayoutModel",
+        "FreeEdgeLabelLayoutModel",
+        "SliderEdgeLabelLayoutModel",
 
-            "LabelCandidate",
-            "EdgeLabelCandidate",
-            "NodeLabelCandidate",
+        "LabelCandidate",
+        "EdgeLabelCandidate",
+        "NodeLabelCandidate",
 
-            "IIntersectionCalculator",
-            "IPortCandidateMatcher",
+        "IIntersectionCalculator",
+        "IPortCandidateMatcher",
 
-            "IProfitModel",
-            "SimpleProfitModel",
-            "ExtendedLabelCandidateProfitModel"
-        ).flatMap { getAffectedMethods(it) }
+        "IProfitModel",
+        "SimpleProfitModel",
+        "ExtendedLabelCandidateProfitModel"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -516,19 +516,19 @@ private fun fixCommonLayoutNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "SequentialLayout",
+        "SequentialLayout",
 
-            "LabelingBase",
-            "MISLabelingBase",
+        "LabelingBase",
+        "MISLabelingBase",
 
-            "MultiPageLayout",
-            "InteractiveOrganicLayout",
-            "OrganicLayout",
-            "PartialLayout",
+        "MultiPageLayout",
+        "InteractiveOrganicLayout",
+        "OrganicLayout",
+        "PartialLayout",
 
-            "ISeriesParallelLayoutPortAssignment",
-            "DefaultSeriesParallelLayoutPortAssignment"
-        ).flatMap { getAffectedMethods(it) }
+        "ISeriesParallelLayoutPortAssignment",
+        "DefaultSeriesParallelLayoutPortAssignment"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -552,24 +552,24 @@ private fun fixStageNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "BendConverter",
-            "ComponentLayout",
-            "CompositeLayoutStage",
-            "FixNodeLayoutStage",
-            "HideGroupsStage",
-            "IsolatedGroupComponentLayout",
-            "LayoutMultiplexer",
-            "MultiStageLayout",
-            "OrientationLayout",
-            "PortCalculator",
-            "RecursiveGroupLayout",
-            "ReverseEdgesStage",
-            "SelfLoopRouter",
+        "BendConverter",
+        "ComponentLayout",
+        "CompositeLayoutStage",
+        "FixNodeLayoutStage",
+        "HideGroupsStage",
+        "IsolatedGroupComponentLayout",
+        "LayoutMultiplexer",
+        "MultiStageLayout",
+        "OrientationLayout",
+        "PortCalculator",
+        "RecursiveGroupLayout",
+        "ReverseEdgesStage",
+        "SelfLoopRouter",
 
-            "IPartitionFinder",
-            "IPartitionInterEdgeRouter",
-            "IPartitionPlacer"
-        ).flatMap { getAffectedMethods(it) }
+        "IPartitionFinder",
+        "IPartitionInterEdgeRouter",
+        "IPartitionPlacer"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -593,15 +593,15 @@ private fun fixMultipageNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "IElementFactory",
-            "DefaultElementFactory",
+        "IElementFactory",
+        "DefaultElementFactory",
 
-            "IElementInfoManager",
-            "LayoutContext",
-            "MultiPageLayoutResult",
+        "IElementInfoManager",
+        "LayoutContext",
+        "MultiPageLayoutResult",
 
-            "ILayoutCallback"
-        ).flatMap { getAffectedMethods(it) }
+        "ILayoutCallback"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -641,54 +641,54 @@ private fun fixHierarchicNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "IItemFactory",
-            "IEdgeReverser",
+        "IItemFactory",
+        "IEdgeReverser",
 
-            "ILayer",
-            "ILayerer",
-            "AsIsLayerer",
-            "AspectRatioComponentLayerer",
-            "BFSLayerer",
-            "ConstraintIncrementalLayerer",
-            "GivenLayersLayerer",
-            "MultiComponentLayerer",
-            "TopologicalLayerer",
-            "WeightedLayerer",
+        "ILayer",
+        "ILayerer",
+        "AsIsLayerer",
+        "AspectRatioComponentLayerer",
+        "BFSLayerer",
+        "ConstraintIncrementalLayerer",
+        "GivenLayersLayerer",
+        "MultiComponentLayerer",
+        "TopologicalLayerer",
+        "WeightedLayerer",
 
-            "ISequencer",
-            "AsIsSequencer",
-            "DefaultLayerSequencer",
-            "GivenSequenceSequencer",
+        "ISequencer",
+        "AsIsSequencer",
+        "DefaultLayerSequencer",
+        "GivenSequenceSequencer",
 
-            "IDrawingDistanceCalculator",
-            "DefaultDrawingDistanceCalculator",
-            "TypeBasedDrawingDistanceCalculator",
+        "IDrawingDistanceCalculator",
+        "DefaultDrawingDistanceCalculator",
+        "TypeBasedDrawingDistanceCalculator",
 
-            "IPortConstraintOptimizer",
-            "PortCandidateOptimizer",
-            "PortConstraintOptimizerBase",
-            "PortConstraintOptimizerSameLayerData",
+        "IPortConstraintOptimizer",
+        "PortCandidateOptimizer",
+        "PortConstraintOptimizerBase",
+        "PortConstraintOptimizerSameLayerData",
 
-            "HierarchicLayout",
-            "HierarchicLayoutCore",
+        "HierarchicLayout",
+        "HierarchicLayoutCore",
 
-            "ILayeredComponentsMerger",
-            "DefaultLayeredComponentsMerger",
+        "ILayeredComponentsMerger",
+        "DefaultLayeredComponentsMerger",
 
-            "IPortAllocator",
-            "DefaultPortAllocator",
+        "IPortAllocator",
+        "DefaultPortAllocator",
 
-            "IHierarchicLayoutNodePlacer",
-            "SimplexNodePlacer",
+        "IHierarchicLayoutNodePlacer",
+        "SimplexNodePlacer",
 
-            "IIncrementalHintsFactory",
-            "ILayerConstraintFactory",
-            "ISequenceConstraintFactory",
-            "ILayoutDataProvider",
-            "INodeData",
+        "IIncrementalHintsFactory",
+        "ILayerConstraintFactory",
+        "ISequenceConstraintFactory",
+        "ILayoutDataProvider",
+        "INodeData",
 
-            "SelfLoopCalculator"
-        ).flatMap { getAffectedMethods(it) }
+        "SelfLoopCalculator"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[NAME] in excludedParameters }
         .filterNot { it[TYPE] in excludedTypes }
@@ -711,8 +711,8 @@ private fun fixRouterNullability(source: Source) {
     )
 
     source.types(
-            "BusRepresentations"
-        ).flatMap(METHODS)
+        "BusRepresentations"
+    ).flatMap(METHODS)
         .filter { it.has(PARAMETERS) }
         .filterNot { it[NAME] in excludedMethods }
         .flatMap(PARAMETERS)
@@ -731,45 +731,45 @@ private fun fixRouterNullability(source: Source) {
             }
 
     source.types(
-            "IDynamicDecomposition",
-            "IDecompositionListener",
-            "IGraphPartitionExtension",
-            "IPartition",
-            "IObstaclePartition",
-            "GraphPartition",
-            "GraphPartitionExtensionAdapter",
-            "DynamicObstacleDecomposition",
+        "IDynamicDecomposition",
+        "IDecompositionListener",
+        "IGraphPartitionExtension",
+        "IPartition",
+        "IObstaclePartition",
+        "GraphPartition",
+        "GraphPartitionExtensionAdapter",
+        "DynamicObstacleDecomposition",
 
-            "BusRouterBusDescriptor",
-            "Channel",
-            "CellSegmentInfo",
-            "EdgeCellInfo",
-            "EdgeInfo",
-            "Interval",
-            "Obstacle",
-            "OrthogonalInterval",
-            "PartitionCell",
-            "PartitionCellBorder",
+        "BusRouterBusDescriptor",
+        "Channel",
+        "CellSegmentInfo",
+        "EdgeCellInfo",
+        "EdgeInfo",
+        "Interval",
+        "Obstacle",
+        "OrthogonalInterval",
+        "PartitionCell",
+        "PartitionCellBorder",
 
-            "EdgeRouterPath",
-            "PathSearch",
-            "PathSearchConfiguration",
-            "PathSearchContext",
-            "PathSearchExtension",
-            "PathSearchResult",
-            "SegmentGroup",
-            "SegmentInfo",
-            "SegmentInfoBase",
+        "EdgeRouterPath",
+        "PathSearch",
+        "PathSearchConfiguration",
+        "PathSearchContext",
+        "PathSearchExtension",
+        "PathSearchResult",
+        "SegmentGroup",
+        "SegmentInfo",
+        "SegmentInfoBase",
 
-            "ChannelRoutingTool",
-            "ChannelBasedPathRouting",
-            "IEnterIntervalCalculator",
+        "ChannelRoutingTool",
+        "ChannelBasedPathRouting",
+        "IEnterIntervalCalculator",
 
-            "ChannelEdgeRouter",
-            "EdgeRouter",
-            "OrthogonalPatternEdgeRouter",
-            "ParallelEdgeRouter"
-        ).flatMap { getAffectedMethods(it) }
+        "ChannelEdgeRouter",
+        "EdgeRouter",
+        "OrthogonalPatternEdgeRouter",
+        "ParallelEdgeRouter"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
@@ -795,42 +795,42 @@ private fun fixTreeNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-            "IProcessor",
+        "IProcessor",
 
-            "ITreeLayoutNodePlacer",
-            "IFromSketchNodePlacer",
-            "AspectRatioNodePlacer",
-            "AssistantNodePlacer",
-            "BusNodePlacer",
-            "CompactNodePlacer",
-            "DefaultNodePlacer",
-            "DelegatingNodePlacer",
-            "DendrogramNodePlacer",
-            "DoubleLineNodePlacer",
-            "FreeNodePlacer",
-            "GridNodePlacer",
-            "GroupedNodePlacer",
-            "LayeredNodePlacer",
-            "LeafNodePlacer",
-            "LeftRightNodePlacer",
-            "NodePlacerBase",
-            "RotatableNodePlacerBase",
-            "SimpleNodePlacer",
+        "ITreeLayoutNodePlacer",
+        "IFromSketchNodePlacer",
+        "AspectRatioNodePlacer",
+        "AssistantNodePlacer",
+        "BusNodePlacer",
+        "CompactNodePlacer",
+        "DefaultNodePlacer",
+        "DelegatingNodePlacer",
+        "DendrogramNodePlacer",
+        "DoubleLineNodePlacer",
+        "FreeNodePlacer",
+        "GridNodePlacer",
+        "GroupedNodePlacer",
+        "LayeredNodePlacer",
+        "LeafNodePlacer",
+        "LeftRightNodePlacer",
+        "NodePlacerBase",
+        "RotatableNodePlacerBase",
+        "SimpleNodePlacer",
 
-            "ITreeLayoutPortAssignment",
-            "DefaultTreeLayoutPortAssignment",
+        "ITreeLayoutPortAssignment",
+        "DefaultTreeLayoutPortAssignment",
 
-            "SubtreeShape",
-            "RootNodeAlignment",
-            "RotatableNodePlacerMatrix",
+        "SubtreeShape",
+        "RootNodeAlignment",
+        "RotatableNodePlacerMatrix",
 
-            "AspectRatioTreeLayout",
-            "BalloonLayout",
+        "AspectRatioTreeLayout",
+        "BalloonLayout",
 
-            "TreeLayout",
-            "TreeComponentLayout",
-            "TreeReductionStage"
-        ).flatMap { getAffectedMethods(it) }
+        "TreeLayout",
+        "TreeComponentLayout",
+        "TreeReductionStage"
+    ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
