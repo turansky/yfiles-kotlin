@@ -55,6 +55,11 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
 
+            is KtClass
+            -> factory === WRONG_EXTERNAL_DECLARATION
+                    && diagnostic.funInterfaceCheck
+                    && psiElement.isYFilesInterface(bindingContext)
+
             else -> false
         }
     }
@@ -66,11 +71,22 @@ private val Diagnostic.reifiedType: KotlinType?
         else -> null
     }
 
+private val Diagnostic.funInterfaceCheck: Boolean
+    get() = this is DiagnosticWithParameters1<*, *>
+            && a == "fun interface"
+
 private fun KtTypeReference?.isYFilesInterface(
     context: BindingContext
 ): Boolean =
     context[BindingContext.TYPE, this]
         .isYFilesInterface()
+
+private fun KtClass.isYFilesInterface(
+    context: BindingContext
+): Boolean {
+    val descriptor = context[BindingContext.CLASS, this] ?: return false
+    return descriptor.isYFilesInterface()
+}
 
 private fun KotlinType?.isYFilesInterface(): Boolean {
     this ?: return false
