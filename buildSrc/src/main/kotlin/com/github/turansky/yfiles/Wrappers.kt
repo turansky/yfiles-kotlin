@@ -221,6 +221,9 @@ internal class Interface(source: JSONObject) : ExtendedType(source) {
                 .singleOrNull { it.abstract }
                 ?.takeIf { it.functional }
         }
+
+    val functional: Boolean =
+        qiiMethod != null && functionalMethod != null
 }
 
 internal class Enum(source: JSONObject) : Type(source) {
