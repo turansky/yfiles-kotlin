@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
     kotlin("js") version "1.3.72" apply false
-    id("de.undercouch.download") version "4.1.0" apply false
+    id("de.undercouch.download") version "4.0.4" apply false
 }
 
 allprojects {
