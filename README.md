@@ -71,9 +71,6 @@ Check [inheritance rules](gradle-plugin) on the fly
 ```Kotlin
 // JS: IVisibilityTestable.$class
 val clazz = IVisibilityTestable.yclass
-
-// JS: IVisibilityTestable.isInstance(o)
-val isInstance = IVisibilityTestable.isInstance(o)
 ```
 
 #### Primitive types
@@ -150,7 +147,7 @@ val layout = HierarchicLayout {
 ## Quick interface implementation
 ```
 val mode = CreateEdgeInputMode {
-    startHitTestable = IHitTestable { _, location -> location.x > 0.0 }
+    beginHitTestable = IHitTestable { _, location -> location.x > 0.0 }
     endHitTestable = IHitTestable { _, location -> location.x < 0.0 }
 }
 ```
