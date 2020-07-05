@@ -333,10 +333,9 @@ internal class KotlinFileGenerator(
                 .replace("IEnumerable<", "IEnumerable<out ")
                 .replace("IListEnumerable<", "IListEnumerable<out ")
 
-            val modifier = exp(declaration.functional, "fun")
             return documentation +
                     externalAnnotation +
-                    "external $modifier interface $interfaceDeclaration ${parentString()} {\n" +
+                    "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
                     "}"
