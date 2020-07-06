@@ -35,18 +35,18 @@ internal class YClassTransformer(
         }
 
     override fun visitClass(declaration: IrClass): IrStatement {
-        if (declaration.transformRequired) {
-            val arrow = findClassSymbol(ARROW_ID)
+        if (!declaration.transformRequired)
+            return declaration
 
-            declaration.superTypes = listOf(
-                IrSimpleTypeImpl(
-                    classifier = arrow,
-                    hasQuestionMark = false,
-                    arguments = emptyList(),
-                    annotations = emptyList()
-                )
+        val arrow = findClassSymbol(ARROW_ID)
+        declaration.superTypes = listOf(
+            IrSimpleTypeImpl(
+                classifier = arrow,
+                hasQuestionMark = false,
+                arguments = emptyList(),
+                annotations = emptyList()
             )
-        }
+        )
 
         return super.visitClass(declaration)
     }
