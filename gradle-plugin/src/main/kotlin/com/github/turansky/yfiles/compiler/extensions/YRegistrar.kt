@@ -18,7 +18,7 @@ class YRegistrar : ComponentRegistrar {
     ) {
         JsSyntheticTranslateExtension.registerExtension(project, JsExtension())
 
-        IrGenerationExtension.registerExtension(project, YLoweringExtension())
+        IrGenerationExtension.registerExtension(project, YTransformExtension())
         StorageComponentContainerContributor.registerExtension(project, YStorageComponentContainerContributor())
 
         Extensions.getRootArea()
