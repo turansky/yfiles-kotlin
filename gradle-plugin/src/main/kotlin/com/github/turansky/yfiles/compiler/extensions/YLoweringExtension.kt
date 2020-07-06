@@ -15,7 +15,8 @@ internal class YLoweringExtension : IrGenerationExtension {
         val classTransformer = YClassTransformer(pluginContext)
         moduleFragment.transformChildrenVoid(classTransformer)
 
-        // TODO: check why order is important
+        // TODO: update after order fix
+        //   https://youtrack.jetbrains.com/issue/KT-39879
         val castLowering = YCastTransformer()
         moduleFragment.transformChildrenVoid(castLowering)
     }
