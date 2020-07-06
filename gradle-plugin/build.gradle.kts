@@ -1,5 +1,6 @@
 plugins {
     `java-gradle-plugin`
+    `kotlin-dsl`
 
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.turansky.kfc.plugin-publish") version "0.8.5"
@@ -10,6 +11,10 @@ plugins {
 repositories {
     jcenter()
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
+}
+
+kotlinDslPluginOptions {
+    experimentalWarning.set(false)
 }
 
 dependencies {
