@@ -30,7 +30,7 @@ gradlePlugin {
     plugins {
         create("yfiles") {
             id = "com.github.turansky.yfiles"
-            implementationClass = "com.github.turansky.yfiles.gradle.plugin.YFilesGradlePlugin"
+            implementationClass = "com.github.turansky.yfiles.gradle.plugin.YFilesGradleSubplugin"
         }
     }
 }
