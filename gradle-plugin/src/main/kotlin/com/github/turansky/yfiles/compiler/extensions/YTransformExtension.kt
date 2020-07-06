@@ -12,12 +12,10 @@ internal class YTransformExtension : IrGenerationExtension {
         moduleFragment: IrModuleFragment,
         pluginContext: IrPluginContext
     ) {
-        val classTransformer = YClassTransformer(pluginContext)
-        moduleFragment.transformChildrenVoid(classTransformer)
-
-        // TODO: update after order fix
-        //   https://youtrack.jetbrains.com/issue/KT-39879
         val castLowering = YCastTransformer()
         moduleFragment.transformChildrenVoid(castLowering)
+
+        val classTransformer = YClassTransformer(pluginContext)
+        moduleFragment.transformChildrenVoid(classTransformer)
     }
 }
