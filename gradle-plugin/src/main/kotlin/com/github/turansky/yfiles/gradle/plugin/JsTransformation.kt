@@ -1,4 +1,3 @@
-// TODO: Remove after fix https://youtrack.jetbrains.com/issue/KT-34770
 package com.github.turansky.yfiles.gradle.plugin
 
 import org.gradle.api.Project
@@ -11,12 +10,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinJsDce
 import java.io.File
-
-private val DESCRIPTOR_REGEX = Regex("(Object\\.defineProperty\\(.+\\.prototype, '[a-zA-Z]+', \\{)")
-
-private fun String.fixPropertyDeclaration(): String =
-    replace(DESCRIPTOR_REGEX, "$1 configurable: true,")
-
 
 internal fun Project.configureJsTransformation() {
     plugins.withType<KotlinJsPluginWrapper> {
@@ -71,10 +64,8 @@ private fun TaskContainer.copyTransformedJs(
 private class TransformationConfig(val originalOutputFile: File) {
     val originalOutputDir: File = originalOutputFile.parentFile
 
-    val tempOutputDir: File = originalOutputFile
-        .parentFile
-        .parentFile
-        .resolve("kotlin-temp")
+    val tempOutputDir: File = originalOutputDir.parentFile
+        .resolve("${originalOutputDir.name}-temp")
 
     val tempOutputFile: File = tempOutputDir.resolve(originalOutputFile.name)
 }
