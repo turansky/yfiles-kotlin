@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.compiler.backend.ir
 
-import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
@@ -19,30 +19,36 @@ private val ARROW_ID = ClassId(
     Name.identifier("Arrow")
 )
 
-internal class YClassLowering(
+internal class YClassTransformer(
     private val context: IrPluginContext
-) : IrElementTransformerVoid(), ClassLoweringPass {
+) : IrElementTransformerVoid() {
     private fun findClassSymbol(id: ClassId): IrClassSymbol =
         context.referenceClass(id.asSingleFqName())!!
 
-    override fun lower(irClass: IrClass) {
-        if (irClass.isExternal) return
-        if (irClass.isInline) return
-        if (!irClass.isClass) return
-        // if (!irClass.implementsYFilesInterface) return
-        if (irClass.name.identifier != "AbstractArrow2") return
+    private val IrClass.transformRequired
+        get() = when {
+            isExternal -> false
+            isInline -> false
+            !isClass -> false
+            // else -> implementsYFilesInterface
+            else -> name.identifier == "AbstractArrow2"
+        }
 
-        val arrow = findClassSymbol(ARROW_ID)
+    override fun visitClass(declaration: IrClass): IrStatement {
+        if (declaration.transformRequired) {
+            val arrow = findClassSymbol(ARROW_ID)
 
-        irClass.superTypes = listOf(
-            IrSimpleTypeImpl(
-                classifier = arrow,
-                hasQuestionMark = false,
-                arguments = emptyList(),
-                annotations = emptyList()
+            declaration.superTypes = listOf(
+                IrSimpleTypeImpl(
+                    classifier = arrow,
+                    hasQuestionMark = false,
+                    arguments = emptyList(),
+                    annotations = emptyList()
+                )
             )
-        )
-        irClass.transformChildrenVoid()
+        }
+
+        return super.visitClass(declaration)
     }
 
     override fun visitDelegatingConstructorCall(
