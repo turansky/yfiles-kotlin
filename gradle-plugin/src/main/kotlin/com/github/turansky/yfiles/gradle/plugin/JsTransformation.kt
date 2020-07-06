@@ -64,10 +64,8 @@ private fun TaskContainer.copyTransformedJs(
 private class TransformationConfig(val originalOutputFile: File) {
     val originalOutputDir: File = originalOutputFile.parentFile
 
-    val tempOutputDir: File = originalOutputFile
-        .parentFile
-        .parentFile
-        .resolve("kotlin-temp")
+    val tempOutputDir: File = originalOutputDir.parentFile
+        .resolve("${originalOutputDir.name}-temp")
 
     val tempOutputFile: File = tempOutputDir.resolve(originalOutputFile.name)
 }
