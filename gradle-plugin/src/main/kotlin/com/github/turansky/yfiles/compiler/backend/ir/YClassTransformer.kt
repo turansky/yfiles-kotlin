@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.ClassId
@@ -49,11 +50,9 @@ internal class YClassTransformer(
         val baseClass = baseClass()
         baseClasses.add(baseClass)
 
-        /*
         declaration.superTypes = listOf(
             baseClass.typeWith(emptyList())
         )
-        */
 
         return super.visitClass(declaration)
     }
