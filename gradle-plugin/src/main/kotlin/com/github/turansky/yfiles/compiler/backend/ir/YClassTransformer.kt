@@ -3,25 +3,20 @@ package com.github.turansky.yfiles.compiler.backend.ir
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.Name
-
-private val ARROW_ID = ClassId(
-    FqName("yfiles.styles"),
-    Name.identifier("Arrow")
-)
 
 internal class YClassTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
+    private val baseClasses = mutableListOf<IrClass>()
+
     private fun findClassSymbol(id: ClassId): IrClassSymbol =
         context.referenceClass(id.asSingleFqName())!!
 
@@ -34,19 +29,31 @@ internal class YClassTransformer(
             else -> name.identifier == "AbstractArrow2"
         }
 
+    override fun visitFile(declaration: IrFile): IrFile {
+        val file = super.visitFile(declaration)
+
+        for (baseClass in baseClasses) {
+            baseClass.parent = file
+            file.declarations.add(baseClass)
+        }
+
+        baseClasses.clear()
+
+        return file
+    }
+
     override fun visitClass(declaration: IrClass): IrStatement {
         if (!declaration.transformRequired)
             return declaration
 
-        val arrow = findClassSymbol(ARROW_ID)
+        val baseClass = baseClass()
+        baseClasses.add(baseClass)
+
+        /*
         declaration.superTypes = listOf(
-            IrSimpleTypeImpl(
-                classifier = arrow,
-                hasQuestionMark = false,
-                arguments = emptyList(),
-                annotations = emptyList()
-            )
+            baseClass.typeWith(emptyList())
         )
+        */
 
         return super.visitClass(declaration)
     }
