@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.ContentMode.CLASS
-import com.github.turansky.yfiles.ContentMode.EXTENSIONS
+import com.github.turansky.yfiles.ContentMode.*
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
@@ -25,20 +24,20 @@ internal fun generateResourceTypes(
         .joinToString(separator = "\n\n", postfix = "\n")
 
     // language=kotlin
-    context["yfiles.lang.Hotkey"] = """
+    context["yfiles.lang.Hotkey", INLINE] = """
         @JsName("String")
         sealed external class Hotkey
         
-        fun Hotkey(source:String):Hotkey = 
+        inline fun Hotkey(source:String):Hotkey = 
             source.unsafeCast<Hotkey>()
     """.trimIndent()
 
     // language=kotlin
-    context["yfiles.lang.ResourceKey"] = """
+    context["yfiles.lang.ResourceKey", INLINE] = """
         @JsName("String")
         sealed external class ResourceKey<T:Any>
         
-        fun <T:Any> ResourceKey(source:String):ResourceKey<T> = 
+        inline fun <T:Any> ResourceKey(source:String):ResourceKey<T> = 
             source.unsafeCast<ResourceKey<T>>()
         
         object ResourceKeys {

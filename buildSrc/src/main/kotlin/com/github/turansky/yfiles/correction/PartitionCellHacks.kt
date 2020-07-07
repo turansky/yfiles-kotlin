@@ -1,13 +1,14 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.ContentMode.INLINE
 
 internal fun generatePartitionCellUtils(context: GeneratorContext) {
     // language=kotlin
-    context["yfiles.router.PartitionCellKey"] = """
+    context["yfiles.router.PartitionCellKey", INLINE] = """
             |external interface PartitionCellKey<T:Any>
             |
-            |fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 
+            |inline fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 
             |    source.unsafeCast<PartitionCellKey<T>>()
         """.trimMargin()
 }

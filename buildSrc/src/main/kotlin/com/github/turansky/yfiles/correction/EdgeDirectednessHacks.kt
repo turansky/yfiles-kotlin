@@ -1,16 +1,17 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_NUMBER
 
 internal const val EDGE_DIRECTEDNESS = "yfiles.algorithms.EdgeDirectedness"
 
 internal fun generateEdgeDirectednessUtils(context: GeneratorContext) {
-    context[EDGE_DIRECTEDNESS] = """
+    context[EDGE_DIRECTEDNESS, INLINE] = """
         @JsName("Number")
         sealed class EdgeDirectedness
         
-        fun EdgeDirectedness(value: Double): $EDGE_DIRECTEDNESS = 
+        inline fun EdgeDirectedness(value: Double): $EDGE_DIRECTEDNESS = 
             value.unsafeCast<$EDGE_DIRECTEDNESS>()
         
         object EdgeDirectednesses {
