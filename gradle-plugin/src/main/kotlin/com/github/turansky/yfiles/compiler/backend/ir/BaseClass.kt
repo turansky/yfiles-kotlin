@@ -9,10 +9,12 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.name.Name
 
+private const val Y = "\$module\$yfiles"
+
 internal fun baseClass(): IrClass = buildClass {
     origin = IrDeclarationOrigin.FILE_CLASS
 
-    name = Name.identifier("BaseClass_YYYY")
+    name = Name.identifier("$Y.BaseClass($Y.IArrow)")
     kind = ClassKind.CLASS
     visibility = Visibilities.PRIVATE
     modality = Modality.ABSTRACT
