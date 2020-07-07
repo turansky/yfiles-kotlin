@@ -12,9 +12,9 @@ abstract class AbstractArrow : IArrow {
 
 @JsExport
 @ExperimentalJsExport
-abstract class AbstractArrow2 : AbstractArrow() {
-    override val cropLength = 14.0
-    override val length = 43.0
+abstract class AbstractArrow2 {
+    val cropLength = 14.0
+    val length = 43.0
 
     fun castTest() {
         val i = js("({})")
@@ -30,6 +30,13 @@ abstract class AbstractArrow2 : AbstractArrow() {
         println(t1)
         println(t2)
     }
+}
+
+@JsExport
+@ExperimentalJsExport
+abstract class AbstractArrow3 : AbstractArrow() {
+    override val cropLength = 15.0
+    override val length = 44.0
 }
 
 abstract class ZArrow {
