@@ -16,7 +16,7 @@ internal class YTransformExtension : IrGenerationExtension {
         val castTransformer = YCastTransformer()
         moduleFragment.transformChildrenVoid(castTransformer)
 
-        val parameterTransformer = YParameterTransformer()
+        val parameterTransformer = YParameterTransformer(pluginContext)
         moduleFragment.transformChildrenVoid(parameterTransformer)
 
         val classTransformer = YClassTransformer(pluginContext)
