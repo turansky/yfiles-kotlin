@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.correction
 
+import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 
@@ -7,11 +8,11 @@ private val BINDING_LIKE = "yfiles.binding.BindingLike"
 
 internal fun generateBindingUtils(context: GeneratorContext) {
     // language=kotlin
-    context[BINDING_LIKE] =
+    context[BINDING_LIKE, INLINE] =
         """
             |external interface BindingLike
             |
-            |fun BindingLike(source:Any):BindingLike = 
+            |inline fun BindingLike(source:Any):BindingLike = 
             |    source.unsafeCast<$BINDING_LIKE>()
         """.trimMargin()
 }

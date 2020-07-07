@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.json.get
 import com.github.turansky.yfiles.json.strictRemove
 
@@ -11,11 +12,11 @@ private fun propertyKey(typeParameter: String) =
 
 internal fun generateCreationPropertyUtils(context: GeneratorContext) {
     // language=kotlin
-    context[CREATION_PROPERTY_KEY] = """
+    context[CREATION_PROPERTY_KEY, INLINE] = """
             |@JsName("String")
             |sealed external class CreationPropertyKey<T : Any> 
             |
-            |fun <T : Any> CreationPropertyKey(source: String): CreationPropertyKey<T> =
+            |inline fun <T : Any> CreationPropertyKey(source: String): CreationPropertyKey<T> =
             |    source.unsafeCast<CreationPropertyKey<T>>()
         """.trimMargin()
 }
