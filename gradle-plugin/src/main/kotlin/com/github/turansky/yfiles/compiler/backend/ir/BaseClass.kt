@@ -14,7 +14,7 @@ internal fun baseClass(): IrClass = buildClass {
 
     name = Name.identifier("BaseClass_YYYY")
     kind = ClassKind.CLASS
-    visibility = Visibilities.LOCAL
+    visibility = Visibilities.PRIVATE
     modality = Modality.ABSTRACT
     isExternal = true
 }.apply {
