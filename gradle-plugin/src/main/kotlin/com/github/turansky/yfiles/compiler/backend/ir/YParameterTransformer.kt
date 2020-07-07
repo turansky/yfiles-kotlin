@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.compiler.backend.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrExpression
@@ -20,8 +21,11 @@ internal class YParameterTransformer(
         )
 
     private val IrCall.checkRequired: Boolean
-        get() = symbol.owner.run {
-            isExternal && valueParameters.any { it.hasDefaultValue() }
+        get() {
+            val function = symbol.owner
+            val klass = function.parent as? IrClass ?: return false
+
+            return klass.isExternal && function.valueParameters.any { it.hasDefaultValue() }
         }
 
     private fun IrCall.fixDefaultValues() {
