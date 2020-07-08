@@ -1,9 +1,6 @@
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-// TODO: remove after plugin fix
-@Ignore
 class BaseClassTest {
     @Test
     fun comboClassName() {
