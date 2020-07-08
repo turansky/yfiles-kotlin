@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
-import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 
 private val SUPPORTED_OPERATORS: Set<IrTypeOperator> = setOf(
     INSTANCEOF,
@@ -23,18 +22,22 @@ private val SUPPORTED_OPERATORS: Set<IrTypeOperator> = setOf(
 internal class YCastTransformer : IrElementTransformerVoid() {
     override fun visitTypeOperator(
         expression: IrTypeOperatorCall
-    ): IrExpression {
-        expression.transformChildrenVoid(this)
+    ): IrExpression =
+        when (val operatorCall = super.visitTypeOperator(expression)) {
+            is IrTypeOperatorCall -> operatorCall.correct()
+            else -> operatorCall
+        }
 
-        if (expression.operator !in SUPPORTED_OPERATORS)
-            return expression
+    private fun IrTypeOperatorCall.correct(): IrTypeOperatorCall {
+        if (operator !in SUPPORTED_OPERATORS)
+            return this
 
-        val type = expression.typeOperand.getClass()
+        val type = typeOperand.getClass()
             ?.takeIf { it.isYFilesInterface() }
             ?.companionObject() as? IrClass
-            ?: return expression
+            ?: return this
 
-        return IrTypeOperatorCallDelegate(expression, type.defaultType)
+        return IrTypeOperatorCallDelegate(this, type.defaultType)
     }
 }
 
