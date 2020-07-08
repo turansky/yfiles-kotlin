@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.compiler.backend.ir
 
+import com.github.turansky.yfiles.compiler.backend.common.YOBJECT
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrClass
@@ -7,6 +8,7 @@ import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
+import org.jetbrains.kotlin.ir.types.isSubtypeOfClass
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 
@@ -24,8 +26,11 @@ internal class YParameterTransformer(
         get() {
             val function = symbol.owner
             val klass = function.parent as? IrClass ?: return false
+            val yobject = context.referenceClass(YOBJECT) ?: return false
 
-            return klass.isExternal && function.valueParameters.any { it.hasDefaultValue() }
+            return klass.isExternal
+                    && klass.symbol.isSubtypeOfClass(yobject)
+                    && function.valueParameters.any { it.hasDefaultValue() }
         }
 
     private fun IrCall.fixDefaultValues() {
