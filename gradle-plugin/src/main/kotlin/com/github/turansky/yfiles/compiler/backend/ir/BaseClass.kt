@@ -35,5 +35,4 @@ internal fun baseClass(superTypes: List<IrType>): IrClass = buildClass {
     isExternal = true
 }.apply {
     createParameterDeclarations()
-    this.superTypes = superTypes
 }

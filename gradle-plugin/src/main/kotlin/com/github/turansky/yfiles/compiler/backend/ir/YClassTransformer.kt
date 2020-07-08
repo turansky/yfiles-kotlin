@@ -21,8 +21,7 @@ internal class YClassTransformer(
             isExternal -> false
             isInline -> false
             !isClass -> false
-            // else -> implementsYFilesInterface
-            else -> name.identifier == "AbstractArrow2"
+            else -> implementsYFilesInterface
         }
 
     override fun visitFile(declaration: IrFile): IrFile {
@@ -45,9 +44,7 @@ internal class YClassTransformer(
         val baseClass = baseClass(declaration.superTypes)
         baseClasses.add(baseClass)
 
-        declaration.superTypes = listOf(
-            baseClass.typeWith(emptyList())
-        )
+        declaration.superTypes += baseClass.typeWith(emptyList())
 
         return super.visitClass(declaration)
     }
