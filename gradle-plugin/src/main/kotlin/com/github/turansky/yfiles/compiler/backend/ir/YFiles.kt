@@ -3,12 +3,13 @@ package com.github.turansky.yfiles.compiler.backend.ir
 import com.github.turansky.yfiles.compiler.backend.common.YOBJECT
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
+import org.jetbrains.kotlin.ir.util.isInterface
 
 private val IrClass.isYObject: Boolean
     get() = isExternal && fqNameWhenAvailable == YOBJECT
 
 internal fun IrClass.isYFilesInterface(): Boolean =
-    isExternal and (isYObject or implementsYObject)
+    isExternal && isInterface && (isYObject || implementsYObject)
 
 internal val IrClass.implementsYObjectDirectly: Boolean
     get() = superInterfaces
