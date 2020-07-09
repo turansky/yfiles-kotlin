@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.ir.types.isSubtypeOfClass
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 
-internal class YParameterTransformer(
+internal class DefaultParameterTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
     private fun constNull(offsetSource: IrElement): IrConst<Nothing?> =
