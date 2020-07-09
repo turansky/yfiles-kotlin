@@ -150,7 +150,7 @@ private class SimpleGeneratorContext(
         }
 
         val suppresses = when (mode) {
-            EXTENSIONS -> if (classId == YOBJECT) NOTHING_TO_INLINE else ""
+            EXTENSIONS -> if (classId == YOBJECT || classId == BASE_CLASS) NOTHING_TO_INLINE else ""
             DELEGATE -> if (classId != DP_KEY_BASE) NOTHING_TO_INLINE else ""
             INLINE -> NOTHING_TO_INLINE
             else -> ""
