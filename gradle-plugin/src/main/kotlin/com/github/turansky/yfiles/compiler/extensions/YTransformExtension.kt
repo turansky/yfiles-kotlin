@@ -13,13 +13,12 @@ internal class YTransformExtension : IrGenerationExtension {
         moduleFragment: IrModuleFragment,
         pluginContext: IrPluginContext
     ) {
-        val castTransformer = CastTransformer()
-        moduleFragment.transformChildrenVoid(castTransformer)
-
-        val parameterTransformer = DefaultParameterTransformer(pluginContext)
-        moduleFragment.transformChildrenVoid(parameterTransformer)
-
-        val classTransformer = SuperTypeTransformer(pluginContext)
-        moduleFragment.transformChildrenVoid(classTransformer)
+        sequenceOf(
+            CastTransformer(),
+            DefaultParameterTransformer(pluginContext),
+            SuperTypeTransformer(pluginContext)
+        ).forEach { transformer ->
+            moduleFragment.transformChildrenVoid(transformer)
+        }
     }
 }
