@@ -19,7 +19,7 @@ private val SUPPORTED_OPERATORS: Set<IrTypeOperator> = setOf(
     SAFE_CAST
 )
 
-internal class YCastTransformer : IrElementTransformerVoid() {
+internal class CastTransformer : IrElementTransformerVoid() {
     override fun visitTypeOperator(
         expression: IrTypeOperatorCall
     ): IrExpression =

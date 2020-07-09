@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.name.FqName
 
 private val CALL_SUPER_CONSTRUCTOR = FqName("yfiles.lang.callSuperConstructor")
 
-internal class YClassTransformer(
+internal class SuperTypeTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
     private val baseClasses = mutableListOf<IrClass>()
