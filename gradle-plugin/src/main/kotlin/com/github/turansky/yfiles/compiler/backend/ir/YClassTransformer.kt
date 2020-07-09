@@ -6,10 +6,15 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
+import org.jetbrains.kotlin.name.FqName
+
+private val CALL_SUPER_CONSTRUCTOR = FqName("yfiles.lang.callSuperConstructor")
 
 internal class YClassTransformer(
     private val context: IrPluginContext
@@ -52,10 +57,24 @@ internal class YClassTransformer(
     override fun visitDelegatingConstructorCall(
         expression: IrDelegatingConstructorCall
     ): IrExpression {
-        return IrConstImpl.constNull(
+        if (expression.valueArgumentsCount == 0)
+            return super.visitDelegatingConstructorCall(expression)
+
+        val callSuperConstructor = context.referenceFunctions(CALL_SUPER_CONSTRUCTOR).single()
+        val call = IrCallImpl(
             startOffset = expression.startOffset,
             endOffset = expression.endOffset,
-            type = context.irBuiltIns.anyNType
+            type = context.irBuiltIns.unitType,
+            symbol = callSuperConstructor
         )
+
+        val thisValue = IrGetValueImpl(
+            startOffset = expression.startOffset,
+            endOffset = expression.endOffset,
+            // TODO: fix
+            symbol = expression.symbol as IrValueSymbol
+        )
+        call.putValueArgument(0, thisValue)
+        return call
     }
 }
