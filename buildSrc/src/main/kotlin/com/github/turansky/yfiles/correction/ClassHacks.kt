@@ -16,13 +16,13 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """.trimIndent()
 
     // language=kotlin
-    context["yfiles.lang.BaseClass", CLASS] =
+    context[BASE_CLASS, CLASS] =
         """
             |$HIDDEN_METHOD_ANNOTATION
             |external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
-    context["yfiles.lang.BaseClass", EXTENSIONS] =
+    context[BASE_CLASS, EXTENSIONS] =
         """
             |$HIDDEN_METHOD_ANNOTATION
             |inline fun callSuperConstructor(o: $YOBJECT) {
@@ -72,7 +72,11 @@ internal fun generateClassUtils(context: GeneratorContext) {
                 
             private class SimpleClassMetadata<T: $YOBJECT>(
                 override val yclass: $YCLASS<T>
-            ): $ICLASS_METADATA<T>
+            ): $ICLASS_METADATA<T> {
+                // WA: https://youtrack.jetbrains.com/issue/KT-40155
+                @JsName("yclass")
+                private val yclassDelegate: $YCLASS<T> = yclass
+            }
         """.trimIndent()
 
     // language=kotlin
