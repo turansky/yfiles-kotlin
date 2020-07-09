@@ -9,6 +9,7 @@ class EnumPolygon {
 
         val name = LayoutOrientation.BOTTOM_TO_TOP.name
         val ordinal = LayoutOrientation.LEFT_TO_RIGHT.ordinal
-        val s = LayoutOrientation.RIGHT_TO_LEFT.toString()
+        val s1 = LayoutOrientation.RIGHT_TO_LEFT.toString()
+        val s2 = "${LayoutOrientation.TOP_TO_BOTTOM}"
     }
 }
