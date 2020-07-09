@@ -22,6 +22,14 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
         """.trimMargin()
 
+    context["yfiles.lang.BaseClass", EXTENSIONS] =
+        """
+            |$HIDDEN_METHOD_ANNOTATION
+            |inline fun callSuperConstructor(o: $YOBJECT) {
+            |   o.$AS_DYNAMIC.__proto__.__proto__.constructor.call(o)
+            |}
+        """.trimMargin()
+
     val primitiveTypeMetadata = sequenceOf(
         BOOLEAN to "__BOOLEAN__",
         DOUBLE to "__NUMBER__",
