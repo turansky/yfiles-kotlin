@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
@@ -20,7 +19,7 @@ internal class SuperTypeTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
     private val baseClasses = mutableListOf<IrClass>()
-    private var latestThisReceiver: IrValueParameter? = null
+    private var latestClass: IrClass? = null
 
     private val IrClass.transformRequired
         get() = when {
@@ -52,7 +51,7 @@ internal class SuperTypeTransformer(
 
         declaration.superTypes += baseClass.typeWith(emptyList())
 
-        latestThisReceiver = declaration.thisReceiver
+        latestClass = declaration
 
         return super.visitClass(declaration)
     }
@@ -60,10 +59,12 @@ internal class SuperTypeTransformer(
     override fun visitDelegatingConstructorCall(
         expression: IrDelegatingConstructorCall
     ): IrExpression {
-        val thisReceiver = latestThisReceiver
+        val thisReceiver = latestClass
+            ?.takeIf { it != expression.symbol.owner.parent }
+            ?.thisReceiver
             ?: return super.visitDelegatingConstructorCall(expression)
 
-        latestThisReceiver = null
+        latestClass = null
 
         val callSuperConstructor = context.referenceFunctions(CALL_SUPER_CONSTRUCTOR).single()
         val call = IrCallImpl(
