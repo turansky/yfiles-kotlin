@@ -4,11 +4,11 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
@@ -20,6 +20,7 @@ internal class SuperTypeTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
     private val baseClasses = mutableListOf<IrClass>()
+    private var latestThisReceiver: IrValueParameter? = null
 
     private val IrClass.transformRequired
         get() = when {
@@ -51,14 +52,18 @@ internal class SuperTypeTransformer(
 
         declaration.superTypes += baseClass.typeWith(emptyList())
 
+        latestThisReceiver = declaration.thisReceiver
+
         return super.visitClass(declaration)
     }
 
     override fun visitDelegatingConstructorCall(
         expression: IrDelegatingConstructorCall
     ): IrExpression {
-        if (expression.valueArgumentsCount == 0)
-            return super.visitDelegatingConstructorCall(expression)
+        val thisReceiver = latestThisReceiver
+            ?: return super.visitDelegatingConstructorCall(expression)
+
+        latestThisReceiver = null
 
         val callSuperConstructor = context.referenceFunctions(CALL_SUPER_CONSTRUCTOR).single()
         val call = IrCallImpl(
@@ -71,8 +76,7 @@ internal class SuperTypeTransformer(
         val thisValue = IrGetValueImpl(
             startOffset = expression.startOffset,
             endOffset = expression.endOffset,
-            // TODO: fix
-            symbol = expression.symbol as IrValueSymbol
+            symbol = thisReceiver.symbol
         )
         call.putValueArgument(0, thisValue)
         return call
