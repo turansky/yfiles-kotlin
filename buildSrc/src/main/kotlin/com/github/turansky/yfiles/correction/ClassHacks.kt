@@ -18,17 +18,17 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[BASE_CLASS, CLASS] =
         """
-            |$HIDDEN_METHOD_ANNOTATION
-            |external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
-        """.trimMargin()
+            $HIDDEN_METHOD_ANNOTATION
+            external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
+        """.trimIndent()
 
     context[BASE_CLASS, EXTENSIONS] =
         """
-            |$HIDDEN_METHOD_ANNOTATION
-            |inline fun callSuperConstructor(o: $YOBJECT) {
-            |   o.$AS_DYNAMIC.__proto__.__proto__.constructor.call(o)
-            |}
-        """.trimMargin()
+            $HIDDEN_METHOD_ANNOTATION
+            inline fun callSuperConstructor(o: $YOBJECT) {
+                o.$AS_DYNAMIC.__proto__.__proto__.constructor.call(o)
+            }
+        """.trimIndent()
 
     val primitiveTypeMetadata = sequenceOf(
         BOOLEAN to "__BOOLEAN__",
@@ -129,6 +129,23 @@ internal fun generateClassUtils(context: GeneratorContext) {
             |   return unsafeCast<T>()
             |}
         """.trimMargin()
+
+    // language=kotlin
+    context[YENUM, EXTENSIONS] = """
+        $HIDDEN_METHOD_ANNOTATION
+        inline fun <T: $YENUM<T>> getEnumName(
+            value: T, 
+            type: EnumMetadata<T>
+        ): String =
+            YEnum.getName(type.yclass, value)
+
+        $HIDDEN_METHOD_ANNOTATION
+        inline fun <T: $YENUM<T>> getEnumOrdinal(
+            value: T,
+            type: EnumMetadata<T>
+        ): Int =
+            YEnum.getValues(type.yclass).indexOf(value)
+    """.trimIndent()
 }
 
 internal fun applyClassHacks(source: Source) {
