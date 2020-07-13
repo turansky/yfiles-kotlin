@@ -47,7 +47,7 @@ internal class EnumTransformer(
                 -> parent.isYFilesEnum
 
                 VALUES
-                -> parent.isYEnumMetadataCompanion
+                -> parent.isYFilesEnum
 
                 else -> false
             }
@@ -109,6 +109,8 @@ internal class EnumTransformer(
         functionName: FqName
     ): IrCall {
         val function = context.referenceFunctions(functionName).single()
+        val enumClass = sourceCall.symbol.owner.parent as IrClass
+        val companionClass = enumClass.companionObject() as IrClass
         val call = IrCallImpl(
             startOffset = sourceCall.startOffset,
             endOffset = sourceCall.endOffset,
@@ -116,15 +118,14 @@ internal class EnumTransformer(
             symbol = function
         )
 
-        val parentClass = sourceCall.symbol.owner.parent as IrClass
         val typeParameter = IrGetObjectValueImpl(
             startOffset = sourceCall.startOffset,
             endOffset = sourceCall.endOffset,
-            type = parentClass.defaultType,
-            symbol = parentClass.symbol
+            type = companionClass.defaultType,
+            symbol = companionClass.symbol
         )
 
-        call.putTypeArgument(0, parentClass.defaultType)
+        call.putTypeArgument(0, enumClass.defaultType)
         call.putValueArgument(0, typeParameter)
 
         return call
