@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.compiler.backend.ir
 
+import com.github.turansky.yfiles.compiler.backend.common.ENUM_METADATA
 import com.github.turansky.yfiles.compiler.backend.common.YENUM
 import com.github.turansky.yfiles.compiler.backend.common.YOBJECT
 import org.jetbrains.kotlin.ir.declarations.IrClass
@@ -11,6 +12,9 @@ private val IrClass.isYObject: Boolean
 
 internal val IrClass.isYEnum: Boolean
     get() = isExternal && fqNameWhenAvailable == YENUM
+
+internal val IrClass.isYEnumMetadata: Boolean
+    get() = isExternal && fqNameWhenAvailable == ENUM_METADATA
 
 internal fun IrClass.isYFilesInterface(): Boolean =
     isExternal && isInterface && (isYObject || implementsYObject)
