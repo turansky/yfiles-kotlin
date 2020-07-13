@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.compiler.backend.ir
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
@@ -36,19 +37,18 @@ private val IrClass.isYEnumMetadataCompanion
 internal class EnumTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
-    private val IrCall.transformRequired: Boolean
-        get() = symbol.owner.let {
-            it.name in NAMES && it.parent.let { it is IrClass && it.isYFilesEnum }
-        }
+    private val IrFunction.transformRequired: Boolean
+        get() = name in NAMES && parent.let { it is IrClass && it.isYFilesEnum }
 
     override fun visitCall(expression: IrCall): IrExpression {
         val dispatchReceiver = expression.dispatchReceiver
             ?: return super.visitCall(expression)
 
-        if (!expression.transformRequired)
+        val function = expression.symbol.owner
+        if (!function.transformRequired)
             return super.visitCall(expression)
 
-        return when (expression.symbol.owner.name) {
+        return when (function.name) {
             GET_NAME -> createCall(expression, GET_ENUM_NAME, dispatchReceiver)
             GET_ORDINAL -> createCall(expression, GET_ENUM_ORDINAL, dispatchReceiver)
             else -> expression
