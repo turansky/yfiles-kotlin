@@ -4,7 +4,7 @@ import yfiles.layout.LayoutOrientation
 @ExperimentalJsExport
 class EnumPolygon {
     fun enumTest() {
-        val values = LayoutOrientation.values()
+        // val values = LayoutOrientation.values()
         // val topToBottom = LayoutOrientation.valueOf("TOP_TO_BOTTOM")
 
         val name = LayoutOrientation.BOTTOM_TO_TOP.name

@@ -2,7 +2,6 @@ package com.github.turansky.yfiles.compiler.extensions
 
 import com.github.turansky.yfiles.compiler.backend.ir.CastTransformer
 import com.github.turansky.yfiles.compiler.backend.ir.DefaultParameterTransformer
-import com.github.turansky.yfiles.compiler.backend.ir.EnumTransformer
 import com.github.turansky.yfiles.compiler.backend.ir.SuperTypeTransformer
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
@@ -17,8 +16,7 @@ internal class YTransformExtension : IrGenerationExtension {
         sequenceOf(
             CastTransformer(),
             DefaultParameterTransformer(pluginContext),
-            SuperTypeTransformer(pluginContext),
-            EnumTransformer(pluginContext)
+            SuperTypeTransformer(pluginContext)
         ).forEach { transformer ->
             moduleFragment.transformChildrenVoid(transformer)
         }
