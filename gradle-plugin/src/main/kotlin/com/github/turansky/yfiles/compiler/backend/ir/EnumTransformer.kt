@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
 import org.jetbrains.kotlin.ir.types.getClass
+import org.jetbrains.kotlin.ir.types.starProjectedType
 import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.isEnumClass
@@ -114,10 +115,18 @@ internal class EnumTransformer(
         val function = context.referenceFunctions(functionName).single()
         val enumClass = sourceCall.symbol.owner.parent as IrClass
         val companionClass = enumClass.companionObject() as IrClass
+
+        val hasParameter = sourceCall.valueArgumentsCount == 1
+        val resultType = if (hasParameter) {
+            enumClass.defaultType
+        } else {
+            context.symbols.array.starProjectedType
+        }
+
         val call = IrCallImpl(
             startOffset = sourceCall.startOffset,
             endOffset = sourceCall.endOffset,
-            type = enumClass.defaultType,
+            type = resultType,
             symbol = function
         )
 
@@ -131,7 +140,7 @@ internal class EnumTransformer(
         call.putTypeArgument(0, enumClass.defaultType)
         call.putValueArgument(0, typeParameter)
 
-        if (sourceCall.valueArgumentsCount == 1) {
+        if (hasParameter) {
             call.putValueArgument(1, sourceCall.getValueArgument(0))
         }
 
