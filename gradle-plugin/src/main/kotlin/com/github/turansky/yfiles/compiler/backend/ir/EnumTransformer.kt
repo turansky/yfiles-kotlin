@@ -29,10 +29,6 @@ private val IrClass.isYFilesEnum
     get() = isExternal && isEnumClass
             && superTypes.any { it.getClass()?.isYEnum ?: false }
 
-private val IrClass.isYEnumMetadataCompanion
-    get() = isExternal && isCompanion
-            && superTypes.any { it.getClass()?.isYEnumMetadata ?: false }
-
 internal class EnumTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
