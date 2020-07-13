@@ -22,6 +22,7 @@ private val GET_ENUM_VALUES = FqName("yfiles.lang.getEnumValues")
 
 private val GET_NAME = Name.special("<get-name>")
 private val GET_ORDINAL = Name.special("<get-ordinal>")
+private val TO_STRING = Name.identifier("toString")
 
 private val VALUES = Name.identifier("values")
 
@@ -39,7 +40,8 @@ internal class EnumTransformer(
 
             return when (name) {
                 GET_NAME,
-                GET_ORDINAL
+                GET_ORDINAL,
+                TO_STRING
                 -> parent.isYFilesEnum
 
                 VALUES
@@ -57,6 +59,7 @@ internal class EnumTransformer(
         val transformedExpression = when (function.name) {
             GET_NAME -> createCall(expression, GET_ENUM_NAME)
             GET_ORDINAL -> createCall(expression, GET_ENUM_ORDINAL)
+            TO_STRING -> createCall(expression, GET_ENUM_NAME)
 
             VALUES -> createStaticCall(expression, GET_ENUM_VALUES)
 
