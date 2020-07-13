@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
+import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.defaultType
@@ -17,14 +18,12 @@ import org.jetbrains.kotlin.name.Name
 
 private val GET_ENUM_NAME = FqName("yfiles.lang.getEnumName")
 private val GET_ENUM_ORDINAL = FqName("yfiles.lang.getEnumOrdinal")
+private val GET_ENUM_VALUES = FqName("yfiles.lang.getEnumValues")
 
 private val GET_NAME = Name.special("<get-name>")
 private val GET_ORDINAL = Name.special("<get-ordinal>")
 
-private val NAMES = setOf(
-    GET_NAME,
-    GET_ORDINAL
-)
+private val VALUES = Name.identifier("values")
 
 private val IrClass.isYFilesEnum
     get() = isExternal && isEnumClass
@@ -38,7 +37,21 @@ internal class EnumTransformer(
     private val context: IrPluginContext
 ) : IrElementTransformerVoid() {
     private val IrFunction.transformRequired: Boolean
-        get() = name in NAMES && parent.let { it is IrClass && it.isYFilesEnum }
+        get() {
+            val parent = parent as? IrClass
+                ?: return false
+
+            return when (name) {
+                GET_NAME,
+                GET_ORDINAL
+                -> parent.isYFilesEnum
+
+                VALUES
+                -> parent.isYEnumMetadataCompanion
+
+                else -> false
+            }
+        }
 
     override fun visitCall(expression: IrCall): IrExpression {
         val dispatchReceiver = expression.dispatchReceiver
@@ -51,6 +64,9 @@ internal class EnumTransformer(
         return when (function.name) {
             GET_NAME -> createCall(expression, GET_ENUM_NAME, dispatchReceiver)
             GET_ORDINAL -> createCall(expression, GET_ENUM_ORDINAL, dispatchReceiver)
+
+            VALUES -> createStaticCall(expression, GET_ENUM_VALUES, dispatchReceiver)
+
             else -> expression
         }
     }
@@ -81,6 +97,26 @@ internal class EnumTransformer(
         call.putTypeArgument(0, type)
         call.putValueArgument(0, parameter)
         call.putValueArgument(1, typeParameter)
+
+        return call
+    }
+
+    private fun createStaticCall(
+        offsetSource: IrExpression,
+        functionName: FqName,
+        parameter: IrExpression
+    ): IrCall {
+        val function = context.referenceFunctions(functionName).single()
+        val call = IrCallImpl(
+            startOffset = offsetSource.startOffset,
+            endOffset = offsetSource.endOffset,
+            type = context.symbols.array.defaultType,
+            symbol = function
+        )
+
+        val parentClass = parameter.type.getClass()!!.parent as IrClass
+        call.putTypeArgument(0, parentClass.defaultType)
+        call.putValueArgument(0, parameter)
 
         return call
     }
