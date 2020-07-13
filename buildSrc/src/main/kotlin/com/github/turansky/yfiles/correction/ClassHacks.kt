@@ -150,7 +150,14 @@ internal fun generateClassUtils(context: GeneratorContext) {
         inline fun <T: $YENUM<T>> getEnumValues(
             type: EnumMetadata<T>
         ): Array<out T> =
-            YEnum.getValues(type.yclass)    
+            YEnum.getValues(type.yclass)
+                
+        $HIDDEN_METHOD_ANNOTATION
+        inline fun <T: $YENUM<T>> getEnumValueOf(
+            type: EnumMetadata<T>,
+            id: String
+        ): T =
+            YEnum.parse(type.yclass, id, true)       
     """.trimIndent()
 }
 
