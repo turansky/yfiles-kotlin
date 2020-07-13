@@ -29,6 +29,15 @@ private val TO_STRING = Name.identifier("toString")
 private val VALUES = Name.identifier("values")
 private val VALUE_OF = Name.identifier("valueOf")
 
+private val NAMES = setOf(
+    GET_NAME,
+    GET_ORDINAL,
+    TO_STRING,
+
+    VALUES,
+    VALUE_OF
+)
+
 private val IrClass.isYFilesEnum
     get() = isExternal && isEnumClass
             && superTypes.any { it.getClass()?.isYEnum ?: false }
@@ -41,24 +50,13 @@ internal class EnumTransformer(
             val parent = parent as? IrClass
                 ?: return false
 
-            return when (name) {
-                GET_NAME,
-                GET_ORDINAL,
-                TO_STRING
-                -> parent.isYFilesEnum
-
-                VALUES,
-                VALUE_OF
-                -> parent.isYFilesEnum
-
-                else -> false
-            }
+            return name in NAMES && parent.isYFilesEnum
         }
 
     override fun visitCall(expression: IrCall): IrExpression {
         val function = expression.symbol.owner
-        if (!function.transformRequired)
-            return super.visitCall(expression)
+            .takeIf { it.transformRequired }
+            ?: return super.visitCall(expression)
 
         val transformedExpression = when (function.name) {
             GET_NAME -> createCall(expression, GET_ENUM_NAME)
