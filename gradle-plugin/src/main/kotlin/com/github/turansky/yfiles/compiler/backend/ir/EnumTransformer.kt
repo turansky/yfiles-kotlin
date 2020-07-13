@@ -54,42 +54,45 @@ internal class EnumTransformer(
         }
 
     override fun visitCall(expression: IrCall): IrExpression {
-        val dispatchReceiver = expression.dispatchReceiver
-            ?: return super.visitCall(expression)
-
         val function = expression.symbol.owner
         if (!function.transformRequired)
             return super.visitCall(expression)
 
-        return when (function.name) {
-            GET_NAME -> createCall(expression, GET_ENUM_NAME, dispatchReceiver)
-            GET_ORDINAL -> createCall(expression, GET_ENUM_ORDINAL, dispatchReceiver)
+        val transformedExpression = when (function.name) {
+            GET_NAME -> createCall(expression, GET_ENUM_NAME)
+            GET_ORDINAL -> createCall(expression, GET_ENUM_ORDINAL)
 
-            VALUES -> createStaticCall(expression, GET_ENUM_VALUES, dispatchReceiver)
+            VALUES -> createStaticCall(expression, GET_ENUM_VALUES)
 
-            else -> expression
+            else -> null
         }
+
+        return transformedExpression
+            ?: super.visitCall(expression)
     }
 
     private fun createCall(
-        offsetSource: IrExpression,
-        functionName: FqName,
-        parameter: IrExpression
-    ): IrCall {
+        sourceCall: IrCall,
+        functionName: FqName
+    ): IrCall? {
+        val parameter = sourceCall.dispatchReceiver
+            ?: return null
+
         val type = parameter.type
+        val companionClass = type.getClass()?.companionObject() as? IrClass
+            ?: return null
 
         val function = context.referenceFunctions(functionName).single()
         val call = IrCallImpl(
-            startOffset = offsetSource.startOffset,
-            endOffset = offsetSource.endOffset,
+            startOffset = sourceCall.startOffset,
+            endOffset = sourceCall.endOffset,
             type = type,
             symbol = function
         )
 
-        val companionClass = parameter.type.getClass()!!.companionObject()!! as IrClass
         val typeParameter = IrGetObjectValueImpl(
-            startOffset = offsetSource.startOffset,
-            endOffset = offsetSource.endOffset,
+            startOffset = sourceCall.startOffset,
+            endOffset = sourceCall.endOffset,
             type = companionClass.defaultType,
             symbol = companionClass.symbol
         )
@@ -102,21 +105,27 @@ internal class EnumTransformer(
     }
 
     private fun createStaticCall(
-        offsetSource: IrExpression,
-        functionName: FqName,
-        parameter: IrExpression
+        sourceCall: IrCall,
+        functionName: FqName
     ): IrCall {
         val function = context.referenceFunctions(functionName).single()
         val call = IrCallImpl(
-            startOffset = offsetSource.startOffset,
-            endOffset = offsetSource.endOffset,
+            startOffset = sourceCall.startOffset,
+            endOffset = sourceCall.endOffset,
             type = context.symbols.array.defaultType,
             symbol = function
         )
 
-        val parentClass = parameter.type.getClass()!!.parent as IrClass
+        val parentClass = sourceCall.symbol.owner.parent as IrClass
+        val typeParameter = IrGetObjectValueImpl(
+            startOffset = sourceCall.startOffset,
+            endOffset = sourceCall.endOffset,
+            type = parentClass.defaultType,
+            symbol = parentClass.symbol
+        )
+
         call.putTypeArgument(0, parentClass.defaultType)
-        call.putValueArgument(0, parameter)
+        call.putValueArgument(0, typeParameter)
 
         return call
     }
