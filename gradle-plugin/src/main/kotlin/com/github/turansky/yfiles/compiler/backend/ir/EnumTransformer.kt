@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 private val GET_ENUM_NAME = FqName("yfiles.lang.getEnumName")
-private val GET_ENUM_ORDINAL = FqName("yfiles.lang.getEnumOrdinal")
 
 private val GET_ENUM_VALUES = FqName("yfiles.lang.getEnumValues")
 private val GET_ENUM_VALUE_OF = FqName("yfiles.lang.getEnumValueOf")
@@ -58,31 +57,27 @@ internal class EnumTransformer(
             .takeIf { it.transformRequired }
             ?: return super.visitCall(expression)
 
-        val transformedExpression = when (function.name) {
+        return when (function.name) {
+            GET_ORDINAL -> expression.dispatchReceiver!!
+
             GET_NAME -> createCall(expression, GET_ENUM_NAME)
-            GET_ORDINAL -> createCall(expression, GET_ENUM_ORDINAL)
             TO_STRING -> createCall(expression, GET_ENUM_NAME)
 
             VALUES -> createStaticCall(expression, GET_ENUM_VALUES)
             VALUE_OF -> createStaticCall(expression, GET_ENUM_VALUE_OF)
 
-            else -> null
+            else -> super.visitCall(expression)
         }
-
-        return transformedExpression
-            ?: super.visitCall(expression)
     }
 
     private fun createCall(
         sourceCall: IrCall,
         functionName: FqName
-    ): IrCall? {
-        val parameter = sourceCall.dispatchReceiver
-            ?: return null
+    ): IrCall {
+        val parameter = sourceCall.dispatchReceiver!!
 
         val type = parameter.type
-        val companionClass = type.getClass()?.companionObject() as? IrClass
-            ?: return null
+        val companionClass = type.getClass()!!.companionObject() as IrClass
 
         val function = context.referenceFunctions(functionName).single()
         val call = IrCallImpl(

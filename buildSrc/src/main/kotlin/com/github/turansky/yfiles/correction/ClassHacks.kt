@@ -138,14 +138,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
             type: EnumMetadata<T>
         ): String =
             YEnum.getName(type.yclass, value)
-
-        $HIDDEN_METHOD_ANNOTATION
-        inline fun <T: $YENUM<T>> getEnumOrdinal(
-            value: T,
-            type: EnumMetadata<T>
-        ): Int =
-            value.unsafeCast<Int>()
-            
+ 
         $HIDDEN_METHOD_ANNOTATION
         inline fun <T: $YENUM<T>> getEnumValues(
             type: EnumMetadata<T>
