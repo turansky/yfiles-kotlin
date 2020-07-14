@@ -23,10 +23,7 @@ internal class CastTransformer : IrElementTransformerVoid() {
     override fun visitTypeOperator(
         expression: IrTypeOperatorCall
     ): IrExpression =
-        when (val operatorCall = super.visitTypeOperator(expression)) {
-            is IrTypeOperatorCall -> operatorCall.correct()
-            else -> operatorCall
-        }
+        super.visitTypeOperator(expression.correct())
 
     private fun IrTypeOperatorCall.correct(): IrTypeOperatorCall {
         if (operator !in SUPPORTED_OPERATORS)
