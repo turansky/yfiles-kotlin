@@ -29,12 +29,14 @@ internal class CastTransformer : IrElementTransformerVoid() {
         if (operator !in SUPPORTED_OPERATORS)
             return this
 
-        val type = typeOperand.getClass()
+        val newTypeOperand = typeOperand.getClass()
             ?.takeIf { it.isYFilesInterface() }
-            ?.companionObject() as? IrClass
+            ?.companionObject()
+            ?.let { it as? IrClass }
+            ?.defaultType
             ?: return this
 
-        return IrTypeOperatorCallDelegate(this, type.defaultType)
+        return IrTypeOperatorCallDelegate(this, newTypeOperand)
     }
 }
 
