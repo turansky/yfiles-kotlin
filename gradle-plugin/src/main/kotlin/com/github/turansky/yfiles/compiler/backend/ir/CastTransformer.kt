@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator.*
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperatorCall
-import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
@@ -33,11 +33,15 @@ internal class CastTransformer : IrElementTransformerVoid() {
             ?.defaultType
             ?: return this
 
-        return IrTypeOperatorCallDelegate(this, newTypeOperand)
+        // TODO: Use delegate after bug fix
+        //  https://youtrack.jetbrains.com/issue/KT-40130
+        return IrTypeOperatorCallImpl(
+            startOffset = startOffset,
+            endOffset = endOffset,
+            type = type,
+            operator = operator,
+            typeOperand = newTypeOperand,
+            argument = argument
+        )
     }
 }
-
-private class IrTypeOperatorCallDelegate(
-    source: IrTypeOperatorCall,
-    override val typeOperand: IrType
-) : IrTypeOperatorCall by source
