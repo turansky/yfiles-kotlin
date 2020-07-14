@@ -1,13 +1,11 @@
 package com.github.turansky.yfiles.compiler.backend.ir
 
-import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator.*
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperatorCall
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.getClass
-import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 
@@ -31,8 +29,7 @@ internal class CastTransformer : IrElementTransformerVoid() {
 
         val newTypeOperand = typeOperand.getClass()
             ?.takeIf { it.isYFilesInterface() }
-            ?.companionObject()
-            ?.let { it as? IrClass }
+            ?.companionObjectClass
             ?.defaultType
             ?: return this
 
