@@ -33,8 +33,6 @@ internal class CastTransformer : IrElementTransformerVoid() {
             ?.defaultType
             ?: return this
 
-        // TODO: Use delegate after bug fix
-        //  https://youtrack.jetbrains.com/issue/KT-40130
         return IrTypeOperatorCallImpl(
             startOffset = startOffset,
             endOffset = endOffset,
