@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.types.starProjectedType
 import org.jetbrains.kotlin.ir.util.defaultType
@@ -76,7 +75,7 @@ internal class EnumTransformer(
         val parameter = sourceCall.dispatchReceiver!!
 
         val type = parameter.type
-        val companionClass = type.getClass()!!.companionObjectClass
+        val enumClass = type.getClass()!!
 
         val function = context.referenceFunctions(functionName).single()
         val call = IrCallImpl(
@@ -86,16 +85,9 @@ internal class EnumTransformer(
             symbol = function
         )
 
-        val typeParameter = IrGetObjectValueImpl(
-            startOffset = sourceCall.startOffset,
-            endOffset = sourceCall.endOffset,
-            type = companionClass.defaultType,
-            symbol = companionClass.symbol
-        )
-
         call.putTypeArgument(0, type)
         call.putValueArgument(0, parameter)
-        call.putValueArgument(1, typeParameter)
+        call.putValueArgument(1, enumClass.companionObjectExpression(sourceCall))
 
         return call
     }
@@ -106,7 +98,6 @@ internal class EnumTransformer(
     ): IrCall {
         val function = context.referenceFunctions(functionName).single()
         val enumClass = sourceCall.symbol.owner.parent as IrClass
-        val companionClass = enumClass.companionObjectClass
 
         val hasParameter = sourceCall.valueArgumentsCount == 1
         val resultType = if (hasParameter) {
@@ -122,15 +113,8 @@ internal class EnumTransformer(
             symbol = function
         )
 
-        val typeParameter = IrGetObjectValueImpl(
-            startOffset = sourceCall.startOffset,
-            endOffset = sourceCall.endOffset,
-            type = companionClass.defaultType,
-            symbol = companionClass.symbol
-        )
-
         call.putTypeArgument(0, enumClass.defaultType)
-        call.putValueArgument(0, typeParameter)
+        call.putValueArgument(0, enumClass.companionObjectExpression(sourceCall))
 
         if (hasParameter) {
             call.putValueArgument(1, sourceCall.getValueArgument(0))
