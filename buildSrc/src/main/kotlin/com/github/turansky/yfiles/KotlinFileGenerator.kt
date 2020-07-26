@@ -256,10 +256,10 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        external object $classDeclaration {
-                        $code
-                        }${enumCompanionContent()}
-                    """.trimIndent()
+                        |external object $classDeclaration {
+                        |$code
+                        |}${enumCompanionContent()}
+                    """.trimMargin()
         }
 
         override val metadataClass: String
@@ -305,12 +305,12 @@ internal class KotlinFileGenerator(
                 ?: return ""
 
             return """
-                
-                @JsName("${data.jsName}")
-                external enum class $name {
-                ${declaration.constants.toContent()}
-                }
-            """.trimIndent()
+                |
+                |@JsName("${data.jsName}")
+                |external enum class $name {
+                |${declaration.constants.toContent()}
+                |}
+            """.trimMargin()
         }
     }
 
@@ -380,12 +380,12 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        external enum class $name: $YENUM<$name> {
-                        ${declaration.constants.toContent()}
-                        
-                           companion object: $ENUM_METADATA<$name>
-                        }
-                    """.trimIndent()
+                        |external enum class $name: $YENUM<$name> {
+                        |${declaration.constants.toContent()}
+                        |
+                        |   companion object: $ENUM_METADATA<$name>
+                        |}
+                    """.trimMargin()
         }
 
 
@@ -397,12 +397,12 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        sealed external class $name: $YFLAGS<$name> {
-                           companion object {
-                           ${members.lines { it.toCode() }}
-                           }
-                        }
-                    """.trimIndent()
+                        |sealed external class $name: $YFLAGS<$name> {
+                        |   companion object {
+                        |   ${members.lines { it.toCode() }}
+                        |   }
+                        |}
+                    """.trimMargin()
         }
 
         override val metadataClass: String
