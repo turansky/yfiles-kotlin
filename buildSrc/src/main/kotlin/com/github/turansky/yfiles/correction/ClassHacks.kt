@@ -129,6 +129,29 @@ internal fun generateClassUtils(context: GeneratorContext) {
                return unsafeCast<T>()
             }
         """.trimIndent()
+
+    // language=kotlin
+    context[YENUM, EXTENSIONS] = """
+        $HIDDEN_METHOD_ANNOTATION
+        inline fun <T: $YENUM<T>> getEnumName(
+            value: T, 
+            type: EnumMetadata<T>
+        ): String =
+            YEnum.getName(type.yclass, value)
+ 
+        $HIDDEN_METHOD_ANNOTATION
+        inline fun <T: $YENUM<T>> getEnumValues(
+            type: EnumMetadata<T>
+        ): Array<out T> =
+            YEnum.getValues(type.yclass)
+                
+        $HIDDEN_METHOD_ANNOTATION
+        inline fun <T: $YENUM<T>> getEnumValueOf(
+            type: EnumMetadata<T>,
+            id: String
+        ): T =
+            YEnum.parse(type.yclass, id, true)       
+    """.trimIndent()
 }
 
 internal fun applyClassHacks(source: Source) {
