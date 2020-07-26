@@ -18,17 +18,17 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[BASE_CLASS, CLASS] =
         """
-            |$HIDDEN_METHOD_ANNOTATION
-            |external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
-        """.trimMargin()
+            $HIDDEN_METHOD_ANNOTATION
+            external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
+        """.trimIndent()
 
     context[BASE_CLASS, EXTENSIONS] =
         """
-            |$HIDDEN_METHOD_ANNOTATION
-            |inline fun callSuperConstructor(o: $YOBJECT) {
-            |   o.$AS_DYNAMIC.__proto__.__proto__.constructor.call(o)
-            |}
-        """.trimMargin()
+            $HIDDEN_METHOD_ANNOTATION
+            inline fun callSuperConstructor(o: $YOBJECT) {
+               o.$AS_DYNAMIC.__proto__.__proto__.constructor.call(o)
+            }
+        """.trimIndent()
 
     val primitiveTypeMetadata = sequenceOf(
         BOOLEAN to "__BOOLEAN__",
@@ -45,21 +45,21 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[ICLASS_METADATA] =
         """
-            |private const val YCLASS = "\${'$'}class"
-            |
-            |external interface IClassMetadata<T: Any> {
-            |   @JsName(YCLASS)
-            |   val yclass:$YCLASS<T>   
-            |}
-            |
-            |inline val <T: $YOBJECT> JsClass<T>.yclass:$YCLASS<T>
-            |    get() = unsafeCast<IClassMetadata<T>>().yclass
-            |
-            |internal fun <T: $ANY> JsClass<T>.findClass():$YCLASS<T>? =
-            |    $AS_DYNAMIC[YCLASS] as? $YCLASS<T>
-            |
-            |$primitiveTypeMetadata    
-        """.trimMargin()
+            private const val YCLASS = "\${'$'}class"
+            
+            external interface IClassMetadata<T: Any> {
+               @JsName(YCLASS)
+               val yclass:$YCLASS<T>   
+            }
+            
+            inline val <T: $YOBJECT> JsClass<T>.yclass:$YCLASS<T>
+                get() = unsafeCast<IClassMetadata<T>>().yclass
+            
+            internal fun <T: $ANY> JsClass<T>.findClass():$YCLASS<T>? =
+                $AS_DYNAMIC[YCLASS] as? $YCLASS<T>
+            
+            $primitiveTypeMetadata    
+        """.trimIndent()
 
     // language=kotlin
     context[ICLASS_METADATA, DELEGATE] =
@@ -100,35 +100,35 @@ internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
     context[INTERFACE_METADATA, INLINE] =
         """
-            |@JsName("Object")
-            |abstract external class InterfaceMetadata<T: $YOBJECT>
-            |internal constructor() : $ICLASS_METADATA<T> {
-            |   override val yclass: $YCLASS<T>
-            |}
-            |
-            |@Suppress("UNUSED_PARAMETER")
-            |inline fun jsInstanceOf(
-            |   o: Any?, 
-            |   type: $INTERFACE_METADATA<*>
-            |): Boolean =
-            |    js("o instanceof type")
-            |
-            |inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
-            |    jsInstanceOf(this, type)
-            |
-            |inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? =
-            |    if (yIs(type)) {
-            |        unsafeCast<T>()
-            |    } else {
-            |        null
-            |    }
-            |
-            |inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T {
-            |   require(this yIs type)
-            |
-            |   return unsafeCast<T>()
-            |}
-        """.trimMargin()
+            @JsName("Object")
+            abstract external class InterfaceMetadata<T: $YOBJECT>
+            internal constructor() : $ICLASS_METADATA<T> {
+               override val yclass: $YCLASS<T>
+            }
+            
+            @Suppress("UNUSED_PARAMETER")
+            inline fun jsInstanceOf(
+               o: Any?, 
+               type: $INTERFACE_METADATA<*>
+            ): Boolean =
+                js("o instanceof type")
+            
+            inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
+                jsInstanceOf(this, type)
+            
+            inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? =
+                if (yIs(type)) {
+                    unsafeCast<T>()
+                } else {
+                    null
+                }
+            
+            inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T {
+               require(this yIs type)
+            
+               return unsafeCast<T>()
+            }
+        """.trimIndent()
 }
 
 internal fun applyClassHacks(source: Source) {

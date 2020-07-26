@@ -10,30 +10,30 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
     // language=kotlin
     context[CONVERTERS] =
         """
-            |@JsName("Object")
-            |sealed external class Converters
-            |
-            |inline operator fun Converters.invoke(
-            |    block: Converters.() -> Unit
-            |): Converters =
-            |   apply(block)
-            |
-            |fun <V, R : Any> Converters.put(
-            |    name: String,
-            |    converter: (value: V) -> R
-            |): Converters {
-            |    asDynamic()[name] = converter
-            |    return this
-            |}
-            |
-            |fun <V, P, R : Any> Converters.put(
-            |    name: String,
-            |    converter: (value: V, parameter: P) -> R
-            |): Converters {
-            |    asDynamic()[name] = converter
-            |    return this
-            |}
-        """.trimMargin()
+            @JsName("Object")
+            sealed external class Converters
+            
+            inline operator fun Converters.invoke(
+                block: Converters.() -> Unit
+            ): Converters =
+               apply(block)
+            
+            fun <V, R : Any> Converters.put(
+                name: String,
+                converter: (value: V) -> R
+            ): Converters {
+                asDynamic()[name] = converter
+                return this
+            }
+            
+            fun <V, P, R : Any> Converters.put(
+                name: String,
+                converter: (value: V, parameter: P) -> R
+            ): Converters {
+                asDynamic()[name] = converter
+                return this
+            }
+        """.trimIndent()
 }
 
 internal fun applyConvertersHacks(source: Source) {

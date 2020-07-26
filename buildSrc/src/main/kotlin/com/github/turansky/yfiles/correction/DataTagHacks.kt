@@ -9,11 +9,11 @@ internal fun generateDataTagUtils(context: GeneratorContext) {
     // language=kotlin
     context[DATA_TAG, INLINE] =
         """
-            |external interface DataTag<K : Any, V : Any>
-            |
-            |inline fun <K : Any, V : Any> DataTag(source:String):DataTag<K,V> = 
-            |    source.unsafeCast<DataTag<K,V>>()
-        """.trimMargin()
+            external interface DataTag<K : Any, V : Any>
+            
+            inline fun <K : Any, V : Any> DataTag(source:String):DataTag<K,V> = 
+                source.unsafeCast<DataTag<K,V>>()
+        """.trimIndent()
 }
 
 internal fun applyDataTagHacks(source: Source) {
