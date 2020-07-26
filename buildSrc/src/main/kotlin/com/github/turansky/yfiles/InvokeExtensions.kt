@@ -41,8 +41,8 @@ internal fun invokeExtension(
     }
 
     return """
-        |inline operator fun ${typeGenerics.declaration} $receiverType.invoke(
-        |    block: $receiverType.() -> Unit
-        |): $receiverType = apply(block)
-    """.trimMargin()
+        inline operator fun ${typeGenerics.declaration} $receiverType.invoke(
+            block: $receiverType.() -> Unit
+        ): $receiverType = apply(block)
+    """.trimIndent()
 }

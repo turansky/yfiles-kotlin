@@ -10,9 +10,9 @@ private fun propertyKey(typeParameter: String) =
 internal fun generateSerializationUtils(context: GeneratorContext) {
     // language=kotlin
     context[SERIALIZATION_PROPERTY_KEY] = """
-            |@JsName("String")
-            |sealed external class SerializationPropertyKey<T : Any> 
-        """.trimMargin()
+            @JsName("String")
+            sealed external class SerializationPropertyKey<T : Any> 
+        """.trimIndent()
 }
 
 internal fun applySerializationHacks(source: Source) {

@@ -19,13 +19,13 @@ internal fun Class.toFactoryMethodCode(): String? {
     }
 
     return """
-            |inline fun $name(
-            |    block: $name.() -> Unit
-            |): $name {
-            |    return $name()
-            |        .apply(block)
-            |}
-        """.trimMargin()
+            inline fun $name(
+                block: $name.() -> Unit
+            ): $name {
+                return $name()
+                    .apply(block)
+            }
+        """.trimIndent()
 }
 
 private fun Class.hasFactoryMethod(): Boolean {

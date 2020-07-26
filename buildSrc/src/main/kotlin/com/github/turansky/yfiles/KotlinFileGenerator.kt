@@ -165,10 +165,10 @@ internal class KotlinFileGenerator(
                     }
                 }
                 return """
-                    |companion object $typeDeclaration {
-                    |${staticDeclarations.lines { it.toCode() } + factoryMethod}
-                    |}
-                """.trimMargin()
+                    companion object $typeDeclaration {
+                    ${staticDeclarations.lines { it.toCode() } + factoryMethod}
+                    }
+                """.trimIndent()
             }
 
         abstract fun companionContent(): String?
@@ -256,10 +256,10 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        |external object $classDeclaration {
-                        |$code
-                        |}${enumCompanionContent()}
-                    """.trimMargin()
+                        external object $classDeclaration {
+                        $code
+                        }${enumCompanionContent()}
+                    """.trimIndent()
         }
 
         override val metadataClass: String
@@ -305,12 +305,12 @@ internal class KotlinFileGenerator(
                 ?: return ""
 
             return """
-                |
-                |@JsName("${data.jsName}")
-                |external enum class $name {
-                |${declaration.constants.toContent()}
-                |}
-            """.trimMargin()
+                
+                @JsName("${data.jsName}")
+                external enum class $name {
+                ${declaration.constants.toContent()}
+                }
+            """.trimIndent()
         }
     }
 
@@ -380,12 +380,12 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        |external enum class $name: $YENUM<$name> {
-                        |${declaration.constants.toContent()}
-                        |
-                        |   companion object: $ENUM_METADATA<$name>
-                        |}
-                    """.trimMargin()
+                        external enum class $name: $YENUM<$name> {
+                        ${declaration.constants.toContent()}
+                        
+                           companion object: $ENUM_METADATA<$name>
+                        }
+                    """.trimIndent()
         }
 
 
@@ -397,12 +397,12 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        |sealed external class $name: $YFLAGS<$name> {
-                        |   companion object {
-                        |   ${members.lines { it.toCode() }}
-                        |   }
-                        |}
-                    """.trimMargin()
+                        sealed external class $name: $YFLAGS<$name> {
+                           companion object {
+                           ${members.lines { it.toCode() }}
+                           }
+                        }
+                    """.trimIndent()
         }
 
         override val metadataClass: String

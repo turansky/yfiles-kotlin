@@ -10,11 +10,11 @@ private const val STYLE_TAG = "yfiles.styles.StyleTag"
 internal fun generateStyleTagUtils(context: GeneratorContext) {
     // language=kotlin
     context[STYLE_TAG, INLINE] = """
-            |external interface StyleTag
-            |
-            |inline fun StyleTag(source:Any):StyleTag = 
-            |    source.unsafeCast<StyleTag>()
-        """.trimMargin()
+            external interface StyleTag
+            
+            inline fun StyleTag(source:Any):StyleTag = 
+                source.unsafeCast<StyleTag>()
+        """.trimIndent()
 }
 
 internal fun applyStyleTagHacks(source: Source) {

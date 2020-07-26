@@ -6,11 +6,11 @@ import com.github.turansky.yfiles.ContentMode.INLINE
 internal fun generatePartitionCellUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.router.PartitionCellKey", INLINE] = """
-            |external interface PartitionCellKey<T:Any>
-            |
-            |inline fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 
-            |    source.unsafeCast<PartitionCellKey<T>>()
-        """.trimMargin()
+            external interface PartitionCellKey<T:Any>
+            
+            inline fun <T:Any> PartitionCellKey(source:Any):PartitionCellKey<T> = 
+                source.unsafeCast<PartitionCellKey<T>>()
+        """.trimIndent()
 }
 
 private val KEY_TYPE_MAP = mapOf(

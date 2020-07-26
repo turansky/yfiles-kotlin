@@ -12,11 +12,11 @@ internal fun generateTagUtils(context: GeneratorContext) {
     // language=kotlin
     context[TAG, INLINE] =
         """
-            |external interface Tag
-            |
-            |inline fun Tag(source:Any):Tag = 
-            |    source.unsafeCast<Tag>()
-        """.trimMargin()
+            external interface Tag
+            
+            inline fun Tag(source:Any):Tag = 
+                source.unsafeCast<Tag>()
+        """.trimIndent()
 }
 
 internal fun applyTagHacks(source: Source) {
