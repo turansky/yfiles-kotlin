@@ -149,12 +149,14 @@ private class SimpleGeneratorContext(
             else -> ""
         }
 
-        val suppresses = when (mode) {
-            EXTENSIONS -> if (classId == YOBJECT || classId == BASE_CLASS) NOTHING_TO_INLINE else ""
-            DELEGATE -> if (classId != DP_KEY_BASE) NOTHING_TO_INLINE else ""
-            INLINE -> NOTHING_TO_INLINE
-            else -> ""
+        val suppressNothingToInline = when (mode) {
+            EXTENSIONS -> classId == YOBJECT || classId == YENUM || classId == BASE_CLASS
+            DELEGATE -> classId != DP_KEY_BASE
+            INLINE -> true
+            else -> false
         }
+
+        val suppresses = exp(suppressNothingToInline, NOTHING_TO_INLINE)
 
         val text = "// $GENERATOR_COMMENT\n\n" +
                 moduleDeclaration +
