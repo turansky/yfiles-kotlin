@@ -98,37 +98,36 @@ internal fun generateClassUtils(context: GeneratorContext) {
     """.trimIndent()
 
     // language=kotlin
-    context[INTERFACE_METADATA, INLINE] =
-        """
-            @JsName("Object")
-            abstract external class InterfaceMetadata<T: $YOBJECT>
-            internal constructor() : $ICLASS_METADATA<T> {
-               override val yclass: $YCLASS<T>
+    context[INTERFACE_METADATA, INLINE] = """
+        @JsName("Object")
+        abstract external class InterfaceMetadata<T: $YOBJECT>
+        internal constructor() : $ICLASS_METADATA<T> {
+           override val yclass: $YCLASS<T>
+        }
+        
+        @Suppress("UNUSED_PARAMETER")
+        inline fun jsInstanceOf(
+           o: Any?, 
+           type: $INTERFACE_METADATA<*>
+        ): Boolean =
+            js("o instanceof type")
+        
+        inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
+            jsInstanceOf(this, type)
+        
+        inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? =
+            if (yIs(type)) {
+                unsafeCast<T>()
+            } else {
+                null
             }
-            
-            @Suppress("UNUSED_PARAMETER")
-            inline fun jsInstanceOf(
-               o: Any?, 
-               type: $INTERFACE_METADATA<*>
-            ): Boolean =
-                js("o instanceof type")
-            
-            inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
-                jsInstanceOf(this, type)
-            
-            inline infix fun <T : $YOBJECT> Any?.yOpt(type: $INTERFACE_METADATA<T>): T? =
-                if (yIs(type)) {
-                    unsafeCast<T>()
-                } else {
-                    null
-                }
-            
-            inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T {
-               require(this yIs type)
-            
-               return unsafeCast<T>()
-            }
-        """.trimIndent()
+        
+        inline infix fun <T : $YOBJECT> Any?.yAs(type: $INTERFACE_METADATA<T>): T {
+           require(this yIs type)
+        
+           return unsafeCast<T>()
+        }
+    """.trimIndent()
 
     // language=kotlin
     context[YENUM, EXTENSIONS] = """
