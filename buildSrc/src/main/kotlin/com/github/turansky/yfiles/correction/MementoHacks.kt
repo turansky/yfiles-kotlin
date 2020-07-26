@@ -4,6 +4,9 @@ import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.json.get
 
+private const val HIERARCHIC_MEMENTOS = "yfiles.hierarchic.Mementos"
+private const val TREE_MEMENTOS = "yfiles.tree.Mementos"
+
 private const val LAYER_CONSTRAINTS_MEMENTO = "yfiles.hierarchic.LayerConstraintsMemento"
 private const val SEQUENCE_CONSTRAINTS_MEMENTO = "yfiles.hierarchic.SequenceConstraintsMemento"
 
@@ -11,18 +14,19 @@ private const val COMPACT_STRATEGY_MEMENTO = "yfiles.tree.CompactStrategyMemento
 
 internal fun generateMementoUtils(context: GeneratorContext) {
     // language=kotlin
-    context["yfiles.hierarchic.Mementos"] = """
-            |@JsName("Object")
-            |sealed external class LayerConstraintsMemento 
-            |
-            |@JsName("Object")
-            |sealed external class SequenceConstraintsMemento 
-        """.trimMargin()
+    context[HIERARCHIC_MEMENTOS] = """
+            @JsName("Object")
+            sealed external class LayerConstraintsMemento 
+            
+            @JsName("Object")
+            sealed external class SequenceConstraintsMemento 
+        """.trimIndent()
 
-    context["yfiles.tree.Mementos"] = """
-            |@JsName("Object")
-            |sealed external class CompactStrategyMemento 
-        """.trimMargin()
+    // language=kotlin
+    context[TREE_MEMENTOS] = """
+            @JsName("Object")
+            sealed external class CompactStrategyMemento 
+        """.trimIndent()
 }
 
 internal fun applyMementoHacks(source: Source) {

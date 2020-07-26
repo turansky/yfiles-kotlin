@@ -8,11 +8,11 @@ import org.json.JSONObject
 internal fun generateIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[YID, INLINE] = """
-            |external interface Id: $YOBJECT
-            |
-            |inline fun Id(source:Any):Id = 
-            |    source.unsafeCast<Id>()
-        """.trimMargin()
+            external interface Id: $YOBJECT
+            
+            inline fun Id(source:Any):Id = 
+                source.unsafeCast<Id>()
+        """.trimIndent()
 }
 
 private val ID_DP_KEYS = setOf(

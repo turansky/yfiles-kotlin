@@ -13,16 +13,16 @@ private fun resourceKey(typeParameter: String) =
 internal fun generateResourceUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.view.Resources"] = """
-            |@JsName("String")
-            |sealed external class ResourceKey<T : Any>
-            |
-            |external interface ResourceMap {
-            |    operator fun <T: Any> set(
-            |       key: ResourceKey<T>, 
-            |       value: T
-            |    )
-            |} 
-        """.trimMargin()
+            @JsName("String")
+            sealed external class ResourceKey<T : Any>
+            
+            external interface ResourceMap {
+                operator fun <T: Any> set(
+                   key: ResourceKey<T>, 
+                   value: T
+                )
+            } 
+        """.trimIndent()
 }
 
 internal fun applyResourceHacks(source: Source) {

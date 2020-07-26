@@ -13,12 +13,12 @@ private fun propertyKey(typeParameter: String) =
 internal fun generateCreationPropertyUtils(context: GeneratorContext) {
     // language=kotlin
     context[CREATION_PROPERTY_KEY, INLINE] = """
-            |@JsName("String")
-            |sealed external class CreationPropertyKey<T : Any> 
-            |
-            |inline fun <T : Any> CreationPropertyKey(source: String): CreationPropertyKey<T> =
-            |    source.unsafeCast<CreationPropertyKey<T>>()
-        """.trimMargin()
+            @JsName("String")
+            sealed external class CreationPropertyKey<T : Any> 
+            
+            inline fun <T : Any> CreationPropertyKey(source: String): CreationPropertyKey<T> =
+                source.unsafeCast<CreationPropertyKey<T>>()
+        """.trimIndent()
 }
 
 internal fun applyCreationPropertyHacks(source: Source) {

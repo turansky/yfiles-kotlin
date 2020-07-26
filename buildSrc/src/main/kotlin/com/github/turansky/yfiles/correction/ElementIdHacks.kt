@@ -9,12 +9,12 @@ private const val ELEMENT_ID = "yfiles.graphml.ElementId"
 internal fun generateElementIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[ELEMENT_ID, INLINE] = """
-            |@JsName("String")
-            |sealed external class ElementId 
-            |
-            |inline fun ElementId(source:String):ElementId = 
-            |    source.unsafeCast<ElementId>()
-        """.trimMargin()
+            @JsName("String")
+            sealed external class ElementId 
+            
+            inline fun ElementId(source:String):ElementId = 
+                source.unsafeCast<ElementId>()
+        """.trimIndent()
 }
 
 internal fun applyElementIdHacks(source: Source) {

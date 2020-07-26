@@ -580,10 +580,10 @@ internal class Property(
         str += "$name: $type${modifiers.nullability}"
         if (!mode.readable) {
             str += """
-                |
-                |   @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
-                |   get() = definedExternally
-            """.trimMargin()
+
+                @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
+                get() = definedExternally
+            """.trimIndent()
         }
 
         if (modifiers.deprecated) {

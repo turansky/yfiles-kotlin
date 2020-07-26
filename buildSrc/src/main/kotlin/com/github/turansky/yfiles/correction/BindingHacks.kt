@@ -10,11 +10,11 @@ internal fun generateBindingUtils(context: GeneratorContext) {
     // language=kotlin
     context[BINDING_LIKE, INLINE] =
         """
-            |external interface BindingLike
-            |
-            |inline fun BindingLike(source:Any):BindingLike = 
-            |    source.unsafeCast<$BINDING_LIKE>()
-        """.trimMargin()
+            external interface BindingLike
+            
+            inline fun BindingLike(source:Any):BindingLike = 
+                source.unsafeCast<$BINDING_LIKE>()
+        """.trimIndent()
 }
 
 internal fun applyBindingHacks(source: Source) {
