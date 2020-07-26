@@ -165,10 +165,10 @@ internal class KotlinFileGenerator(
                     }
                 }
                 return """
-                    companion object $typeDeclaration {
-                    ${staticDeclarations.lines { it.toCode() } + factoryMethod}
-                    }
-                """.trimIndent()
+                    |companion object $typeDeclaration {
+                    |${staticDeclarations.lines { it.toCode() } + factoryMethod}
+                    |}
+                """.trimMargin()
             }
 
         abstract fun companionContent(): String?
