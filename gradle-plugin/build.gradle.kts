@@ -5,12 +5,12 @@ plugins {
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.turansky.kfc.plugin-publish") version "0.8.5"
 
-    kotlin("jvm") version "1.4.0-rc-134"
+    kotlin("jvm") version "1.4.0-rc"
 }
 
 repositories {
     jcenter()
-    maven("https://dl.bintray.com/kotlin/kotlin-dev")
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 kotlinDslPluginOptions {
