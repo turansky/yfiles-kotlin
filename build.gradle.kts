@@ -25,6 +25,10 @@ subprojects {
                 allWarningsAsErrors = true
             }
         }
+
+        dependencies {
+            "implementation"(kotlin("stdlib-js"))
+        }
     }
 }
 
