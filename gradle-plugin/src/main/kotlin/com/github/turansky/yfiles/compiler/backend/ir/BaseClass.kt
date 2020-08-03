@@ -25,14 +25,15 @@ private fun baseClassCall(superTypes: List<IrType>): String {
     return "$Y.BaseClass($types)"
 }
 
-internal fun baseClass(superTypes: List<IrType>): IrClass = buildClass {
-    origin = IrDeclarationOrigin.FILE_CLASS
+internal fun baseClass(superTypes: List<IrType>): IrClass =
+    buildClass {
+        origin = IrDeclarationOrigin.FILE_CLASS
 
-    name = Name.identifier(baseClassCall(superTypes))
-    kind = ClassKind.CLASS
-    visibility = Visibilities.PRIVATE
-    modality = Modality.ABSTRACT
-    isExternal = true
-}.apply {
-    createParameterDeclarations()
-}
+        name = Name.identifier(baseClassCall(superTypes))
+        kind = ClassKind.CLASS
+        visibility = Visibilities.PRIVATE
+        modality = Modality.ABSTRACT
+        isExternal = true
+    }.apply {
+        createParameterDeclarations()
+    }
