@@ -5,13 +5,17 @@ import yfiles.view.IVisualCreator
 
 @JsExport
 @ExperimentalJsExport
+fun arrow() {
+    println(AbstractArrow::class.js)
+    println(AbstractArrow2::class.js)
+    println(AbstractArrow3::class.js)
+}
+
 abstract class AbstractArrow : IArrow {
     override val cropLength = 13.0
     override val length = 42.0
 }
 
-@JsExport
-@ExperimentalJsExport
 abstract class AbstractArrow2 {
     val cropLength = 14.0
     val length = 43.0
@@ -32,8 +36,6 @@ abstract class AbstractArrow2 {
     }
 }
 
-@JsExport
-@ExperimentalJsExport
 abstract class AbstractArrow3 : AbstractArrow() {
     override val cropLength = 15.0
     override val length = 44.0
