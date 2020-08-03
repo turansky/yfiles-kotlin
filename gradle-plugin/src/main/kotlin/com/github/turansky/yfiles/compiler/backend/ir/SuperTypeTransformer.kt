@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.types.typeWith
+import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.isClass
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.name.FqName
@@ -50,6 +51,11 @@ internal class SuperTypeTransformer(
         baseClasses.add(baseClass)
 
         declaration.superTypes += baseClass.typeWith(emptyList())
+        if (declaration.companionObject() == null) {
+            val companionObject = createCompanionObject()
+            declaration.declarations += companionObject
+            companionObject.parent = declaration
+        }
 
         latestClass = declaration
 
