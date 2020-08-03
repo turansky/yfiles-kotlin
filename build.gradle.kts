@@ -27,6 +27,10 @@ subprojects {
                 moduleKind = "commonjs"
             }
         }
+
+        dependencies {
+            "implementation"(kotlin("stdlib-js"))
+        }
     }
 }
 

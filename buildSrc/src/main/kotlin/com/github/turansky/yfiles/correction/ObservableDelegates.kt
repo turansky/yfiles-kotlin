@@ -84,7 +84,7 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
         }
          
         private inline fun $TAG.makeObservable() {
-            if (firePropertyChangedDeclared) {
+            if (!firePropertyChangedDeclared) {
                 $MAKE_OBSERVABLE(this)
             }
         }

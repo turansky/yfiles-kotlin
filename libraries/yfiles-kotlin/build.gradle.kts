@@ -17,10 +17,6 @@ kotlin.js {
     browser()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-js"))
-}
-
 val kotlinSourceDir: File
     get() = kotlin
         .sourceSets
