@@ -105,12 +105,11 @@ internal fun generateClassUtils(context: GeneratorContext) {
            override val yclass: $YCLASS<T>
         }
         
-        @Suppress("UNUSED_PARAMETER")
         inline fun jsInstanceOf(
            o: Any?, 
            type: $INTERFACE_METADATA<*>
         ): Boolean =
-            js("o instanceof type")
+            type.$AS_DYNAMIC.isInstance(o)
         
         inline infix fun Any?.yIs(type: $INTERFACE_METADATA<*>): Boolean =
             jsInstanceOf(this, type)
