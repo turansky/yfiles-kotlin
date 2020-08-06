@@ -8,6 +8,7 @@ private val YFILES_COMPILER_PLUGIN_ID = "com.github.turansky.yfiles"
 
 class YFilesGradleSubplugin : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project) {
+        target.configureIdeaCompanion()
         target.configureJsTransformation()
     }
 
