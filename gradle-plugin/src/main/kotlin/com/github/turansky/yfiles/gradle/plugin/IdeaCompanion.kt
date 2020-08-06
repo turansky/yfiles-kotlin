@@ -3,7 +3,7 @@ package com.github.turansky.yfiles.gradle.plugin
 import org.gradle.api.Project
 
 // language=XML
-private val DEPENDENCIES = """
+private val EXTERNAL_DEPENDENCIES = """
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalDependencies">
@@ -19,5 +19,5 @@ internal fun Project.configureIdeaCompanion() {
         ?: return
 
     val dependenciesFile = ideaDirectory.resolve("externalDependencies.xml")
-    dependenciesFile.writeText(DEPENDENCIES)
+    dependenciesFile.writeText(EXTERNAL_DEPENDENCIES)
 }
