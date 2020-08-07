@@ -2,7 +2,7 @@ import com.github.turansky.yfiles.generateKotlinDeclarations
 import de.undercouch.gradle.tasks.download.Download
 
 group = "com.yworks.yfiles"
-version = "23.0.1-SNAPSHOT"
+version = "23.0.2-SNAPSHOT"
 
 plugins {
     kotlin("js")

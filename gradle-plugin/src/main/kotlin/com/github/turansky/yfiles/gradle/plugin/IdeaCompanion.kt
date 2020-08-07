@@ -2,6 +2,8 @@ package com.github.turansky.yfiles.gradle.plugin
 
 import org.gradle.api.Project
 
+private val COMPANION_CONFIGURED = "yfiles.gradle.plugin.companion.configured"
+
 // language=XML
 private val EXTERNAL_DEPENDENCIES = """
 <?xml version="1.0" encoding="UTF-8"?>
@@ -12,12 +14,17 @@ private val EXTERNAL_DEPENDENCIES = """
 </project>    
 """.trimIndent()
 
-
+@Suppress("UNCHECKED_CAST")
 internal fun Project.configureIdeaCompanion() {
+    rootProject.properties
+        .let { it as MutableMap<String, Any?> }
+        .putIfAbsent(COMPANION_CONFIGURED, true)
+        ?: return
+
     val ideaDirectory = rootDir.resolve(".idea")
         .takeIf { it.isDirectory }
         ?: return
 
-    val dependenciesFile = ideaDirectory.resolve("externalDependencies.xml")
-    dependenciesFile.writeText(EXTERNAL_DEPENDENCIES)
+    ideaDirectory.resolve("externalDependencies.xml")
+        .writeText(EXTERNAL_DEPENDENCIES)
 }
