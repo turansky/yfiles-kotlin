@@ -130,7 +130,12 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext") to "context",
     ParameterData("NodeReshapeHandlerHandle", "dragFinished", "inputModeContext") to "context",
     ParameterData("NodeReshapeHandlerHandle", "handleMove", "inputModeContext") to "context",
-    ParameterData("NodeReshapeHandlerHandle", "initializeDrag", "inputModeContext") to "context"
+    ParameterData("NodeReshapeHandlerHandle", "initializeDrag", "inputModeContext") to "context",
+
+    ParameterData("GraphOverviewCanvasVisualCreator", "createVisual", "ctx") to "context",
+    ParameterData("GraphOverviewCanvasVisualCreator", "updateVisual", "ctx") to "context",
+    ParameterData("GraphOverviewWebGLVisualCreator", "createVisual", "ctx") to "context",
+    ParameterData("GraphOverviewWebGLVisualCreator", "updateVisual", "ctx") to "context"
 )
 
 internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
@@ -319,6 +324,13 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "GridVisualCreator", methodName = "updateVisual") to true,
     MethodDeclaration(className = "VoidVisualCreator", methodName = "createVisual") to true,
     MethodDeclaration(className = "VoidVisualCreator", methodName = "updateVisual") to true,
+
+    MethodDeclaration(className = "GraphOverviewSvgVisualCreator", methodName = "createVisual") to true,
+    MethodDeclaration(className = "GraphOverviewSvgVisualCreator", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "GraphOverviewCanvasVisualCreator", methodName = "createVisual") to true,
+    MethodDeclaration(className = "GraphOverviewCanvasVisualCreator", methodName = "updateVisual") to true,
+    MethodDeclaration(className = "GraphOverviewWebGLVisualCreator", methodName = "createVisual") to true,
+    MethodDeclaration(className = "GraphOverviewWebGLVisualCreator", methodName = "updateVisual") to true,
 
     MethodDeclaration(className = "BevelNodeStyleRenderer", methodName = "getOutline") to true,
     MethodDeclaration(className = "CollapsibleNodeStyleDecoratorRenderer", methodName = "getOutline") to true,
@@ -555,42 +567,6 @@ internal val MISSED_METHODS = listOf(
     MethodData(className = "Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
 
     MethodData(
-        className = "GraphOverviewSvgVisualCreator",
-        methodName = "createVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext")
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-    MethodData(
-        className = "GraphOverviewSvgVisualCreator",
-        methodName = "updateVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext"),
-            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-
-    MethodData(
-        className = "GraphOverviewCanvasVisualCreator",
-        methodName = "createVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext")
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-    MethodData(
-        className = "GraphOverviewCanvasVisualCreator",
-        methodName = "updateVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext"),
-            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-
-    MethodData(
         className = "DefaultPortCandidateDescriptor",
         methodName = "createVisual",
         parameters = listOf(
@@ -678,23 +654,6 @@ internal val MISSED_METHODS = listOf(
             MethodParameterData("ratio", JS_NUMBER)
         ),
         result = ResultData("yfiles.geometry.Tangent", true)
-    ),
-    MethodData(
-        className = "GraphOverviewWebGLVisualCreator",
-        methodName = "createVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext")
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-    MethodData(
-        className = "GraphOverviewWebGLVisualCreator",
-        methodName = "updateVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext"),
-            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-        ),
-        result = ResultData("yfiles.view.Visual", true)
     ),
     MethodData(
         className = "NodeLabelModelStripeLabelModelAdapter",
