@@ -17,12 +17,12 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2020.1.1"
+    version = "2020.2"
 
     setPlugins(
         "gradle",
         "java",
-        "org.jetbrains.kotlin:1.3.72-release-IJ2020.1-1"
+        "org.jetbrains.kotlin:1.3.72-release-IJ2020.1-5"
     )
 }
 
