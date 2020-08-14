@@ -1,9 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-import org.jetbrains.kotlin.gradle.plugin.KotlinJsPluginWrapper
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
-    kotlin("js") version "1.4.0-rc" apply false
+    kotlin("js") version "1.4.0" apply false
     id("com.github.turansky.kfc.webpack") version "0.10.0" apply false
     id("de.undercouch.download") version "4.1.1" apply false
 }
@@ -11,7 +10,6 @@ plugins {
 allprojects {
     repositories {
         jcenter()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
 

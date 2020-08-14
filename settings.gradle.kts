@@ -1,12 +1,5 @@
 rootProject.name = "yfiles-kotlin"
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
-    }
-}
-
 include("libraries:yfiles-kotlin")
 include("libraries:vsdx-kotlin")
 
