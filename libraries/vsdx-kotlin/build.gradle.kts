@@ -13,10 +13,8 @@ plugins {
     id("maven-publish")
 }
 
-kotlin {
-    target {
-        nodejs()
-    }
+kotlin.js {
+    nodejs()
 }
 
 dependencies {
@@ -55,7 +53,7 @@ tasks {
         dependsOn(downloadApiDescriptor)
     }
 
-    compileKotlinJs {
+    named("compileKotlinJs") {
         dependsOn(generateDeclarations)
         finalizedBy("publishToMavenLocal")
     }
@@ -65,7 +63,7 @@ publishing {
     publications {
         register("mavenKotlin", MavenPublication::class) {
             from(components["kotlin"])
-            artifact(tasks.JsSourcesJar.get())
+            artifact(tasks.getByName("kotlinSourcesJar"))
         }
     }
 }

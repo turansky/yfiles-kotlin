@@ -3,10 +3,8 @@ plugins {
     id("com.github.turansky.yfiles")
 }
 
-kotlin {
-    target {
-        nodejs()
-    }
+kotlin.js {
+    nodejs()
 }
 
 dependencies {

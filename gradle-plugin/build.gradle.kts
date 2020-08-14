@@ -5,7 +5,7 @@ plugins {
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.turansky.kfc.plugin-publish") version "0.10.0"
 
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
 }
 
 repositories {
@@ -51,6 +51,11 @@ pluginBundle {
         )
         version = project.version.toString()
     }
+}
+
+// TODO: remove after Gradle update on Kotlin 1.4
+tasks.compileKotlin {
+    kotlinOptions.allWarningsAsErrors = false
 }
 
 tasks.wrapper {

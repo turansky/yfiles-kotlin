@@ -1,13 +1,11 @@
 package com.github.turansky.yfiles.compiler.backend.common
 
 import com.github.turansky.yfiles.compiler.diagnostic.BaseClassErrors
-import com.github.turansky.yfiles.compiler.diagnostic.YMessagesExtension
 import com.github.turansky.yfiles.compiler.diagnostic.YObjectErrors
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.reportFromPlugin
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
@@ -35,7 +33,7 @@ internal object YDeclarationChecker : DeclarationChecker {
         if (!descriptor.implementsYFilesInterface) return
 
         descriptor.check {
-            context.trace.reportFromPlugin(it.on(declaration), YMessagesExtension)
+            context.trace.report(it.on(declaration))
         }
     }
 

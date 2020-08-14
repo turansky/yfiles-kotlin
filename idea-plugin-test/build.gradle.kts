@@ -9,10 +9,8 @@ repositories {
     mavenLocal()
 }
 
-kotlin {
-    target {
-        nodejs()
-    }
+kotlin.js {
+    nodejs()
 }
 
 dependencies {

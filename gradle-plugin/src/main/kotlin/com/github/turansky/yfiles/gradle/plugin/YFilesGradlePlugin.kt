@@ -7,7 +7,5 @@ import org.gradle.kotlin.dsl.apply
 class YFilesGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.rootProject.plugins.apply(IdeaCompanionPlugin::class)
-
-        target.configureJsTransformation()
     }
 }

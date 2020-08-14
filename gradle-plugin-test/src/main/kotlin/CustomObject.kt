@@ -1,7 +1,7 @@
+import kotlinx.browser.window
 import yfiles.lang.IClassMetadata
 import yfiles.lang.YObject
 import yfiles.lang.classMetadata
-import kotlin.browser.window
 
 class CustomObject : YObject {
     fun hallo() {
