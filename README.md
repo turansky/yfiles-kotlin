@@ -2,14 +2,12 @@
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com/github/turansky/yfiles/com.github.turansky.yfiles.gradle.plugin/maven-metadata.xml.svg?label=plugin&logo=gradle)](https://plugins.gradle.org/plugin/com.github.turansky.yfiles)
 [![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/v/13384-yfiles?label=plugin&logo=intellij-idea)](https://plugins.jetbrains.com/plugin/13384-yfiles/)
 [![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/d/13384-yfiles?logo=intellij-idea)](https://plugins.jetbrains.com/plugin/13384-yfiles/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.72-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.4.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 # Kotlin/JS support for yFiles
 
 ## [Gradle Plugin](gradle-plugin)
 Resolve inheritance problems
-> Includes temp WA for [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770).
-> Configurable properties required for yFiles
 
 ## [IDEA Plugin](idea-plugin)
 Check [inheritance rules](gradle-plugin) on the fly
@@ -62,7 +60,6 @@ Check [inheritance rules](gradle-plugin) on the fly
 \** - via extension methods
 
 #### Related issues
-* [`KT-34770`](https://youtrack.jetbrains.com/issue/KT-34770) - Non-configurable properties
 * [`No Xcode or CLT version detected!`](https://github.com/nodejs/node-gyp/issues/1927#issuecomment-544507444) - For `macOS Catalina`
 
 ## `YClass`
@@ -140,9 +137,6 @@ val layout = HierarchicLayout {
     gridSpacing = 20.0
 }
 ```
-
-#### Related issues
-* [`KT-31126`](https://youtrack.jetbrains.com/issue/KT-31126) - Invalid JS constructor call (primary ordinary -> secondary external)
 
 ## Quick interface implementation
 ```
