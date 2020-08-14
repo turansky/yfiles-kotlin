@@ -6,12 +6,10 @@ repositories {
     jcenter()
 }
 
-tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            allWarningsAsErrors = true
-        }
+tasks.compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+        allWarningsAsErrors = true
     }
 }
 
