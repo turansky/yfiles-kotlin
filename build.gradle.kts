@@ -24,7 +24,8 @@ subprojects {
         tasks.withType<KotlinJsCompile>().configureEach {
             kotlinOptions {
                 moduleKind = "commonjs"
-                allWarningsAsErrors = true
+                // TODO: activate after source map support fix
+                allWarningsAsErrors = false
             }
         }
     }
