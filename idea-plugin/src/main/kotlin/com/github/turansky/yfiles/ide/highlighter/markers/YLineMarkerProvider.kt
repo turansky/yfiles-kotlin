@@ -25,7 +25,7 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
 
     override fun collectSlowLineMarkers(
         elements: List<PsiElement>,
-        result: MutableCollection<LineMarkerInfo<*>>
+        result: MutableCollection<in LineMarkerInfo<*>>
     ) {
         if (elements.isEmpty()) return
         if (LineMarkerOptions.allOptions.none { option -> option.isEnabled }) return

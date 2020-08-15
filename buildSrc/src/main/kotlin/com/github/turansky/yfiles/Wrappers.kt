@@ -869,7 +869,7 @@ internal class Method(
         } ?: return null
 
         val newSource = if (assignMode && returns != null) {
-            JSONObject(source, (source.keySet() - "returns").toTypedArray())
+            JSONObject(source, *(source.keySet() - "returns").toTypedArray())
         } else {
             source
         }
