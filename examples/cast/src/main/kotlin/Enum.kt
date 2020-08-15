@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 import yfiles.layout.LayoutOrientation
 
 @JsExport

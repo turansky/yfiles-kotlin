@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 import yfiles.graph.INode
 import yfiles.input.IHitTestable
 import yfiles.view.IVisualCreator
