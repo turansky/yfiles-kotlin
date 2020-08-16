@@ -18,7 +18,7 @@ internal fun documentation(binding: Binding): String =
 
 private fun StringBuilder.renderBindingBlock(binding: Binding) {
     renderSection("Binding") {
-        createHyperlink(this, binding.reference, binding.name ?: binding.parentName, false)
+        createHyperlink(this, binding.reference, binding.name ?: binding.parentName, true)
     }
 }
 
@@ -26,7 +26,7 @@ private fun StringBuilder.renderConverterBlock(binding: Binding) {
     val converter = binding.converter ?: return
 
     renderSection("Converter") {
-        createHyperlink(this, converter, converter, false)
+        createHyperlink(this, converter, converter, true)
     }
 }
 
