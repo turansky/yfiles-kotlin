@@ -15,13 +15,16 @@ internal fun documentation(code: String): String =
 
 private fun StringBuilder.addReturnsBlock(code: String) {
     renderSection(KotlinBundle.message("kdoc.section.title.returns")) {
+        append("<pre><code>")
         append(code)
+        append("</code></pre>")
     }
 }
 
 private fun StringBuilder.addSeeAlsoBlock() {
     renderSection(KotlinBundle.message("kdoc.section.title.see.also")) {
         createHyperlink(this, SVG_TEMPLATES_URL, "SVG Templates in Styles", false)
+        append(", ")
         createHyperlink(this, TEMPLATE_BINDING_URL, "Template Binding", false)
     }
 }
