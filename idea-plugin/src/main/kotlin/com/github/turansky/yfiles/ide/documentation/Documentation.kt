@@ -18,7 +18,7 @@ internal fun documentation(binding: Binding): String =
 
 private fun StringBuilder.renderBindingBlock(binding: Binding) {
     renderSection("Binding") {
-        createHyperlink(this, binding.reference, binding.name ?: binding.parentName, true)
+        reference(binding.reference, binding.name ?: binding.parentName)
     }
 }
 
@@ -26,7 +26,7 @@ private fun StringBuilder.renderConverterBlock(binding: Binding) {
     val converter = binding.converter ?: return
 
     renderSection("Converter") {
-        createHyperlink(this, converter, converter, true)
+        reference(converter)
     }
 }
 
@@ -53,6 +53,13 @@ private fun StringBuilder.renderSection(
     append(SECTION_HEADER_START, title, ":", SECTION_SEPARATOR)
     content()
     append(SECTION_END)
+}
+
+private fun StringBuilder.reference(
+    reference: String,
+    title: String = reference
+) {
+    createHyperlink(this, reference, title, true)
 }
 
 private fun StringBuilder.link(
