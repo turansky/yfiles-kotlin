@@ -32,6 +32,10 @@
             groupName="Kotlin/JS"
             enabledByDefault="true"
             implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
+
+        <lang.documentationProvider
+            language="XML"
+            implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
