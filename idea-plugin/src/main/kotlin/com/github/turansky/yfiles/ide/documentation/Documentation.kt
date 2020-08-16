@@ -26,7 +26,7 @@ private fun StringBuilder.renderConverterBlock(binding: Binding) {
     val converter = binding.converter ?: return
 
     renderSection("Converter") {
-        append(converter)
+        createHyperlink(this, converter, converter, false)
     }
 }
 
