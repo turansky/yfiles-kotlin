@@ -14,29 +14,32 @@ private val DIRECTIVES = setOf(
     PARAMETER
 )
 
-internal sealed class Binding {
-    abstract val name: String?
-    abstract val converter: String?
-    abstract val parameter: String?
+internal sealed class Binding(private val parentName: String) {
+    protected abstract val name: String?
+    protected abstract val converter: String?
+    protected abstract val parameter: String?
 
-    abstract fun toDoc(): String
+    private fun toCode(): String {
+        val target = join(parentName, ".", name)
+        val converter = converter ?: return target
+        val parameters = join(target, ", ", parameter)
+        return "$converter($parameters)"
+    }
+
+    fun toDoc(): String = documentation(toCode())
 }
 
 private data class TagBinding(
     override val name: String?,
     override val converter: String?,
     override val parameter: String?
-) : Binding() {
-    override fun toDoc(): String = toString()
-}
+) : Binding("tag")
 
 private data class TemplateBinding(
     override val name: String?,
     override val converter: String?,
     override val parameter: String?
-) : Binding() {
-    override fun toDoc(): String = toString()
-}
+) : Binding("context")
 
 internal fun String.toBinding(): Binding? {
     val code = trimBrackets() ?: return null
@@ -78,4 +81,15 @@ private fun String.trimBrackets(): String? =
         !startsWith("{") -> null
         !endsWith("}") -> null
         else -> removePrefix("{").removeSuffix("}").trim().takeIf { it.isNotEmpty() }
+    }
+
+private fun join(
+    first: String,
+    delimiter: String,
+    second: String?
+): String =
+    if (second != null) {
+        "$first$delimiter$second"
+    } else {
+        first
     }

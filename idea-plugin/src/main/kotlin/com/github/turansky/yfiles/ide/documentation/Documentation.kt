@@ -7,9 +7,9 @@ import org.jetbrains.kotlin.idea.KotlinBundle
 private const val SVG_TEMPLATES_URL: String = "https://docs.yworks.com/yfileshtml/#/dguide/custom-styles_template-styles"
 private const val TEMPLATE_BINDING_URL: String = "https://docs.yworks.com/yfileshtml/%23/dguide/custom-styles_template-styles#_template_binding"
 
-internal fun documentation(toCode: () -> String): String =
+internal fun documentation(code: String): String =
     StringBuilder().apply {
-        addReturnsBlock(toCode())
+        addReturnsBlock(code)
         addSeeAlsoBlock()
     }.toString()
 
