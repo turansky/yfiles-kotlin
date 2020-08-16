@@ -28,8 +28,8 @@ internal sealed class Binding {
     fun toCode(): String {
         val target = join(parentName, ".", name)
         val converter = converter ?: return target
-        val parameters = join(target, ", ", parameter)
-        return "$converter($parameters)"
+        val parameter = parameter ?: return "$converter($target)"
+        return "$converter($target, '$parameter')"
     }
 
     fun toDoc(): String = documentation(this)
