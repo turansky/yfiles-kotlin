@@ -40,17 +40,24 @@ private fun StringBuilder.renderReturnsBlock(code: String) {
 
 private fun StringBuilder.renderSeeAlsoBlock() {
     renderSection(KotlinBundle.message("kdoc.section.title.see.also")) {
-        createHyperlink(this, SVG_TEMPLATES_URL, "SVG Templates", false)
+        link("SVG Templates", SVG_TEMPLATES_URL)
         append(", ")
-        createHyperlink(this, TEMPLATE_BINDING_URL, "Template Binding", false)
+        link("Template Binding", TEMPLATE_BINDING_URL)
     }
 }
 
 private fun StringBuilder.renderSection(
-    title: String, content:
-    StringBuilder.() -> Unit
+    title: String,
+    content: StringBuilder.() -> Unit
 ) {
     append(SECTION_HEADER_START, title, ":", SECTION_SEPARATOR)
     content()
     append(SECTION_END)
+}
+
+private fun StringBuilder.link(
+    title: String,
+    href: String
+) {
+    createHyperlink(this, href, title, false)
 }
