@@ -14,19 +14,19 @@ private val DIRECTIVES = setOf(
     PARAMETER
 )
 
-internal sealed class Binding(private val parentName: String) {
-    protected abstract val name: String?
-    protected abstract val converter: String?
-    protected abstract val parameter: String?
+internal sealed class Binding(val parentName: String) {
+    abstract val name: String?
+    abstract val converter: String?
+    abstract val parameter: String?
 
-    private fun toCode(): String {
+    fun toCode(): String {
         val target = join(parentName, ".", name)
         val converter = converter ?: return target
         val parameters = join(target, ", ", parameter)
         return "$converter($parameters)"
     }
 
-    fun toDoc(): String = documentation(toCode())
+    fun toDoc(): String = documentation(this)
 }
 
 private data class TagBinding(
