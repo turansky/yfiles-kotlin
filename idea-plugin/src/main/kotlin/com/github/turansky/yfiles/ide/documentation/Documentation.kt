@@ -5,7 +5,7 @@ import com.intellij.lang.documentation.DocumentationMarkup.*
 import org.jetbrains.kotlin.idea.KotlinBundle
 
 private const val SVG_TEMPLATES_URL: String = "https://docs.yworks.com/yfileshtml/#/dguide/custom-styles_template-styles"
-private const val TEMPLATE_BINDING_URL: String = "https://docs.yworks.com/yfileshtml/%23/dguide/custom-styles_template-styles#_template_binding"
+private const val TEMPLATE_BINDING_URL: String = "$SVG_TEMPLATES_URL%23_template_binding"
 
 internal fun documentation(binding: Binding): String =
     StringBuilder().apply {
