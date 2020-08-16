@@ -18,7 +18,7 @@ internal fun documentation(binding: Binding): String =
 
 private fun StringBuilder.renderBindingBlock(binding: Binding) {
     renderSection("Binding") {
-        append(binding.name)
+        createHyperlink(this, binding.reference, binding.name ?: binding.parentName, false)
     }
 }
 

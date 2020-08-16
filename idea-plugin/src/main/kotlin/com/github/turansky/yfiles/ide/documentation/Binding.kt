@@ -1,5 +1,8 @@
 package com.github.turansky.yfiles.ide.documentation
 
+private const val ITEM_TAG: String = "yfiles.graph.IModelItem.tag"
+private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
+
 private const val BINDING: String = "Binding"
 private const val TEMPLATE_BINDING: String = "TemplateBinding"
 
@@ -14,10 +17,13 @@ private val DIRECTIVES = setOf(
     PARAMETER
 )
 
-internal sealed class Binding(val parentName: String) {
+internal sealed class Binding {
+    abstract val parentName: String
     abstract val name: String?
     abstract val converter: String?
     abstract val parameter: String?
+
+    abstract val reference: String
 
     fun toCode(): String {
         val target = join(parentName, ".", name)
@@ -33,13 +39,19 @@ private data class TagBinding(
     override val name: String?,
     override val converter: String?,
     override val parameter: String?
-) : Binding("tag")
+) : Binding() {
+    override val parentName: String = "tag"
+    override val reference: String = name ?: ITEM_TAG
+}
 
 private data class TemplateBinding(
     override val name: String?,
     override val converter: String?,
     override val parameter: String?
-) : Binding("context")
+) : Binding() {
+    override val parentName: String = "context"
+    override val reference: String = join(CONTEXT, ".", name)
+}
 
 internal fun String.toBinding(): Binding? {
     val code = trimBrackets() ?: return null
