@@ -9,12 +9,26 @@ private const val TEMPLATE_BINDING_URL: String = "https://docs.yworks.com/yfiles
 
 internal fun documentation(binding: Binding): String =
     StringBuilder().apply {
-        renderSection("Binding", binding.name)
-        renderSection("Converter", binding.converter)
+        renderBindingBlock(binding)
+        renderConverterBlock(binding)
 
         renderReturnsBlock(binding.toCode())
         renderSeeAlsoBlock()
     }.toString()
+
+private fun StringBuilder.renderBindingBlock(binding: Binding) {
+    renderSection("Binding") {
+        append(binding.name)
+    }
+}
+
+private fun StringBuilder.renderConverterBlock(binding: Binding) {
+    val converter = binding.converter ?: return
+
+    renderSection("Converter") {
+        append(converter)
+    }
+}
 
 private fun StringBuilder.renderReturnsBlock(code: String) {
     renderSection(KotlinBundle.message("kdoc.section.title.returns")) {
@@ -26,20 +40,9 @@ private fun StringBuilder.renderReturnsBlock(code: String) {
 
 private fun StringBuilder.renderSeeAlsoBlock() {
     renderSection(KotlinBundle.message("kdoc.section.title.see.also")) {
-        createHyperlink(this, SVG_TEMPLATES_URL, "SVG Templates in Styles", false)
+        createHyperlink(this, SVG_TEMPLATES_URL, "SVG Templates", false)
         append(", ")
         createHyperlink(this, TEMPLATE_BINDING_URL, "Template Binding", false)
-    }
-}
-
-private fun StringBuilder.renderSection(
-    title: String,
-    content: String?
-) {
-    content ?: return
-
-    renderSection(title) {
-        append(content)
     }
 }
 
