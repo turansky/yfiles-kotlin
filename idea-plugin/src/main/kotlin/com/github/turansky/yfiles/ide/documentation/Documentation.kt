@@ -59,5 +59,5 @@ private fun StringBuilder.link(
     title: String,
     href: String
 ) {
-    createHyperlink(this, href, title, false)
+    append("""<a href="$href">$title</a>""")
 }
