@@ -12,18 +12,6 @@ internal class BindingDocumentationProvider : AbstractDocumentationProvider() {
         val attributeValue = originalElement?.context as? XmlAttributeValue ?: return null
         if (!attributeValue.containingFile.isSvgFile) return null
 
-        val value = attributeValue.value
-        return if (value.isBindingLike) {
-            "Template binding detected!"
-        } else {
-            null
-        }
+        return attributeValue.value.toBinding()?.toDoc()
     }
 }
-
-private val String.isBindingLike: Boolean
-    get() {
-        if (!endsWith("}")) return false
-
-        return startsWith("{TemplateBinding") || startsWith("{Binding")
-    }
