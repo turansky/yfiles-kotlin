@@ -48,7 +48,7 @@ internal fun String.toBinding(): Binding? {
 
     val dataMap = mutableMapOf<String, String?>()
     for (block in blocks) {
-        val data = block.trim().split(" ")
+        val data = block.trim().split(" ", "=")
         if (data.size > 2) return null
 
         val directive = data[0]
