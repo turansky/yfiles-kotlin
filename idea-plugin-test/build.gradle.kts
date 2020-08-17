@@ -1,5 +1,5 @@
 plugins {
-    kotlin("js") version "1.3.72"
+    kotlin("js") version "1.4.0"
     id("com.github.turansky.yfiles") version "3.2.0"
 }
 
