@@ -21,11 +21,11 @@ internal class BindingAnnotator : Annotator {
         if (!element.containingFile.isSvgFile) return
 
         val value = element.value
-        val code = value.trimBraces() ?: return
         value.toBinding() ?: return
 
         val codeStartOffset = element.textRange.startOffset + 2
 
+        val code = value.drop(1).dropLast(1)
         val blocks = code.split(',')
 
         var localOffset = 0
