@@ -1,21 +1,9 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.github.turansky.yfiles.ide.binding.BindingDirective.*
+
 private const val ITEM_TAG: String = "yfiles.graph.IModelItem.tag"
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
-
-private const val BINDING: String = "Binding"
-private const val TEMPLATE_BINDING: String = "TemplateBinding"
-
-private const val CONVERTER: String = "Converter"
-private const val PARAMETER: String = "Parameter"
-
-private val DIRECTIVES = setOf(
-    BINDING,
-    TEMPLATE_BINDING,
-
-    CONVERTER,
-    PARAMETER
-)
 
 internal sealed class Binding {
     abstract val parentName: String
@@ -56,13 +44,13 @@ internal fun String.toBinding(): Binding? {
     val blocks = code.split(",")
     if (blocks.size !in 1..3) return null
 
-    val dataMap = mutableMapOf<String, String?>()
+    val dataMap = mutableMapOf<BindingDirective, String?>()
     for (block in blocks) {
         val data = block.trim().split(" ", "=")
         if (data.size > 2) return null
 
-        val directive = data[0]
-        if (directive !in DIRECTIVES || dataMap.containsKey(directive)) return null
+        val directive = BindingDirective.find(data[0]) ?: return null
+        if (dataMap.containsKey(directive)) return null
 
         dataMap[directive] = if (data.size > 1) data[1] else null
     }
