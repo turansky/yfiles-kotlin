@@ -10,6 +10,7 @@ import com.intellij.psi.xml.XmlAttributeValue
 import org.jetbrains.kotlin.idea.highlighter.KotlinHighlightingColors
 
 private val BINDING = Regex("\\s*(Binding|TemplateBinding)\\s*(.*)\\s*")
+private val PARAMETER = Regex("\\s*(Converter|Parameter)\\s*(=)\\s*(.*)\\s*")
 
 internal class BindingAnnotator : Annotator {
     override fun annotate(
@@ -30,18 +31,30 @@ internal class BindingAnnotator : Annotator {
         var localOffset = 0
         for (block in blocks) {
             val offset = codeStartOffset + localOffset
+            localOffset += block.length + 1
 
-            BINDING.find(block)?.also {
-                val keywordRange = it.groups[1]!!.range
+            val bindingMatchResult = BINDING.find(block)
+            if (bindingMatchResult != null) {
+                val keywordRange = bindingMatchResult.groups[1]!!.range
                 holder.keyword(offset + keywordRange.first, keywordRange.count())
 
-                val dataRange = it.groups[2]!!.range
+                val dataRange = bindingMatchResult.groups[2]!!.range
                 if (!dataRange.isEmpty()) {
                     holder.parameter(offset + dataRange.first, dataRange.count())
                 }
+                continue
             }
 
-            localOffset += block.length + 1
+            val parameterMatchResult = PARAMETER.find(block)!!
+
+            val nameRange = parameterMatchResult.groups[1]!!.range
+            holder.parameterName(offset + nameRange.first, nameRange.count())
+
+            val assignRange = parameterMatchResult.groups[2]!!.range
+            holder.assign(offset + assignRange.first)
+
+            val dataRange = parameterMatchResult.groups[3]!!.range
+            holder.parameter(offset + dataRange.first, dataRange.count())
         }
     }
 }
@@ -50,6 +63,20 @@ private fun AnnotationHolder.keyword(offset: Int, length: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
         .textAttributes(KotlinHighlightingColors.KEYWORD)
         .range(TextRange.from(offset, length))
+        .create()
+}
+
+private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
+    newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
+        .range(TextRange.from(offset, length))
+        .create()
+}
+
+private fun AnnotationHolder.assign(offset: Int) {
+    newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
+        .range(TextRange.from(offset, 1))
         .create()
 }
 
