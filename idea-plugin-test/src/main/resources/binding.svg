@@ -1,17 +1,33 @@
-<rect
-    width1="{TemplateBinding width}"
-    width2="{TemplateBinding width, Converter=correct}"
-    width3="{TemplateBinding width, Converter=correct, Parameter=13}"
+<g>
+    <rect
+        width="10"
+        height="10"
+        width1="{TemplateBinding width}"
+        width2="{TemplateBinding width, Converter=correct}"
+        width3="{TemplateBinding width, Converter=correct, Parameter=13}"
+    />
 
-    ewidth1="{TemplateBinding}"
-    ewidth2="{TemplateBinding, Converter=correct}"
-    ewidth3="{TemplateBinding, Converter=correct, Parameter=13}"
+    <rect
+        width="20"
+        height="20"
+        ewidth1="{TemplateBinding}"
+        ewidth2="{TemplateBinding, Converter=correct}"
+        ewidth3="{TemplateBinding, Converter=correct, Parameter=13}"
+    />
 
-    fill1="{Binding fill}"
-    fill2="{Binding fill, Converter=calculate}"
-    fill3="{Binding fill, Converter=calculate, Parameter=blue}"
+    <rect
+        width="30"
+        height="30"
+        fill1="{Binding fill}"
+        fill2="{Binding fill, Converter=calculate}"
+        fill3="{Binding fill, Converter=calculate, Parameter=blue}"
+    />
 
-    efill1="{Binding}"
-    efill2="{Binding, Converter=calculate}"
-    efill3="{Binding, Converter=calculate, Parameter=blue}"
-/>
+    <rect
+        width="40"
+        height="40"
+        efill1="{Binding}"
+        efill2="{Binding, Converter=calculate}"
+        efill3="{Binding, Converter=calculate, Parameter=blue}"
+    />
+</g>
