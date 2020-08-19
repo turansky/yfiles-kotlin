@@ -1,4 +1,4 @@
-package com.github.turansky.yfiles.ide.documentation
+package com.github.turansky.yfiles.ide.binding
 
 private const val ITEM_TAG: String = "yfiles.graph.IModelItem.tag"
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
@@ -31,8 +31,6 @@ internal sealed class Binding {
         val parameter = parameter ?: return "$converter($target)"
         return "$converter($target, '$parameter')"
     }
-
-    fun toDoc(): String = documentation(this)
 }
 
 private data class TagBinding(
@@ -93,15 +91,4 @@ private fun String.trimBrackets(): String? =
         !startsWith("{") -> null
         !endsWith("}") -> null
         else -> removePrefix("{").removeSuffix("}").trim().takeIf { it.isNotEmpty() }
-    }
-
-private fun join(
-    first: String,
-    delimiter: String,
-    second: String?
-): String =
-    if (second != null) {
-        "$first$delimiter$second"
-    } else {
-        first
     }

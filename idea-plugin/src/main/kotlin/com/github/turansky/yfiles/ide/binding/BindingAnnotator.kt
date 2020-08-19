@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
 import com.github.turansky.yfiles.ide.documentation.isSvgFile
-import com.github.turansky.yfiles.ide.documentation.toBinding
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity

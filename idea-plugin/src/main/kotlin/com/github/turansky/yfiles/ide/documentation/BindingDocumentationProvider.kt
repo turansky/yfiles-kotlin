@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.ide.documentation
 
+import com.github.turansky.yfiles.ide.binding.toBinding
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
@@ -12,6 +13,6 @@ internal class BindingDocumentationProvider : AbstractDocumentationProvider() {
         val attributeValue = originalElement?.context as? XmlAttributeValue ?: return null
         if (!attributeValue.containingFile.isSvgFile) return null
 
-        return attributeValue.value.toBinding()?.toDoc()
+        return attributeValue.value.toBinding()?.let(::documentation)
     }
 }
