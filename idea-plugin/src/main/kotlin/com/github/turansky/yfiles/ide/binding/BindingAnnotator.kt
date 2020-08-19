@@ -17,14 +17,26 @@ internal class BindingAnnotator : Annotator {
         if (element !is XmlAttributeValue) return
         if (!element.containingFile.isSvgFile) return
 
-        element.value.toBinding() ?: return
+        val value = element.value
+        value.toBinding() ?: return
 
         val valueRange = element.textRange
             .let { TextRange.create(it.startOffset + 1, it.endOffset - 1) }
 
-        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .textAttributes(KotlinHighlightingColors.SMART_CAST_VALUE)
-            .range(valueRange)
-            .create()
+        val directives = BindingDirective.values()
+            .asSequence()
+            .map { it.key }
+            .filter { it in value }
+            .toList()
+
+        for (directive in directives) {
+            val index = value.indexOf(directive)
+            val range = TextRange.from(valueRange.startOffset + index, directive.length)
+
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .textAttributes(KotlinHighlightingColors.KEYWORD)
+                .range(range)
+                .create()
+        }
     }
 }
