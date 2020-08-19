@@ -40,7 +40,7 @@ private data class TemplateBinding(
 }
 
 internal fun String.toBinding(): Binding? {
-    val code = trimBrackets() ?: return null
+    val code = trimBraces() ?: return null
     val blocks = code.split(",")
     if (blocks.size !in 1..3) return null
 
@@ -73,10 +73,3 @@ internal fun String.toBinding(): Binding? {
         else -> null
     }
 }
-
-private fun String.trimBrackets(): String? =
-    when {
-        !startsWith("{") -> null
-        !endsWith("}") -> null
-        else -> removePrefix("{").removeSuffix("}").trim().takeIf { it.isNotEmpty() }
-    }

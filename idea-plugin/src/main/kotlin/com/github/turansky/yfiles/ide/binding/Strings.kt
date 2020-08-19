@@ -10,3 +10,11 @@ internal fun join(
     } else {
         first
     }
+
+
+internal fun String.trimBraces(): String? =
+    when {
+        !startsWith("{") -> null
+        !endsWith("}") -> null
+        else -> removePrefix("{").removeSuffix("}").trim().takeIf { it.isNotEmpty() }
+    }
