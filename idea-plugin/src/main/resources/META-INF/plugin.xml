@@ -36,6 +36,10 @@
         <lang.documentationProvider
             language="XML"
             implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"/>
+
+        <annotator
+            language="XML"
+            implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
