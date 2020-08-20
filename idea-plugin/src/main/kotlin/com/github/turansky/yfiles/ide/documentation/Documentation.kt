@@ -9,13 +9,13 @@ private const val SVG_TEMPLATES_URL: String = "https://docs.yworks.com/yfileshtm
 private const val TEMPLATE_BINDING_URL: String = "$SVG_TEMPLATES_URL%23_template_binding"
 
 internal fun documentation(binding: Binding): String =
-    StringBuilder().apply {
+    buildString {
         renderBindingBlock(binding)
         renderConverterBlock(binding)
 
         renderReturnsBlock(binding.toCode())
         renderSeeAlsoBlock()
-    }.toString()
+    }
 
 private fun StringBuilder.renderBindingBlock(binding: Binding) {
     renderSection("Binding") {
