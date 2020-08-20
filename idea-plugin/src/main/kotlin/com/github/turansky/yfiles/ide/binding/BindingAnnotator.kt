@@ -35,11 +35,11 @@ internal class BindingAnnotator : Annotator {
 
             val bindingMatchResult = BINDING.find(block)
             if (bindingMatchResult != null) {
-                val keywordGroup = bindingMatchResult.groups[1]!!
+                val keywordGroup = bindingMatchResult.g(1)
                 val keywordRange = keywordGroup.range
                 holder.keyword(offset + keywordRange.first, keywordRange.count())
 
-                val dataGroup = bindingMatchResult.groups[2]!!
+                val dataGroup = bindingMatchResult.g(2)
                 val dataRange = dataGroup.range
                 if (!dataRange.isEmpty()) {
                     val valid = when (BindingDirective.find(keywordGroup.value)) {
@@ -53,13 +53,13 @@ internal class BindingAnnotator : Annotator {
 
             val parameterMatchResult = PARAMETER.find(block)!!
 
-            val nameRange = parameterMatchResult.groups[1]!!.range
+            val nameRange = parameterMatchResult.r(1)
             holder.parameterName(offset + nameRange.first, nameRange.count())
 
-            val assignRange = parameterMatchResult.groups[2]!!.range
+            val assignRange = parameterMatchResult.r(2)
             holder.assign(offset + assignRange.first)
 
-            val dataRange = parameterMatchResult.groups[3]!!.range
+            val dataRange = parameterMatchResult.r(3)
             holder.parameter(offset + dataRange.first, dataRange.count())
         }
     }
