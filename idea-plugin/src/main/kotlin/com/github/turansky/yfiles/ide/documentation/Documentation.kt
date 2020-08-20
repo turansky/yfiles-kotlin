@@ -19,7 +19,12 @@ internal fun documentation(binding: Binding): String =
 
 private fun StringBuilder.renderBindingBlock(binding: Binding) {
     renderSection("Binding") {
-        reference(binding.reference, binding.name ?: binding.parentName)
+        append("<pre><code>")
+        reference(binding.parentReference, binding.parentName)
+        binding.name?.also {
+            append(".$it")
+        }
+        append("</code></pre>")
     }
 }
 
