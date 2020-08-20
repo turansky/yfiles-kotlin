@@ -31,7 +31,6 @@ internal class BindingAnnotator : Annotator {
         var localOffset = 0
         for (block in blocks) {
             val offset = codeStartOffset + localOffset
-            localOffset += block.length + 1
 
             val bindingMatchResult = BINDING.find(block)
             if (bindingMatchResult != null) {
@@ -48,19 +47,23 @@ internal class BindingAnnotator : Annotator {
                     }
                     holder.parameter(offset + dataRange.first, dataRange.count(), valid)
                 }
-                continue
+            } else {
+                val parameterMatchResult = PARAMETER.find(block)!!
+
+                val nameRange = parameterMatchResult.r(1)
+                holder.parameterName(offset + nameRange.first, nameRange.count())
+
+                val assignRange = parameterMatchResult.r(2)
+                holder.assign(offset + assignRange.first)
+
+                val dataRange = parameterMatchResult.r(3)
+                holder.parameter(offset + dataRange.first, dataRange.count())
             }
 
-            val parameterMatchResult = PARAMETER.find(block)!!
-
-            val nameRange = parameterMatchResult.r(1)
-            holder.parameterName(offset + nameRange.first, nameRange.count())
-
-            val assignRange = parameterMatchResult.r(2)
-            holder.assign(offset + assignRange.first)
-
-            val dataRange = parameterMatchResult.r(3)
-            holder.parameter(offset + dataRange.first, dataRange.count())
+            localOffset += block.length + 1
+            if (localOffset < code.length) {
+                holder.comma(codeStartOffset + localOffset - 1)
+            }
         }
     }
 }
@@ -82,6 +85,13 @@ private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
 private fun AnnotationHolder.assign(offset: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
         .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
+        .range(TextRange.from(offset, 1))
+        .create()
+}
+
+private fun AnnotationHolder.comma(offset: Int) {
+    newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(KotlinHighlightingColors.COMMA)
         .range(TextRange.from(offset, 1))
         .create()
 }
