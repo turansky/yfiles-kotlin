@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+
 plugins {
     kotlin("js") version "1.4.0"
     id("com.github.turansky.yfiles") version "3.2.0"
@@ -19,7 +21,7 @@ dependencies {
 }
 
 tasks {
-    compileKotlinJs {
+    withType<KotlinJsCompile>().configureEach {
         kotlinOptions {
             moduleKind = "commonjs"
             allWarningsAsErrors = true
