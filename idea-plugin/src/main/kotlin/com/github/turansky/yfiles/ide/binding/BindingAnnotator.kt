@@ -9,8 +9,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
 import org.jetbrains.kotlin.idea.highlighter.KotlinHighlightingColors
 
-private val BINDING = Regex("\\s*(Binding|TemplateBinding)\\s*(.*)\\s*")
-private val PARAMETER = Regex("\\s*(Converter|Parameter)\\s*(=)\\s*(.*)\\s*")
+private val BINDING = Regex("\\s*(Binding|TemplateBinding)\\s*(\\S*)\\s*")
+private val PARAMETER = Regex("\\s*(Converter|Parameter)\\s*(=)\\s*(\\S*)\\s*")
 
 internal class BindingAnnotator : Annotator {
     override fun annotate(
