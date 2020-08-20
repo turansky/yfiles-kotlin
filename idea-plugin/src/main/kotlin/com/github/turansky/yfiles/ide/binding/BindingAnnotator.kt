@@ -35,12 +35,15 @@ internal class BindingAnnotator : Annotator {
 
             val bindingMatchResult = BINDING.find(block)
             if (bindingMatchResult != null) {
-                val keywordRange = bindingMatchResult.groups[1]!!.range
+                val keywordGroup = bindingMatchResult.groups[1]!!
+                val keywordRange = keywordGroup.range
                 holder.keyword(offset + keywordRange.first, keywordRange.count())
 
-                val dataRange = bindingMatchResult.groups[2]!!.range
+                val dataGroup = bindingMatchResult.groups[2]!!
+                val dataRange = dataGroup.range
                 if (!dataRange.isEmpty()) {
-                    holder.parameter(offset + dataRange.first, dataRange.count())
+                    val valid = BindingDirective.find(keywordGroup.value) != BindingDirective.TEMPLATE_BINDING
+                    holder.parameter(offset + dataRange.first, dataRange.count(), valid)
                 }
                 continue
             }
@@ -80,9 +83,15 @@ private fun AnnotationHolder.assign(offset: Int) {
         .create()
 }
 
-private fun AnnotationHolder.parameter(offset: Int, length: Int) {
+private fun AnnotationHolder.parameter(offset: Int, length: Int, valid: Boolean = true) {
+    val textAttributes = if (valid) {
+        KotlinHighlightingColors.PARAMETER
+    } else {
+        KotlinHighlightingColors.BAD_CHARACTER
+    }
+
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.PARAMETER)
+        .textAttributes(textAttributes)
         .range(TextRange.from(offset, length))
         .create()
 }
