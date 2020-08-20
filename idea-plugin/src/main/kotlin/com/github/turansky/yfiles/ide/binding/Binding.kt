@@ -17,7 +17,7 @@ internal sealed class Binding {
         val target = join(parentName, ".", name)
         val converter = converter ?: return target
         val parameter = parameter ?: return "$converter($target)"
-        return "$converter($target, '$parameter')"
+        return """$converter($target, "$parameter")"""
     }
 }
 
