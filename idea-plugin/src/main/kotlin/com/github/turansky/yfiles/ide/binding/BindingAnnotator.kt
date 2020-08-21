@@ -26,6 +26,8 @@ internal class BindingAnnotator : Annotator {
 
         val valueRange = element.textRange
         holder.languageFragment(valueRange)
+        holder.brace(valueRange.startOffset + 1)
+        holder.brace(valueRange.endOffset - 2)
 
         val codeStartOffset = valueRange.startOffset + 2
 
@@ -81,7 +83,7 @@ private fun AnnotationHolder.languageFragment(range: TextRange) {
 
 private fun AnnotationHolder.keyword(offset: Int, length: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.KEYWORD)
+        .textAttributes(XmlHighlighterColors.XML_NS_PREFIX)
         .range(TextRange.from(offset, length))
         .create()
 }
@@ -90,6 +92,13 @@ private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
         .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
         .range(TextRange.from(offset, length))
+        .create()
+}
+
+private fun AnnotationHolder.brace(offset: Int) {
+    newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(XmlHighlighterColors.XML_TAG_NAME)
+        .range(TextRange.from(offset, 1))
         .create()
 }
 
