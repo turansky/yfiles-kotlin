@@ -26,8 +26,6 @@ internal class BindingAnnotator : Annotator {
 
         val valueRange = element.textRange
         holder.languageFragment(valueRange)
-        holder.brace(valueRange.startOffset + 1)
-        holder.brace(valueRange.endOffset - 2)
 
         val codeStartOffset = valueRange.startOffset + 2
 
@@ -95,13 +93,6 @@ private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
         .create()
 }
 
-private fun AnnotationHolder.brace(offset: Int) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(XmlHighlighterColors.XML_TAG_NAME)
-        .range(TextRange.from(offset, 1))
-        .create()
-}
-
 private fun AnnotationHolder.assign(offset: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
         .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
@@ -111,20 +102,22 @@ private fun AnnotationHolder.assign(offset: Int) {
 
 private fun AnnotationHolder.comma(offset: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.COMMA)
+        .textAttributes(KotlinHighlightingColors.STRING_ESCAPE)
         .range(TextRange.from(offset, 1))
         .create()
 }
 
 private fun AnnotationHolder.parameter(offset: Int, length: Int, valid: Boolean = true) {
-    val textAttributes = if (valid) {
-        KotlinHighlightingColors.PARAMETER
-    } else {
-        KotlinHighlightingColors.BAD_CHARACTER
-    }
+    val range = TextRange.from(offset, length)
+    newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(KotlinHighlightingColors.STRING_ESCAPE)
+        .range(range)
+        .create()
+
+    if (valid) return
 
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(textAttributes)
-        .range(TextRange.from(offset, length))
+        .textAttributes(KotlinHighlightingColors.RESOLVED_TO_ERROR)
+        .range(range)
         .create()
 }
