@@ -114,7 +114,7 @@ private fun AnnotationHolder.parameter(offset: Int, length: Int, valid: Boolean 
 
     if (valid) return
 
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
+    newSilentAnnotation(HighlightSeverity.ERROR)
         .textAttributes(BindingHighlightingColors.RESOLVED_TO_ERROR)
         .range(range)
         .create()
