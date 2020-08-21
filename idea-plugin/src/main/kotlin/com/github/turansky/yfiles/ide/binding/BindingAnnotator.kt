@@ -4,11 +4,9 @@ import com.github.turansky.yfiles.ide.documentation.isSvgFile
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.XmlHighlighterColors
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
-import org.jetbrains.kotlin.idea.highlighter.KotlinHighlightingColors
 
 private val BINDING = Regex("\\s*(Binding|TemplateBinding)\\s*(\\S*)\\s*")
 private val PARAMETER = Regex("\\s*(Converter|Parameter)\\s*(=)\\s*(\\S*)\\s*")
@@ -74,35 +72,35 @@ internal class BindingAnnotator : Annotator {
 
 private fun AnnotationHolder.languageFragment(range: TextRange) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(XmlHighlighterColors.XML_INJECTED_LANGUAGE_FRAGMENT)
+        .textAttributes(BindingHighlightingColors.LANGUAGE_INJECTION)
         .range(range)
         .create()
 }
 
 private fun AnnotationHolder.keyword(offset: Int, length: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(XmlHighlighterColors.XML_NS_PREFIX)
+        .textAttributes(BindingHighlightingColors.KEYWORD)
         .range(TextRange.from(offset, length))
         .create()
 }
 
 private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
+        .textAttributes(BindingHighlightingColors.NAMED_ARGUMENT)
         .range(TextRange.from(offset, length))
         .create()
 }
 
 private fun AnnotationHolder.assign(offset: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.NAMED_ARGUMENT)
+        .textAttributes(BindingHighlightingColors.ASSIGN)
         .range(TextRange.from(offset, 1))
         .create()
 }
 
 private fun AnnotationHolder.comma(offset: Int) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.STRING_ESCAPE)
+        .textAttributes(BindingHighlightingColors.COMMA)
         .range(TextRange.from(offset, 1))
         .create()
 }
@@ -110,14 +108,14 @@ private fun AnnotationHolder.comma(offset: Int) {
 private fun AnnotationHolder.parameter(offset: Int, length: Int, valid: Boolean = true) {
     val range = TextRange.from(offset, length)
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.STRING_ESCAPE)
+        .textAttributes(BindingHighlightingColors.ARGUMENT)
         .range(range)
         .create()
 
     if (valid) return
 
     newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(KotlinHighlightingColors.RESOLVED_TO_ERROR)
+        .textAttributes(BindingHighlightingColors.RESOLVED_TO_ERROR)
         .range(range)
         .create()
 }
