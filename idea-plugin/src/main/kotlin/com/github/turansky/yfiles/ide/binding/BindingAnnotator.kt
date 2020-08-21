@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.github.turansky.yfiles.ide.binding.BindingDirective.*
 import com.github.turansky.yfiles.ide.documentation.isSvgFile
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
@@ -8,8 +9,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
 
-private val BINDING = Regex("\\s*(Binding|TemplateBinding)\\s*(\\S*)\\s*")
-private val PARAMETER = Regex("\\s*(Converter|Parameter)\\s*(=)\\s*(\\S*)\\s*")
+private val KEYWORD = Regex("\\s*($BINDING|$TEMPLATE_BINDING)\\s*(\\S*)\\s*")
+private val ARGUMENT = Regex("\\s*($CONVERTER|$PARAMETER)\\s*(=)\\s*(\\S*)\\s*")
 
 internal class BindingAnnotator : Annotator {
     override fun annotate(
@@ -34,7 +35,7 @@ internal class BindingAnnotator : Annotator {
         for (block in blocks) {
             val offset = codeStartOffset + localOffset
 
-            val bindingMatchResult = BINDING.find(block)
+            val bindingMatchResult = KEYWORD.find(block)
             if (bindingMatchResult != null) {
                 val keywordGroup = bindingMatchResult.g(1)
                 val keywordRange = keywordGroup.range
@@ -44,13 +45,13 @@ internal class BindingAnnotator : Annotator {
                 val dataRange = dataGroup.range
                 if (!dataRange.isEmpty()) {
                     val valid = when (BindingDirective.find(keywordGroup.value)) {
-                        BindingDirective.TEMPLATE_BINDING -> isContextParameter(dataGroup.value)
+                        TEMPLATE_BINDING -> isContextParameter(dataGroup.value)
                         else -> true
                     }
                     holder.parameter(offset + dataRange.first, dataRange.count(), valid)
                 }
             } else {
-                val parameterMatchResult = PARAMETER.find(block)!!
+                val parameterMatchResult = ARGUMENT.find(block)!!
 
                 val nameRange = parameterMatchResult.r(1)
                 holder.parameterName(offset + nameRange.first, nameRange.count())

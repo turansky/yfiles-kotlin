@@ -8,6 +8,8 @@ internal enum class BindingDirective(
     CONVERTER("Converter"),
     PARAMETER("Parameter");
 
+    override fun toString(): String = key
+
     companion object {
         private val map = values().asSequence().associateBy { it.key }
 
