@@ -5,6 +5,7 @@ import com.github.turansky.yfiles.ide.documentation.isSvgFile
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
@@ -72,51 +73,43 @@ internal class BindingAnnotator : Annotator {
 }
 
 private fun AnnotationHolder.languageFragment(range: TextRange) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(BindingHighlightingColors.LANGUAGE_INJECTION)
-        .range(range)
-        .create()
+    info(BindingHighlightingColors.LANGUAGE_INJECTION, range)
 }
 
 private fun AnnotationHolder.keyword(offset: Int, length: Int) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(BindingHighlightingColors.KEYWORD)
-        .range(TextRange.from(offset, length))
-        .create()
+    info(BindingHighlightingColors.KEYWORD, TextRange.from(offset, length))
 }
 
 private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(BindingHighlightingColors.NAMED_ARGUMENT)
-        .range(TextRange.from(offset, length))
-        .create()
+    info(BindingHighlightingColors.NAMED_ARGUMENT, TextRange.from(offset, length))
 }
 
 private fun AnnotationHolder.assign(offset: Int) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(BindingHighlightingColors.ASSIGN)
-        .range(TextRange.from(offset, 1))
-        .create()
+    info(BindingHighlightingColors.ASSIGN, TextRange.from(offset, 1))
 }
 
 private fun AnnotationHolder.comma(offset: Int) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(BindingHighlightingColors.COMMA)
-        .range(TextRange.from(offset, 1))
-        .create()
+    info(BindingHighlightingColors.COMMA, TextRange.from(offset, 1))
 }
 
 private fun AnnotationHolder.parameter(offset: Int, length: Int, valid: Boolean = true) {
     val range = TextRange.from(offset, length)
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(BindingHighlightingColors.ARGUMENT)
-        .range(range)
-        .create()
+    info(BindingHighlightingColors.ARGUMENT, range)
 
     if (valid) return
 
     newSilentAnnotation(HighlightSeverity.ERROR)
         .textAttributes(BindingHighlightingColors.RESOLVED_TO_ERROR)
+        .range(range)
+        .create()
+}
+
+private fun AnnotationHolder.info(
+    attributes: TextAttributesKey,
+    range: TextRange
+) {
+    newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(attributes)
         .range(range)
         .create()
 }
