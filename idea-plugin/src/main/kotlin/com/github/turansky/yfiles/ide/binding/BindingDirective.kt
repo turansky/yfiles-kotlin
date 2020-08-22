@@ -11,7 +11,7 @@ internal enum class BindingDirective(
     override fun toString(): String = key
 
     companion object {
-        private val map = values().asSequence().associateBy { it.key }
+        private val map = values().associateBy { it.key }
 
         fun find(key: String): BindingDirective? = map[key]
     }
