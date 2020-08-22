@@ -35,12 +35,12 @@ internal class BindingAnnotator : Annotator {
         var localOffset = 0
         for (block in blocks) {
             val offset = codeStartOffset + localOffset
+            val range = { source: IntRange -> TextRange.from(offset + source.first, source.count()) }
 
             val bindingMatchResult = KEYWORD.find(block)
             if (bindingMatchResult != null) {
                 val keywordGroup = bindingMatchResult.g(1)
-                val keywordRange = keywordGroup.range
-                holder.keyword(offset + keywordRange.first, keywordRange.count())
+                holder.keyword(range(keywordGroup.range))
 
                 val dataGroup = bindingMatchResult.g(2)
                 val dataRange = dataGroup.range
@@ -49,19 +49,13 @@ internal class BindingAnnotator : Annotator {
                         TEMPLATE_BINDING -> isContextParameter(dataGroup.value)
                         else -> true
                     }
-                    holder.parameter(offset + dataRange.first, dataRange.count(), valid)
+                    holder.parameter(range(dataRange), valid)
                 }
             } else {
-                val parameterMatchResult = ARGUMENT.find(block)!!
-
-                val nameRange = parameterMatchResult.r(1)
-                holder.parameterName(offset + nameRange.first, nameRange.count())
-
-                val assignRange = parameterMatchResult.r(2)
-                holder.assign(offset + assignRange.first)
-
-                val dataRange = parameterMatchResult.r(3)
-                holder.parameter(offset + dataRange.first, dataRange.count())
+                val matchResult = ARGUMENT.find(block)!!
+                holder.parameterName(range(matchResult.r(1)))
+                holder.assign(range(matchResult.r(2)))
+                holder.parameter(range(matchResult.r(3)))
             }
 
             localOffset += block.length + 1
@@ -76,24 +70,23 @@ private fun AnnotationHolder.languageFragment(range: TextRange) {
     info(BindingHighlightingColors.LANGUAGE_INJECTION, range)
 }
 
-private fun AnnotationHolder.keyword(offset: Int, length: Int) {
-    info(BindingHighlightingColors.KEYWORD, TextRange.from(offset, length))
+private fun AnnotationHolder.keyword(range: TextRange) {
+    info(BindingHighlightingColors.KEYWORD, range)
 }
 
-private fun AnnotationHolder.parameterName(offset: Int, length: Int) {
-    info(BindingHighlightingColors.NAMED_ARGUMENT, TextRange.from(offset, length))
+private fun AnnotationHolder.parameterName(range: TextRange) {
+    info(BindingHighlightingColors.NAMED_ARGUMENT, range)
 }
 
-private fun AnnotationHolder.assign(offset: Int) {
-    info(BindingHighlightingColors.ASSIGN, TextRange.from(offset, 1))
+private fun AnnotationHolder.assign(range: TextRange) {
+    info(BindingHighlightingColors.ASSIGN, range)
 }
 
 private fun AnnotationHolder.comma(offset: Int) {
     info(BindingHighlightingColors.COMMA, TextRange.from(offset, 1))
 }
 
-private fun AnnotationHolder.parameter(offset: Int, length: Int, valid: Boolean = true) {
-    val range = TextRange.from(offset, length)
+private fun AnnotationHolder.parameter(range: TextRange, valid: Boolean = true) {
     info(BindingHighlightingColors.ARGUMENT, range)
 
     if (valid) return
