@@ -145,9 +145,12 @@ val mode = CreateEdgeInputMode {
     endHitTestable = IHitTestable { _, location -> location.x < 0.0 }
 }
 ```
-
-#### Related issues
-- [KT-39580](https://youtrack.jetbrains.com/issue/KT-39580) - Custom lambda wrapper for `fun interface`
+will be compiled to
+```JavaScript
+const mode = new CreateEdgeInputMode()
+mode.beginHitTestable = IHitTestable.from((_, location) => location.x > 0.0)
+mode.endHitTestable = IHitTestable.from((_, location) => location.x < 0.0)
+```
                                                              
 ## Flags
 Some yFiles enums are marked as `flags`.
