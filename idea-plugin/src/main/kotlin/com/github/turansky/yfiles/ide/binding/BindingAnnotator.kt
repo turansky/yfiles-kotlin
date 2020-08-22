@@ -45,7 +45,7 @@ internal class BindingAnnotator : Annotator {
                 val dataGroup = bindingMatchResult.g(2)
                 val dataRange = dataGroup.range
                 if (!dataRange.isEmpty()) {
-                    val valid = when (BindingDirective.find(keywordGroup.value)) {
+                    val valid = when (keywordGroup.valueAsDirective) {
                         TEMPLATE_BINDING -> isContextParameter(dataGroup.value)
                         else -> true
                     }
