@@ -139,7 +139,7 @@ val layout = HierarchicLayout {
 ```
 
 ## Quick interface implementation
-```
+```Kotlin
 val mode = CreateEdgeInputMode {
     beginHitTestable = IHitTestable { _, location -> location.x > 0.0 }
     endHitTestable = IHitTestable { _, location -> location.x < 0.0 }
