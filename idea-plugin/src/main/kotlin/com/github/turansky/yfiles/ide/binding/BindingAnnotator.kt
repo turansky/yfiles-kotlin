@@ -25,7 +25,7 @@ internal class BindingAnnotator : Annotator {
         value.toBinding() ?: return
 
         val valueRange = element.textRange
-        holder.languageFragment(valueRange)
+        holder.languageFragment(TextRange.create(valueRange.startOffset + 1, valueRange.endOffset - 1))
 
         val codeStartOffset = valueRange.startOffset + 2
 
