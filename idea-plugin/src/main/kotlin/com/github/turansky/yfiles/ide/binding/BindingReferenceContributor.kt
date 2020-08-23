@@ -29,23 +29,44 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         val binding = element.value.toBinding() as? TemplateBinding
             ?: return PsiReference.EMPTY_ARRAY
 
-        val name = binding.name
-            ?: return PsiReference.EMPTY_ARRAY
-
         val value = element.value
         val valueOffset = element.valueTextRange.startOffset - element.textRange.startOffset
 
         val key = TEMPLATE_BINDING.key
-        val nameStartOffset = value.indexOf(name, value.indexOf(key) + key.length) + valueOffset
+        val keyIndex = value.indexOf(key)
+        val keyStartOffset = keyIndex + valueOffset
 
-        val property = ContextProperty(
+        val classReference = ContextClass(
+            element = element,
+            rangeInElement = TextRange.from(keyStartOffset, key.length),
+            className = binding.parentReference
+        )
+
+        val name = binding.name
+            ?: return arrayOf(classReference)
+
+        val nameStartOffset = value.indexOf(name, keyIndex + key.length) + valueOffset
+
+        val propertyReference = ContextProperty(
             element = element,
             rangeInElement = TextRange.from(nameStartOffset, name.length),
             className = binding.parentReference,
             propertyName = name
         )
-        return arrayOf(property)
+        return arrayOf(
+            classReference,
+            propertyReference
+        )
     }
+}
+
+private class ContextClass(
+    element: XmlAttributeValue,
+    rangeInElement: TextRange,
+    private val className: String
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, true) {
+    override fun resolve(): PsiElement? =
+        findKotlinClass(element, className)
 }
 
 private class ContextProperty(
