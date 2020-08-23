@@ -1,8 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.GeneratorContext
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_OBJECT
+import com.github.turansky.yfiles.*
 
 private const val CONVERTERS = "yfiles.styles.Converters"
 
@@ -22,15 +20,15 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
                 name: String,
                 converter: (value: V) -> R
             ): Converters {
-                asDynamic()[name] = converter
+                $AS_DYNAMIC[name] = converter
                 return this
             }
             
-            fun <V, P, R : Any> Converters.put(
+            fun <V, P: $STRING?, R : Any> Converters.put(
                 name: String,
                 converter: (value: V, parameter: P) -> R
             ): Converters {
-                asDynamic()[name] = converter
+                $AS_DYNAMIC[name] = converter
                 return this
             }
         """.trimIndent()
