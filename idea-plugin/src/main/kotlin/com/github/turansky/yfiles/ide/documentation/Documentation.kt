@@ -1,6 +1,8 @@
 package com.github.turansky.yfiles.ide.documentation
 
 import com.github.turansky.yfiles.ide.binding.Binding
+import com.github.turansky.yfiles.ide.binding.TagBinding
+import com.github.turansky.yfiles.ide.binding.TemplateBinding
 import com.intellij.codeInsight.documentation.DocumentationManager.createHyperlink
 import com.intellij.lang.documentation.DocumentationMarkup.*
 import org.jetbrains.kotlin.idea.KotlinBundle
@@ -21,8 +23,14 @@ private fun StringBuilder.renderBindingBlock(binding: Binding) {
     renderSection("Binding") {
         append("<pre><code>")
         reference(binding.parentReference, binding.parentName)
-        binding.name?.also {
-            append(".$it")
+        binding.name?.also { name ->
+            when (binding) {
+                is TagBinding -> append(".$name")
+                is TemplateBinding -> {
+                    append(".")
+                    reference("${binding.parentReference}.$name", name)
+                }
+            }
         }
         append("</code></pre>")
     }
