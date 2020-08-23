@@ -23,26 +23,28 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
     ): Array<out PsiReference> {
         element as XmlAttributeValue
 
-        val binding = element.value.toBinding()
+        val name = element.value.toBinding()
+            ?.let { it as? TemplateBinding }
+            ?.name
             ?: return PsiReference.EMPTY_ARRAY
 
-        if (binding !is TemplateBinding)
-            return PsiReference.EMPTY_ARRAY
-
-        val name = binding.name ?: return PsiReference.EMPTY_ARRAY
-
-        val nameStartOffset = element.value.indexOf(name) + element.valueTextRange.startOffset - element.range.startOffset
-        return arrayOf(ContextProperty(element, TextRange.from(nameStartOffset, name.length)))
+        val valueOffset = element.valueTextRange.startOffset - element.range.startOffset
+        val nameStartOffset = element.value.indexOf(name) + valueOffset
+        val property = ContextProperty(
+            element,
+            TextRange.from(nameStartOffset, name.length),
+            name
+        )
+        return arrayOf(property)
     }
 }
 
 private class ContextProperty(
     element: XmlAttributeValue,
-    rangeInElement: TextRange
-) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement) {
+    rangeInElement: TextRange,
+    name: String
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, isContextParameter(name)) {
     override fun resolve(): PsiElement? {
-        val nameRange = rangeInElement.shiftRight(element.range.startOffset).shiftLeft(element.valueTextRange.startOffset)
-        val name = element.value.substring(nameRange.startOffset, nameRange.endOffset)
-        return if (isContextParameter(name)) element else null
+        return null
     }
 }
