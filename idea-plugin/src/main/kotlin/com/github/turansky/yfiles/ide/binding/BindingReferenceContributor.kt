@@ -26,9 +26,10 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         if (!element.bindingEnabled)
             return PsiReference.EMPTY_ARRAY
 
-        val name = element.value.toBinding()
-            ?.let { it as? TemplateBinding }
-            ?.name
+        val binding = element.value.toBinding() as? TemplateBinding
+            ?: return PsiReference.EMPTY_ARRAY
+
+        val name = binding.name
             ?: return PsiReference.EMPTY_ARRAY
 
         val value = element.value
@@ -40,7 +41,8 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         val property = ContextProperty(
             element = element,
             rangeInElement = TextRange.from(nameStartOffset, name.length),
-            name = name
+            className = binding.parentReference,
+            propertyName = name
         )
         return arrayOf(property)
     }
@@ -49,9 +51,12 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
 private class ContextProperty(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    name: String
-) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, isContextParameter(name)) {
-    override fun resolve(): PsiElement? {
-        return null
-    }
+    private val className: String,
+    private val propertyName: String
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, isContextParameter(propertyName)) {
+    override fun resolve(): PsiElement? =
+        when {
+            isSoft -> findKotlinProperty(element, className, propertyName)
+            else -> null
+        }
 }
