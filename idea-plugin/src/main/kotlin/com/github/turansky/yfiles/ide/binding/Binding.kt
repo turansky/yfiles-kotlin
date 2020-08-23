@@ -21,7 +21,7 @@ internal sealed class Binding {
     }
 }
 
-private data class TagBinding(
+internal data class TagBinding(
     override val name: String?,
     override val converter: String?,
     override val parameter: String?
@@ -30,7 +30,7 @@ private data class TagBinding(
     override val parentReference: String = TAG
 }
 
-private data class TemplateBinding(
+internal data class TemplateBinding(
     override val name: String?,
     override val converter: String?,
     override val parameter: String?

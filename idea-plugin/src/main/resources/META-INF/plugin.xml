@@ -40,6 +40,8 @@
         <annotator
             language="XML"
             implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"/>
+
+        <psi.referenceContributor implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
