@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.github.turansky.yfiles.ide.binding.BindingDirective.TEMPLATE_BINDING
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
@@ -28,12 +29,16 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
             ?.name
             ?: return PsiReference.EMPTY_ARRAY
 
+        val value = element.value
         val valueOffset = element.valueTextRange.startOffset - element.range.startOffset
-        val nameStartOffset = element.value.indexOf(name) + valueOffset
+
+        val key = TEMPLATE_BINDING.key
+        val nameStartOffset = value.indexOf(name, value.indexOf(key) + key.length) + valueOffset
+
         val property = ContextProperty(
-            element,
-            TextRange.from(nameStartOffset, name.length),
-            name
+            element = element,
+            rangeInElement = TextRange.from(nameStartOffset, name.length),
+            name = name
         )
         return arrayOf(property)
     }
