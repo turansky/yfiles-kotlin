@@ -30,4 +30,10 @@
         efill2="{Binding, Converter=calculate}"
         efill3="{Binding, Converter=calculate, Parameter=blue}"
     />
+
+    <text
+        data="{TemplateBinding labelText}"
+        data-flipped="{TemplateBinding isFlipped}"
+        data-position="{TemplateBinding isUpsideDown}"
+    />
 </g>
