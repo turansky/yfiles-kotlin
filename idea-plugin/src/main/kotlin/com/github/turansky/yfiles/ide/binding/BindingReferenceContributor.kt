@@ -53,7 +53,7 @@ private class ContextProperty(
     rangeInElement: TextRange,
     private val className: String,
     private val propertyName: String
-) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, isContextParameter(propertyName)) {
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, isValidContextParameter(propertyName)) {
     override fun resolve(): PsiElement? =
         when {
             isSoft -> findKotlinProperty(element, className, propertyName)

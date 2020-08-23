@@ -3,7 +3,6 @@ package com.github.turansky.yfiles.ide.binding
 import com.github.turansky.yfiles.ide.binding.BindingDirective.*
 
 private const val TAG: String = "yfiles.graph.Tag"
-private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 
 internal sealed class Binding {
     abstract val parentName: String
@@ -36,7 +35,7 @@ internal data class TemplateBinding(
     override val parameter: String?
 ) : Binding() {
     override val parentName: String = "context"
-    override val parentReference: String = CONTEXT
+    override val parentReference: String = getContextParameterParentClass(name)
 }
 
 internal fun String.toBinding(): Binding? {
