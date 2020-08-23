@@ -24,10 +24,10 @@ internal class BindingAnnotator : Annotator {
         val value = element.value
         value.toBinding() ?: return
 
-        val valueRange = element.textRange
-        holder.languageFragment(TextRange.create(valueRange.startOffset + 1, valueRange.endOffset - 1))
+        val valueRange = element.valueTextRange
+        holder.languageFragment(valueRange)
 
-        val codeStartOffset = valueRange.startOffset + 2
+        val codeStartOffset = valueRange.startOffset + 1
 
         val code = value.drop(1).dropLast(1)
         val blocks = code.split(',')
