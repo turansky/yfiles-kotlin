@@ -48,9 +48,11 @@ internal class BindingAnnotator : Annotator {
                 }
             } else {
                 val matchResult = ARGUMENT.find(block)!!
+                val valueMode = matchResult.d(1) == PARAMETER
                 holder.parameterName(range(matchResult.r(1)))
                 holder.assign(range(matchResult.r(2)))
-                holder.parameter(range(matchResult.r(3)))
+
+                holder.parameter(range(matchResult.r(3)), valueMode)
             }
 
             localOffset += block.length + 1
@@ -85,8 +87,8 @@ private fun AnnotationHolder.comma(offset: Int) {
     info(BindingHighlightingColors.COMMA, TextRange.from(offset, 1))
 }
 
-private fun AnnotationHolder.parameter(range: TextRange) {
-    info(BindingHighlightingColors.ARGUMENT, range)
+private fun AnnotationHolder.parameter(range: TextRange, valueMode: Boolean = false) {
+    info(if (valueMode) BindingHighlightingColors.VALUE else BindingHighlightingColors.ARGUMENT, range)
 }
 
 private fun AnnotationHolder.info(

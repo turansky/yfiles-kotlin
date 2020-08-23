@@ -13,5 +13,6 @@ object BindingHighlightingColors {
     val ASSIGN = createTextAttributesKey("BINDING_ASSIGN", NAMED_ARGUMENT)
 
     val ARGUMENT = createTextAttributesKey("BINDING_ARGUMENT", KotlinHighlightingColors.STRING_ESCAPE)
+    val VALUE = createTextAttributesKey("BINDING_VALUE", XmlHighlighterColors.XML_ATTRIBUTE_VALUE)
     val COMMA = createTextAttributesKey("BINDING_COMMA", ARGUMENT)
 }
