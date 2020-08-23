@@ -25,6 +25,8 @@ internal class BindingAnnotator : Annotator {
 
         val valueRange = element.valueTextRange
         holder.languageFragment(valueRange)
+        holder.brace(valueRange.startOffset)
+        holder.brace(valueRange.endOffset - 1)
 
         val codeStartOffset = valueRange.startOffset + 1
 
@@ -61,6 +63,10 @@ internal class BindingAnnotator : Annotator {
 
 private fun AnnotationHolder.languageFragment(range: TextRange) {
     info(BindingHighlightingColors.LANGUAGE_INJECTION, range)
+}
+
+private fun AnnotationHolder.brace(offset: Int) {
+    info(BindingHighlightingColors.BRACE, TextRange.from(offset, 1))
 }
 
 private fun AnnotationHolder.keyword(range: TextRange) {
