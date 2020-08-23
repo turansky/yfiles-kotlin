@@ -6,7 +6,6 @@ import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.xml.XmlAttributeValue
 import com.intellij.util.ProcessingContext
-import org.jetbrains.kotlin.idea.core.util.range
 
 internal class BindingReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
@@ -30,7 +29,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
             ?: return PsiReference.EMPTY_ARRAY
 
         val value = element.value
-        val valueOffset = element.valueTextRange.startOffset - element.range.startOffset
+        val valueOffset = element.valueTextRange.startOffset - element.textRange.startOffset
 
         val key = TEMPLATE_BINDING.key
         val nameStartOffset = value.indexOf(name, value.indexOf(key) + key.length) + valueOffset
