@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
 import com.github.turansky.yfiles.ide.binding.BindingDirective.*
-import com.github.turansky.yfiles.ide.documentation.isSvgFile
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -19,7 +18,7 @@ internal class BindingAnnotator : Annotator {
         holder: AnnotationHolder
     ) {
         if (element !is XmlAttributeValue) return
-        if (!element.containingFile.isSvgFile) return
+        if (!element.bindingEnabled) return
 
         val value = element.value
         value.toBinding() ?: return

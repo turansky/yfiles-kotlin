@@ -23,6 +23,9 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
     ): Array<out PsiReference> {
         element as XmlAttributeValue
 
+        if (!element.bindingEnabled)
+            return PsiReference.EMPTY_ARRAY
+
         val name = element.value.toBinding()
             ?.let { it as? TemplateBinding }
             ?.name
