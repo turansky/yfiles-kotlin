@@ -39,17 +39,11 @@ internal class BindingAnnotator : Annotator {
 
             val bindingMatchResult = KEYWORD.find(block)
             if (bindingMatchResult != null) {
-                val keywordGroup = bindingMatchResult.g(1)
-                holder.keyword(range(keywordGroup.range))
+                holder.keyword(range(bindingMatchResult.r(1)))
 
-                val dataGroup = bindingMatchResult.g(2)
-                val dataRange = dataGroup.range
+                val dataRange = bindingMatchResult.r(2)
                 if (!dataRange.isEmpty()) {
-                    val valid = when (keywordGroup.valueAsDirective) {
-                        TEMPLATE_BINDING -> isContextParameter(dataGroup.value)
-                        else -> true
-                    }
-                    holder.parameter(range(dataRange), valid)
+                    holder.parameter(range(dataRange))
                 }
             } else {
                 val matchResult = ARGUMENT.find(block)!!
@@ -86,15 +80,8 @@ private fun AnnotationHolder.comma(offset: Int) {
     info(BindingHighlightingColors.COMMA, TextRange.from(offset, 1))
 }
 
-private fun AnnotationHolder.parameter(range: TextRange, valid: Boolean = true) {
+private fun AnnotationHolder.parameter(range: TextRange) {
     info(BindingHighlightingColors.ARGUMENT, range)
-
-    if (valid) return
-
-    newSilentAnnotation(HighlightSeverity.ERROR)
-        .textAttributes(BindingHighlightingColors.RESOLVED_TO_ERROR)
-        .range(range)
-        .create()
 }
 
 private fun AnnotationHolder.info(

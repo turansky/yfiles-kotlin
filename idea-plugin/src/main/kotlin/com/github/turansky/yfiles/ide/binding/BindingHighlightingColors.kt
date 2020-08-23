@@ -13,6 +13,4 @@ object BindingHighlightingColors {
 
     val ARGUMENT = createTextAttributesKey("BINDING_ARGUMENT", KotlinHighlightingColors.STRING_ESCAPE)
     val COMMA = createTextAttributesKey("BINDING_COMMA", ARGUMENT)
-
-    val RESOLVED_TO_ERROR = createTextAttributesKey("BINDING_RESOLVED_TO_ERROR", KotlinHighlightingColors.RESOLVED_TO_ERROR)
 }
