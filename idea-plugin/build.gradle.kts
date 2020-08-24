@@ -20,7 +20,6 @@ intellij {
     version = "2020.2"
 
     setPlugins(
-        "gradle",
         "java",
         "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1"
     )
