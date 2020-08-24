@@ -6,6 +6,8 @@ private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBind
 interface IContextProperty {
     val name: String
     val className: String
+
+    val isStandard: Boolean
 }
 
 private enum class ContextProperty : IContextProperty {
@@ -20,8 +22,8 @@ private enum class ContextProperty : IContextProperty {
     width,
     zoom;
 
-    override val className: String
-        get() = CONTEXT
+    override val className = CONTEXT
+    override val isStandard: Boolean = true
 }
 
 private enum class LabelContextProperty : IContextProperty {
@@ -29,8 +31,8 @@ private enum class LabelContextProperty : IContextProperty {
     isUpsideDown,
     labelText;
 
-    override val className: String
-        get() = LABEL_CONTEXT
+    override val className = LABEL_CONTEXT
+    override val isStandard: Boolean = true
 }
 
 private val PARAMETER_MAP = sequenceOf<IContextProperty>()
