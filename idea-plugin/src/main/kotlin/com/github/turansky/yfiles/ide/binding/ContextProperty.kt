@@ -3,12 +3,12 @@ package com.github.turansky.yfiles.ide.binding
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
 
-interface IContextParameter {
+interface IContextProperty {
     val name: String
     val className: String
 }
 
-enum class ContextParameter : IContextParameter {
+private enum class ContextProperty : IContextProperty {
     bounds,
     canvasComponent,
     height,
@@ -24,7 +24,7 @@ enum class ContextParameter : IContextParameter {
         get() = CONTEXT
 }
 
-enum class LabelContextParameter : IContextParameter {
+private enum class LabelContextProperty : IContextProperty {
     isFlipped,
     isUpsideDown,
     labelText;
@@ -33,9 +33,9 @@ enum class LabelContextParameter : IContextParameter {
         get() = LABEL_CONTEXT
 }
 
-private val PARAMETER_MAP = sequenceOf<IContextParameter>()
-    .plus(ContextParameter.values())
-    .plus(LabelContextParameter.values())
+private val PARAMETER_MAP = sequenceOf<IContextProperty>()
+    .plus(ContextProperty.values())
+    .plus(LabelContextProperty.values())
     .associateBy { it.name }
 
 internal fun getContextParameterParentClass(name: String?): String {

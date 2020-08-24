@@ -36,7 +36,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         val keyIndex = value.indexOf(key)
         val keyStartOffset = keyIndex + valueOffset
 
-        val classReference = ContextClass(
+        val classReference = ContextClassReference(
             element = element,
             rangeInElement = TextRange.from(keyStartOffset, key.length),
             className = binding.parentReference
@@ -47,7 +47,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
 
         val nameStartOffset = value.indexOf(name, keyIndex + key.length) + valueOffset
 
-        val propertyReference = ContextProperty(
+        val propertyReference = ContextPropertyReference(
             element = element,
             rangeInElement = TextRange.from(nameStartOffset, name.length),
             className = binding.parentReference,
@@ -60,7 +60,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
     }
 }
 
-private class ContextClass(
+private class ContextClassReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
     private val className: String
@@ -69,7 +69,7 @@ private class ContextClass(
         findKotlinClass(element, className)
 }
 
-private class ContextProperty(
+private class ContextPropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
     private val className: String,
