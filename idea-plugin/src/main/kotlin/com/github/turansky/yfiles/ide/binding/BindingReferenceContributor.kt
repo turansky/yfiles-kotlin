@@ -74,8 +74,9 @@ private class ContextPropertyReference(
     private val property: IContextProperty
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property.isStandard) {
     override fun resolve(): PsiElement? =
-        when {
-            isSoft -> findKotlinProperty(element, property.className, property.name)
-            else -> null
+        if (property.isStandard) {
+            findKotlinProperty(element, property.className, property.name)
+        } else {
+            null
         }
 }
