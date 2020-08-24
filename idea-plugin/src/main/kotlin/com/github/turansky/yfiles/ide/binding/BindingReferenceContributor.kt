@@ -50,8 +50,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         val propertyReference = ContextPropertyReference(
             element = element,
             rangeInElement = TextRange.from(nameStartOffset, name.length),
-            className = binding.parentReference,
-            propertyName = name
+            property = binding.property
         )
         return arrayOf(
             classReference,
@@ -72,12 +71,11 @@ private class ContextClassReference(
 private class ContextPropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    private val className: String,
-    private val propertyName: String
-) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, isValidContextParameter(propertyName)) {
+    private val property: IContextProperty
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property.isStandard) {
     override fun resolve(): PsiElement? =
         when {
-            isSoft -> findKotlinProperty(element, className, propertyName)
+            isSoft -> findKotlinProperty(element, property.className, property.name)
             else -> null
         }
 }
