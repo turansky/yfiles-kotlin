@@ -3,29 +3,47 @@ package com.github.turansky.yfiles.ide.binding
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
 
-private val CONTEXT_PARAMETERS = setOf(
-    "bounds",
-    "canvasComponent",
-    "height",
-    "item",
-    "itemFocused",
-    "itemHighlighted",
-    "itemSelected",
-    "styleTag",
-    "width",
-    "zoom",
-)
+interface IContextParameter {
+    val name: String
+    val className: String
+}
 
-private val LABEL_CONTEXT_PARAMETERS = setOf(
-    "isFlipped",
-    "isUpsideDown",
-    "labelText",
-)
+enum class ContextParameter : IContextParameter {
+    bounds,
+    canvasComponent,
+    height,
+    item,
+    itemFocused,
+    itemHighlighted,
+    itemSelected,
+    styleTag,
+    width,
+    zoom;
 
-private val ALL_PARAMETERS = CONTEXT_PARAMETERS + LABEL_CONTEXT_PARAMETERS
+    override val className: String
+        get() = CONTEXT
+}
 
-internal fun getContextParameterParentClass(name: String?): String =
-    if (name in LABEL_CONTEXT_PARAMETERS) LABEL_CONTEXT else CONTEXT
+enum class LabelContextParameter : IContextParameter {
+    isFlipped,
+    isUpsideDown,
+    labelText;
+
+    override val className: String
+        get() = LABEL_CONTEXT
+}
+
+private val PARAMETER_MAP = sequenceOf<IContextParameter>()
+    .plus(ContextParameter.values())
+    .plus(LabelContextParameter.values())
+    .associateBy { it.name }
+
+internal fun getContextParameterParentClass(name: String?): String {
+    name ?: return CONTEXT
+
+    return PARAMETER_MAP[name]?.className
+        ?: CONTEXT
+}
 
 internal fun isValidContextParameter(name: String): Boolean =
-    name in ALL_PARAMETERS
+    PARAMETER_MAP.containsKey(name)
