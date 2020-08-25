@@ -12,7 +12,7 @@ repositories {
 }
 
 kotlin.js {
-    nodejs()
+    browser()
 }
 
 dependencies {

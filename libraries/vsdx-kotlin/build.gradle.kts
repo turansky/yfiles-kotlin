@@ -14,7 +14,7 @@ plugins {
 }
 
 kotlin.js {
-    nodejs()
+    browser()
 }
 
 dependencies {
