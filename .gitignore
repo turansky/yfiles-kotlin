@@ -9,4 +9,4 @@ vsdx-kotlin/src/
 !.idea/icon.png
 *.iml
 
-webpack.config.d
+webpack.config.d/
