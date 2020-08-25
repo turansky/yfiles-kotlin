@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.ide.binding
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementFinder
 import org.jetbrains.kotlin.asJava.classes.KtUltraLightClass
+import org.jetbrains.kotlin.asJava.finder.JavaElementFinder
 import org.jetbrains.kotlin.psi.psiUtil.findPropertyByName
 
 internal fun findKotlinClass(
@@ -10,7 +11,7 @@ internal fun findKotlinClass(
     className: String
 ): KtUltraLightClass? =
     PsiElementFinder.EP.getExtensions(context.project)
-        .asSequence()
+        .filterIsInstance<JavaElementFinder>()
         .mapNotNull { it.findClass(className, context.resolveScope) }
         .firstOrNull() as? KtUltraLightClass
 
