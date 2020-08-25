@@ -36,10 +36,10 @@ Check [inheritance rules](gradle-plugin) on the fly
 * Run `./gradlew build`
 * Check source folders
 
-| Declarations                | Source folder                                              |
-| :---                        | :---                                                       |
-| [yFiles for HTML][11]       | [`yfiles-kotlin`](libraries/yfiles-kotlin/src/main/kotlin) |
-| [VSDX Export][21]           | [`vsdx-kotlin`](libraries/vsdx-kotlin/src/main/kotlin)     |
+| Declarations                | Source folder                                    |
+| :---                        | :---                                             |
+| [yFiles for HTML][11]       | [`yfiles-kotlin`](yfiles-kotlin/src/main/kotlin) |
+| [VSDX Export][21]           | [`vsdx-kotlin`](vsdx-kotlin/src/main/kotlin)     |
   
 ## Description
 | JS library                  | [yFiles for HTML][11] | [VSDX Export][21] |

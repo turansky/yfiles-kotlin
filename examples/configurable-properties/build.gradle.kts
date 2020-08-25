@@ -11,5 +11,5 @@ kotlin.js {
 }
 
 dependencies {
-    implementation(project(":libraries:yfiles-kotlin"))
+    implementation(project(":yfiles-kotlin"))
 }
