@@ -1,7 +1,7 @@
 rootProject.name = "yfiles-kotlin"
 
-include("libraries:yfiles-kotlin")
-include("libraries:vsdx-kotlin")
+include("yfiles-kotlin")
+include("vsdx-kotlin")
 
 includeBuild("gradle-plugin")
 include("gradle-plugin-test")
