@@ -1,8 +1,8 @@
 group = "com.github.turansky.yfiles"
-version = "0.6.1-SNAPSHOT"
+version = "0.12.3-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
     id("org.jetbrains.intellij") version "0.4.21"
 }
 
@@ -17,12 +17,11 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
-    version = "2020.2"
+    version = "2020.2.1"
 
     setPlugins(
-        "gradle",
         "java",
-        "org.jetbrains.kotlin:1.3.72-release-IJ2020.1-5"
+        "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1"
     )
 }
 
@@ -30,7 +29,8 @@ tasks {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "1.8"
-            allWarningsAsErrors = true
+            // TODO: uncomment after Gradle update on Kotlin 1.4
+            // allWarningsAsErrors = true
         }
     }
 
@@ -44,7 +44,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.6"
+        gradleVersion = "6.6.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

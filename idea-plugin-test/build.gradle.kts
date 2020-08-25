@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+
 plugins {
-    kotlin("js") version "1.3.72"
-    id("com.github.turansky.yfiles") version "0.13.0"
+    kotlin("js") version "1.4.0"
+    id("com.github.turansky.yfiles") version "3.2.0"
 }
 
 repositories {
@@ -19,7 +21,7 @@ dependencies {
 }
 
 tasks {
-    compileKotlinJs {
+    withType<KotlinJsCompile>().configureEach {
         kotlinOptions {
             moduleKind = "commonjs"
             allWarningsAsErrors = true
@@ -27,7 +29,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.6"
+        gradleVersion = "6.6.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
