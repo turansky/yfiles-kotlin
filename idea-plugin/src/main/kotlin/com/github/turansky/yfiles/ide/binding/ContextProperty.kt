@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
-import com.github.turansky.yfiles.ide.binding.ExistedContextProperty.Type
-import com.github.turansky.yfiles.ide.binding.ExistedContextProperty.Type.*
+import com.github.turansky.yfiles.ide.binding.ContextProperty.Type.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 
@@ -9,11 +8,8 @@ private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
 
 internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
-    sequenceOf<ExistedContextProperty>()
-        .plus(ContextProperty.values())
-        .plus(LabelContextProperty.values())
+    ContextProperty.values()
         .map { it.toVariant() }
-        .toList()
         .toTypedArray()
 }
 
@@ -24,11 +20,26 @@ internal interface IContextProperty {
     val isStandard: Boolean
 }
 
-internal interface ExistedContextProperty : IContextProperty {
-    val type: Type
+private enum class ContextProperty(
+    val type: Type,
+    override val className: String = CONTEXT
+) : IContextProperty {
+    bounds(RECT),
+    canvasComponent(CANVAS_COMPONENT),
+    height(DOUBLE),
+    item(IMODEL_ITEM),
+    itemFocused(BOOLEAN),
+    itemHighlighted(BOOLEAN),
+    itemSelected(BOOLEAN),
+    styleTag(STYLE_TAG),
+    width(DOUBLE),
+    zoom(DOUBLE),
 
-    override val isStandard: Boolean
-        get() = true
+    isFlipped(BOOLEAN, LABEL_CONTEXT),
+    isUpsideDown(BOOLEAN, LABEL_CONTEXT),
+    labelText(STRING, LABEL_CONTEXT);
+
+    override val isStandard: Boolean = true
 
     enum class Type {
         STRING,
@@ -48,33 +59,6 @@ internal interface ExistedContextProperty : IContextProperty {
     }
 }
 
-private enum class ContextProperty(
-    override val type: Type
-) : ExistedContextProperty {
-    bounds(RECT),
-    canvasComponent(CANVAS_COMPONENT),
-    height(DOUBLE),
-    item(IMODEL_ITEM),
-    itemFocused(BOOLEAN),
-    itemHighlighted(BOOLEAN),
-    itemSelected(BOOLEAN),
-    styleTag(STYLE_TAG),
-    width(DOUBLE),
-    zoom(DOUBLE);
-
-    override val className = CONTEXT
-}
-
-private enum class LabelContextProperty(
-    override val type: Type
-) : ExistedContextProperty {
-    isFlipped(BOOLEAN),
-    isUpsideDown(BOOLEAN),
-    labelText(STRING);
-
-    override val className = LABEL_CONTEXT
-}
-
 private object ClassContextProperty : IContextProperty {
     override val name: String
         get() = TODO()
@@ -91,9 +75,7 @@ private object InvalidContextProperty : IContextProperty {
     override val isStandard = false
 }
 
-private val PROPERTY_MAP = sequenceOf<IContextProperty>()
-    .plus(ContextProperty.values())
-    .plus(LabelContextProperty.values())
+private val PROPERTY_MAP = ContextProperty.values()
     .associateBy { it.name }
 
 internal fun findContextProperty(name: String?): IContextProperty {
@@ -102,6 +84,6 @@ internal fun findContextProperty(name: String?): IContextProperty {
     return PROPERTY_MAP[name] ?: InvalidContextProperty
 }
 
-private fun ExistedContextProperty.toVariant(): LookupElement =
+private fun ContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)
         .withTypeText(type.toString(), true)
