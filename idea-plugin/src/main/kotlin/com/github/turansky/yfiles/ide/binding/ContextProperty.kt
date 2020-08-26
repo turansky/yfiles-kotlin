@@ -63,7 +63,7 @@ private enum class ContextProperty(
 
 private object ClassContextProperty : IContextProperty {
     override val name: String
-        get() = TODO()
+        get() = error("Name in unavailable!")
 
     override val className = CONTEXT
     override val isStandard = true
@@ -71,7 +71,7 @@ private object ClassContextProperty : IContextProperty {
 
 private object InvalidContextProperty : IContextProperty {
     override val name: String
-        get() = TODO()
+        get() = error("Name in unavailable!")
 
     override val className = CONTEXT
     override val isStandard = false
