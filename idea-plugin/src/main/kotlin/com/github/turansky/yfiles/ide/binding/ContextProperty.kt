@@ -52,7 +52,9 @@ private enum class ContextProperty(
 
         STYLE_TAG;
 
-        private val value = name.split("_")
+        private val value: String = name
+            .replace("IM", "I_M")
+            .split("_")
             .joinToString("") { it.toLowerCase().capitalize() }
 
         override fun toString(): String = value
