@@ -79,4 +79,7 @@ private class ContextPropertyReference(
         } else {
             null
         }
+
+    override fun getVariants(): Array<out Any> =
+        CONTEXT_PROPERTY_VARIANTS
 }

@@ -1,7 +1,19 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
+
+internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
+    sequenceOf<IContextProperty>()
+        .plus(ContextProperty.values())
+        .plus(LabelContextProperty.values())
+        .map { it.toVariant() }
+        .toList()
+        .toTypedArray()
+}
 
 internal interface IContextProperty {
     val name: String
@@ -61,3 +73,6 @@ internal fun findContextProperty(name: String?): IContextProperty {
 
     return PROPERTY_MAP[name] ?: InvalidContextProperty
 }
+
+private fun IContextProperty.toVariant(): LookupElement =
+    LookupElementBuilder.create(name)
