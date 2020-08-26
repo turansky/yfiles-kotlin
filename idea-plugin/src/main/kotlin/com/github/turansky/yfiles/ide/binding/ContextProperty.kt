@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.ide.binding
 
-import com.github.turansky.yfiles.ide.binding.IContextProperty.Type
-import com.github.turansky.yfiles.ide.binding.IContextProperty.Type.*
+import com.github.turansky.yfiles.ide.binding.ExistedContextProperty.Type
+import com.github.turansky.yfiles.ide.binding.ExistedContextProperty.Type.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 
@@ -9,7 +9,7 @@ private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
 
 internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
-    sequenceOf<IContextProperty>()
+    sequenceOf<ExistedContextProperty>()
         .plus(ContextProperty.values())
         .plus(LabelContextProperty.values())
         .map { it.toVariant() }
@@ -20,9 +20,15 @@ internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
 internal interface IContextProperty {
     val name: String
     val className: String
-    val type: Type
 
     val isStandard: Boolean
+}
+
+internal interface ExistedContextProperty : IContextProperty {
+    val type: Type
+
+    override val isStandard: Boolean
+        get() = true
 
     enum class Type {
         STRING,
@@ -33,9 +39,7 @@ internal interface IContextProperty {
         IMODEL_ITEM,
         CANVAS_COMPONENT,
 
-        STYLE_TAG,
-
-        UNDEFINED;
+        STYLE_TAG;
 
         private val value = name.split("_")
             .joinToString("") { it.toLowerCase().capitalize() }
@@ -46,7 +50,7 @@ internal interface IContextProperty {
 
 private enum class ContextProperty(
     override val type: Type
-) : IContextProperty {
+) : ExistedContextProperty {
     bounds(RECT),
     canvasComponent(CANVAS_COMPONENT),
     height(DOUBLE),
@@ -59,18 +63,16 @@ private enum class ContextProperty(
     zoom(DOUBLE);
 
     override val className = CONTEXT
-    override val isStandard = true
 }
 
 private enum class LabelContextProperty(
     override val type: Type
-) : IContextProperty {
+) : ExistedContextProperty {
     isFlipped(BOOLEAN),
     isUpsideDown(BOOLEAN),
     labelText(STRING);
 
     override val className = LABEL_CONTEXT
-    override val isStandard = true
 }
 
 private object ClassContextProperty : IContextProperty {
@@ -79,8 +81,6 @@ private object ClassContextProperty : IContextProperty {
 
     override val className = CONTEXT
     override val isStandard = true
-
-    override val type: Type = UNDEFINED
 }
 
 private object InvalidContextProperty : IContextProperty {
@@ -89,8 +89,6 @@ private object InvalidContextProperty : IContextProperty {
 
     override val className = CONTEXT
     override val isStandard = false
-
-    override val type: Type = UNDEFINED
 }
 
 private val PROPERTY_MAP = sequenceOf<IContextProperty>()
@@ -104,6 +102,6 @@ internal fun findContextProperty(name: String?): IContextProperty {
     return PROPERTY_MAP[name] ?: InvalidContextProperty
 }
 
-private fun IContextProperty.toVariant(): LookupElement =
+private fun ExistedContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)
         .withTypeText(type.toString(), true)
