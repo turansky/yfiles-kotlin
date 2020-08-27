@@ -54,8 +54,16 @@ private object JavaPsiFinder : PsiFinder() {
         className: String,
         propertyName: String
     ): PsiElement? =
-        JavaScriptPsiFinder.findClass(context, className)
-            ?.findFieldByName(propertyName, true)
+        findClass(context, className)
+            ?.findMethodsByName(propertyName.toMethodName(), true)
+            ?.firstOrNull()
+
+    private fun String.toMethodName(): String =
+        when {
+            startsWith("is") -> this
+            endsWith("ed") -> "is" + capitalize()
+            else -> "get" + capitalize()
+        }
 }
 
 private object JavaScriptPsiFinder : PsiFinder() {
