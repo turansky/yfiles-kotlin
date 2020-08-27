@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.idea.stubindex.KotlinFullClassNameIndex
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.psiUtil.findPropertyByName
 
-sealed class PsiFinder {
+internal sealed class PsiFinder {
     abstract fun findClass(
         context: PsiElement,
         className: String
@@ -21,7 +21,30 @@ sealed class PsiFinder {
     ): PsiElement?
 }
 
-val DefaultPsiFinder: PsiFinder = KotlinPsiFinder
+internal object DefaultPsiFinder : PsiFinder() {
+    private val finders = listOf(
+        KotlinPsiFinder,
+        JavaPsiFinder,
+        JavaScriptPsiFinder
+    )
+
+    override fun findClass(
+        context: PsiElement,
+        className: String
+    ): PsiElement? =
+        finders.asSequence()
+            .mapNotNull { it.findClass(context, className) }
+            .firstOrNull()
+
+    override fun findProperty(
+        context: PsiElement,
+        className: String,
+        propertyName: String
+    ): PsiElement? =
+        finders.asSequence()
+            .mapNotNull { it.findProperty(context, className, propertyName) }
+            .firstOrNull()
+}
 
 private object KotlinPsiFinder : PsiFinder() {
     override fun findClass(
