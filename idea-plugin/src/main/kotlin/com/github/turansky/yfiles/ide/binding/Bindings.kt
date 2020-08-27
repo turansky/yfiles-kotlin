@@ -9,4 +9,5 @@ internal val XmlAttributeValue.bindingEnabled: Boolean
     get() = containingFile.isSvgFile
 
 private val PsiFile.isSvgFile: Boolean
-    get() = fileType.defaultExtension.toLowerCase() == SVG_EXTENSION
+    get() = fileType.defaultExtension
+        .equals(SVG_EXTENSION, ignoreCase = true)
