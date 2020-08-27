@@ -65,7 +65,7 @@ private class ContextClassReference(
     private val className: String
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, true) {
     override fun resolve(): PsiElement? =
-        findKotlinClass(element, className)
+        DefaultPsiFinder.findClass(element, className)
 }
 
 private class ContextPropertyReference(
@@ -75,7 +75,7 @@ private class ContextPropertyReference(
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property.isStandard) {
     override fun resolve(): PsiElement? =
         if (property.isStandard) {
-            findKotlinProperty(element, property.className, property.name)
+            DefaultPsiFinder.findProperty(element, property.className, property.name)
         } else {
             null
         }
