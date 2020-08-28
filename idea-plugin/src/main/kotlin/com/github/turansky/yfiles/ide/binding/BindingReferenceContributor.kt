@@ -11,7 +11,8 @@ internal class BindingReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(
             PlatformPatterns.psiElement(XmlAttributeValue::class.java),
-            BindingReferenceProvider()
+            BindingReferenceProvider(),
+            PsiReferenceRegistrar.HIGHER_PRIORITY
         )
     }
 }
