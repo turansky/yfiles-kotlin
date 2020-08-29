@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.search.PsiShortNamesCache
 import org.jetbrains.kotlin.idea.stubindex.KotlinFullClassNameIndex
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.findPropertyByName
 
 internal sealed class PsiFinder {
@@ -79,8 +80,18 @@ private object KotlinPsiFinder : PsiFinder() {
     override fun findPropertyVariants(
         context: PsiElement,
         classNames: List<String>
-    ): Array<out Any>? =
-        null
+    ): Array<out Any>? {
+        val classes = classNames
+            .mapNotNull { findClass(context, it) }
+            .takeIf { it.isNotEmpty() }
+            ?: return null
+
+        return classes.asSequence()
+            .flatMap { it.declarations }
+            .filterIsInstance<KtProperty>()
+            .toList()
+            .toTypedArray()
+    }
 }
 
 private object JavaPsiFinder : PsiFinder() {
