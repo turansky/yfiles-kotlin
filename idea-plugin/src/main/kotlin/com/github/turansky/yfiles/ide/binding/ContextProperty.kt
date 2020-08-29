@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.ide.binding
 
-import com.github.turansky.yfiles.ide.binding.ContextProperty.Type.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 
@@ -21,44 +20,24 @@ internal interface IContextProperty {
 }
 
 private enum class ContextProperty(
-    val type: Type,
     override val className: String = CONTEXT
 ) : IContextProperty {
-    bounds(RECT),
-    canvasComponent(CANVAS_COMPONENT),
-    height(DOUBLE),
-    item(IMODEL_ITEM),
-    itemFocused(BOOLEAN),
-    itemHighlighted(BOOLEAN),
-    itemSelected(BOOLEAN),
-    styleTag(STYLE_TAG),
-    width(DOUBLE),
-    zoom(DOUBLE),
+    bounds,
+    canvasComponent,
+    height,
+    item,
+    itemFocused,
+    itemHighlighted,
+    itemSelected,
+    styleTag,
+    width,
+    zoom,
 
-    isFlipped(BOOLEAN, LABEL_CONTEXT),
-    isUpsideDown(BOOLEAN, LABEL_CONTEXT),
-    labelText(STRING, LABEL_CONTEXT);
+    isFlipped(LABEL_CONTEXT),
+    isUpsideDown(LABEL_CONTEXT),
+    labelText(LABEL_CONTEXT);
 
     override val isStandard: Boolean = true
-
-    enum class Type {
-        STRING,
-        DOUBLE,
-        BOOLEAN,
-
-        RECT,
-        IMODEL_ITEM,
-        CANVAS_COMPONENT,
-
-        STYLE_TAG;
-
-        private val value: String = name
-            .replace("IM", "I_M")
-            .split("_")
-            .joinToString("") { it.toLowerCase().capitalize() }
-
-        override fun toString(): String = value
-    }
 }
 
 private object ClassContextProperty : IContextProperty {
@@ -88,4 +67,3 @@ internal fun findContextProperty(name: String?): IContextProperty {
 
 private fun ContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)
-        .withTypeText(type.toString(), true)
