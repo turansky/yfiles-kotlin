@@ -1,10 +1,6 @@
 plugins {
-    kotlin("js")
+    id("com.github.turansky.kfc.library")
     id("com.github.turansky.yfiles")
-}
-
-kotlin.js {
-    browser()
 }
 
 dependencies {
