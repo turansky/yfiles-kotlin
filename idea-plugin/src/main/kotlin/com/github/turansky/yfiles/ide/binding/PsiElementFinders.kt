@@ -21,10 +21,10 @@ internal sealed class PsiFinder {
         propertyName: String
     ): PsiElement?
 
-    abstract fun findPropertyVariants(
+    open fun findPropertyVariants(
         context: PsiElement,
         classNames: List<String>
-    ): Array<out Any>?
+    ): Array<out Any>? = null
 }
 
 internal object DefaultPsiFinder : PsiFinder() {
@@ -117,12 +117,6 @@ private object JavaPsiFinder : PsiFinder() {
             endsWith("ed") -> "is" + capitalize()
             else -> "get" + capitalize()
         }
-
-    override fun findPropertyVariants(
-        context: PsiElement,
-        classNames: List<String>
-    ): Array<out Any>? =
-        null
 }
 
 private object JavaScriptPsiFinder : PsiFinder() {
@@ -141,10 +135,4 @@ private object JavaScriptPsiFinder : PsiFinder() {
     ): PsiElement? =
         findClass(context, className)
             ?.findFieldByName(propertyName, true)
-
-    override fun findPropertyVariants(
-        context: PsiElement,
-        classNames: List<String>
-    ): Array<out Any>? =
-        null
 }
