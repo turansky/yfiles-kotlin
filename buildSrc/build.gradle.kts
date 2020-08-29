@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.3.72"
+    `kotlin-dsl`
 }
 
 repositories {
@@ -7,10 +7,7 @@ repositories {
 }
 
 tasks.compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-        allWarningsAsErrors = true
-    }
+    kotlinOptions.allWarningsAsErrors = true
 }
 
 dependencies {
