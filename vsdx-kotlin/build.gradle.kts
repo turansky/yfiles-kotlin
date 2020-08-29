@@ -1,20 +1,12 @@
 import com.github.turansky.yfiles.generateVsdxKotlinDeclarations
 import de.undercouch.gradle.tasks.download.Download
 
-group = "com.yworks.yfiles"
-version = "1.2.0-SNAPSHOT"
-
 plugins {
-    kotlin("js")
+    id("com.github.turansky.kfc.library")
     id("com.github.turansky.yfiles")
 
     id("de.undercouch.download")
-
-    id("maven-publish")
-}
-
-kotlin.js {
-    browser()
+    id("com.github.turansky.kfc.maven-publish")
 }
 
 dependencies {
@@ -56,14 +48,5 @@ tasks {
     named("compileKotlinJs") {
         dependsOn(generateDeclarations)
         finalizedBy("publishToMavenLocal")
-    }
-}
-
-publishing {
-    publications {
-        register<MavenPublication>("mavenKotlin") {
-            from(components["kotlin"])
-            artifact(tasks.getByName("jsSourcesJar"))
-        }
     }
 }

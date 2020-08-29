@@ -1,27 +1,108 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementFinder
-import org.jetbrains.kotlin.asJava.classes.KtUltraLightClass
-import org.jetbrains.kotlin.asJava.finder.JavaElementFinder
+import com.intellij.psi.search.PsiShortNamesCache
+import org.jetbrains.kotlin.idea.stubindex.KotlinFullClassNameIndex
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.psiUtil.findPropertyByName
 
-internal fun findKotlinClass(
-    context: PsiElement,
-    className: String
-): KtUltraLightClass? =
-    PsiElementFinder.EP.getExtensions(context.project)
-        .filterIsInstance<JavaElementFinder>()
-        .mapNotNull { it.findClass(className, context.resolveScope) }
-        .firstOrNull() as? KtUltraLightClass
+internal sealed class PsiFinder {
+    abstract fun findClass(
+        context: PsiElement,
+        className: String
+    ): PsiElement?
 
-internal fun findKotlinProperty(
-    context: PsiElement,
-    className: String,
-    propertyName: String
-): PsiElement? {
-    val klass = findKotlinClass(context, className)
-        ?: return null
+    abstract fun findProperty(
+        context: PsiElement,
+        className: String,
+        propertyName: String
+    ): PsiElement?
+}
 
-    return klass.kotlinOrigin.findPropertyByName(propertyName)
+internal object DefaultPsiFinder : PsiFinder() {
+    private val finders = listOf(
+        KotlinPsiFinder,
+        JavaPsiFinder,
+        JavaScriptPsiFinder
+    )
+
+    override fun findClass(
+        context: PsiElement,
+        className: String
+    ): PsiElement? =
+        finders.asSequence()
+            .mapNotNull { it.findClass(context, className) }
+            .firstOrNull()
+
+    override fun findProperty(
+        context: PsiElement,
+        className: String,
+        propertyName: String
+    ): PsiElement? =
+        finders.asSequence()
+            .mapNotNull { it.findProperty(context, className, propertyName) }
+            .firstOrNull()
+}
+
+private object KotlinPsiFinder : PsiFinder() {
+    override fun findClass(
+        context: PsiElement,
+        className: String
+    ): KtClassOrObject? =
+        KotlinFullClassNameIndex.getInstance()
+            .get(className, context.project, context.resolveScope)
+            .firstOrNull()
+
+    override fun findProperty(
+        context: PsiElement,
+        className: String,
+        propertyName: String
+    ): PsiElement? =
+        findClass(context, className)
+            ?.findPropertyByName(propertyName)
+}
+
+private object JavaPsiFinder : PsiFinder() {
+    override fun findClass(
+        context: PsiElement,
+        className: String
+    ): PsiClass? =
+        JavaPsiFacade.getInstance(context.project)
+            .findClass("com.yworks.$className", context.resolveScope)
+
+    override fun findProperty(
+        context: PsiElement,
+        className: String,
+        propertyName: String
+    ): PsiElement? =
+        findClass(context, className)
+            ?.findMethodsByName(propertyName.toMethodName(), true)
+            ?.firstOrNull()
+
+    private fun String.toMethodName(): String =
+        when {
+            startsWith("is") -> this
+            endsWith("ed") -> "is" + capitalize()
+            else -> "get" + capitalize()
+        }
+}
+
+private object JavaScriptPsiFinder : PsiFinder() {
+    override fun findClass(
+        context: PsiElement,
+        className: String
+    ): PsiClass? =
+        PsiShortNamesCache.getInstance(context.project)
+            .getClassesByName(className.substringAfterLast("."), context.resolveScope)
+            .firstOrNull()
+
+    override fun findProperty(
+        context: PsiElement,
+        className: String,
+        propertyName: String
+    ): PsiElement? =
+        findClass(context, className)
+            ?.findFieldByName(propertyName, true)
 }
