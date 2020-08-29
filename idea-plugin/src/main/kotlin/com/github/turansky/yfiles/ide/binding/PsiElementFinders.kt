@@ -1,5 +1,8 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.icons.AllIcons
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
@@ -86,12 +89,18 @@ private object KotlinPsiFinder : PsiFinder() {
             .takeIf { it.isNotEmpty() }
             ?: return null
 
-        return classes.asSequence()
+        return classes
+            .asSequence()
             .flatMap { it.declarations }
             .filterIsInstance<KtProperty>()
+            .map { it.toVariant() }
             .toList()
             .toTypedArray()
     }
+
+    private fun KtProperty.toVariant(): LookupElement =
+        LookupElementBuilder.create(this)
+            .withIcon(AllIcons.Nodes.PropertyRead)
 }
 
 private object JavaPsiFinder : PsiFinder() {

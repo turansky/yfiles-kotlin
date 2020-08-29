@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.ide.binding
 
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.icons.AllIcons
 
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
@@ -72,3 +73,4 @@ internal fun findContextProperty(name: String?): IContextProperty {
 
 private fun ContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)
+        .withIcon(AllIcons.Nodes.Field)
