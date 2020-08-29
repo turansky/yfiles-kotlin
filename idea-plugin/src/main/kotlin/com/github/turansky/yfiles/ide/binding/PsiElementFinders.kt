@@ -19,6 +19,11 @@ internal sealed class PsiFinder {
         className: String,
         propertyName: String
     ): PsiElement?
+
+    abstract fun findPropertyVariants(
+        context: PsiElement,
+        classNames: List<String>
+    ): Array<out Any>?
 }
 
 internal object DefaultPsiFinder : PsiFinder() {
@@ -44,6 +49,14 @@ internal object DefaultPsiFinder : PsiFinder() {
         finders.asSequence()
             .mapNotNull { it.findProperty(context, className, propertyName) }
             .firstOrNull()
+
+    override fun findPropertyVariants(
+        context: PsiElement,
+        classNames: List<String>
+    ): Array<out Any>? =
+        finders.asSequence()
+            .mapNotNull { it.findPropertyVariants(context, classNames) }
+            .firstOrNull()
 }
 
 private object KotlinPsiFinder : PsiFinder() {
@@ -62,6 +75,12 @@ private object KotlinPsiFinder : PsiFinder() {
     ): PsiElement? =
         findClass(context, className)
             ?.findPropertyByName(propertyName)
+
+    override fun findPropertyVariants(
+        context: PsiElement,
+        classNames: List<String>
+    ): Array<out Any>? =
+        null
 }
 
 private object JavaPsiFinder : PsiFinder() {
@@ -87,6 +106,12 @@ private object JavaPsiFinder : PsiFinder() {
             endsWith("ed") -> "is" + capitalize()
             else -> "get" + capitalize()
         }
+
+    override fun findPropertyVariants(
+        context: PsiElement,
+        classNames: List<String>
+    ): Array<out Any>? =
+        null
 }
 
 private object JavaScriptPsiFinder : PsiFinder() {
@@ -105,4 +130,10 @@ private object JavaScriptPsiFinder : PsiFinder() {
     ): PsiElement? =
         findClass(context, className)
             ?.findFieldByName(propertyName, true)
+
+    override fun findPropertyVariants(
+        context: PsiElement,
+        classNames: List<String>
+    ): Array<out Any>? =
+        null
 }
