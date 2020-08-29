@@ -82,5 +82,6 @@ private class ContextPropertyReference(
         }
 
     override fun getVariants(): Array<out Any> =
-        CONTEXT_PROPERTY_VARIANTS
+        DefaultPsiFinder.findPropertyVariants(element, CONTEXT_CLASSES)
+            ?: CONTEXT_PROPERTY_VARIANTS
 }

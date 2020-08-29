@@ -6,6 +6,11 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 private const val CONTEXT: String = "yfiles.styles.ITemplateStyleBindingContext"
 private const val LABEL_CONTEXT: String = "yfiles.styles.ILabelTemplateStyleBindingContext"
 
+internal val CONTEXT_CLASSES: List<String> = listOf(
+    CONTEXT,
+    LABEL_CONTEXT
+)
+
 internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
     ContextProperty.values()
         .map { it.toVariant() }
