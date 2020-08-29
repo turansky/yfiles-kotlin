@@ -33,6 +33,19 @@
       enabledByDefault="true"
       implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
 
+    <!-- Template -->
+    <fileType
+      name="yfiles-template"
+      implementationClass="com.github.turansky.yfiles.ide.template.TemplateFileType"
+      fieldName="INSTANCE"
+      language="yfiles-template"/>
+
+    <lang.parserDefinition
+      language="yfiles-template"
+      implementationClass="com.github.turansky.yfiles.ide.template.TemplateParserDefinition"
+    />
+
+    <!-- Binding -->
     <lang.documentationProvider
       language="XML"
       implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"/>
