@@ -1,50 +1,50 @@
 <idea-plugin>
-    <id>com.github.turansky.yfiles</id>
-    <name>yFiles</name>
-    <vendor url="https://github.com/turansky">Victor Turansky</vendor>
+  <id>com.github.turansky.yfiles</id>
+  <name>yFiles</name>
+  <vendor url="https://github.com/turansky">Victor Turansky</vendor>
 
-    <!-- language=HTML -->
-    <description>
-        <![CDATA[
-        yFiles class framework helper for Kotlin/JS.<br>
-        Check yFiles inheritance rules on the fly.<br>
-        Companion of <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">yFiles Gradle plugin</a>.<br><br>
+  <!-- language=HTML -->
+  <description>
+    <![CDATA[
+    yFiles class framework helper for Kotlin/JS.<br>
+    Check yFiles inheritance rules on the fly.<br>
+    Companion of <a href="https://github.com/turansky/yfiles-kotlin/tree/master/gradle-plugin">yFiles Gradle plugin</a>.<br><br>
 
-        <a href="https://github.com/turansky/yfiles-kotlin">yFiles Kotlin/JS declarations</a><br>
-        <a href="https://docs.yworks.com/yfileshtml/#/dguide/yfiles_class_framework">yFiles Class Framework</a><br>
-        ]]>
-    </description>
+    <a href="https://github.com/turansky/yfiles-kotlin">yFiles Kotlin/JS declarations</a><br>
+    <a href="https://docs.yworks.com/yfileshtml/#/dguide/yfiles_class_framework">yFiles Class Framework</a><br>
+    ]]>
+  </description>
 
-    <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.java</depends>
-    <depends>org.jetbrains.kotlin</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.modules.java</depends>
+  <depends>org.jetbrains.kotlin</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <codeInsight.lineMarkerProvider
-            language="kotlin"
-            implementationClass="com.github.turansky.yfiles.ide.highlighter.markers.YLineMarkerProvider"/>
+  <extensions defaultExtensionNs="com.intellij">
+    <codeInsight.lineMarkerProvider
+      language="kotlin"
+      implementationClass="com.github.turansky.yfiles.ide.highlighter.markers.YLineMarkerProvider"/>
 
-        <localInspection
-            language="kotlin"
-            shortName="yfiles-kotlinjs-inheritance"
-            displayName="Invalid inheritance"
-            groupPath="yFiles"
-            groupName="Kotlin/JS"
-            enabledByDefault="true"
-            implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
+    <localInspection
+      language="kotlin"
+      shortName="yfiles-kotlinjs-inheritance"
+      displayName="Invalid inheritance"
+      groupPath="yFiles"
+      groupName="Kotlin/JS"
+      enabledByDefault="true"
+      implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
 
-        <lang.documentationProvider
-            language="XML"
-            implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"/>
+    <lang.documentationProvider
+      language="XML"
+      implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"/>
 
-        <annotator
-            language="XML"
-            implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"/>
+    <annotator
+      language="XML"
+      implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"/>
 
-        <psi.referenceContributor implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"/>
-    </extensions>
+    <psi.referenceContributor implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"/>
+  </extensions>
 
-    <extensions defaultExtensionNs="org.jetbrains.kotlin">
-        <diagnosticSuppressor implementation="com.github.turansky.yfiles.ide.inspections.YDiagnosticSuppressor"/>
-    </extensions>
+  <extensions defaultExtensionNs="org.jetbrains.kotlin">
+    <diagnosticSuppressor implementation="com.github.turansky.yfiles.ide.inspections.YDiagnosticSuppressor"/>
+  </extensions>
 </idea-plugin>
