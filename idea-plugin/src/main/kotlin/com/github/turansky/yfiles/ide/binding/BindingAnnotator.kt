@@ -47,12 +47,14 @@ internal class BindingAnnotator : Annotator {
                     holder.parameter(range(dataRange))
                 }
             } else {
-                val matchResult = ARGUMENT.find(block)!!
-                val valueMode = matchResult.d(1) == PARAMETER
-                holder.parameterName(range(matchResult.r(1)))
-                holder.assign(range(matchResult.r(2)))
+                val matchResult = ARGUMENT.find(block)
+                if (matchResult != null) {
+                    val valueMode = matchResult.d(1) == PARAMETER
+                    holder.parameterName(range(matchResult.r(1)))
+                    holder.assign(range(matchResult.r(2)))
 
-                holder.parameter(range(matchResult.r(3)), valueMode)
+                    holder.parameter(range(matchResult.r(3)), valueMode)
+                }
             }
 
             localOffset += block.length + 1
