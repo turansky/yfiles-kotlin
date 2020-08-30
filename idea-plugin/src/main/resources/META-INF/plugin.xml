@@ -22,7 +22,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <codeInsight.lineMarkerProvider
       language="kotlin"
-      implementationClass="com.github.turansky.yfiles.ide.highlighter.markers.YLineMarkerProvider"/>
+      implementationClass="com.github.turansky.yfiles.ide.highlighter.markers.YLineMarkerProvider"
+    />
 
     <localInspection
       language="kotlin"
@@ -31,14 +32,16 @@
       groupPath="yFiles"
       groupName="Kotlin/JS"
       enabledByDefault="true"
-      implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"/>
+      implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"
+    />
 
     <!-- Template -->
     <fileType
       name="yfiles-template"
+      language="yfiles-template"
       implementationClass="com.github.turansky.yfiles.ide.template.TemplateFileType"
       fieldName="INSTANCE"
-      language="yfiles-template"/>
+    />
 
     <lang.parserDefinition
       language="yfiles-template"
@@ -48,15 +51,18 @@
     <!-- Binding -->
     <lang.documentationProvider
       language="XML"
-      implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"/>
+      implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"
+    />
 
     <annotator
       language="XML"
-      implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"/>
+      implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"
+    />
 
     <psi.referenceContributor
       language="XML"
-      implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"/>
+      implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"
+    />
   </extensions>
 
   <extensions defaultExtensionNs="org.jetbrains.kotlin">
