@@ -7,10 +7,11 @@
 # Kotlin/JS support for yFiles
 
 ## [Gradle Plugin](gradle-plugin)
-Resolve inheritance problems
++ Resolve inheritance problems
 
 ## [IDEA Plugin](idea-plugin)
-Check [inheritance rules](gradle-plugin) on the fly
++ Check [inheritance rules](gradle-plugin) on the fly
++ Highlight binding syntax <sup>**new**</sup>
 
 ## Table of contents
 * [Generation](#generation)
