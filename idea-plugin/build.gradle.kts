@@ -17,6 +17,7 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
+    type = "IU"
     version = "2020.2.1"
 
     setPlugins(
