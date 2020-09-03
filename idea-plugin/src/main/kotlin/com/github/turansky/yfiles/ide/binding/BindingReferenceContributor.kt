@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.ide.binding
 
 import com.github.turansky.yfiles.ide.binding.BindingDirective.TEMPLATE_BINDING
+import com.github.turansky.yfiles.ide.psi.DefaultPsiFinder
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
