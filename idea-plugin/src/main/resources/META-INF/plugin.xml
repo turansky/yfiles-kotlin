@@ -21,6 +21,7 @@
   </description>
 
   <depends>com.intellij.modules.lang</depends>
+  <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>
   <depends optional="true" config-file="kotlin.xml">org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.intellij">
