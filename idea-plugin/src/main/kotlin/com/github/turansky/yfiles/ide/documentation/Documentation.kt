@@ -5,7 +5,6 @@ import com.github.turansky.yfiles.ide.binding.TagBinding
 import com.github.turansky.yfiles.ide.binding.TemplateBinding
 import com.intellij.codeInsight.documentation.DocumentationManager.createHyperlink
 import com.intellij.lang.documentation.DocumentationMarkup.*
-import org.jetbrains.kotlin.idea.KotlinBundle
 
 private const val SVG_TEMPLATES_URL: String = "https://docs.yworks.com/yfileshtml/#/dguide/custom-styles_template-styles"
 private const val TEMPLATE_BINDING_URL: String = "$SVG_TEMPLATES_URL%23_template_binding"
@@ -45,7 +44,7 @@ private fun StringBuilder.renderConverterBlock(binding: Binding) {
 }
 
 private fun StringBuilder.renderReturnsBlock(code: String) {
-    renderSection(KotlinBundle.message("kdoc.section.title.returns")) {
+    renderSection("Returns") {
         append("<pre><code>")
         append(code)
         append("</code></pre>")
@@ -53,7 +52,7 @@ private fun StringBuilder.renderReturnsBlock(code: String) {
 }
 
 private fun StringBuilder.renderSeeAlsoBlock() {
-    renderSection(KotlinBundle.message("kdoc.section.title.see.also")) {
+    renderSection("See Also") {
         link("SVG Templates", SVG_TEMPLATES_URL)
         append(", ")
         link("Template Binding", TEMPLATE_BINDING_URL)
