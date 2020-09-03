@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.findPropertyByName
 
-class KotlinPsiFinder : PsiFinder() {
+class KotlinPsiFinder : PsiFinder {
     override fun findClass(
         context: PsiElement,
         className: String

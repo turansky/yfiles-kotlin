@@ -4,7 +4,7 @@ import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 
-class JavaPsiFinder : PsiFinder() {
+class JavaPsiFinder : PsiFinder {
     override fun findClass(
         context: PsiElement,
         className: String

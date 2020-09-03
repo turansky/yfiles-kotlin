@@ -2,7 +2,7 @@ package com.github.turansky.yfiles.ide.psi
 
 import com.intellij.psi.PsiElement
 
-internal object DefaultPsiFinder : PsiFinder() {
+internal object DefaultPsiFinder : PsiFinder {
     private val finders = listOf(
         KotlinPsiFinder(),
         JavaPsiFinder(),
