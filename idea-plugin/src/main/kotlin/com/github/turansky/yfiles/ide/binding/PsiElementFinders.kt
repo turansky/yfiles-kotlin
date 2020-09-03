@@ -6,7 +6,6 @@ import com.intellij.icons.AllIcons
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
-import com.intellij.psi.search.PsiShortNamesCache
 import org.jetbrains.kotlin.idea.stubindex.KotlinFullClassNameIndex
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtProperty
@@ -34,7 +33,6 @@ internal object DefaultPsiFinder : PsiFinder() {
     private val finders = listOf(
         KotlinPsiFinder,
         JavaPsiFinder,
-        JavaScriptPsiFinder
     )
 
     override fun findClass(
@@ -126,22 +124,4 @@ private object JavaPsiFinder : PsiFinder() {
             endsWith("ed") -> "is" + capitalize()
             else -> "get" + capitalize()
         }
-}
-
-private object JavaScriptPsiFinder : PsiFinder() {
-    override fun findClass(
-        context: PsiElement,
-        className: String
-    ): PsiClass? =
-        PsiShortNamesCache.getInstance(context.project)
-            .getClassesByName(className.substringAfterLast("."), context.resolveScope)
-            .firstOrNull()
-
-    override fun findProperty(
-        context: PsiElement,
-        className: String,
-        propertyName: String
-    ): PsiElement? =
-        findClass(context, className)
-            ?.findFieldByName(propertyName, true)
 }
