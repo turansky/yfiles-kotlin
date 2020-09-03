@@ -1,5 +1,4 @@
 <idea-plugin>
-  <depends>com.intellij.modules.java</depends>
   <depends>org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -27,5 +26,12 @@
 
   <extensions defaultExtensionNs="org.jetbrains.kotlin">
     <diagnosticSuppressor implementation="com.github.turansky.yfiles.ide.inspections.YDiagnosticSuppressor"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.github.turansky.yfiles">
+    <psiFinder
+      order="first"
+      implementation="com.github.turansky.yfiles.ide.psi.KotlinPsiFinder"
+    />
   </extensions>
 </idea-plugin>

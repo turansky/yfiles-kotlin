@@ -49,4 +49,11 @@
       implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"
     />
   </extensions>
+
+  <extensionPoints>
+    <extensionPoint
+      name="psiFinder"
+      interface="com.github.turansky.yfiles.ide.psi.PsiFinder"
+    />
+  </extensionPoints>
 </idea-plugin>
