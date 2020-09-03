@@ -36,5 +36,16 @@
       language="yfiles-template"
       implementationClass="com.github.turansky.yfiles.ide.template.TemplateParserDefinition"
     />
+
+    <!-- Binding -->
+    <lang.documentationProvider
+      language="XML"
+      implementationClass="com.github.turansky.yfiles.ide.documentation.BindingDocumentationProvider"
+    />
+
+    <annotator
+      language="XML"
+      implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"
+    />
   </extensions>
 </idea-plugin>
