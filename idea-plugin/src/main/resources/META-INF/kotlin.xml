@@ -16,12 +16,6 @@
       enabledByDefault="true"
       implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"
     />
-
-    <!-- Binding -->
-    <psi.referenceContributor
-      language="XML"
-      implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"
-    />
   </extensions>
 
   <extensions defaultExtensionNs="org.jetbrains.kotlin">

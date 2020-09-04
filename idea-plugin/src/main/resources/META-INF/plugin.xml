@@ -49,6 +49,11 @@
       language="XML"
       implementationClass="com.github.turansky.yfiles.ide.binding.BindingAnnotator"
     />
+
+    <psi.referenceContributor
+      language="XML"
+      implementation="com.github.turansky.yfiles.ide.binding.BindingReferenceContributor"
+    />
   </extensions>
 
   <extensionPoints>
