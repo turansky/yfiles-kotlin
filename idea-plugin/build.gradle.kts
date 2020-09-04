@@ -22,7 +22,8 @@ intellij {
 
     setPlugins(
         "java",
-        "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1"
+        "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1",
+        "JavaScript"
     )
 }
 
