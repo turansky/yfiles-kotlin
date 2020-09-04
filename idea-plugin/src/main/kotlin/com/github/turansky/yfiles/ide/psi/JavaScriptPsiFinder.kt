@@ -12,7 +12,7 @@ class JavaScriptPsiFinder : PsiFinder {
         JavaScriptIndex.getInstance(context.project)
             .getClassByName(className.substringAfterLast("."), true)
             .filterIsInstance<JSClass>()
-            .firstOrNull()
+            .firstOrNull { !it.isInterface }
 
     override fun findProperty(
         context: PsiElement,
