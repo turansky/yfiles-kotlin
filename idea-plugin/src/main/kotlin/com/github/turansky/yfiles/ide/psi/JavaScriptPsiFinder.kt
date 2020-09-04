@@ -1,19 +1,24 @@
 package com.github.turansky.yfiles.ide.psi
 
-import com.intellij.psi.PsiClass
+import com.intellij.lang.javascript.index.JavaScriptIndex
+import com.intellij.lang.javascript.psi.ecmal4.JSClass
 import com.intellij.psi.PsiElement
 
 class JavaScriptPsiFinder : PsiFinder {
     override fun findClass(
         context: PsiElement,
         className: String
-    ): PsiClass? =
-        null
+    ): JSClass? =
+        JavaScriptIndex.getInstance(context.project)
+            .getClassByName(className.substringAfterLast("."), true)
+            .filterIsInstance<JSClass>()
+            .firstOrNull()
 
     override fun findProperty(
         context: PsiElement,
         className: String,
         propertyName: String
     ): PsiElement? =
-        null
+        findClass(context, className)
+            ?.findFieldByName(propertyName)
 }
