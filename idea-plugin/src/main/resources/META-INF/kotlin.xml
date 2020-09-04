@@ -30,8 +30,8 @@
 
   <extensions defaultExtensionNs="com.github.turansky.yfiles">
     <psiFinder
-      order="first"
       implementation="com.github.turansky.yfiles.ide.psi.KotlinPsiFinder"
+      order="first"
     />
   </extensions>
 </idea-plugin>
