@@ -14,6 +14,12 @@ import com.intellij.util.ThreeState
 import com.intellij.util.TripleFunction
 import com.intellij.util.diff.FlyweightCapableTreeStructure
 
+/**
+ * Copy of [XmlParser][com.intellij.psi.impl.source.parsing.xml.XmlParser].
+ * Difference - [TemplateParsing] instead of [XmlParsing][com.intellij.psi.impl.source.parsing.xml.XmlParsing].
+ *
+ * @see <a href="https://github.com/JetBrains/intellij-community/blob/master/xml/xml-psi-impl/src/com/intellij/psi/impl/source/parsing/xml/XmlParser.java">XmlParser</a>
+ */
 class TemplateParser : PsiParser {
     override fun parse(root: IElementType, builder: PsiBuilder): ASTNode {
         builder.enforceCommentTokens(TokenSet.EMPTY)
