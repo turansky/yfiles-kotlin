@@ -13,9 +13,7 @@ internal object TemplateLanguage : XMLLanguage(
     INSTANCE,
     "yfiles-template",
     "text/yfiles-template"
-) {
-    const val defaultExtension: String = "svg"
-}
+)
 
 class TemplateParserDefinition : XMLParserDefinition() {
     override fun getFileNodeType(): IFileElementType =
