@@ -19,7 +19,7 @@ class TemplateParser : PsiParser {
         builder.enforceCommentTokens(TokenSet.EMPTY)
         builder.putUserData(PsiBuilderImpl.CUSTOM_COMPARATOR, REPARSE_XML_TAG_BY_NAME)
         val file = builder.mark()
-        XmlParsing(builder).parseDocument()
+        TemplateParsing(builder).parseDocument()
         file.done(root)
         return builder.treeBuilt
     }
@@ -49,5 +49,11 @@ class TemplateParser : PsiParser {
 
             return ThreeState.UNSURE
         }
+    }
+}
+
+class TemplateParsing(builder: PsiBuilder) : XmlParsing(builder) {
+    override fun parseTag(multipleRootTagError: Boolean) {
+        super.parseTag(false)
     }
 }
