@@ -39,6 +39,10 @@
       implementationClass="com.github.turansky.yfiles.ide.template.TemplateParserDefinition"
     />
 
+    <highlightErrorFilter
+      implementation="com.github.turansky.yfiles.ide.template.TemplateErrorFilter"
+    />
+
     <!-- Binding -->
     <lang.documentationProvider
       language="XML"
