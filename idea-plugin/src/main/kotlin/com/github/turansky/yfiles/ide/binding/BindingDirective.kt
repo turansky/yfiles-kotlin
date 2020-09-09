@@ -13,6 +13,6 @@ internal enum class BindingDirective(
     companion object {
         private val map = values().associateBy { it.key }
 
-        fun find(key: String): BindingDirective? = map[key]
+        fun find(key: String): BindingDirective = map.getValue(key)
     }
 }
