@@ -1,6 +1,6 @@
 name: idea plugin
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
