@@ -47,13 +47,11 @@ internal fun String.toBinding(): Binding? {
 
     val dataMap = mutableMapOf<BindingDirective, String?>()
     for (block in blocks) {
-        val data = block.trim().split(" ", "=")
-        if (data.size > 2) return null
+        val (directive, value) = BindingParser.parse(block) ?: return null
 
-        val directive = BindingDirective.find(data[0]) ?: return null
         if (dataMap.containsKey(directive)) return null
 
-        dataMap[directive] = if (data.size > 1) data[1] else null
+        dataMap[directive] = value
     }
 
     return when {

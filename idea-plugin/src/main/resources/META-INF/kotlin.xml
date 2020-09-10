@@ -1,0 +1,31 @@
+<idea-plugin>
+  <depends>org.jetbrains.kotlin</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <codeInsight.lineMarkerProvider
+      language="kotlin"
+      implementationClass="com.github.turansky.yfiles.ide.highlighter.markers.YLineMarkerProvider"
+    />
+
+    <localInspection
+      language="kotlin"
+      shortName="yfiles-kotlinjs-inheritance"
+      displayName="Invalid inheritance"
+      groupPath="yFiles"
+      groupName="Kotlin/JS"
+      enabledByDefault="true"
+      implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"
+    />
+  </extensions>
+
+  <extensions defaultExtensionNs="org.jetbrains.kotlin">
+    <diagnosticSuppressor implementation="com.github.turansky.yfiles.ide.inspections.YDiagnosticSuppressor"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.github.turansky.yfiles">
+    <psiFinder
+      implementation="com.github.turansky.yfiles.ide.psi.KotlinPsiFinder"
+      order="first"
+    />
+  </extensions>
+</idea-plugin>

@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
-import com.github.turansky.yfiles.ide.binding.BindingDirective.*
+import com.github.turansky.yfiles.ide.binding.BindingDirective.PARAMETER
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -8,9 +8,6 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
-
-private val KEYWORD = Regex("\\s*($BINDING|$TEMPLATE_BINDING)\\s*(\\S*)\\s*")
-private val ARGUMENT = Regex("\\s*($CONVERTER|$PARAMETER)\\s*(=)\\s*(\\S*)\\s*")
 
 internal class BindingAnnotator : Annotator {
     override fun annotate(
@@ -38,7 +35,7 @@ internal class BindingAnnotator : Annotator {
             val offset = codeStartOffset + localOffset
             val range = { source: IntRange -> TextRange.from(offset + source.first, source.count()) }
 
-            val bindingMatchResult = KEYWORD.find(block)
+            val bindingMatchResult = BindingParser.KEYWORD.find(block)
             if (bindingMatchResult != null) {
                 holder.keyword(range(bindingMatchResult.r(1)))
 
@@ -47,12 +44,14 @@ internal class BindingAnnotator : Annotator {
                     holder.parameter(range(dataRange))
                 }
             } else {
-                val matchResult = ARGUMENT.find(block)!!
-                val valueMode = matchResult.d(1) == PARAMETER
-                holder.parameterName(range(matchResult.r(1)))
-                holder.assign(range(matchResult.r(2)))
+                val matchResult = BindingParser.ARGUMENT.find(block)
+                if (matchResult != null) {
+                    val valueMode = matchResult.d(1) == PARAMETER
+                    holder.parameterName(range(matchResult.r(1)))
+                    holder.assign(range(matchResult.r(2)))
 
-                holder.parameter(range(matchResult.r(3)), valueMode)
+                    holder.parameter(range(matchResult.r(3)), valueMode)
+                }
             }
 
             localOffset += block.length + 1

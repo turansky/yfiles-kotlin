@@ -1,0 +1,5 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.github.turansky.yfiles">
+    <psiFinder implementation="com.github.turansky.yfiles.ide.psi.JavaPsiFinder"/>
+  </extensions>
+</idea-plugin>

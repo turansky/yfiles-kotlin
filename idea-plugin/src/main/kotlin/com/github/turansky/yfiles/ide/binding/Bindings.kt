@@ -1,13 +1,12 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.github.turansky.yfiles.ide.template.TemplateFileType
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlAttributeValue
 
-private const val SVG_EXTENSION = "svg"
-
 internal val XmlAttributeValue.bindingEnabled: Boolean
-    get() = containingFile.isSvgFile
+    get() = containingFile.bindingEnabled
 
-private val PsiFile.isSvgFile: Boolean
+private val PsiFile.bindingEnabled: Boolean
     get() = fileType.defaultExtension
-        .equals(SVG_EXTENSION, ignoreCase = true)
+        .equals(TemplateFileType.defaultExtension, ignoreCase = true)

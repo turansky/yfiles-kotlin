@@ -4,8 +4,11 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-1.4.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 # yFiles IDEA plugin
-Check [inheritance rules](../gradle-plugin) on the fly
++ Check [inheritance rules](../gradle-plugin) on the fly
++ Highlight binding syntax <sup>**new**</sup>
 
 ## Examples
-![Example #1](assets/class-interface-object.png)
-![Example #2](assets/interface-combinations.png)
+![Example #1](assets/template-binding-autocomplete.png)
+![Example #2](assets/template-mime-type-support.png)
+![Example #3](assets/class-interface-object.png)
+![Example #4](assets/interface-combinations.png)

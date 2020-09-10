@@ -1,9 +1,9 @@
 group = "com.github.turansky.yfiles"
-version = "0.13.3-SNAPSHOT"
+version = "0.18.1-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.4.0"
-    id("org.jetbrains.intellij") version "0.4.21"
+    id("org.jetbrains.intellij") version "0.4.22"
 }
 
 repositories {
@@ -17,11 +17,13 @@ dependencies {
 intellij {
     pluginName = "yfiles"
 
+    type = "IU"
     version = "2020.2.1"
 
     setPlugins(
         "java",
-        "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1"
+        "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1",
+        "JavaScript"
     )
 }
 

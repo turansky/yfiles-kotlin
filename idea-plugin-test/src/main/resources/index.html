@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SVG Templates</title>
+</head>
+<body>
+<script type="image/svg+xml">
+  <g>
+    <rect
+      width="{TemplateBinding width, Converter=correct}"
+      height="{TemplateBinding height, Converter=correct, Parameter=13}"
+    />
+  </g>
+</script>
+
+<!-- language=SVG -->
+<script type="text/yfiles">
+  <g>
+    <rect
+      width="{TemplateBinding width, Converter=correct}"
+      height="{TemplateBinding height, Converter=correct, Parameter=13}"
+    />
+  </g>
+</script>
+
+<script type="text/yfiles-template">
+  <g>
+    <rect
+      width="{TemplateBinding width, Converter=correct}"
+      height="{TemplateBinding height, Converter=correct, Parameter=13}"
+    />
+  </g>
+</script>
+
+<script>
+  class ITemplateStyleBindingContext {
+    get width() { return 5 }
+    get height() { return 10 }
+  }
+</script>
+
+</body>
+</html>
