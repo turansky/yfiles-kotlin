@@ -1,8 +1,8 @@
 group = "com.github.turansky.yfiles"
-version = "0.18.1-SNAPSHOT"
+version = "0.18.2-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.10"
     id("org.jetbrains.intellij") version "0.4.22"
 }
 
@@ -22,7 +22,7 @@ intellij {
 
     setPlugins(
         "java",
-        "org.jetbrains.kotlin:1.4.0-release-IJ2020.2-1",
+        "org.jetbrains.kotlin:1.4.10-release-IJ2020.2-1",
         "JavaScript"
     )
 }
