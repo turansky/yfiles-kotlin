@@ -51,6 +51,8 @@ internal class BindingAnnotator : Annotator {
                     holder.assign(range(matchResult.r(2)))
 
                     holder.parameter(range(matchResult.r(3)), valueMode)
+                } else {
+                    holder.error(range(block.indices))
                 }
             }
 
@@ -96,6 +98,13 @@ private fun AnnotationHolder.info(
 ) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
         .textAttributes(attributes)
+        .range(range)
+        .create()
+}
+
+private fun AnnotationHolder.error(range: TextRange) {
+    newSilentAnnotation(HighlightSeverity.ERROR)
+        .textAttributes(BindingHighlightingColors.ERROR)
         .range(range)
         .create()
 }

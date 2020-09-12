@@ -47,7 +47,7 @@ internal fun String.toBinding(): Binding? {
 
     val dataMap = mutableMapOf<BindingDirective, String?>()
     for (block in blocks) {
-        val (directive, value) = BindingParser.parse(block) ?: return null
+        val (directive, value) = BindingParser.parse(block) ?: continue
 
         if (dataMap.containsKey(directive)) return null
 
