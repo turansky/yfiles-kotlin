@@ -39,7 +39,7 @@ internal object BindingParser {
         }
 
         source.find(ARGUMENT_REGEX)?.also { result ->
-            val argumentMode = result.d(1) == CONVERTER
+            val argumentMode = result.directive == CONVERTER
 
             return listOf(
                 BindingParseResult(KEYWORD, result.r(1)),
@@ -65,3 +65,9 @@ internal data class BindingParseResult(
     val token: BindingToken,
     val range: IntRange
 )
+
+private val MatchResult.directive: BindingDirective
+    get() = BindingDirective.find(groups[1]!!.value)
+
+private fun MatchResult.r(index: Int): IntRange =
+    groups[index]!!.range
