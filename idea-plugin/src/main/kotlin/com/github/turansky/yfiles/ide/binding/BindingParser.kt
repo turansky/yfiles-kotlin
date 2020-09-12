@@ -24,7 +24,7 @@ internal object BindingParser {
 
     fun parse(source: String): List<BindingParseResult> {
         val result = mutableListOf(
-            BindingParseResult(LANGUAGE_INJECTION, source.indices),
+            BindingParseResult(LANGUAGE_INJECTION, TextRange.allOf(source)),
             BindingParseResult(BRACE, 0),
             BindingParseResult(BRACE, source.lastIndex),
         )
@@ -54,7 +54,7 @@ internal object BindingParser {
             val keywordRange = result.r(1)
             val argumentRange = result.r(2)
 
-            return if (argumentRange.isEmpty()) {
+            return if (argumentRange.isEmpty) {
                 listOf(
                     BindingParseResult(KEYWORD, keywordRange)
                 )
@@ -77,7 +77,7 @@ internal object BindingParser {
         }
 
         return listOf(
-            BindingParseResult(ERROR, source.indices)
+            BindingParseResult(ERROR, TextRange.allOf(source))
         )
     }
 
@@ -96,18 +96,13 @@ internal data class BindingParseResult(
 
 private fun BindingParseResult(
     token: BindingToken,
-    range: IntRange
-): BindingParseResult =
-    BindingParseResult(token, TextRange.from(range.start, range.count()))
-
-private fun BindingParseResult(
-    token: BindingToken,
     offset: Int
 ): BindingParseResult =
-    BindingParseResult(token, IntRange(offset, offset))
+    BindingParseResult(token, TextRange.from(offset, 1))
 
 private val MatchResult.directive: BindingDirective
     get() = BindingDirective.find(groups[1]!!.value)
 
-private fun MatchResult.r(index: Int): IntRange =
+private fun MatchResult.r(index: Int): TextRange =
     groups[index]!!.range
+        .let { TextRange(it.start, it.endInclusive + 1) }
