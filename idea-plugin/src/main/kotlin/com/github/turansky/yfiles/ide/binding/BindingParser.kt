@@ -22,6 +22,33 @@ internal object BindingParser {
     }
 
     fun parse(source: String): List<BindingParseResult> {
+        val result = mutableListOf(
+            BindingParseResult(LANGUAGE_INJECTION, source.indices),
+            BindingParseResult(BRACE, 0),
+            BindingParseResult(BRACE, source.lastIndex),
+        )
+
+        val codeStartOffset = 1
+
+        val code = source.drop(1).dropLast(1)
+        val blocks = code.split(',')
+
+        var localOffset = 0
+        for (block in blocks) {
+            val offset = codeStartOffset + localOffset
+
+            result.addAll(parseBlock(block).map { it.copy(range = it.range.shiftRight(offset)) })
+
+            localOffset += block.length + 1
+            if (localOffset < code.length) {
+                result.add(BindingParseResult(COMMA, codeStartOffset + localOffset - 1))
+            }
+        }
+
+        return result
+    }
+
+    private fun parseBlock(source: String): List<BindingParseResult> {
         source.find(KEYWORD_REGEX)?.also { result ->
             val keywordRange = result.r(1)
             val argumentRange = result.r(2)
@@ -66,8 +93,17 @@ internal data class BindingParseResult(
     val range: IntRange
 )
 
+private fun BindingParseResult(
+    token: BindingToken,
+    offset: Int
+): BindingParseResult =
+    BindingParseResult(token, IntRange(offset, offset))
+
 private val MatchResult.directive: BindingDirective
     get() = BindingDirective.find(groups[1]!!.value)
 
 private fun MatchResult.r(index: Int): IntRange =
     groups[index]!!.range
+
+fun IntRange.shiftRight(delta: Int): IntRange =
+    IntRange(start + delta, endInclusive + delta)

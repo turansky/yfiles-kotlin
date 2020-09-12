@@ -1,6 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
-import com.github.turansky.yfiles.ide.binding.BindingToken.*
+import com.github.turansky.yfiles.ide.binding.BindingToken.ERROR
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -19,28 +19,9 @@ internal class BindingAnnotator : Annotator {
         val value = element.value
         value.toBinding() ?: return
 
-        val valueRange = element.valueTextRange
-        holder.info(LANGUAGE_INJECTION, valueRange)
-        holder.info(BRACE, valueRange.startOffset)
-        holder.info(BRACE, valueRange.endOffset - 1)
-
-        val codeStartOffset = valueRange.startOffset + 1
-
-        val code = value.drop(1).dropLast(1)
-        val blocks = code.split(',')
-
-        var localOffset = 0
-        for (block in blocks) {
-            val offset = codeStartOffset + localOffset
-
-            BindingParser.parse(block).forEach { (token, range) ->
-                holder.info(token, TextRange.from(offset + range.first, range.count()))
-            }
-
-            localOffset += block.length + 1
-            if (localOffset < code.length) {
-                holder.info(COMMA, codeStartOffset + localOffset - 1)
-            }
+        val offset = element.valueTextRange.startOffset
+        BindingParser.parse(value).forEach { (token, range) ->
+            holder.info(token, TextRange.from(offset + range.first, range.count()))
         }
     }
 }
