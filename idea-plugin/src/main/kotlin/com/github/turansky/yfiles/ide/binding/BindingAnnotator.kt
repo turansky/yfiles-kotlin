@@ -21,7 +21,7 @@ internal class BindingAnnotator : Annotator {
 
         val offset = element.valueTextRange.startOffset
         BindingParser.parse(value).forEach { (token, range) ->
-            holder.info(token, TextRange.from(offset + range.first, range.count()))
+            holder.info(token, range.shiftRight(offset))
         }
     }
 }

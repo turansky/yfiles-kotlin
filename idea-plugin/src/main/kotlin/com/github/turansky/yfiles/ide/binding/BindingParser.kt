@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.ide.binding
 
 import com.github.turansky.yfiles.ide.binding.BindingDirective.*
 import com.github.turansky.yfiles.ide.binding.BindingToken.*
+import com.intellij.openapi.util.TextRange
 
 internal object BindingParser {
     private val KEYWORD_REGEX = Regex("\\s*($BINDING|$TEMPLATE_BINDING)\\s*(\\S*)\\s*")
@@ -90,8 +91,14 @@ internal object BindingParser {
 
 internal data class BindingParseResult(
     val token: BindingToken,
-    val range: IntRange
+    val range: TextRange
 )
+
+private fun BindingParseResult(
+    token: BindingToken,
+    range: IntRange
+): BindingParseResult =
+    BindingParseResult(token, TextRange.from(range.start, range.count()))
 
 private fun BindingParseResult(
     token: BindingToken,
@@ -104,6 +111,3 @@ private val MatchResult.directive: BindingDirective
 
 private fun MatchResult.r(index: Int): IntRange =
     groups[index]!!.range
-
-fun IntRange.shiftRight(delta: Int): IntRange =
-    IntRange(start + delta, endInclusive + delta)
