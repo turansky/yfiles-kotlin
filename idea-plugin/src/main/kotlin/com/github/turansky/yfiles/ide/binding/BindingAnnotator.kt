@@ -40,11 +40,3 @@ private fun AnnotationHolder.info(
         .range(range)
         .create()
 }
-
-private fun AnnotationHolder.info(
-    token: BindingToken,
-    offset: Int
-) {
-    info(token, TextRange.from(offset, 1))
-}
-
