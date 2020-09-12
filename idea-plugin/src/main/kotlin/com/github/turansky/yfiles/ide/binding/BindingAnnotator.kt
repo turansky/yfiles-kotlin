@@ -32,10 +32,12 @@ internal class BindingAnnotator : Annotator {
         var localOffset = 0
         for (block in blocks) {
             val offset = codeStartOffset + localOffset
-            val range = { source: IntRange -> TextRange.from(offset + source.first, source.count()) }
 
             BindingParser.parse(block).forEach { (token, range) ->
-                holder.info(BindingHighlightingColors[token], range(range))
+                holder.info(
+                    attributes = BindingHighlightingColors[token],
+                    range = TextRange.from(offset + range.first, range.count())
+                )
             }
 
             localOffset += block.length + 1
