@@ -1,9 +1,9 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.github.turansky.yfiles.ide.binding.BindingToken.*
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlAttributeValue
@@ -20,9 +20,9 @@ internal class BindingAnnotator : Annotator {
         value.toBinding() ?: return
 
         val valueRange = element.valueTextRange
-        holder.languageFragment(valueRange)
-        holder.brace(valueRange.startOffset)
-        holder.brace(valueRange.endOffset - 1)
+        holder.info(LANGUAGE_INJECTION, valueRange)
+        holder.info(BRACE, valueRange.startOffset)
+        holder.info(BRACE, valueRange.endOffset - 1)
 
         val codeStartOffset = valueRange.startOffset + 1
 
@@ -34,39 +34,36 @@ internal class BindingAnnotator : Annotator {
             val offset = codeStartOffset + localOffset
 
             BindingParser.parse(block).forEach { (token, range) ->
-                holder.info(
-                    attributes = BindingHighlightingColors[token],
-                    range = TextRange.from(offset + range.first, range.count())
-                )
+                holder.info(token, TextRange.from(offset + range.first, range.count()))
             }
 
             localOffset += block.length + 1
             if (localOffset < code.length) {
-                holder.comma(codeStartOffset + localOffset - 1)
+                holder.info(COMMA, codeStartOffset + localOffset - 1)
             }
         }
     }
 }
 
-private fun AnnotationHolder.languageFragment(range: TextRange) {
-    info(BindingHighlightingColors.LANGUAGE_INJECTION, range)
-}
+private fun AnnotationHolder.info(
+    token: BindingToken,
+    range: TextRange
+) {
+    val severity = when (token) {
+        ERROR -> HighlightSeverity.ERROR
+        else -> HighlightSeverity.INFORMATION
+    }
 
-private fun AnnotationHolder.brace(offset: Int) {
-    info(BindingHighlightingColors.BRACE, TextRange.from(offset, 1))
-}
-
-private fun AnnotationHolder.comma(offset: Int) {
-    info(BindingHighlightingColors.COMMA, TextRange.from(offset, 1))
+    newSilentAnnotation(severity)
+        .textAttributes(BindingHighlightingColors[token])
+        .range(range)
+        .create()
 }
 
 private fun AnnotationHolder.info(
-    attributes: TextAttributesKey,
-    range: TextRange
+    token: BindingToken,
+    offset: Int
 ) {
-    newSilentAnnotation(HighlightSeverity.INFORMATION)
-        .textAttributes(attributes)
-        .range(range)
-        .create()
+    info(token, TextRange.from(offset, 1))
 }
 
