@@ -47,7 +47,7 @@ internal class BindingAnnotator : Annotator {
                 val matchResult = BindingParser.ARGUMENT.find(block)
                 if (matchResult != null) {
                     val valueMode = matchResult.d(1) == PARAMETER
-                    holder.parameterName(range(matchResult.r(1)))
+                    holder.keyword(range(matchResult.r(1)))
                     holder.assign(range(matchResult.r(2)))
 
                     holder.parameter(range(matchResult.r(3)), valueMode)
@@ -74,10 +74,6 @@ private fun AnnotationHolder.brace(offset: Int) {
 
 private fun AnnotationHolder.keyword(range: TextRange) {
     info(BindingHighlightingColors.KEYWORD, range)
-}
-
-private fun AnnotationHolder.parameterName(range: TextRange) {
-    info(BindingHighlightingColors.NAMED_ARGUMENT, range)
 }
 
 private fun AnnotationHolder.assign(range: TextRange) {
