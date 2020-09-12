@@ -7,23 +7,22 @@ internal object BindingParser {
     private val KEYWORD_REGEX = Regex("\\s*($BINDING|$TEMPLATE_BINDING)\\s*(\\S*)\\s*")
     private val ARGUMENT_REGEX = Regex("\\s*($CONVERTER|$PARAMETER)\\s*(=)\\s*(\\S*)\\s*")
 
-    fun find(source: String): Pair<BindingDirective, String?>? =
-        when {
-            KEYWORD_REGEX.matches(source) -> {
-                val (directive, value) = KEYWORD_REGEX.find(source)!!.destructured
-                BindingDirective.find(directive) to value.ifEmpty { null }
-            }
-
-            ARGUMENT_REGEX.matches(source) -> {
-                val (directive, _, value) = ARGUMENT_REGEX.find(source)!!.destructured
-                BindingDirective.find(directive) to value.ifEmpty { null }
-            }
-
-            else -> null
+    fun find(source: String): Pair<BindingDirective, String?>? {
+        source.find(KEYWORD_REGEX)?.also { result ->
+            val (directive, value) = result.destructured
+            return BindingDirective.find(directive) to value.ifEmpty { null }
         }
 
+        source.find(ARGUMENT_REGEX)?.also { result ->
+            val (directive, _, value) = result.destructured
+            return BindingDirective.find(directive) to value.ifEmpty { null }
+        }
+
+        return null
+    }
+
     fun parse(source: String): List<BindingParseResult> {
-        KEYWORD_REGEX.find(source)?.also { result ->
+        source.find(KEYWORD_REGEX)?.also { result ->
             val keywordRange = result.r(1)
             val argumentRange = result.r(2)
 
@@ -39,7 +38,7 @@ internal object BindingParser {
             }
         }
 
-        ARGUMENT_REGEX.find(source)?.also { result ->
+        source.find(ARGUMENT_REGEX)?.also { result ->
             val argumentMode = result.d(1) == CONVERTER
 
             return listOf(
@@ -53,6 +52,13 @@ internal object BindingParser {
             BindingParseResult(ERROR, source.indices)
         )
     }
+
+    private fun String.find(exp: Regex): MatchResult? =
+        if (exp.matches(this)) {
+            exp.find(this)
+        } else {
+            null
+        }
 }
 
 internal data class BindingParseResult(
