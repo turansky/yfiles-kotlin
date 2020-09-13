@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.xml.XmlAttributeValue
 
-internal class ContextClassReference(
+internal class ClassReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
     private val className: String
@@ -15,7 +15,7 @@ internal class ContextClassReference(
         DefaultPsiFinder.findClass(element, className)
 }
 
-internal class ContextPropertyReference(
+internal open class PropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
     private val property: IProperty
@@ -26,7 +26,13 @@ internal class ContextPropertyReference(
         } else {
             null
         }
+}
 
+internal class ContextPropertyReference(
+    element: XmlAttributeValue,
+    rangeInElement: TextRange,
+    property: IProperty
+) : PropertyReference(element, rangeInElement, property) {
     override fun getVariants(): Array<out Any> =
         DefaultPsiFinder.findPropertyVariants(element, CONTEXT_CLASSES)
             ?: CONTEXT_PROPERTY_VARIANTS

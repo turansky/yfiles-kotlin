@@ -40,7 +40,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                 BindingToken.KEYWORD -> when (directive) {
                     BINDING,
                     TEMPLATE_BINDING
-                    -> result += ContextClassReference(
+                    -> result += ClassReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
                         className = binding.parentReference
