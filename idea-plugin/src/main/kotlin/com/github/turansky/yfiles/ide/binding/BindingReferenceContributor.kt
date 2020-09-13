@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
-import com.github.turansky.yfiles.ide.binding.BindingDirective.BINDING
-import com.github.turansky.yfiles.ide.binding.BindingDirective.TEMPLATE_BINDING
+import com.github.turansky.yfiles.ide.binding.BindingDirective.*
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.xml.XmlAttributeValue
@@ -44,6 +43,13 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
                         className = binding.parentReference
+                    )
+
+                    CONVERTER
+                    -> result += PropertyReference(
+                        element = element,
+                        rangeInElement = range.shiftRight(valueOffset),
+                        property = Properties.CONVERTERS
                     )
                 }
 
