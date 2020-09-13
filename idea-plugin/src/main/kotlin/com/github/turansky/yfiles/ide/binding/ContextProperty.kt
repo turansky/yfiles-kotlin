@@ -18,16 +18,9 @@ internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
         .toTypedArray()
 }
 
-internal interface IContextProperty {
-    val name: String
-    val className: String
-
-    val isStandard: Boolean
-}
-
 private enum class ContextProperty(
     override val className: String = CONTEXT
-) : IContextProperty {
+) : IProperty {
     bounds,
     canvasComponent,
     height,
@@ -46,7 +39,7 @@ private enum class ContextProperty(
     override val isStandard: Boolean = true
 }
 
-private object ClassContextProperty : IContextProperty {
+private object ClassContextProperty : IProperty {
     override val name: String
         get() = error("Name in unavailable!")
 
@@ -54,7 +47,7 @@ private object ClassContextProperty : IContextProperty {
     override val isStandard = true
 }
 
-private object InvalidContextProperty : IContextProperty {
+private object InvalidContextProperty : IProperty {
     override val name: String
         get() = error("Name in unavailable!")
 
@@ -65,7 +58,7 @@ private object InvalidContextProperty : IContextProperty {
 private val PROPERTY_MAP = ContextProperty.values()
     .associateBy { it.name }
 
-internal fun findContextProperty(name: String?): IContextProperty {
+internal fun findContextProperty(name: String?): IProperty {
     name ?: return ClassContextProperty
 
     return PROPERTY_MAP[name] ?: InvalidContextProperty

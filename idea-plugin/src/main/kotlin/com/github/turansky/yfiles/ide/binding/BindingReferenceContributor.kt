@@ -76,7 +76,7 @@ private class ContextClassReference(
 private class ContextPropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    private val property: IContextProperty
+    private val property: IProperty
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property.isStandard) {
     override fun resolve(): PsiElement? =
         if (property.isStandard) {
