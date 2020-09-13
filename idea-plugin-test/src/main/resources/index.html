@@ -31,6 +31,14 @@
       height="{TemplateBinding height, Converter=correct, Parameter=13}"
     />
   </g>
+
+  <g>
+    <rect
+      visibility="{TemplateBinding itemSelected, Converter=toVisibility}"
+      width="{Binding width, Converter=calc, Parameter=$v*0.5}"
+      height="{Binding height, Converter=calc, Parameter=$v*0.5}"
+    />
+  </g>
 </script>
 
 <script>
