@@ -1,5 +1,6 @@
 package com.github.turansky.yfiles.ide.binding
 
+import com.github.turansky.yfiles.ide.binding.BindingDirective.BINDING
 import com.github.turansky.yfiles.ide.binding.BindingDirective.TEMPLATE_BINDING
 import com.github.turansky.yfiles.ide.psi.DefaultPsiFinder
 import com.intellij.openapi.util.TextRange
@@ -28,7 +29,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         if (!element.bindingEnabled)
             return PsiReference.EMPTY_ARRAY
 
-        val binding = element.value.toBinding() as? TemplateBinding
+        val binding = element.value.toBinding()
             ?: return PsiReference.EMPTY_ARRAY
 
         val value = element.value
@@ -38,19 +39,22 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         BindingParser.parse(value).forEach { (token, range, directive) ->
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (token) {
-                BindingToken.KEYWORD -> if (directive == TEMPLATE_BINDING) {
-                    result += ContextClassReference(
+                BindingToken.KEYWORD -> when (directive) {
+                    BINDING,
+                    TEMPLATE_BINDING
+                    -> result += ContextClassReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
                         className = binding.parentReference
                     )
                 }
 
-                BindingToken.ARGUMENT -> if (directive == TEMPLATE_BINDING) {
-                    result += ContextPropertyReference(
+                BindingToken.ARGUMENT -> when (directive) {
+                    TEMPLATE_BINDING
+                    -> result += ContextPropertyReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
-                        property = binding.property
+                        property = (binding as TemplateBinding).property
                     )
                 }
             }
