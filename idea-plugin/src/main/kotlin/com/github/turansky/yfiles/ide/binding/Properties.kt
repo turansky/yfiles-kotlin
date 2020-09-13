@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.ide.binding
 
 internal object Properties {
-    val CONVERTERS: IProperty = SimpleProperty("yfiles.styles.Templates", "CONVERTERS")
+    val TEMPLATE_CONVERTERS: IProperty = SimpleProperty("yfiles.styles.Templates", "CONVERTERS")
 }
 
 internal interface IProperty {

@@ -45,11 +45,12 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                         className = binding.parentReference
                     )
 
-                    CONVERTER
+                    CONVERTER,
+                    PARAMETER
                     -> result += PropertyReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
-                        property = Properties.CONVERTERS
+                        property = Properties.TEMPLATE_CONVERTERS
                     )
                 }
 
