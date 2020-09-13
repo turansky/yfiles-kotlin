@@ -51,19 +51,15 @@ internal object BindingParser {
 
     private fun parseBlock(source: String): List<BindingParseResult> {
         source.find(KEYWORD_REGEX)?.also { result ->
-            val keywordRange = result.r(1)
-            val argumentRange = result.r(2)
+            val parseResults = listOf(
+                BindingParseResult(KEYWORD, result.r(1))
+            )
 
-            return if (argumentRange.isEmpty) {
-                listOf(
-                    BindingParseResult(KEYWORD, keywordRange)
-                )
-            } else {
-                listOf(
-                    BindingParseResult(KEYWORD, keywordRange),
-                    BindingParseResult(ARGUMENT, argumentRange)
-                )
-            }
+            val argumentRange = result.r(2)
+                .takeIf { !it.isEmpty }
+                ?: return parseResults
+
+            return parseResults + BindingParseResult(ARGUMENT, argumentRange)
         }
 
         source.find(ARGUMENT_REGEX)?.also { result ->
