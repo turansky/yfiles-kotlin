@@ -34,30 +34,29 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
         val value = element.value
         val valueOffset = element.valueTextRange.startOffset - element.textRange.startOffset
 
-        val key = TEMPLATE_BINDING.key
-        val keyIndex = value.indexOf(key)
-        val keyStartOffset = keyIndex + valueOffset
+        val result = mutableListOf<PsiReference>()
+        BindingParser.parse(value).forEach { (token, range, directive) ->
+            @Suppress("NON_EXHAUSTIVE_WHEN")
+            when (token) {
+                BindingToken.KEYWORD -> if (directive == TEMPLATE_BINDING) {
+                    result += ContextClassReference(
+                        element = element,
+                        rangeInElement = range.shiftRight(valueOffset),
+                        className = binding.parentReference
+                    )
+                }
 
-        val classReference = ContextClassReference(
-            element = element,
-            rangeInElement = TextRange.from(keyStartOffset, key.length),
-            className = binding.parentReference
-        )
+                BindingToken.ARGUMENT -> if (directive == TEMPLATE_BINDING) {
+                    result += ContextPropertyReference(
+                        element = element,
+                        rangeInElement = range.shiftRight(valueOffset),
+                        property = binding.property
+                    )
+                }
+            }
+        }
 
-        val name = binding.name
-            ?: return arrayOf(classReference)
-
-        val nameStartOffset = value.indexOf(name, keyIndex + key.length) + valueOffset
-
-        val propertyReference = ContextPropertyReference(
-            element = element,
-            rangeInElement = TextRange.from(nameStartOffset, name.length),
-            property = binding.property
-        )
-        return arrayOf(
-            classReference,
-            propertyReference
-        )
+        return result.toTypedArray()
     }
 }
 
