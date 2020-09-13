@@ -36,6 +36,13 @@ tasks {
         }
     }
 
+    runIde {
+        jvmArgs(
+            "-Xms1g",
+            "-Xmx4g"
+        )
+    }
+
     patchPluginXml {
         sinceBuild("201.6487")
         untilBuild("203.*")
