@@ -51,24 +51,24 @@ internal object BindingParser {
 
     private fun parseBlock(source: String): List<BindingParseResult> {
         source.find(KEYWORD_REGEX)?.also { result ->
+            val directive = result.directive
             val parseResults = listOf(
-                BindingParseResult(KEYWORD, result.r(1))
+                BindingParseResult(KEYWORD, result.r(1), directive)
             )
 
             val argumentRange = result.r(2)
                 .takeIf { !it.isEmpty }
                 ?: return parseResults
 
-            return parseResults + BindingParseResult(ARGUMENT, argumentRange)
+            return parseResults + BindingParseResult(ARGUMENT, argumentRange, directive)
         }
 
         source.find(ARGUMENT_REGEX)?.also { result ->
-            val argumentMode = result.directive == CONVERTER
-
+            val directive = result.directive
             return listOf(
-                BindingParseResult(KEYWORD, result.r(1)),
+                BindingParseResult(KEYWORD, result.r(1), directive),
                 BindingParseResult(ASSIGN, result.r(2)),
-                BindingParseResult(if (argumentMode) ARGUMENT else VALUE, result.r(3))
+                BindingParseResult(if (directive == CONVERTER) ARGUMENT else VALUE, result.r(3), directive)
             )
         }
 
@@ -87,7 +87,8 @@ internal object BindingParser {
 
 internal data class BindingParseResult(
     val token: BindingToken,
-    val range: TextRange
+    val range: TextRange,
+    val directive: BindingDirective? = null
 )
 
 private fun BindingParseResult(
