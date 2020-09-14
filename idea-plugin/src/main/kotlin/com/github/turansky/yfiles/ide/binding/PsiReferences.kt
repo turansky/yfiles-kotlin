@@ -34,7 +34,7 @@ internal fun ContextPropertyReference(
         "." !in propertyName -> null
         ".." in propertyName -> null
         propertyName.endsWith(".") -> null
-        else -> findContextProperty(propertyName.substringBefore("."))
+        else -> ContextProperty.find(propertyName.substringBefore("."))
     }
 
     if (property != null) {
@@ -48,7 +48,7 @@ internal fun ContextPropertyReference(
     return ContextPropertyReference(
         element = element,
         rangeInElement = rangeInElement,
-        property = findContextProperty(propertyName)
+        property = ContextProperty.find(propertyName)
     )
 }
 

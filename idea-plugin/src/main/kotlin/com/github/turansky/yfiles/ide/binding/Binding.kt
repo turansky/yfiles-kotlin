@@ -35,7 +35,7 @@ internal data class TemplateBinding(
     override val parameter: String?
 ) : Binding() {
     override val parentName: String = "context"
-    override val parentReference: String = findContextClass(name)
+    override val parentReference: String = ContextProperty.findParentClass(name)
 }
 
 internal fun String.toBinding(): Binding? {

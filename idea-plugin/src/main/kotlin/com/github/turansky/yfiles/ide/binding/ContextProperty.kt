@@ -18,7 +18,7 @@ internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
         .toTypedArray()
 }
 
-private enum class ContextProperty(
+internal enum class ContextProperty(
     override val className: String = CONTEXT
 ) : IProperty {
     bounds,
@@ -35,16 +35,18 @@ private enum class ContextProperty(
     isFlipped(LABEL_CONTEXT),
     isUpsideDown(LABEL_CONTEXT),
     labelText(LABEL_CONTEXT);
+
+    companion object {
+        private val MAP = values()
+            .associateBy { it.name }
+
+        internal fun findParentClass(propertyName: String?): String =
+            MAP[propertyName]?.className ?: CONTEXT
+
+        internal fun find(name: String): ContextProperty? =
+            MAP[name]
+    }
 }
-
-private val PROPERTY_MAP = ContextProperty.values()
-    .associateBy { it.name }
-
-internal fun findContextClass(propertyName: String?): String =
-    PROPERTY_MAP[propertyName]?.className ?: CONTEXT
-
-internal fun findContextProperty(name: String): IProperty? =
-    PROPERTY_MAP[name]
 
 private fun ContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)
