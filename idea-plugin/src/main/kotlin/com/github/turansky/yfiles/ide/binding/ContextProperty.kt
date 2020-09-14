@@ -39,14 +39,6 @@ private enum class ContextProperty(
     override val isStandard: Boolean = true
 }
 
-private object ClassContextProperty : IProperty {
-    override val name: String
-        get() = error("Name in unavailable!")
-
-    override val className = CONTEXT
-    override val isStandard = true
-}
-
 private object InvalidContextProperty : IProperty {
     override val name: String
         get() = error("Name in unavailable!")
@@ -58,11 +50,11 @@ private object InvalidContextProperty : IProperty {
 private val PROPERTY_MAP = ContextProperty.values()
     .associateBy { it.name }
 
-internal fun findContextProperty(name: String?): IProperty {
-    name ?: return ClassContextProperty
+internal fun findContextClass(propertyName: String?): String =
+    PROPERTY_MAP[propertyName]?.className ?: CONTEXT
 
-    return PROPERTY_MAP[name] ?: InvalidContextProperty
-}
+internal fun findContextProperty(name: String): IProperty =
+    PROPERTY_MAP[name] ?: InvalidContextProperty
 
 private fun ContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)
