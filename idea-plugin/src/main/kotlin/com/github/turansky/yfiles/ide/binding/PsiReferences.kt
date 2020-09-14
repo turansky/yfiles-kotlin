@@ -34,16 +34,20 @@ internal fun ContextPropertyReference(
     rangeInElement: TextRange,
     propertyName: String
 ): PsiReference {
-    if ("." in propertyName) {
-        val name = propertyName.substringBefore(".")
-        val property = findContextProperty(name)
-        if (property.isStandard) {
-            return ContextPropertyReference(
-                element = element,
-                rangeInElement = TextRange.from(rangeInElement.startOffset, name.length),
-                property = property
-            )
-        }
+    val property = when {
+        "." !in propertyName -> null
+        ".." in propertyName -> null
+        propertyName.endsWith(".") -> null
+        else -> findContextProperty(propertyName.substringBefore("."))
+            .takeIf { it.isStandard }
+    }
+
+    if (property != null) {
+        return ContextPropertyReference(
+            element = element,
+            rangeInElement = TextRange.from(rangeInElement.startOffset, property.name.length),
+            property = property
+        )
     }
 
     return ContextPropertyReference(
