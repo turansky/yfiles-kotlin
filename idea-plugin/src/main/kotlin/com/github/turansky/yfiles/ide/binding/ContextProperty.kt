@@ -35,16 +35,6 @@ private enum class ContextProperty(
     isFlipped(LABEL_CONTEXT),
     isUpsideDown(LABEL_CONTEXT),
     labelText(LABEL_CONTEXT);
-
-    override val isStandard: Boolean = true
-}
-
-private object InvalidContextProperty : IProperty {
-    override val name: String
-        get() = error("Name in unavailable!")
-
-    override val className = CONTEXT
-    override val isStandard = false
 }
 
 private val PROPERTY_MAP = ContextProperty.values()
@@ -53,8 +43,8 @@ private val PROPERTY_MAP = ContextProperty.values()
 internal fun findContextClass(propertyName: String?): String =
     PROPERTY_MAP[propertyName]?.className ?: CONTEXT
 
-internal fun findContextProperty(name: String): IProperty =
-    PROPERTY_MAP[name] ?: InvalidContextProperty
+internal fun findContextProperty(name: String): IProperty? =
+    PROPERTY_MAP[name]
 
 private fun ContextProperty.toVariant(): LookupElement =
     LookupElementBuilder.create(name)

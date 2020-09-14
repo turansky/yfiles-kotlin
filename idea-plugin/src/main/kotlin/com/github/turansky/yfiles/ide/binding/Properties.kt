@@ -7,13 +7,9 @@ internal object Properties {
 internal interface IProperty {
     val className: String
     val name: String
-
-    val isStandard: Boolean
 }
 
 private class SimpleProperty(
     override val className: String,
     override val name: String
-) : IProperty {
-    override val isStandard: Boolean = true
-}
+) : IProperty

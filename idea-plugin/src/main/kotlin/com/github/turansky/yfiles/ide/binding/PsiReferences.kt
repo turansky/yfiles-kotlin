@@ -20,13 +20,9 @@ internal open class PropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
     private val property: IProperty
-) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property.isStandard) {
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, true) {
     override fun resolve(): PsiElement? =
-        if (property.isStandard) {
-            DefaultPsiFinder.findProperty(element, property.className, property.name)
-        } else {
-            null
-        }
+        DefaultPsiFinder.findProperty(element, property.className, property.name)
 }
 
 internal fun ContextPropertyReference(
@@ -39,7 +35,6 @@ internal fun ContextPropertyReference(
         ".." in propertyName -> null
         propertyName.endsWith(".") -> null
         else -> findContextProperty(propertyName.substringBefore("."))
-            .takeIf { it.isStandard }
     }
 
     if (property != null) {
@@ -60,8 +55,15 @@ internal fun ContextPropertyReference(
 private class ContextPropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    property: IProperty
-) : PropertyReference(element, rangeInElement, property) {
+    private val property: IProperty?
+) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property != null) {
+    override fun resolve(): PsiElement? =
+        if (property != null) {
+            DefaultPsiFinder.findProperty(element, property.className, property.name)
+        } else {
+            null
+        }
+
     override fun getVariants(): Array<out Any> =
         DefaultPsiFinder.findPropertyVariants(element, CONTEXT_CLASSES)
             ?: CONTEXT_PROPERTY_VARIANTS
