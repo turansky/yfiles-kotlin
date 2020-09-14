@@ -40,11 +40,21 @@ internal enum class ContextProperty(
         private val MAP = values()
             .associateBy { it.name }
 
+        private val COMPLEX_MAP = listOf(
+            bounds,
+            canvasComponent,
+            item,
+            styleTag
+        ).associateBy { it.name }
+
         internal fun findParentClass(propertyName: String?): String =
             MAP[propertyName]?.className ?: CONTEXT
 
         internal fun find(name: String): ContextProperty? =
             MAP[name]
+
+        internal fun findComplex(name: String): ContextProperty? =
+            COMPLEX_MAP[name]
     }
 }
 

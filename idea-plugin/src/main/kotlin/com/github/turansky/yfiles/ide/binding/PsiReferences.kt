@@ -34,7 +34,7 @@ internal fun ContextPropertyReference(
         "." !in propertyName -> null
         ".." in propertyName -> null
         propertyName.endsWith(".") -> null
-        else -> ContextProperty.find(propertyName.substringBefore("."))
+        else -> ContextProperty.findComplex(propertyName.substringBefore("."))
     }
 
     if (property != null) {
