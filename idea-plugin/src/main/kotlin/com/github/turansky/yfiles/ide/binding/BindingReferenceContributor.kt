@@ -59,7 +59,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                     -> result += ContextPropertyReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
-                        property = (binding as TemplateBinding).property
+                        propertyName = binding.name!!
                     )
                 }
             }
