@@ -45,6 +45,8 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.styles.VoidPortStyle",
 
     "yfiles.view.GraphComponent",
+    "yfiles.view.IRenderContext",
+    VISUAL,
 
     "yfiles.view.Color",
     "yfiles.view.Fill",
@@ -70,7 +72,8 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[Promise<$JS_VOID>,undefined]" to "Promise<$JS_VOID>",
     "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
     "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
-    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>"
+    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>",
+    "Promise<${VISUAL.substringAfterLast(".")}>" to "Promise<$VISUAL>"
 )
 
 private val COLLECTION_INTERFACES = setOf(
