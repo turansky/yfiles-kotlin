@@ -100,7 +100,7 @@ private fun fixOptionsParameter(source: VsdxSource) {
         .optFlatMap(PARAMETERS)
         .filter { it[NAME].endsWith("OrOptions") }
         .onEach { it[NAME] = it[NAME].removeSuffix("OrOptions") }
-        .forEach { it[TYPE] = it[TYPE].between(":", ",", true) }
+        .forEach { it[TYPE] = it[TYPE].between("[", ",", true) }
 }
 
 private fun String.fixVsdxPackage(): String =
