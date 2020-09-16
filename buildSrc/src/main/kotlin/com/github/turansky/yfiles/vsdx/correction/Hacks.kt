@@ -274,8 +274,17 @@ private fun fixMethodModifier(source: VsdxSource) {
         .forEach { it[MODIFIERS].put(ABSTRACT) }
 }
 
-private val YFILES_API_REGEX = Regex("<a href=\"https://docs.yworks.com/yfileshtml/#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
-private val VSDX_API_REGEX = Regex("<a href=\"#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
+private val YFILES_API_REGEX = Regex("""<api-link data-type="([a-zA-Z.]+)"\s*></api-link>""")
+
+private val STANDARD_TYPE_MAP = sequenceOf(
+    "Window",
+    "Styles",
+    "Promise",
+
+    "addExportFinishedListener",
+    "SvgSupport.applySvg"
+).associateBy { it }
+    .plus(JS_BLOB to BLOB)
 
 private fun JSONObject.fixSummary() {
     if (!has(SUMMARY)) {
@@ -284,10 +293,16 @@ private fun JSONObject.fixSummary() {
 
     val summary = get(SUMMARY)
         .replace(YFILES_API_REGEX) {
-            val type = YFILES_TYPE_MAP.getValue(it.groupValues.get(1))
+            val dataType = it.groupValues[1]
+            val type = when {
+                dataType.startsWith("vsdx.")
+                -> dataType.removePrefix("vsdx.")
+
+                else -> YFILES_TYPE_MAP[dataType] ?: STANDARD_TYPE_MAP.getValue(dataType)
+            }
+
             "[$type]"
         }
-        .replace(VSDX_API_REGEX, "[$1]")
         .replace("\r\n   ", "")
         .replace("\r\n", " ")
         .replace("\r", " ")
