@@ -276,6 +276,7 @@ private fun fixMethodModifier(source: VsdxSource) {
 
 private val YFILES_API_REGEX = Regex("""<api-link data-type="([a-zA-Z.]+)"\s*></api-link>""")
 private val P_START_REGEX = Regex("""<p>\r\n\s{3,}""")
+private val PRE_REGEX = Regex("""<pre>([\s\S]+?)</pre>""")
 
 private val STANDARD_TYPE_MAP = sequenceOf(
     "Window",
@@ -304,7 +305,14 @@ private fun JSONObject.fixSummary() {
 
             "[$type]"
         }
+        .replace(PRE_REGEX) {
+            val code = it.groupValues[1]
+                .replace("\r\n", "\n")
+
+            "\n```$code```\n\n"
+        }
         .replace(P_START_REGEX, "\n")
+        .replace("<br>\r\n", "\n")
         .replace("\r\n", " ")
         .replace("\r", " ")
         .replace("</p>", "")
