@@ -8,6 +8,8 @@ plugins {
 
 kotlin.js {
     browser()
+
+    binaries.executable()
 }
 
 tasks {
