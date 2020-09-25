@@ -7,7 +7,11 @@ plugins {
 }
 
 kotlin.js {
-    browser()
+    browser {
+        dceTask {
+            keep("yfiles-kotlin-import-optimizer-application")
+        }
+    }
 
     binaries.executable()
 }
