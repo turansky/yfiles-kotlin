@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 plugins {
@@ -9,8 +10,14 @@ kotlin.js {
     browser()
 }
 
-tasks.withType<KotlinWebpack> {
-    enabled = false
+tasks {
+    withType<KotlinJsCompile> {
+        kotlinOptions.moduleKind = "commonjs"
+    }
+
+    withType<KotlinWebpack> {
+        enabled = false
+    }
 }
 
 dependencies {
