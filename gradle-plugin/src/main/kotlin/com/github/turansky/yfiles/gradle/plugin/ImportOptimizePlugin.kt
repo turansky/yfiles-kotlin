@@ -37,5 +37,5 @@ private fun createImportFile(outputDir: File) {
 
     val imports = importedClasses.joinToString(",\n")
     outputDir.resolve("yfiles.js")
-        .writeText("export {\n$imports } from '../../../node_modules/yfiles/yfiles.js'")
+        .writeText("export {\n$imports\n} from '../../../node_modules/yfiles/yfiles.js'")
 }
