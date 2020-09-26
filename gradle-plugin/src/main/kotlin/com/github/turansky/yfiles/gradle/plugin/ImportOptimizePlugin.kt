@@ -9,6 +9,7 @@ import java.io.File
 private const val KOTLIN_JS = "org.jetbrains.kotlin.js"
 
 private val Y_IMPORT = Regex("\\\$module\\\$yfiles\\.(\\w+)")
+private val Y_INLINE_IMPORT = Regex("yfiles_kotlin\\.\\\$\\\$importsForInline\\\$\\\$\\.yfiles\\.(\\w+)")
 
 internal class ImportOptimizePlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -29,7 +30,7 @@ private fun createImportFile(outputDir: File) {
 
     val importedClasses = jsFiles.asSequence()
         .flatMap { it.readLines().asSequence() }
-        .flatMap { Y_IMPORT.findAll(it) }
+        .flatMap { Y_IMPORT.findAll(it) + Y_INLINE_IMPORT.findAll(it) }
         .map { it.groupValues[1] }
         .distinct()
         .toList()
