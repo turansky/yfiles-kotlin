@@ -6,8 +6,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
-import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
-import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.NESTED_CLASS_IN_EXTERNAL_INTERFACE
+import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
@@ -57,6 +56,10 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             -> factory === EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
                     && diagnostic.reifiedType.isYFilesInterface()
 
+            is KtConstructor<*>
+            -> factory === WRONG_EXTERNAL_DECLARATION
+                    && diagnostic.messageParameter == "private member of class"
+
             is KtObjectDeclaration
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
@@ -69,6 +72,12 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
 private val Diagnostic.reifiedType: KotlinType?
     get() = when (this) {
         is DiagnosticWithParameters1<*, *> -> a as? KotlinType
+        else -> null
+    }
+
+private val Diagnostic.messageParameter: String?
+    get() = when (this) {
+        is DiagnosticWithParameters1<*, *> -> a as? String
         else -> null
     }
 
