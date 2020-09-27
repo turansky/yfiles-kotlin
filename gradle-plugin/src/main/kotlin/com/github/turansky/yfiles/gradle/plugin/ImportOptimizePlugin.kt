@@ -12,7 +12,7 @@ private val Y_IMPORT = Regex("\\\$module\\\$yfiles\\.(\\w+)")
 private val Y_INLINE_IMPORT = Regex("yfiles_kotlin\\.\\\$\\\$importsForInline\\\$\\\$\\.yfiles\\.(\\w+)")
 
 internal class ImportOptimizePlugin : Plugin<Project> {
-    override fun apply(target: Project) = target.run {
+    override fun apply(target: Project) = with(target) {
         plugins.withId(KOTLIN_JS) {
             tasks.withType<KotlinJsDce>().configureEach {
                 doLast {

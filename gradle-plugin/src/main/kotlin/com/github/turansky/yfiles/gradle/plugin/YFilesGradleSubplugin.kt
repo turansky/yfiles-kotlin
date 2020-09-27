@@ -8,10 +8,10 @@ import org.jetbrains.kotlin.gradle.plugin.*
 private val YFILES_COMPILER_PLUGIN_ID = "com.github.turansky.yfiles"
 
 class YFilesGradleSubplugin : KotlinCompilerPluginSupportPlugin {
-    override fun apply(target: Project) {
-        target.plugins.apply(ImportOptimizePlugin::class)
+    override fun apply(target: Project): Unit = with(target) {
+        plugins.apply(ImportOptimizePlugin::class)
 
-        target.rootProject.plugins.apply(IdeaCompanionPlugin::class)
+        rootProject.plugins.apply(IdeaCompanionPlugin::class)
     }
 
     override fun isApplicable(
