@@ -14,6 +14,8 @@ internal const val READ_WRITE_PROPERTY = "kotlin.properties.ReadWriteProperty"
 internal const val KCLASS = "kotlin.reflect.KClass"
 internal const val KPROPERTY = "kotlin.reflect.KProperty"
 
+internal const val BLOB = "org.w3c.files.Blob"
+
 internal const val ELEMENT = "org.w3c.dom.Element"
 internal const val HTML_ELEMENT = "org.w3c.dom.HTMLElement"
 internal const val SVG_ELEMENT = "org.w3c.dom.svg.SVGElement"
@@ -55,7 +57,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
     "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
 
-    "Blob" to "org.w3c.files.Blob",
+    JS_BLOB to BLOB,
 
     "Promise" to PROMISE,
     JS_CLASS to "kotlin.js.JsClass"

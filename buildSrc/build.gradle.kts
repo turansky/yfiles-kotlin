@@ -6,6 +6,10 @@ repositories {
     jcenter()
 }
 
+kotlinDslPluginOptions {
+    experimentalWarning.set(false)
+}
+
 tasks.compileKotlin {
     kotlinOptions.allWarningsAsErrors = true
 }

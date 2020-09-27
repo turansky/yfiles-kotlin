@@ -1,5 +1,5 @@
 group = "com.github.turansky.yfiles"
-version = "0.18.2-SNAPSHOT"
+version = "0.20.2-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.4.10"
@@ -18,7 +18,7 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2020.2.1"
+    version = "2020.2.2"
 
     setPlugins(
         "java",
@@ -34,6 +34,13 @@ tasks {
             // TODO: uncomment after Gradle update on Kotlin 1.4
             // allWarningsAsErrors = true
         }
+    }
+
+    runIde {
+        jvmArgs(
+            "-Xms1g",
+            "-Xmx4g"
+        )
     }
 
     patchPluginXml {

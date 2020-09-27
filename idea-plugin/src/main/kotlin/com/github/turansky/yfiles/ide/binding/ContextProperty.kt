@@ -18,16 +18,9 @@ internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
         .toTypedArray()
 }
 
-internal interface IContextProperty {
-    val name: String
-    val className: String
-
-    val isStandard: Boolean
-}
-
-private enum class ContextProperty(
+internal enum class ContextProperty(
     override val className: String = CONTEXT
-) : IContextProperty {
+) : IProperty {
     bounds,
     canvasComponent,
     height,
@@ -43,32 +36,26 @@ private enum class ContextProperty(
     isUpsideDown(LABEL_CONTEXT),
     labelText(LABEL_CONTEXT);
 
-    override val isStandard: Boolean = true
-}
+    companion object {
+        private val MAP = values()
+            .associateBy { it.name }
 
-private object ClassContextProperty : IContextProperty {
-    override val name: String
-        get() = error("Name in unavailable!")
+        private val COMPLEX_MAP = listOf(
+            bounds,
+            canvasComponent,
+            item,
+            styleTag
+        ).associateBy { it.name }
 
-    override val className = CONTEXT
-    override val isStandard = true
-}
+        internal fun findParentClass(propertyName: String?): String =
+            MAP[propertyName]?.className ?: CONTEXT
 
-private object InvalidContextProperty : IContextProperty {
-    override val name: String
-        get() = error("Name in unavailable!")
+        internal fun find(name: String): ContextProperty? =
+            MAP[name]
 
-    override val className = CONTEXT
-    override val isStandard = false
-}
-
-private val PROPERTY_MAP = ContextProperty.values()
-    .associateBy { it.name }
-
-internal fun findContextProperty(name: String?): IContextProperty {
-    name ?: return ClassContextProperty
-
-    return PROPERTY_MAP[name] ?: InvalidContextProperty
+        internal fun findComplex(name: String): ContextProperty? =
+            COMPLEX_MAP[name]
+    }
 }
 
 private fun ContextProperty.toVariant(): LookupElement =

@@ -8,6 +8,8 @@
 
 ## [Gradle Plugin](gradle-plugin)
 + Resolve inheritance problems
++ Optimize yFiles imports <sup>**new**</sup>
+  + while [ES modules](https://youtrack.jetbrains.com/issue/KT-8373) not supported
 
 ## [IDEA Plugin](idea-plugin)
 + Check [inheritance rules](gradle-plugin) on the fly
@@ -22,12 +24,12 @@
   * [Lookup extensions](#lookup-extensions)
   * [Type parameter](#type-parameter) 
 * [Factory methods](#factory-methods)
-* [Quick interface implementation <sup>**new**</sup>](#quick-interface-implementation)
+* [Quick interface implementation](#quick-interface-implementation)
 * [Flags](#flags)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)
-* [Observable <sup>**new**</sup>](#observable)  
+* [Observable](#observable)  
 * [TimeSpan extensions](#timespan)
 * [Resources Defaults](#resources-defaults)
 * [KDoc](#kdoc)
@@ -47,7 +49,7 @@
 | :---                        |         :---:         |      :---:        |
 | Documentation               |        [API][12]      |     [API][22]     |
 | Module                      |        `yfiles`       | `vsdx-export-for-yfiles-for-html` |
-| Version                     |         `23.0.2`      |      `1.2.0`      |
+| Version                     |         `23.0.2`      |      `1.3.0`      |
 | Module format               |         `ES6`         |       `ES6`       |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
 | Nullability fixes           |         3200+         |         -         |

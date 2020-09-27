@@ -34,10 +34,8 @@ internal data class TemplateBinding(
     override val converter: String?,
     override val parameter: String?
 ) : Binding() {
-    val property: IContextProperty = findContextProperty(name)
-
     override val parentName: String = "context"
-    override val parentReference: String = property.className
+    override val parentReference: String = ContextProperty.findParentClass(name)
 }
 
 internal fun String.toBinding(): Binding? {
@@ -47,7 +45,7 @@ internal fun String.toBinding(): Binding? {
 
     val dataMap = mutableMapOf<BindingDirective, String?>()
     for (block in blocks) {
-        val (directive, value) = BindingParser.parse(block) ?: return null
+        val (directive, value) = BindingParser.find(block) ?: continue
 
         if (dataMap.containsKey(directive)) return null
 

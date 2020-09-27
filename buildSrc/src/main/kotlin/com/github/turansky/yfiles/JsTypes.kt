@@ -13,5 +13,7 @@ val JS_DOUBLE = DOUBLE
 
 const val JS_CLASS = "JsClass"
 
+const val JS_BLOB = "Blob"
+
 const val JS_SVG_ELEMENT = "SVGElement"
 const val JS_SVG_SVG_ELEMENT = "SVGSVGElement"

@@ -45,6 +45,8 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.styles.VoidPortStyle",
 
     "yfiles.view.GraphComponent",
+    "yfiles.view.IRenderContext",
+    VISUAL,
 
     "yfiles.view.Color",
     "yfiles.view.Fill",
@@ -70,7 +72,8 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[Promise<$JS_VOID>,undefined]" to "Promise<$JS_VOID>",
     "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
     "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
-    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>"
+    "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>",
+    "Promise<${VISUAL.substringAfterLast(".")}>" to "Promise<$VISUAL>"
 )
 
 private val COLLECTION_INTERFACES = setOf(
@@ -100,7 +103,7 @@ private fun fixOptionsParameter(source: VsdxSource) {
         .optFlatMap(PARAMETERS)
         .filter { it[NAME].endsWith("OrOptions") }
         .onEach { it[NAME] = it[NAME].removeSuffix("OrOptions") }
-        .forEach { it[TYPE] = it[TYPE].between(":", ",", true) }
+        .forEach { it[TYPE] = it[TYPE].between("[", ",", true) }
 }
 
 private fun String.fixVsdxPackage(): String =
@@ -271,8 +274,19 @@ private fun fixMethodModifier(source: VsdxSource) {
         .forEach { it[MODIFIERS].put(ABSTRACT) }
 }
 
-private val YFILES_API_REGEX = Regex("<a href=\"https://docs.yworks.com/yfileshtml/#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
-private val VSDX_API_REGEX = Regex("<a href=\"#/api/([a-zA-Z]+)\">([a-zA-Z]+)</a>")
+private val YFILES_API_REGEX = Regex("""<api-link data-type="([a-zA-Z.]+)"\s*></api-link>""")
+private val P_START_REGEX = Regex("""<p>\r\n\s{3,}""")
+private val PRE_REGEX = Regex("""<pre>([\s\S]+?)</pre>""")
+
+private val STANDARD_TYPE_MAP = sequenceOf(
+    "Window",
+    "Styles",
+    "Promise",
+
+    "addExportFinishedListener",
+    "SvgSupport.applySvg"
+).associateBy { it }
+    .plus(JS_BLOB to BLOB)
 
 private fun JSONObject.fixSummary() {
     if (!has(SUMMARY)) {
@@ -281,10 +295,24 @@ private fun JSONObject.fixSummary() {
 
     val summary = get(SUMMARY)
         .replace(YFILES_API_REGEX) {
-            val type = YFILES_TYPE_MAP.getValue(it.groupValues.get(1))
+            val dataType = it.groupValues[1]
+            val type = when {
+                dataType.startsWith("vsdx.")
+                -> dataType.removePrefix("vsdx.")
+
+                else -> YFILES_TYPE_MAP[dataType] ?: STANDARD_TYPE_MAP.getValue(dataType)
+            }
+
             "[$type]"
         }
-        .replace(VSDX_API_REGEX, "[$1]")
+        .replace(PRE_REGEX) {
+            val code = it.groupValues[1]
+                .replace("\r\n", "\n")
+
+            "\n```$code```\n\n"
+        }
+        .replace(P_START_REGEX, "\n")
+        .replace("<br>\r\n", "\n")
         .replace("\r\n", " ")
         .replace("\r", " ")
         .replace("</p>", "")
