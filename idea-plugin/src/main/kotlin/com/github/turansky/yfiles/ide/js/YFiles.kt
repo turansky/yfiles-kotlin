@@ -3,12 +3,17 @@ package com.github.turansky.yfiles.ide.js
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
+private val YFILES_PACKAGE_ID = Name.identifier("yfiles")
 private val YOBJECT = FqName("yfiles.lang.YObject")
 private val YENUM = FqName("yfiles.lang.YEnum")
+
+internal val ClassDescriptor.locatedInYFilesPackage: Boolean
+    get() = fqNameSafe.startsWith(YFILES_PACKAGE_ID)
 
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT

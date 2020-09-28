@@ -2,12 +2,12 @@ package com.github.turansky.yfiles.ide.inspections
 
 import com.github.turansky.yfiles.ide.js.isYEnum
 import com.github.turansky.yfiles.ide.js.isYFilesInterface
+import com.github.turansky.yfiles.ide.js.locatedInYFilesPackage
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
-import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
-import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.NESTED_CLASS_IN_EXTERNAL_INTERFACE
+import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
@@ -27,6 +27,8 @@ private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
     UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
     */
 )
+
+private const val EXTERNAL_PRIVATE_CONSTRUCTOR = "private member of class"
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
@@ -57,6 +59,11 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             -> factory === EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
                     && diagnostic.reifiedType.isYFilesInterface()
 
+            is KtConstructor<*>
+            -> factory === WRONG_EXTERNAL_DECLARATION
+                    && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
+                    && psiElement.isYFilesConstructor(bindingContext)
+
             is KtObjectDeclaration
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
@@ -66,11 +73,15 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
     }
 }
 
-// HACK: for verification
-@Suppress("UsePropertyAccessSyntax")
 private val Diagnostic.reifiedType: KotlinType?
     get() = when (this) {
-        is DiagnosticWithParameters1<*, *> -> getA() as? KotlinType
+        is DiagnosticWithParameters1<*, *> -> a as? KotlinType
+        else -> null
+    }
+
+private val Diagnostic.messageParameter: String?
+    get() = when (this) {
+        is DiagnosticWithParameters1<*, *> -> a as? String
         else -> null
     }
 
@@ -87,6 +98,13 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
         ?: return false
 
     return descriptor.isYFilesInterface()
+}
+
+private fun KtConstructor<*>.isYFilesConstructor(
+    context: BindingContext
+): Boolean {
+    val descriptor = context[BindingContext.CLASS, parent] ?: return false
+    return descriptor.locatedInYFilesPackage
 }
 
 private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
