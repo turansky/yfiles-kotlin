@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.compiler.diagnostic
 
 import com.github.turansky.yfiles.compiler.backend.common.isYEnum
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
+import com.github.turansky.yfiles.compiler.backend.common.locatedInYFilesPackage
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
@@ -26,6 +27,8 @@ private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
     UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
     */
 )
+
+private const val EXTERNAL_PRIVATE_CONSTRUCTOR = "private member of class"
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
@@ -58,7 +61,8 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
 
             is KtConstructor<*>
             -> factory === WRONG_EXTERNAL_DECLARATION
-                    && diagnostic.messageParameter == "private member of class"
+                    && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
+                    && psiElement.isYFilesConstructor(bindingContext)
 
             is KtObjectDeclaration
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
@@ -94,6 +98,13 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
         ?: return false
 
     return descriptor.isYFilesInterface()
+}
+
+private fun KtConstructor<*>.isYFilesConstructor(
+    context: BindingContext
+): Boolean {
+    val descriptor = context[BindingContext.CLASS, parent] ?: return false
+    return descriptor.locatedInYFilesPackage
 }
 
 private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
