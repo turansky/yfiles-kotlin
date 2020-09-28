@@ -9,7 +9,8 @@ internal fun generateIncrementalHint(context: GeneratorContext) {
     // language=kotlin
     context[INCREMENTAL_HINT] = """
             @JsName("Object")
-            sealed external class IncrementalHint
+            external class IncrementalHint
+            private constructor()
         """.trimIndent()
 }
 

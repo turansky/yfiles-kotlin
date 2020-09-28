@@ -14,7 +14,8 @@ internal fun generateCreationPropertyUtils(context: GeneratorContext) {
     // language=kotlin
     context[CREATION_PROPERTY_KEY, INLINE] = """
             @JsName("String")
-            sealed external class CreationPropertyKey<T : Any> 
+            external class CreationPropertyKey<T : Any>
+            private constructor() 
             
             inline fun <T : Any> CreationPropertyKey(source: String): CreationPropertyKey<T> =
                 source.unsafeCast<CreationPropertyKey<T>>()

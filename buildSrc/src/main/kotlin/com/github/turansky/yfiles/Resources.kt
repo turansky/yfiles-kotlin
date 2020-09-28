@@ -26,7 +26,8 @@ internal fun generateResourceTypes(
     // language=kotlin
     context["yfiles.lang.Hotkey", INLINE] = """
         @JsName("String")
-        sealed external class Hotkey
+        external class Hotkey
+        private constructor()
         
         inline fun Hotkey(source:String):Hotkey = 
             source.unsafeCast<Hotkey>()
@@ -35,7 +36,8 @@ internal fun generateResourceTypes(
     // language=kotlin
     context["yfiles.lang.ResourceKey", INLINE] = """
         @JsName("String")
-        sealed external class ResourceKey<T:Any>
+        external class ResourceKey<T:Any>
+        private constructor()
         
         inline fun <T:Any> ResourceKey(source:String):ResourceKey<T> = 
             source.unsafeCast<ResourceKey<T>>()
@@ -48,7 +50,8 @@ internal fun generateResourceTypes(
     // language=kotlin
     context["yfiles.lang.ResourceMap"] = """
             @JsName("Object")
-            sealed external class ResourceMap
+            external class ResourceMap
+            private constructor()
             
             inline fun ResourceMap(block: (ResourceMap) -> Unit):ResourceMap { 
                 val map: ResourceMap = js("({})")

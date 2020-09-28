@@ -16,16 +16,19 @@ internal fun generateMementoUtils(context: GeneratorContext) {
     // language=kotlin
     context[HIERARCHIC_MEMENTOS] = """
             @JsName("Object")
-            sealed external class LayerConstraintsMemento 
+            external class LayerConstraintsMemento
+            private constructor() 
             
             @JsName("Object")
-            sealed external class SequenceConstraintsMemento 
+            external class SequenceConstraintsMemento
+            private constructor() 
         """.trimIndent()
 
     // language=kotlin
     context[TREE_MEMENTOS] = """
             @JsName("Object")
-            sealed external class CompactStrategyMemento 
+            external class CompactStrategyMemento
+            private constructor() 
         """.trimIndent()
 }
 

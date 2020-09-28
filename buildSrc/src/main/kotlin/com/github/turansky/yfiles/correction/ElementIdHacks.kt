@@ -10,7 +10,8 @@ internal fun generateElementIdUtils(context: GeneratorContext) {
     // language=kotlin
     context[ELEMENT_ID, INLINE] = """
             @JsName("String")
-            sealed external class ElementId 
+            external class ElementId
+            private constructor() 
             
             inline fun ElementId(source:String):ElementId = 
                 source.unsafeCast<ElementId>()
