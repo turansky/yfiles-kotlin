@@ -15,6 +15,7 @@ internal const val SEALED = "sealed"
 internal const val ABSTRACT = "abstract"
 internal const val INTERNAL = "internal"
 internal const val PROTECTED = "protected"
+internal const val PRIVATE = "private"
 
 internal const val ARTIFICIAL = "artificial"
 internal const val VARARGS = "varargs"
@@ -89,20 +90,20 @@ internal class EnumModifiers(modifiers: List<String>) : Modifiers(modifiers, ENU
 internal enum class ConstructorVisibility {
     PUBLIC,
     PROTECTED,
-    INTERNAL
+    PRIVATE
 }
 
 private val CONSTRUCTOR_MODIFIERS = setOf(
-    INTERNAL,
     PROTECTED,
+    PRIVATE,
 
     PUBLIC
 )
 
 internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifiers, CONSTRUCTOR_MODIFIERS) {
     val visibility: ConstructorVisibility = when {
-        has(INTERNAL) -> ConstructorVisibility.INTERNAL
         has(PROTECTED) -> ConstructorVisibility.PROTECTED
+        has(PRIVATE) -> ConstructorVisibility.PRIVATE
         else -> ConstructorVisibility.PUBLIC
     }
 }

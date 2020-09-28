@@ -444,7 +444,7 @@ internal class Constructor(
         val declaration: String = when (modifiers.visibility) {
             ConstructorVisibility.PUBLIC -> ""
             ConstructorVisibility.PROTECTED -> "\nprotected constructor"
-            ConstructorVisibility.INTERNAL -> "\ninternal constructor"
+            ConstructorVisibility.PRIVATE -> "\nprivate constructor"
         }
 
         return "$declaration (${kotlinParametersString()})"
