@@ -6,13 +6,17 @@ import org.jetbrains.kotlin.name.Name.identifier
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 
-internal val YFILES_PACKAGE = FqName("yfiles")
+private val YFILES_PACKAGE_ID = identifier("yfiles")
+private val YFILES_PACKAGE = FqName(YFILES_PACKAGE_ID.identifier)
 internal val LANG_PACKAGE = YFILES_PACKAGE.child(identifier("lang"))
 internal val YOBJECT = LANG_PACKAGE.child(identifier("YObject"))
 internal val YENUM = LANG_PACKAGE.child(identifier("YEnum"))
 
 internal val YCLASS_NAME = identifier("YClass")
 internal val BASE_CLASS_NAME = identifier("BaseClass")
+
+internal val ClassDescriptor.locatedInYFilesPackage: Boolean
+    get() = fqNameSafe.startsWith(YFILES_PACKAGE_ID)
 
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT

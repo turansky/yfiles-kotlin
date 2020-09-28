@@ -9,7 +9,8 @@ internal fun generateConvertersUtils(context: GeneratorContext) {
     context[CONVERTERS] =
         """
             @JsName("Object")
-            sealed external class Converters
+            external class Converters
+            private constructor()
             
             inline operator fun Converters.invoke(
                 block: Converters.() -> Unit

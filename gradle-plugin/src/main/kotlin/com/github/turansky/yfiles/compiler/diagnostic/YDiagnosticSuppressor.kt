@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.compiler.diagnostic
 
 import com.github.turansky.yfiles.compiler.backend.common.isYEnum
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
+import com.github.turansky.yfiles.compiler.backend.common.locatedInYFilesPackage
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
@@ -21,6 +22,8 @@ private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
 private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
     UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
 )
+
+private const val EXTERNAL_PRIVATE_CONSTRUCTOR = "private member of class"
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
@@ -51,6 +54,11 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             -> factory === EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
                     && diagnostic.reifiedType.isYFilesInterface()
 
+            is KtConstructor<*>
+            -> factory === WRONG_EXTERNAL_DECLARATION
+                    && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
+                    && psiElement.isYFilesConstructor(bindingContext)
+
             is KtObjectDeclaration
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
@@ -63,6 +71,12 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
 private val Diagnostic.reifiedType: KotlinType?
     get() = when (this) {
         is DiagnosticWithParameters1<*, *> -> a as? KotlinType
+        else -> null
+    }
+
+private val Diagnostic.messageParameter: String?
+    get() = when (this) {
+        is DiagnosticWithParameters1<*, *> -> a as? String
         else -> null
     }
 
@@ -79,6 +93,13 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
         ?: return false
 
     return descriptor.isYFilesInterface()
+}
+
+private fun KtConstructor<*>.isYFilesConstructor(
+    context: BindingContext
+): Boolean {
+    val descriptor = context[BindingContext.CLASS, parent] ?: return false
+    return descriptor.locatedInYFilesPackage
 }
 
 private fun KtObjectDeclaration.isYFilesInterfaceCompanion(

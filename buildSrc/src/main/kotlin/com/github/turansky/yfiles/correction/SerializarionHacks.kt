@@ -11,7 +11,8 @@ internal fun generateSerializationUtils(context: GeneratorContext) {
     // language=kotlin
     context[SERIALIZATION_PROPERTY_KEY] = """
             @JsName("String")
-            sealed external class SerializationPropertyKey<T : Any> 
+            external class SerializationPropertyKey<T : Any>
+            private constructor() 
         """.trimIndent()
 }
 
