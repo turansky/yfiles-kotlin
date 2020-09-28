@@ -397,10 +397,11 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        |sealed external class $name: $YFLAGS<$name> {
-                        |   companion object {
-                        |   ${members.lines { it.toCode() }}
-                        |   }
+                        |external class $name 
+                        |    private constructor(): $YFLAGS<$name> {
+                        |    companion object {
+                        |    ${members.lines { it.toCode() }}
+                        |    }
                         |}
                     """.trimMargin()
         }
