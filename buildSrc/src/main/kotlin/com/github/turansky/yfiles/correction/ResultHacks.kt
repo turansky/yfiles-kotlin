@@ -11,7 +11,6 @@ internal fun applyResultHacks(source: Source) {
     source.types()
         .filter { it[GROUP] == "class" }
         .filter { FINAL in it[MODIFIERS] }
-        .filter { it[NAME].endsWith("Result") }
         .filterNot { it.has(EXTENDS) }
         .filterNot { it.has(CONSTRUCTORS) }
         .filter { it.has(PROPERTIES) }
