@@ -1,3 +1,4 @@
+import yfiles.algorithms.nodeDpKey
 import yfiles.input.IHitTestable
 import yfiles.styles.IArrow
 import yfiles.view.GraphComponent
@@ -10,14 +11,12 @@ fun createComponent(): GraphComponent =
         graph = createGraph()
     }
 
-/* Check after Kotlin update
 @JsExport
 @ExperimentalJsExport
-val STRING_DATA_KEY by nodeDpKey<String>()
+object Keys {
+    val STRING_DATA_KEY by nodeDpKey<String>()
 
-@JsExport
-@ExperimentalJsExport
-val INT_DATA_KEY by nodeDpKey<Int>()
-*/
+    val INT_DATA_KEY by nodeDpKey<Int>()
+}
 
 abstract class AbstractArrow : IArrow, IVisualCreator, IHitTestable
