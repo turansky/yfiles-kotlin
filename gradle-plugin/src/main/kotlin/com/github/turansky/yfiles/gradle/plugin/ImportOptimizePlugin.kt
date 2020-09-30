@@ -33,6 +33,7 @@ private fun createImportFile(outputDir: File) {
         .flatMap { Y_IMPORT.findAll(it) + Y_INLINE_IMPORT.findAll(it) }
         .map { it.groupValues[1] }
         .distinct()
+        .sorted()
         .toList()
         .ifEmpty { return }
 
