@@ -732,7 +732,7 @@ internal class Method(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    private fun kotlinModificator(): String {
+    private fun kotlinModifier(): String {
         if (isExtension) {
             require(!protected)
             require(!abstract)
@@ -801,8 +801,10 @@ internal class Method(
         val methodName = if (staticCreate) "invoke" else name
         val annotation = if (staticCreate) "@JsName(\"$name\")\n" else ""
 
-        val returnSignature = getReturnSignature(!static && !abstract && parent is Interface)
-        var code = "$annotation${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
+        val definedExternally = !static && !abstract && parent is Interface
+        val returnSignature = getReturnSignature(definedExternally)
+        val modifier = kotlinModifier() + exp(definedExternally, " final")
+        var code = "$annotation $modifier $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code
