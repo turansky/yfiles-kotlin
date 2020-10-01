@@ -322,7 +322,7 @@ internal class KotlinFileGenerator(
 
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
             return memberProperties.filter { !it.extension } +
-                    memberFunctions.filter { it.abstract } +
+                    memberFunctions +
                     memberEvents
         }
 
@@ -345,7 +345,6 @@ internal class KotlinFileGenerator(
         }
 
         private val defaultDeclarations = memberProperties.filter { it.extension } +
-                memberFunctions.filter { !it.abstract } +
                 memberExtensionFunctions +
                 memberEvents.filter { !it.overriden }
 

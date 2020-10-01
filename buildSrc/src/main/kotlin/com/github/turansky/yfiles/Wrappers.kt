@@ -774,8 +774,9 @@ internal class Method(
         }
 
     // https://youtrack.jetbrains.com/issue/KT-31249
-    private fun getReturnSignature(): String {
-        var type = returns?.type ?: return ""
+    private fun getReturnSignature(definedExternally: Boolean = false): String {
+        var type = returns?.type
+            ?: return exp(definedExternally, ":$UNIT = definedExternally")
 
         if (type.startsWith("$PROMISE<")) {
             val newGeneric = when (val generic = type.between("<", ">")) {
@@ -786,7 +787,7 @@ internal class Method(
             type = "$PROMISE<$newGeneric>"
         }
 
-        return ":" + type + modifiers.nullability
+        return ":" + type + modifiers.nullability + exp(definedExternally, " = definedExternally")
     }
 
     private fun isOperatorMode(): Boolean =
@@ -800,7 +801,8 @@ internal class Method(
         val methodName = if (staticCreate) "invoke" else name
         val annotation = if (staticCreate) "@JsName(\"$name\")\n" else ""
 
-        var code = "$annotation${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
+        val returnSignature = getReturnSignature(!static && !abstract && parent is Interface)
+        var code = "$annotation${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code

@@ -1,6 +1,5 @@
 import org.w3c.dom.HTMLDivElement
 import yfiles.graph.DefaultGraph
-import yfiles.graph.applyLayout
 import yfiles.graph.decorator
 import yfiles.graph.invoke
 import yfiles.hierarchic.HierarchicLayout
