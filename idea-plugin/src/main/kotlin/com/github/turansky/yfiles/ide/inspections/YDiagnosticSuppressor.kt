@@ -64,6 +64,10 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
                     && psiElement.isYFilesConstructor(bindingContext)
 
+            is KtProperty
+            -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
+                    && psiElement.isYFilesInterfaceMember(bindingContext)
+
             is KtNamedFunction
             -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceMember(bindingContext)
@@ -71,7 +75,7 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             is LeafPsiElement
             -> factory === Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
                     && diagnostic.keywordToken == "final"
-                    && psiElement.parentFunction?.isYFilesInterfaceMember(bindingContext) ?: false
+                    && psiElement.parentDeclaration?.isYFilesInterfaceMember(bindingContext) ?: false
 
             is KtObjectDeclaration
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
@@ -100,8 +104,12 @@ private val Diagnostic.keywordToken: String?
         else -> null
     }
 
-private val LeafPsiElement.parentFunction: KtNamedFunction?
-    get() = parent?.parent as? KtNamedFunction
+private val LeafPsiElement.parentDeclaration: KtCallableDeclaration?
+    get() = when (val declaration = parent?.parent) {
+        is KtProperty -> declaration
+        is KtNamedFunction -> declaration
+        else -> null
+    }
 
 private fun KtTypeReference?.isYFilesInterface(
     context: BindingContext
@@ -125,7 +133,7 @@ private fun KtConstructor<*>.isYFilesConstructor(
     return descriptor.locatedInYFilesPackage
 }
 
-private fun KtNamedFunction.isYFilesInterfaceMember(
+private fun KtCallableDeclaration.isYFilesInterfaceMember(
     context: BindingContext
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent?.parent] ?: return false
