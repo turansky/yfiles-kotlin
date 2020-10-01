@@ -15,4 +15,17 @@ class ConfigurablePropertyTest {
             getOwnPropertyDescriptor(jsClassPrototype, "length").configurable
         }
     }
+
+    @Test
+    fun arrowDelegateProperties() {
+        val jsClassPrototype: Any = ArrowDelegate::class.js.asDynamic().prototype
+
+        assertTrue {
+            getOwnPropertyDescriptor(jsClassPrototype, "cropLength").configurable
+        }
+
+        assertTrue {
+            getOwnPropertyDescriptor(jsClassPrototype, "length").configurable
+        }
+    }
 }
