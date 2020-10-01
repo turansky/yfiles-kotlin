@@ -2,6 +2,8 @@ package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.ContentMode.*
 
+private const val SUPPRESS_TYPE_VARIANCE_CONFLICT = "@Suppress(\"TYPE_VARIANCE_CONFLICT\", \"TYPE_VARIANCE_CONFLICT_IN_EXPANDED_TYPE\")\n"
+
 private val ENUM_COMPANION_MAP = mapOf(
     "BipartitionAlgorithm" to "BipartitionMark",
     "DfsAlgorithm" to "DfsState"
@@ -335,6 +337,7 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
+                    exp(data.fqn == IENUMERABLE, SUPPRESS_TYPE_VARIANCE_CONFLICT) +
                     "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
