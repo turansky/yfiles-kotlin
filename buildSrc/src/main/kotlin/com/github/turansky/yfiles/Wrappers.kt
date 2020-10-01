@@ -559,6 +559,8 @@ internal class Property(
     override fun toCode(): String {
         var str = ""
 
+        val definedExternally = parent is Interface && !abstract
+
         if (overridden) {
             str += exp(final, "final ") + "override "
         } else {
@@ -567,6 +569,7 @@ internal class Property(
             }
 
             str += when {
+                definedExternally -> "final "
                 abstract -> "abstract "
                 final -> "final "
                 open -> "open "
@@ -589,7 +592,7 @@ internal class Property(
             str = DEPRECATED_ANNOTATION + "\n" + str
         }
 
-        if (parent is Interface && !abstract) {
+        if (definedExternally) {
             str += "\nget() = definedExternally"
             if (mode.writable) {
                 str += "\nset(value) = definedExternally"
