@@ -81,13 +81,11 @@ internal class KotlinFileGenerator(
                     .toList()
             }
 
-        protected open fun isExtension(property: Property): Boolean = false
-
         protected val memberProperties: List<Property>
-            get() = declaration.memberProperties.filter { !isExtension(it) }
+            get() = declaration.memberProperties.filter { !it.generated }
 
         protected val memberExtensionProperties: List<Property>
-            get() = declaration.memberProperties.filter { isExtension(it) }
+            get() = declaration.memberProperties.filter { it.generated }
 
         protected val memberFunctions: List<Method>
             get() = declaration.memberMethods
@@ -181,9 +179,6 @@ internal class KotlinFileGenerator(
 
         override val hasConstants: Boolean =
             enumCompanionName == null && !declaration.enumLike
-
-        override fun isExtension(property: Property): Boolean =
-            property.generated
 
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
@@ -317,11 +312,8 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
-        private val Property.extension: Boolean
-            get() = !abstract && !nullable
-
         override fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties.filter { !it.extension } +
+            return memberProperties +
                     memberFunctions +
                     memberEvents
         }
@@ -344,7 +336,7 @@ internal class KotlinFileGenerator(
                     "}"
         }
 
-        private val defaultDeclarations = memberProperties.filter { it.extension } +
+        private val defaultDeclarations = memberExtensionProperties +
                 memberExtensionFunctions +
                 memberEvents.filter { !it.overriden }
 

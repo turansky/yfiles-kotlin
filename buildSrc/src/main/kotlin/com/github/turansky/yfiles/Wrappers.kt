@@ -530,7 +530,6 @@ internal class Property(
     val abstract = modifiers.abstract
     private val final = modifiers.final
     private val open = !static && !final
-    val nullable = modifiers.canbenull
     val generated = modifiers.generated
 
     private val preconditions: List<String> by stringList(::summary)
@@ -592,6 +591,9 @@ internal class Property(
 
         if (parent is Interface && !abstract) {
             str += "\nget() = definedExternally"
+            if (mode.writable) {
+                str += "\nset(value) = definedExternally"
+            }
         }
 
         return "$documentation$str"
