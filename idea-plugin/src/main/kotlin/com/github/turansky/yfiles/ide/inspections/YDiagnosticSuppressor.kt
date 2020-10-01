@@ -3,11 +3,11 @@ package com.github.turansky.yfiles.ide.inspections
 import com.github.turansky.yfiles.ide.js.isYEnum
 import com.github.turansky.yfiles.ide.js.isYFilesInterface
 import com.github.turansky.yfiles.ide.js.locatedInYFilesPackage
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.diagnostics.Diagnostic
-import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
-import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
+import org.jetbrains.kotlin.diagnostics.*
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
+import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
@@ -64,6 +64,15 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
                     && psiElement.isYFilesConstructor(bindingContext)
 
+            is KtNamedFunction
+            -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
+                    && psiElement.isYFilesInterfaceMember(bindingContext)
+
+            is LeafPsiElement
+            -> factory === Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
+                    && diagnostic.keywordToken == "final"
+                    && psiElement.parentFunction?.isYFilesInterfaceMember(bindingContext) ?: false
+
             is KtObjectDeclaration
             -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
@@ -85,6 +94,15 @@ private val Diagnostic.messageParameter: String?
         else -> null
     }
 
+private val Diagnostic.keywordToken: String?
+    get() = when (this) {
+        is DiagnosticWithParameters2<*, *, *> -> (a as? KtModifierKeywordToken)?.value
+        else -> null
+    }
+
+private val LeafPsiElement.parentFunction: KtNamedFunction?
+    get() = parent?.parent as? KtNamedFunction
+
 private fun KtTypeReference?.isYFilesInterface(
     context: BindingContext
 ): Boolean =
@@ -105,6 +123,13 @@ private fun KtConstructor<*>.isYFilesConstructor(
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent] ?: return false
     return descriptor.locatedInYFilesPackage
+}
+
+private fun KtNamedFunction.isYFilesInterfaceMember(
+    context: BindingContext
+): Boolean {
+    val descriptor = context[BindingContext.CLASS, parent?.parent] ?: return false
+    return descriptor.isYFilesInterface()
 }
 
 private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
