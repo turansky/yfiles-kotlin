@@ -603,24 +603,13 @@ internal class Property(
     }
 
     override fun toExtensionCode(): String {
+        require(generated)
         require(!protected)
-        require(mode.readable)
+        require(mode == PropertyMode.READ_ONLY)
 
         val generics = parent.generics.declaration
-
-        val body = if (!generated) {
-            "$AS_DYNAMIC.$name"
-        } else {
-            require(!mode.writable)
-            this.body
-        }
-
-        var str = "inline " + if (mode.writable) "var " else "val "
-        str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
+        val str = "inline val $generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $body"
-        if (mode.writable) {
-            str += "\n    set(value) { $body = value }"
-        }
 
         return "$documentation$str"
     }
