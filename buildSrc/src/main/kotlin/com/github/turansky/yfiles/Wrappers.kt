@@ -880,27 +880,16 @@ internal class Method(
         }
 
         require(!protected)
+        requireNotNull(operatorName)
 
         val extParameters = kotlinParametersString(extensionMode = true)
-        val callParameters = parameters
-            .byComma { it.name }
-
         val returnSignature = getReturnSignature()
-
         val genericDeclaration = (parent.generics + generics).declaration
         val returnOperator = exp(returns != null, "return ")
+        val methodCall = "$name(${parameters.byComma { it.name }})"
 
-        val methodCall = if (parameters.none { it.modifiers.vararg }) {
-            "$name($callParameters)"
-        } else {
-            require(parameters.size == 1)
-            "$name.apply(this, $callParameters)"
-        }
-
-        val extensionName = operatorName ?: name
-        val operator = exp(operatorName != null || isOperatorMode(), "operator")
         return documentation +
-                "inline $operator fun $genericDeclaration ${parent.classDeclaration}.$extensionName($extParameters)$returnSignature {\n" +
+                "inline operator fun $genericDeclaration ${parent.classDeclaration}.$operatorName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
     }
