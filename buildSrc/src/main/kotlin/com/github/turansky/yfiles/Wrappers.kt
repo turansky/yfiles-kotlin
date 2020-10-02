@@ -678,11 +678,9 @@ private val FACTORY_METHODS = setOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: Type
-) : MethodBase(source, parent) {
-    // TODO: Move to constructor in Kotlin 1.4
+    private val parent: Type,
     private var operatorName: String? = null
-
+) : MethodBase(source, parent) {
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
     val static = modifiers.static
