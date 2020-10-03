@@ -137,9 +137,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     protected val methods: List<Method> by declarationList(::Method)
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
-    val extensionMethods: List<Method> by lazy {
-        memberMethods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
-    }
+    val extensionMethods: List<Method> by lazy { staticMethods.mapNotNull { it.toStaticOperatorExtension() } }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -623,8 +621,6 @@ private val OPERATOR_MAP = mapOf(
 )
 
 private val OPERATOR_NAME_MAP = mapOf(
-    "elementAt" to "get",
-
     "combineWith" to "plus",
 
     "add" to "plus",
@@ -634,9 +630,7 @@ private val OPERATOR_NAME_MAP = mapOf(
     "getReduced" to "minus",
 
     "multiply" to "times",
-    "divide" to "div",
-
-    "includes" to "contains"
+    "divide" to "div"
 )
 
 private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
@@ -788,12 +782,18 @@ internal class Method(
 
     override fun toCode(): String {
         val staticCreate = static && name in FACTORY_METHODS && parent.name != "List"
-        val operator = exp(staticCreate || isOperatorMode(), "operator")
+        val additionalOperator = operatorName != null
+        val operator = exp(staticCreate || additionalOperator || isOperatorMode(), "operator")
 
-        val methodName = if (staticCreate) "invoke" else name
-        val annotation = if (staticCreate) "@JsName(\"$name\")\n" else ""
+        val methodName = if (staticCreate) "invoke" else operatorName ?: name
+        val annotation = if (staticCreate || additionalOperator) "@JsName(\"$name\")\n" else ""
 
-        val definedExternally = !static && !abstract && parent is Interface
+        val definedExternally = if (additionalOperator) {
+            parent is Interface
+        } else {
+            !static && !abstract && parent is Interface
+        }
+
         val returnSignature = getReturnSignature(definedExternally)
         val modifier = kotlinModifier() + exp(definedExternally, " final")
         var code = "$annotation $modifier $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
@@ -804,7 +804,13 @@ internal class Method(
                 code = HIDDEN_METHOD_ANNOTATION + "\n" + code
         }
 
-        return documentation + code
+        val result = documentation + code
+
+        if (additionalOperator) return result
+        if (static) return result
+        val operatorExtension = toOperatorExtension() ?: return result
+
+        return "$result\n\n${operatorExtension.toCode()}"
     }
 
     fun toQiiCode(): String? {
