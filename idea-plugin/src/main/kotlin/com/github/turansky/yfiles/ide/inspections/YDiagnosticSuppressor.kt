@@ -5,7 +5,11 @@ import com.github.turansky.yfiles.ide.js.isYFilesInterface
 import com.github.turansky.yfiles.ide.js.locatedInYFilesPackage
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.diagnostics.*
+import org.jetbrains.kotlin.diagnostics.Diagnostic
+import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
+import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
+import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters2
+import org.jetbrains.kotlin.diagnostics.Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.psi.*
@@ -64,6 +68,10 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
                     && psiElement.isYFilesConstructor(bindingContext)
 
+            is KtParameter
+            -> factory === EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
+                    && psiElement.isYFilesConstructorParameter(bindingContext)
+
             is KtProperty
             -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceMember(bindingContext)
@@ -73,7 +81,7 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && psiElement.isYFilesInterfaceMember(bindingContext)
 
             is LeafPsiElement
-            -> factory === Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
+            -> factory === WRONG_MODIFIER_CONTAINING_DECLARATION
                     && diagnostic.keywordToken == "final"
                     && psiElement.parentDeclaration?.isYFilesInterfaceMember(bindingContext) ?: false
 
@@ -131,6 +139,13 @@ private fun KtConstructor<*>.isYFilesConstructor(
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent] ?: return false
     return descriptor.locatedInYFilesPackage
+}
+
+private fun KtParameter.isYFilesConstructorParameter(
+    context: BindingContext
+): Boolean {
+    val constructor = parent?.parent as? KtConstructor<*> ?: return false
+    return constructor.isYFilesConstructor(context)
 }
 
 private fun KtCallableDeclaration.isYFilesInterfaceMember(
