@@ -16,9 +16,12 @@ internal fun generateEdgeDirectednessUtils(context: GeneratorContext) {
             value.unsafeCast<$EDGE_DIRECTEDNESS>()
         
         object EdgeDirectednesses {
-            val SOURCE_TO_TARGET: $EDGE_DIRECTEDNESS = EdgeDirectedness(1.0)
-            val TARGET_TO_SOURCE: $EDGE_DIRECTEDNESS = EdgeDirectedness(-1.0)
-            val UNDIRECTED: $EDGE_DIRECTEDNESS = EdgeDirectedness(0.0)
+            inline val SOURCE_TO_TARGET: $EDGE_DIRECTEDNESS
+                get() = EdgeDirectedness(1.0)
+            inline val TARGET_TO_SOURCE: $EDGE_DIRECTEDNESS
+                get() = EdgeDirectedness(-1.0)
+            inline val UNDIRECTED: $EDGE_DIRECTEDNESS
+                get() = EdgeDirectedness(0.0)
         }
     """.trimIndent()
 }
