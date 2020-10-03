@@ -433,8 +433,7 @@ internal class Constructor(
     }
 
     fun hasPropertyParameter(parameterName: String): Boolean =
-        parameterName.isEmpty()
-    // propertyParameterMap?.containsKey(parameterName) ?: false
+        propertyParameterMap?.containsKey(parameterName) ?: false
 
     fun isDefault(): Boolean {
         return parameters.all { it.modifiers.optional }
@@ -472,7 +471,16 @@ internal class Constructor(
             ConstructorVisibility.PRIVATE -> "\nprivate constructor"
         }
 
-        return "$declaration (${kotlinParametersString()})"
+        val propertyMap = propertyParameterMap
+        val parametersString = if (propertyMap != null) {
+            parameters.byCommaLine {
+                propertyMap.getValue(it.name).toPrimaryCode(it.modifiers.optional)
+            }
+        } else {
+            kotlinParametersString()
+        }
+
+        return "$declaration ($parametersString)"
     }
 
     override fun toCode(): String {
@@ -592,7 +600,13 @@ internal class Property(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String {
+    override fun toCode(): String =
+        "$documentation${toSimpleCode()}"
+
+    fun toPrimaryCode(optionalParameter: Boolean): String =
+        toSimpleCode() + exp(optionalParameter, EQ_DE)
+
+    private fun toSimpleCode(): String {
         var str = ""
 
         val definedExternally = parent is Interface && !abstract
@@ -635,7 +649,7 @@ internal class Property(
             }
         }
 
-        return "$documentation$str"
+        return str
     }
 
     override fun toExtensionCode(): String {
