@@ -9,7 +9,8 @@ internal const val EDGE_DIRECTEDNESS = "yfiles.algorithms.EdgeDirectedness"
 internal fun generateEdgeDirectednessUtils(context: GeneratorContext) {
     context[EDGE_DIRECTEDNESS, INLINE] = """
         @JsName("Number")
-        sealed class EdgeDirectedness
+        external class EdgeDirectedness
+        private constructor()
         
         inline fun EdgeDirectedness(value: Double): $EDGE_DIRECTEDNESS = 
             value.unsafeCast<$EDGE_DIRECTEDNESS>()
