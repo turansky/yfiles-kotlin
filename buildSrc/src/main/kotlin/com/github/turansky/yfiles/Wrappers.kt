@@ -137,7 +137,10 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     protected val methods: List<Method> by declarationList(::Method)
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
-    val extensionMethods: List<Method> by lazy { staticMethods.mapNotNull { it.toStaticOperatorExtension() } }
+    val extensionMethods: List<Method> by lazy {
+        (if (id == IENUMERABLE) methods.mapNotNull { it.toOperatorExtension() } else emptyList()) +
+                staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+    }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
     final override val generics: Generics = Generics(typeparameters)
@@ -621,6 +624,8 @@ private val OPERATOR_MAP = mapOf(
 )
 
 private val OPERATOR_NAME_MAP = mapOf(
+    "elementAt" to "get",
+
     "combineWith" to "plus",
 
     "add" to "plus",
@@ -630,7 +635,9 @@ private val OPERATOR_NAME_MAP = mapOf(
     "getReduced" to "minus",
 
     "multiply" to "times",
-    "divide" to "div"
+    "divide" to "div",
+
+    "includes" to "contains"
 )
 
 private val ASSIGN_OPERATOR_NAME_MAP = mapOf(
@@ -808,6 +815,7 @@ internal class Method(
 
         if (additionalOperator) return result
         if (static) return result
+        if (parent.classId == IENUMERABLE) return result
         val operatorExtension = toOperatorExtension() ?: return result
 
         return "$result\n\n${operatorExtension.toCode()}"
