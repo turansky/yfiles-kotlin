@@ -425,6 +425,7 @@ internal class Constructor(
         parent.memberProperties
             .filter { it.name in parameterNames }
             .takeIf { it.size == parameterNames.size }
+            ?.sortedBy { parameterNames.indexOf(it.name) }
             ?.associateBy { it.name }
     }
 
@@ -449,7 +450,8 @@ internal class Constructor(
             preconditions = preconditions,
             parameters = parameters,
             seeAlso = seeAlso + seeAlsoDocs,
-            primaryConstructor = true
+            primaryConstructor = true,
+            properties = propertyParameterMap?.values?.toList()
         )
 
         return if (lines.isNotEmpty()) {
@@ -567,6 +569,17 @@ internal class Property(
 
     private val documentation: String
         get() = getDocumentation(
+            summary = summary,
+            remarks = remarks,
+            preconditions = preconditions,
+            defaultValue = defaultValue,
+            exceptions = throws.filterNot { it.isEmpty() },
+            seeAlso = seeAlso + seeAlsoDocs
+        )
+
+    fun toPrimaryDocumentation(): List<String> =
+        getDocumentationLines(
+            propertyName = name,
             summary = summary,
             remarks = remarks,
             preconditions = preconditions,
@@ -1233,9 +1246,15 @@ private fun getDocumentationLines(
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     seeAlso: List<SeeAlso>? = null,
-    primaryConstructor: Boolean = false
+    primaryConstructor: Boolean = false,
+    propertyName: String? = null,
+    properties: List<Property>? = null
 ): List<String> {
     val lines = mutableListOf<String>()
+    if (propertyName != null) {
+        lines.add(property(propertyName))
+    }
+
     if (summary != null) {
         if (primaryConstructor) {
             lines.add(constructor(summary))
@@ -1308,6 +1327,11 @@ private fun getDocumentationLines(
 
     if (primaryConstructor && summary == null && lines.isNotEmpty()) {
         lines.add(0, constructor())
+    }
+
+    properties?.forEach {
+        lines.add("")
+        lines.addAll(it.toPrimaryDocumentation())
     }
 
     return lines.toList()

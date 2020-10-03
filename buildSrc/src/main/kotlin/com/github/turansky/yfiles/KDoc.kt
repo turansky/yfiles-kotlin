@@ -28,6 +28,9 @@ fun constructor(): String =
 fun constructor(summary: String): String =
     "@constructor $summary"
 
+fun property(name: String): String =
+    "@property $name"
+
 fun param(name: String, summary: String): List<String> =
     "@param [$name] $summary"
         .asMultiline()
