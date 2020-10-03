@@ -895,7 +895,7 @@ internal class Method(
         require(!protected)
         requireNotNull(operatorName)
 
-        val extParameters = kotlinParametersString(extensionMode = true)
+        val extParameters = kotlinParametersString()
         val returnSignature = getReturnSignature()
         val genericDeclaration = (parent.generics + generics).declaration
         val returnOperator = exp(returns != null, "return ")
@@ -939,23 +939,12 @@ internal sealed class MethodBase(
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
 
-    protected fun kotlinParametersString(
-        extensionMode: Boolean = false
-    ): String {
-        return parameters
-            .byCommaLine {
-                val modifiers = exp(extensionMode && it.lambda, "noinline ") +
-                        exp(it.modifiers.vararg, "vararg ")
-
-                val body = if (it.modifiers.optional && !overridden) {
-                    if (extensionMode) EQ_NULL else EQ_DE
-                } else {
-                    ""
-                }
-
-                "$modifiers ${it.declaration}" + body
-            }
-    }
+    protected fun kotlinParametersString(): String =
+        parameters.byCommaLine {
+            val modifiers = exp(it.modifiers.vararg, "vararg ")
+            val body = exp(it.modifiers.optional && !overridden, EQ_DE)
+            "$modifiers ${it.declaration} $body"
+        }
 
     override fun compareTo(other: Declaration): Int {
         val result = super.compareTo(other)
@@ -979,7 +968,6 @@ internal class Parameter(
 ) : JsonWrapper(source), IParameter {
     override val name: String by string()
     private val signature: String? by optString()
-    val lambda: Boolean = signature != null
     val type: String by type { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
