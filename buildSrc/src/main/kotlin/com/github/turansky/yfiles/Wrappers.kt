@@ -413,6 +413,24 @@ internal class Constructor(
 
     override val overridden: Boolean = false
 
+    private val propertyParameterMap: Map<String, Property>? by lazy {
+        if (parent.secondaryConstructors.isNotEmpty())
+            return@lazy null
+
+        if (parameters.size < 2)
+            return@lazy null
+
+        val parameterNames = parameters.map { it.name }
+
+        parent.memberProperties
+            .filter { it.name in parameterNames }
+            .takeIf { it.size == parameterNames.size }
+            ?.associateBy { it.name }
+    }
+
+    fun hasPropertyParameter(parameterName: String): Boolean =
+        propertyParameterMap?.containsKey(parameterName) ?: false
+
     fun isDefault(): Boolean {
         return parameters.all { it.modifiers.optional }
     }
