@@ -68,6 +68,10 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
                     && psiElement.isYFilesConstructor(bindingContext)
 
+            is KtParameter
+            -> factory === EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
+                    && psiElement.isYFilesConstructorParameter(bindingContext)
+
             is KtProperty
             -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
                     && psiElement.isYFilesInterfaceMember(bindingContext)
@@ -135,6 +139,13 @@ private fun KtConstructor<*>.isYFilesConstructor(
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent] ?: return false
     return descriptor.locatedInYFilesPackage
+}
+
+private fun KtParameter.isYFilesConstructorParameter(
+    context: BindingContext
+): Boolean {
+    val constructor = parent as? KtConstructor<*> ?: return false
+    return constructor.isYFilesConstructor(context)
 }
 
 private fun KtCallableDeclaration.isYFilesInterfaceMember(
