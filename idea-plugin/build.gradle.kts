@@ -1,6 +1,3 @@
-group = "com.github.turansky.yfiles"
-version = "0.24.1-SNAPSHOT"
-
 plugins {
     kotlin("jvm") version "1.4.10"
     id("org.jetbrains.intellij") version "0.4.26"
