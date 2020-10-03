@@ -144,7 +144,7 @@ private fun KtConstructor<*>.isYFilesConstructor(
 private fun KtParameter.isYFilesConstructorParameter(
     context: BindingContext
 ): Boolean {
-    val constructor = parent as? KtConstructor<*> ?: return false
+    val constructor = parent?.parent as? KtConstructor<*> ?: return false
     return constructor.isYFilesConstructor(context)
 }
 
