@@ -82,10 +82,10 @@ internal class KotlinFileGenerator(
             }
 
         protected val memberProperties: List<Property>
-            get() = declaration.memberProperties.filter { !it.generated }
+            get() = declaration.memberProperties
 
         protected val memberExtensionProperties: List<Property>
-            get() = declaration.memberProperties.filter { it.generated }
+            get() = declaration.memberExtensionProperties
 
         protected val memberFunctions: List<Method>
             get() = declaration.memberMethods

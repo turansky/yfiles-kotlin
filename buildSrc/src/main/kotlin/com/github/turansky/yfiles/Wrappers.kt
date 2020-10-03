@@ -131,7 +131,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     abstract val constants: List<Constant>
 
     private val properties: List<Property> by declarationList(::Property)
-    val memberProperties: List<Property> = properties.filter { !it.static }
+    val memberProperties: List<Property> = properties.filter { !it.static && !it.generated }
+    val memberExtensionProperties: List<Property> = properties.filter { !it.static && it.generated }
     val staticProperties: List<Property> = properties.filter { it.static }
 
     protected val methods: List<Method> by declarationList(::Method)
