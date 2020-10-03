@@ -802,7 +802,7 @@ internal class Method(
         }
 
         val returnSignature = getReturnSignature(definedExternally)
-        val modifier = kotlinModifier() + exp(definedExternally, " final")
+        val modifier = if (additionalOperator || definedExternally) " final" else kotlinModifier()
         var code = "$annotation $modifier $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
         when {
             deprecated ->
