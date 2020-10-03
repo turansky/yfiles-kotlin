@@ -198,6 +198,9 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
 
+    fun isHidden(property: Property): Boolean =
+        primaryConstructor?.hasPropertyParameter(property.name) ?: false
+
     override val additionalDocumentation: String?
         get() = primaryConstructor?.getPrimaryDocumentation()
 }
@@ -430,7 +433,8 @@ internal class Constructor(
     }
 
     fun hasPropertyParameter(parameterName: String): Boolean =
-        propertyParameterMap?.containsKey(parameterName) ?: false
+        parameterName.isEmpty()
+    // propertyParameterMap?.containsKey(parameterName) ?: false
 
     fun isDefault(): Boolean {
         return parameters.all { it.modifiers.optional }

@@ -99,11 +99,11 @@ internal class KotlinFileGenerator(
                 else -> emptyList()
             }
 
-        protected val memberDeclarations by lazy { calculateMemberDeclarations() }
-
-        protected open fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties + memberFunctions + memberEvents
+        protected val memberDeclarations by lazy {
+            memberProperties.filterNot(::isHidden) + memberFunctions + memberEvents
         }
+
+        protected open fun isHidden(property: Property) = false
 
         protected val externalAnnotation: String
             get() = exp(
@@ -175,6 +175,9 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
+        override fun isHidden(property: Property) =
+            declaration.isHidden(property)
+
         private val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
 
         override val hasConstants: Boolean =
@@ -312,12 +315,6 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
-        override fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties +
-                    memberFunctions +
-                    memberEvents
-        }
-
         override fun content(): String {
             val content = super.content()
                 .replace("abstract ", "")
