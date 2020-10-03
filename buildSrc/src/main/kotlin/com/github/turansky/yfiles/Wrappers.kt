@@ -190,7 +190,6 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         ClassMode.ENUM -> "enum"
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
-        ClassMode.SEALED -> "sealed"
         ClassMode.ABSTRACT -> "abstract"
     }
 
