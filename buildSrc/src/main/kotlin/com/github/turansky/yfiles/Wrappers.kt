@@ -667,10 +667,8 @@ internal class Property(
         require(mode == PropertyMode.READ_ONLY)
 
         val generics = parent.generics.declaration
-        val str = "inline val $generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
+        return "inline val $generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $body"
-
-        return "$documentation$str"
     }
 }
 
