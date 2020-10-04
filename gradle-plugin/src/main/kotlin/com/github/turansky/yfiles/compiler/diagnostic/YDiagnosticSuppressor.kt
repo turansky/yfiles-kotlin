@@ -8,7 +8,6 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters2
-import org.jetbrains.kotlin.diagnostics.Errors.USELESS_IS_CHECK
 import org.jetbrains.kotlin.diagnostics.Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
@@ -35,6 +34,8 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         val factory = diagnostic.factory
 
         return when (factory) {
+            // TODO: use in IR
+            /*
             CANNOT_CHECK_FOR_EXTERNAL_INTERFACE,
             USELESS_IS_CHECK
             -> psiElement is KtIsExpression
@@ -43,6 +44,7 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
             -> psiElement is KtBinaryExpressionWithTypeRHS
                     && psiElement.right.isYFilesInterface(bindingContext)
+             */
 
             EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
             -> psiElement is KtCallExpression || psiElement is KtTypeReference
