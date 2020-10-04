@@ -38,8 +38,14 @@ internal class KotlinFileGenerator(
         val data = generatedFile.data
         val mode = if (generatedFile is InterfaceFile) INTERFACE else CLASS
 
-        context[data.fileId, mode] = generatedFile.content()
-        context[data.fileId, EXTENSIONS] = generatedFile.companionContent() ?: return
+        val content = generatedFile.content()
+        val companionContent = generatedFile.companionContent()
+
+        context[data.fileId, mode] = if (companionContent != null) {
+            "$content\n\n\n$companionContent"
+        } else {
+            content
+        }
     }
 
     private fun generate(
