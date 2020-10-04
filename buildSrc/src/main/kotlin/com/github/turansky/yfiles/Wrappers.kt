@@ -394,7 +394,7 @@ internal sealed class TypedDeclaration(
     protected val parent: TypeDeclaration
 ) : Declaration(source) {
     private val signature: String? by optString()
-    protected val type: String by type {
+    val type: String by type {
         parse(it, signature).run {
             if (fixGeneric) asReadOnly() else this
         }
@@ -425,11 +425,19 @@ internal class Constructor(
 
         val parameterNames = parameters.map { it.name }
 
-        parent.memberProperties
+        val map = parent.memberProperties
             .filter { it.name in parameterNames }
             .takeIf { it.size == parameterNames.size }
             ?.sortedBy { parameterNames.indexOf(it.name) }
             ?.associateBy { it.name }
+            ?: return@lazy null
+
+        val compatible = parameters.all {
+            val property = map.getValue(it.name)
+            property.type == it.type && property.nullability == it.modifiers.nullability
+        }
+
+        map.takeIf { compatible }
     }
 
     fun hasPropertyParameter(parameterName: String): Boolean =
@@ -564,6 +572,7 @@ internal class Property(
     private val final = modifiers.final
     private val open = !static && !final
     val generated = modifiers.generated
+    val nullability = modifiers.nullability
 
     private val preconditions: List<String> by stringList(::summary)
 
