@@ -3,7 +3,7 @@ package com.github.turansky.yfiles.gradle.plugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-private const val IDEA_PLUGIN_VERSION: String = "0.24.0"
+private const val IDEA_PLUGIN_VERSION: String = "0.25.0"
 
 // language=XML
 private val EXTERNAL_DEPENDENCIES: String = """
