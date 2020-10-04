@@ -420,7 +420,7 @@ internal class Constructor(
         if (parent.secondaryConstructors.isNotEmpty())
             return@lazy null
 
-        if (parameters.size < 2)
+        if (parameters.isEmpty())
             return@lazy null
 
         val parameterNames = parameters.map { it.name }
@@ -481,7 +481,7 @@ internal class Constructor(
 
         val propertyMap = propertyParameterMap
         val parametersString = if (propertyMap != null) {
-            parameters.byCommaLine {
+            "\n" + parameters.byCommaLine {
                 propertyMap.getValue(it.name).toPrimaryCode(it.modifiers.optional)
             }
         } else {
