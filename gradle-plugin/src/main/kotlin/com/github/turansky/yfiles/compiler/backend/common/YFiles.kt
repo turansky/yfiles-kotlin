@@ -15,8 +15,11 @@ internal val YENUM = LANG_PACKAGE.child(identifier("YEnum"))
 internal val YCLASS_NAME = identifier("YClass")
 internal val BASE_CLASS_NAME = identifier("BaseClass")
 
+internal val FqName.isYFiles: Boolean
+    get() = startsWith(YFILES_PACKAGE_ID)
+
 internal val ClassDescriptor.locatedInYFilesPackage: Boolean
-    get() = fqNameSafe.startsWith(YFILES_PACKAGE_ID)
+    get() = fqNameSafe.isYFiles
 
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT

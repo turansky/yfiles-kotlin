@@ -4,7 +4,6 @@ import yfiles.algorithms.asSequence
 import yfiles.collections.asSequence
 import yfiles.graph.DefaultGraph
 import yfiles.graph.IGraph
-import yfiles.graph.applyLayout
 import yfiles.hierarchic.HierarchicLayout
 import yfiles.layout.DefaultLayoutGraph
 import yfiles.layout.LayoutGraph

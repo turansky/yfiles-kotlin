@@ -13,6 +13,8 @@ internal fun applyEventHacks(source: Source) {
 
             it[NAME] = name
         }
+
+    fixMouseEventArgsConstructor(source)
 }
 
 fun JSONObject.getNewName(): String? =
@@ -28,3 +30,17 @@ fun JSONObject.getNewName(): String? =
 
         else -> null
     }
+
+private fun fixMouseEventArgsConstructor(source: Source) {
+    val nameFixMap = mapOf(
+        "mouseWheelDelta" to "wheelDelta",
+        "mouseWheelDeltaX" to "wheelDeltaX",
+        "scrollType" to "deltaMode"
+    )
+
+    source.type("MouseEventArgs")
+        .flatMap(CONSTRUCTORS)
+        .flatMap(PARAMETERS)
+        .filter { nameFixMap.containsKey(it[NAME]) }
+        .forEach { it[NAME] = nameFixMap.getValue(it[NAME]) }
+}

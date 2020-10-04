@@ -12,8 +12,11 @@ private val YFILES_PACKAGE_ID = Name.identifier("yfiles")
 private val YOBJECT = FqName("yfiles.lang.YObject")
 private val YENUM = FqName("yfiles.lang.YEnum")
 
+internal val FqName.isYFiles: Boolean
+    get() = startsWith(YFILES_PACKAGE_ID)
+
 internal val ClassDescriptor.locatedInYFilesPackage: Boolean
-    get() = fqNameSafe.startsWith(YFILES_PACKAGE_ID)
+    get() = fqNameSafe.isYFiles
 
 private val ClassDescriptor.isYObject: Boolean
     get() = isExternal && fqNameSafe == YOBJECT

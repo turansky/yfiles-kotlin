@@ -11,7 +11,6 @@ internal const val VIRTUAL = "virtual"
 internal const val RO = "ro"
 internal const val WO = "wo"
 internal const val ENUM_LIKE = "enum"
-internal const val SEALED = "sealed"
 internal const val ABSTRACT = "abstract"
 internal const val INTERNAL = "internal"
 internal const val PROTECTED = "protected"
@@ -52,13 +51,11 @@ internal enum class ClassMode {
     ENUM,
     FINAL,
     OPEN,
-    SEALED,
     ABSTRACT
 }
 
 private val CLASS_MODIFIERS = setOf(
     ENUM_LIKE,
-    SEALED,
     ABSTRACT,
     FINAL,
 
@@ -69,7 +66,6 @@ private val CLASS_MODIFIERS = setOf(
 internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CLASS_MODIFIERS) {
     val mode: ClassMode = when {
         has(ENUM_LIKE) -> ClassMode.ENUM
-        has(SEALED) -> ClassMode.SEALED
         has(ABSTRACT) -> ClassMode.ABSTRACT
         has(FINAL) -> ClassMode.FINAL
         else -> ClassMode.OPEN

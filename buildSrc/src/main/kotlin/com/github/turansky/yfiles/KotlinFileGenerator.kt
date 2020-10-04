@@ -2,6 +2,8 @@ package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.ContentMode.*
 
+private const val SUPPRESS_TYPE_VARIANCE_CONFLICT = "@Suppress(\"TYPE_VARIANCE_CONFLICT\", \"TYPE_VARIANCE_CONFLICT_IN_EXPANDED_TYPE\")\n"
+
 private val ENUM_COMPANION_MAP = mapOf(
     "BipartitionAlgorithm" to "BipartitionMark",
     "DfsAlgorithm" to "DfsState"
@@ -36,8 +38,14 @@ internal class KotlinFileGenerator(
         val data = generatedFile.data
         val mode = if (generatedFile is InterfaceFile) INTERFACE else CLASS
 
-        context[data.fileId, mode] = generatedFile.content()
-        context[data.fileId, EXTENSIONS] = generatedFile.companionContent() ?: return
+        val content = generatedFile.content()
+        val companionContent = generatedFile.companionContent()
+
+        context[data.fileId, mode] = if (companionContent != null) {
+            "$content\n\n\n$companionContent"
+        } else {
+            content
+        }
     }
 
     private fun generate(
@@ -79,13 +87,11 @@ internal class KotlinFileGenerator(
                     .toList()
             }
 
-        protected open fun isExtension(property: Property): Boolean = false
-
         protected val memberProperties: List<Property>
-            get() = declaration.memberProperties.filter { !isExtension(it) }
+            get() = declaration.memberProperties
 
         protected val memberExtensionProperties: List<Property>
-            get() = declaration.memberProperties.filter { isExtension(it) }
+            get() = declaration.memberExtensionProperties
 
         protected val memberFunctions: List<Method>
             get() = declaration.memberMethods
@@ -99,11 +105,11 @@ internal class KotlinFileGenerator(
                 else -> emptyList()
             }
 
-        protected val memberDeclarations by lazy { calculateMemberDeclarations() }
-
-        protected open fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties + memberFunctions + memberEvents
+        protected val memberDeclarations by lazy {
+            memberProperties.filterNot(::isHidden) + memberFunctions + memberEvents
         }
+
+        protected open fun isHidden(property: Property) = false
 
         protected val externalAnnotation: String
             get() = exp(
@@ -175,13 +181,13 @@ internal class KotlinFileGenerator(
     }
 
     inner class ClassFile(private val declaration: Class) : GeneratedFile(declaration) {
+        override fun isHidden(property: Property) =
+            declaration.isHidden(property)
+
         private val enumCompanionName = ENUM_COMPANION_MAP[data.jsName]
 
         override val hasConstants: Boolean =
             enumCompanionName == null && !declaration.enumLike
-
-        override fun isExtension(property: Property): Boolean =
-            property.generated
 
         // TODO: check after fix
         //  https://youtrack.jetbrains.com/issue/KT-31126
@@ -315,15 +321,6 @@ internal class KotlinFileGenerator(
     }
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
-        private val Property.extension: Boolean
-            get() = !abstract && !nullable
-
-        override fun calculateMemberDeclarations(): List<JsonWrapper> {
-            return memberProperties.filter { !it.extension } +
-                    memberFunctions.filter { it.abstract } +
-                    memberEvents
-        }
-
         override fun content(): String {
             val content = super.content()
                 .replace("abstract ", "")
@@ -335,14 +332,14 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
+                    exp(data.fqn == IENUMERABLE, SUPPRESS_TYPE_VARIANCE_CONFLICT) +
                     "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     companionObjectContent + "\n" +
                     "}"
         }
 
-        private val defaultDeclarations = memberProperties.filter { it.extension } +
-                memberFunctions.filter { !it.abstract } +
+        private val defaultDeclarations = memberExtensionProperties +
                 memberExtensionFunctions +
                 memberEvents.filter { !it.overriden }
 

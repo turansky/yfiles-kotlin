@@ -131,14 +131,16 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     abstract val constants: List<Constant>
 
     private val properties: List<Property> by declarationList(::Property)
-    val memberProperties: List<Property> = properties.filter { !it.static }
+    val memberProperties: List<Property> = properties.filter { !it.static && !it.generated }
+    val memberExtensionProperties: List<Property> = properties.filter { !it.static && it.generated }
     val staticProperties: List<Property> = properties.filter { it.static }
 
     protected val methods: List<Method> by declarationList(::Method)
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
     val extensionMethods: List<Method> by lazy {
-        memberMethods.mapNotNull { it.toOperatorExtension() } + staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+        (if (id == IENUMERABLE) methods.mapNotNull { it.toOperatorExtension() } else emptyList()) +
+                staticMethods.mapNotNull { it.toStaticOperatorExtension() }
     }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -189,13 +191,15 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         ClassMode.ENUM -> "enum"
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
-        ClassMode.SEALED -> "sealed"
         ClassMode.ABSTRACT -> "abstract"
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
     val primaryConstructor: Constructor? = constructors.firstOrNull()
     val secondaryConstructors: List<Constructor> = constructors.drop(1)
+
+    fun isHidden(property: Property): Boolean =
+        primaryConstructor?.hasPropertyParameter(property.name) ?: false
 
     override val additionalDocumentation: String?
         get() = primaryConstructor?.getPrimaryDocumentation()
@@ -390,7 +394,7 @@ internal sealed class TypedDeclaration(
     protected val parent: TypeDeclaration
 ) : Declaration(source) {
     private val signature: String? by optString()
-    protected val type: String by type {
+    val type: String by type {
         parse(it, signature).run {
             if (fixGeneric) asReadOnly() else this
         }
@@ -412,6 +416,33 @@ internal class Constructor(
 
     override val overridden: Boolean = false
 
+    private val propertyParameterMap: Map<String, Property>? by lazy {
+        if (parent.secondaryConstructors.isNotEmpty())
+            return@lazy null
+
+        if (parameters.isEmpty())
+            return@lazy null
+
+        val parameterNames = parameters.map { it.name }
+
+        val map = parent.memberProperties
+            .filter { it.name in parameterNames }
+            .takeIf { it.size == parameterNames.size }
+            ?.sortedBy { parameterNames.indexOf(it.name) }
+            ?.associateBy { it.name }
+            ?: return@lazy null
+
+        val compatible = parameters.all {
+            val property = map.getValue(it.name)
+            property.type == it.type && property.nullability == it.modifiers.nullability
+        }
+
+        map.takeIf { compatible }
+    }
+
+    fun hasPropertyParameter(parameterName: String): Boolean =
+        propertyParameterMap?.containsKey(parameterName) ?: false
+
     fun isDefault(): Boolean {
         return parameters.all { it.modifiers.optional }
     }
@@ -430,7 +461,8 @@ internal class Constructor(
             preconditions = preconditions,
             parameters = parameters,
             seeAlso = seeAlso + seeAlsoDocs,
-            primaryConstructor = true
+            primaryConstructor = true,
+            properties = propertyParameterMap?.values?.toList()
         )
 
         return if (lines.isNotEmpty()) {
@@ -447,7 +479,16 @@ internal class Constructor(
             ConstructorVisibility.PRIVATE -> "\nprivate constructor"
         }
 
-        return "$declaration (${kotlinParametersString()})"
+        val propertyMap = propertyParameterMap
+        val parametersString = if (propertyMap != null) {
+            "\n" + parameters.byCommaLine {
+                propertyMap.getValue(it.name).toPrimaryCode(it.modifiers.optional)
+            }
+        } else {
+            kotlinParametersString()
+        }
+
+        return "$declaration ($parametersString)"
     }
 
     override fun toCode(): String {
@@ -530,8 +571,8 @@ internal class Property(
     val abstract = modifiers.abstract
     private val final = modifiers.final
     private val open = !static && !final
-    val nullable = modifiers.canbenull
     val generated = modifiers.generated
+    val nullability = modifiers.nullability
 
     private val preconditions: List<String> by stringList(::summary)
 
@@ -557,8 +598,27 @@ internal class Property(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String {
+    fun toPrimaryDocumentation(): List<String> =
+        getDocumentationLines(
+            propertyName = name,
+            summary = summary,
+            remarks = remarks,
+            preconditions = preconditions,
+            defaultValue = defaultValue,
+            exceptions = throws.filterNot { it.isEmpty() },
+            seeAlso = seeAlso + seeAlsoDocs
+        )
+
+    override fun toCode(): String =
+        "$documentation${toSimpleCode()}"
+
+    fun toPrimaryCode(optionalParameter: Boolean): String =
+        toSimpleCode() + exp(optionalParameter, EQ_DE)
+
+    private fun toSimpleCode(): String {
         var str = ""
+
+        val definedExternally = parent is Interface && !abstract
 
         if (overridden) {
             str += exp(final, "final ") + "override "
@@ -568,6 +628,7 @@ internal class Property(
             }
 
             str += when {
+                definedExternally -> "final "
                 abstract -> "abstract "
                 final -> "final "
                 open -> "open "
@@ -590,34 +651,24 @@ internal class Property(
             str = DEPRECATED_ANNOTATION + "\n" + str
         }
 
-        if (parent is Interface && !abstract) {
+        if (definedExternally) {
             str += "\nget() = definedExternally"
+            if (mode.writable) {
+                str += "\nset(value) = definedExternally"
+            }
         }
 
-        return "$documentation$str"
+        return str
     }
 
     override fun toExtensionCode(): String {
+        require(generated)
         require(!protected)
-        require(mode.readable)
+        require(mode == PropertyMode.READ_ONLY)
 
         val generics = parent.generics.declaration
-
-        val body = if (!generated) {
-            "$AS_DYNAMIC.$name"
-        } else {
-            require(!mode.writable)
-            this.body
-        }
-
-        var str = "inline " + if (mode.writable) "var " else "val "
-        str += "$generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
+        return "inline val $generics ${parent.classDeclaration}.$name: $type${modifiers.nullability}\n" +
                 "    get() = $body"
-        if (mode.writable) {
-            str += "\n    set(value) { $body = value }"
-        }
-
-        return "$documentation$str"
     }
 }
 
@@ -684,11 +735,9 @@ private val FACTORY_METHODS = setOf(
 
 internal class Method(
     source: JSONObject,
-    private val parent: Type
-) : MethodBase(source, parent) {
-    // TODO: Move to constructor in Kotlin 1.4
+    private val parent: Type,
     private var operatorName: String? = null
-
+) : MethodBase(source, parent) {
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
     val static = modifiers.static
@@ -732,7 +781,7 @@ internal class Method(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    private fun kotlinModificator(): String {
+    private fun kotlinModifier(): String {
         if (isExtension) {
             require(!protected)
             require(!abstract)
@@ -774,8 +823,9 @@ internal class Method(
         }
 
     // https://youtrack.jetbrains.com/issue/KT-31249
-    private fun getReturnSignature(): String {
-        var type = returns?.type ?: return ""
+    private fun getReturnSignature(definedExternally: Boolean = false): String {
+        var type = returns?.type
+            ?: return exp(definedExternally, ":$UNIT = definedExternally")
 
         if (type.startsWith("$PROMISE<")) {
             val newGeneric = when (val generic = type.between("<", ">")) {
@@ -786,7 +836,7 @@ internal class Method(
             type = "$PROMISE<$newGeneric>"
         }
 
-        return ":" + type + modifiers.nullability
+        return ":" + type + modifiers.nullability + exp(definedExternally, " = definedExternally")
     }
 
     private fun isOperatorMode(): Boolean =
@@ -795,12 +845,21 @@ internal class Method(
 
     override fun toCode(): String {
         val staticCreate = static && name in FACTORY_METHODS && parent.name != "List"
-        val operator = exp(staticCreate || isOperatorMode(), "operator")
+        val additionalOperator = operatorName != null
+        val operator = exp(staticCreate || additionalOperator || isOperatorMode(), "operator")
 
-        val methodName = if (staticCreate) "invoke" else name
-        val annotation = if (staticCreate) "@JsName(\"$name\")\n" else ""
+        val methodName = if (staticCreate) "invoke" else operatorName ?: name
+        val annotation = if (staticCreate || additionalOperator) "@JsName(\"$name\")\n" else ""
 
-        var code = "$annotation${kotlinModificator()} $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})${getReturnSignature()}"
+        val definedExternally = if (additionalOperator) {
+            parent is Interface
+        } else {
+            !static && !abstract && parent is Interface
+        }
+
+        val returnSignature = getReturnSignature(definedExternally)
+        val modifier = if (additionalOperator || definedExternally) " final" else kotlinModifier()
+        var code = "$annotation $modifier $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code
@@ -808,7 +867,14 @@ internal class Method(
                 code = HIDDEN_METHOD_ANNOTATION + "\n" + code
         }
 
-        return documentation + code
+        val result = documentation + code
+
+        if (additionalOperator) return result
+        if (static) return result
+        if (parent.classId == IENUMERABLE) return result
+        val operatorExtension = toOperatorExtension() ?: return result
+
+        return "$result\n\n${operatorExtension.toCode()}"
     }
 
     fun toQiiCode(): String? {
@@ -884,27 +950,16 @@ internal class Method(
         }
 
         require(!protected)
+        requireNotNull(operatorName)
 
-        val extParameters = kotlinParametersString(extensionMode = true)
-        val callParameters = parameters
-            .byComma { it.name }
-
+        val extParameters = kotlinParametersString()
         val returnSignature = getReturnSignature()
-
         val genericDeclaration = (parent.generics + generics).declaration
         val returnOperator = exp(returns != null, "return ")
+        val methodCall = "$name(${parameters.byComma { it.name }})"
 
-        val methodCall = if (parameters.none { it.modifiers.vararg }) {
-            "$name($callParameters)"
-        } else {
-            require(parameters.size == 1)
-            "$name.apply(this, $callParameters)"
-        }
-
-        val extensionName = operatorName ?: name
-        val operator = exp(operatorName != null || isOperatorMode(), "operator")
         return documentation +
-                "inline $operator fun $genericDeclaration ${parent.classDeclaration}.$extensionName($extParameters)$returnSignature {\n" +
+                "inline operator fun $genericDeclaration ${parent.classDeclaration}.$operatorName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
     }
@@ -941,23 +996,12 @@ internal sealed class MethodBase(
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
 
-    protected fun kotlinParametersString(
-        extensionMode: Boolean = false
-    ): String {
-        return parameters
-            .byCommaLine {
-                val modifiers = exp(extensionMode && it.lambda, "noinline ") +
-                        exp(it.modifiers.vararg, "vararg ")
-
-                val body = if (it.modifiers.optional && !overridden) {
-                    if (extensionMode) EQ_NULL else EQ_DE
-                } else {
-                    ""
-                }
-
-                "$modifiers ${it.declaration}" + body
-            }
-    }
+    protected fun kotlinParametersString(): String =
+        parameters.byCommaLine {
+            val modifiers = exp(it.modifiers.vararg, "vararg ")
+            val body = exp(it.modifiers.optional && !overridden, EQ_DE)
+            "$modifiers ${it.declaration} $body"
+        }
 
     override fun compareTo(other: Declaration): Int {
         val result = super.compareTo(other)
@@ -981,7 +1025,6 @@ internal class Parameter(
 ) : JsonWrapper(source), IParameter {
     override val name: String by string()
     private val signature: String? by optString()
-    val lambda: Boolean = signature != null
     val type: String by type { parse(it, signature).inMode(readOnly) }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
@@ -1228,9 +1271,15 @@ private fun getDocumentationLines(
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     seeAlso: List<SeeAlso>? = null,
-    primaryConstructor: Boolean = false
+    primaryConstructor: Boolean = false,
+    propertyName: String? = null,
+    properties: List<Property>? = null
 ): List<String> {
     val lines = mutableListOf<String>()
+    if (propertyName != null) {
+        lines.add(property(propertyName))
+    }
+
     if (summary != null) {
         if (primaryConstructor) {
             lines.add(constructor(summary))
@@ -1303,6 +1352,11 @@ private fun getDocumentationLines(
 
     if (primaryConstructor && summary == null && lines.isNotEmpty()) {
         lines.add(0, constructor())
+    }
+
+    properties?.forEach {
+        lines.add("")
+        lines.addAll(it.toPrimaryDocumentation())
     }
 
     return lines.toList()

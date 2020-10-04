@@ -3,6 +3,8 @@ package com.github.turansky.yfiles.correction
 import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.ContentMode.*
 import com.github.turansky.yfiles.json.get
+import com.github.turansky.yfiles.json.jArray
+import com.github.turansky.yfiles.json.jObject
 import com.github.turansky.yfiles.json.removeAllObjects
 import com.github.turansky.yfiles.json.removeItem
 import org.json.JSONObject
@@ -172,7 +174,13 @@ private fun fixClass(source: Source) {
     source.type("Class") {
         setSingleTypeParameter(bound = JS_OBJECT)
 
-        get(MODIFIERS).put(SEALED)
+        get(MODIFIERS).put(FINAL)
+
+        this[CONSTRUCTORS] = jArray(
+            jObject(
+                MODIFIERS to arrayOf(PRIVATE)
+            )
+        )
 
         get(METHODS).removeItem(method("getProperties"))
 
