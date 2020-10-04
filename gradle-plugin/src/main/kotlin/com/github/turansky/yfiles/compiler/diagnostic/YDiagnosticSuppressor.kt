@@ -1,8 +1,10 @@
 package com.github.turansky.yfiles.compiler.diagnostic
 
 import com.github.turansky.yfiles.compiler.backend.common.isYEnum
+import com.github.turansky.yfiles.compiler.backend.common.isYFiles
 import com.github.turansky.yfiles.compiler.backend.common.isYFilesInterface
 import com.github.turansky.yfiles.compiler.backend.common.locatedInYFilesPackage
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
@@ -71,6 +73,10 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             NESTED_CLASS_IN_EXTERNAL_INTERFACE
             -> psiElement is KtObjectDeclaration
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
+
+            // TODO: check type parameter
+            NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE
+            -> psiElement.isYFilesExtension()
 
             else -> false
         }
@@ -143,4 +149,20 @@ private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
     if (!isCompanion()) return false
     val descriptor = context[BindingContext.CLASS, parent?.parent] ?: return false
     return descriptor.isYFilesInterface() || descriptor.isYEnum
+}
+
+private fun PsiElement.isYFilesExtension(): Boolean {
+    val declaration: KtCallableDeclaration? = when (this) {
+        is KtProperty -> this
+        is KtPropertyAccessor -> parent as? KtProperty
+
+        is KtNamedFunction -> this
+
+        else -> null
+    }
+
+    val file = declaration?.parent as? KtFile
+        ?: return false
+
+    return file.packageFqName.isYFiles
 }
