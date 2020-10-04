@@ -6,7 +6,6 @@ import com.github.turansky.yfiles.ide.js.locatedInYFilesPackage
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
-import org.jetbrains.kotlin.diagnostics.DiagnosticFactory
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters2
 import org.jetbrains.kotlin.diagnostics.Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
@@ -16,21 +15,6 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 import org.jetbrains.kotlin.types.KotlinType
-
-private val IS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
-    // TODO: use in IR
-    /*
-    CANNOT_CHECK_FOR_EXTERNAL_INTERFACE,
-    USELESS_IS_CHECK
-    */
-)
-
-private val AS_FACTORIES: Set<DiagnosticFactory<*>> = setOf(
-    // TODO: use in IR
-    /*
-    UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
-    */
-)
 
 private const val EXTERNAL_PRIVATE_CONSTRUCTOR = "private member of class"
 
@@ -49,44 +33,43 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
         val psiElement = diagnostic.psiElement
         val factory = diagnostic.factory
 
-        return when (psiElement) {
-            is KtIsExpression
-            -> factory in IS_FACTORIES
+        return when (factory) {
+            // TODO: use in IR
+            /*
+            CANNOT_CHECK_FOR_EXTERNAL_INTERFACE,
+            USELESS_IS_CHECK
+            -> psiElement is KtIsExpression
                     && psiElement.typeReference.isYFilesInterface(bindingContext)
 
-            is KtBinaryExpressionWithTypeRHS
-            -> factory in AS_FACTORIES
+            UNCHECKED_CAST_TO_EXTERNAL_INTERFACE
+            -> psiElement is KtBinaryExpressionWithTypeRHS
                     && psiElement.right.isYFilesInterface(bindingContext)
+             */
 
-            is KtCallExpression,
-            is KtTypeReference
-            -> factory === EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
+            EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
+            -> psiElement is KtCallExpression || psiElement is KtTypeReference
                     && diagnostic.reifiedType.isYFilesInterface()
 
-            is KtConstructor<*>
-            -> factory === WRONG_EXTERNAL_DECLARATION
+            WRONG_EXTERNAL_DECLARATION
+            -> psiElement is KtConstructor<*>
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
                     && psiElement.isYFilesConstructor(bindingContext)
 
-            is KtParameter
-            -> factory === EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
+            EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
+            -> psiElement is KtParameter
                     && psiElement.isYFilesConstructorParameter(bindingContext)
 
-            is KtProperty
-            -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
+            NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
+            -> psiElement is KtCallableDeclaration
                     && psiElement.isYFilesInterfaceMember(bindingContext)
 
-            is KtNamedFunction
-            -> factory === NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
-                    && psiElement.isYFilesInterfaceMember(bindingContext)
-
-            is LeafPsiElement
-            -> factory === WRONG_MODIFIER_CONTAINING_DECLARATION
+            WRONG_MODIFIER_CONTAINING_DECLARATION
+            -> psiElement is LeafPsiElement
                     && diagnostic.keywordToken == "final"
                     && psiElement.parentDeclaration?.isYFilesInterfaceMember(bindingContext) ?: false
 
-            is KtObjectDeclaration
-            -> factory === NESTED_CLASS_IN_EXTERNAL_INTERFACE
+            NESTED_CLASS_IN_EXTERNAL_INTERFACE
+            -> psiElement is KtObjectDeclaration
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
 
             else -> false
@@ -113,11 +96,7 @@ private val Diagnostic.keywordToken: String?
     }
 
 private val LeafPsiElement.parentDeclaration: KtCallableDeclaration?
-    get() = when (val declaration = parent?.parent) {
-        is KtProperty -> declaration
-        is KtNamedFunction -> declaration
-        else -> null
-    }
+    get() = parent?.parent as? KtCallableDeclaration
 
 private fun KtTypeReference?.isYFilesInterface(
     context: BindingContext
@@ -151,6 +130,9 @@ private fun KtParameter.isYFilesConstructorParameter(
 private fun KtCallableDeclaration.isYFilesInterfaceMember(
     context: BindingContext
 ): Boolean {
+    if (this !is KtProperty && this !is KtNamedFunction)
+        return false
+
     val descriptor = context[BindingContext.CLASS, parent?.parent] ?: return false
     return descriptor.isYFilesInterface()
 }
