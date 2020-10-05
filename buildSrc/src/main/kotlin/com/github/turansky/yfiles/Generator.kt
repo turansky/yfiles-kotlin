@@ -117,8 +117,6 @@ internal interface GeneratorContext {
     fun clean()
 }
 
-private const val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
-
 private class SimpleGeneratorContext(
     private val sourceDir: File,
     moduleName: String,
@@ -148,18 +146,8 @@ private class SimpleGeneratorContext(
             else -> ""
         }
 
-        val suppressNothingToInline = when (mode) {
-            EXTENSIONS -> classId == YOBJECT || classId == YENUM || classId == BASE_CLASS
-            DELEGATE -> classId != DP_KEY_BASE
-            INLINE -> true
-            else -> false
-        }
-
-        val suppresses = exp(suppressNothingToInline, NOTHING_TO_INLINE)
-
         val text = "// $GENERATOR_COMMENT\n\n" +
                 moduleDeclaration +
-                suppresses +
                 "package $packageId\n\n" +
                 content.clear(classId)
                     .replace(DOC_BASE_URL, docBaseUrl)
