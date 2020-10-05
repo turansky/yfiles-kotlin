@@ -100,7 +100,6 @@ fun generateVsdxKotlinDeclarations(
 
 enum class ContentMode {
     CLASS,
-    INTERFACE,
     EXTENSIONS,
     DELEGATE,
     ITERATOR,
@@ -145,7 +144,7 @@ private class SimpleGeneratorContext(
         } + ".kt"
 
         val moduleDeclaration = when (mode) {
-            CLASS, INTERFACE -> moduleAnnotation
+            CLASS -> moduleAnnotation
             else -> ""
         }
 
