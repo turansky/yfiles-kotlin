@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters2
+import org.jetbrains.kotlin.diagnostics.Errors.NOTHING_TO_INLINE
 import org.jetbrains.kotlin.diagnostics.Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
@@ -77,6 +78,9 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             // TODO: check type parameter
             NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE
             -> psiElement.isYFilesExtension()
+
+            NOTHING_TO_INLINE
+            -> psiElement.isYFilesExtensionModifier()
 
             else -> false
         }
@@ -161,8 +165,19 @@ private fun PsiElement.isYFilesExtension(): Boolean {
         else -> null
     }
 
-    val file = declaration?.parent as? KtFile
-        ?: return false
-
-    return file.packageFqName.isYFiles
+    return declaration.locatedInYFilesFile
 }
+
+private fun PsiElement.isYFilesExtensionModifier(): Boolean =
+    (this as? LeafPsiElement)
+        ?.parentDeclaration
+        .locatedInYFilesFile
+
+private val KtCallableDeclaration?.locatedInYFilesFile: Boolean
+    get() {
+        val file = this?.parent as? KtFile
+            ?: return false
+
+        return file.packageFqName.isYFiles
+    }
+
