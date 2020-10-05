@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.ContentMode.*
+import com.github.turansky.yfiles.ContentMode.CLASS
+import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
@@ -81,11 +82,7 @@ internal fun generateResourceTypes(
             external object Resources {
                 val invariant: ResourceMap
             }
-        """.trimIndent()
 
-    // language=kotlin
-    context["yfiles.lang.Resources", EXTENSIONS] =
-        """
             inline operator fun Resources.get(locale: String):ResourceMap? {
                 return asDynamic()[locale]
             }
