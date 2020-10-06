@@ -356,6 +356,7 @@ internal class KotlinFileGenerator(
                 defaultDeclarations
                     .takeIf { it.isNotEmpty() }
                     ?.lines { it.toExtensionCode() },
+                declaration.getExtensions(),
                 declaration.getComponents()
             ).takeIf { it.isNotEmpty() }
                 ?.joinToString("\n\n")

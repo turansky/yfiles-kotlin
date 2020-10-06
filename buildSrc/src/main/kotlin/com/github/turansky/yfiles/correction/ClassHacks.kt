@@ -11,13 +11,6 @@ import org.json.JSONObject
 
 internal fun generateClassUtils(context: GeneratorContext) {
     // language=kotlin
-    context[YOBJECT, EXTENSIONS] =
-        """
-            inline fun <T: $YOBJECT> T.getClass(): $YCLASS<out T> =
-                $AS_DYNAMIC.getClass()
-        """.trimIndent()
-
-    // language=kotlin
     context[BASE_CLASS, CLASS] =
         """
             $HIDDEN_METHOD_ANNOTATION
