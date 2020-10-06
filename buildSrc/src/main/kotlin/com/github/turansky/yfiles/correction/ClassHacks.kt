@@ -22,10 +22,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
         """
             $HIDDEN_METHOD_ANNOTATION
             external fun BaseClass(vararg types: JsClass<out $YOBJECT>):JsClass<out $YOBJECT>
-        """.trimIndent()
 
-    context[BASE_CLASS, EXTENSIONS] =
-        """
             $HIDDEN_METHOD_ANNOTATION
             inline fun callSuperConstructor(o: $YOBJECT) {
                o.$AS_DYNAMIC.__proto__.__proto__.constructor.call(o)
