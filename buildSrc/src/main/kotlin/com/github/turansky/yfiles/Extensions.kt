@@ -1,5 +1,16 @@
 package com.github.turansky.yfiles
 
+import com.github.turansky.yfiles.correction.timeSpanExtensions
+
+internal fun Class.getExtensions(): String? =
+    when (classId) {
+        "yfiles.lang.TimeSpan"
+        -> timeSpanExtensions(this)
+
+        else
+        -> null
+    }
+
 internal fun Interface.getExtensions(): String? =
     when (classId) {
         // language=kotlin

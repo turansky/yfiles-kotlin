@@ -62,9 +62,6 @@ fun generateKotlinDeclarations(
     generateSerializationUtils(context)
     generateEdgeDirectednessUtils(context)
 
-    val timeSpanClass = types.first { it.classId == "yfiles.lang.TimeSpan" } as Class
-    generateTimeSpanExtensions(context, timeSpanClass)
-
     addIteratorSupport(context)
     generateDpKeyDelegates(context)
 

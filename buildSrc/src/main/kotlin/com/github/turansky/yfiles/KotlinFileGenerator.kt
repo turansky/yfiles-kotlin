@@ -287,6 +287,7 @@ internal class KotlinFileGenerator(
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
                     ?.run { lines { it.toExtensionCode() } },
+                declaration.getExtensions(),
                 declaration.getComponents()
             )
 
