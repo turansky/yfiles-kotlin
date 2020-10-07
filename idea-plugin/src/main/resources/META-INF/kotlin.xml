@@ -20,7 +20,7 @@
     <!-- Color -->
     <annotator
       language="kotlin"
-      implementationClass="com.github.turansky.yfiles.ide.color.ColorAnnotator"
+      implementationClass="com.github.turansky.yfiles.ide.color.KotlinColorAnnotator"
     />
   </extensions>
 

@@ -16,7 +16,7 @@ import javax.swing.Icon
 private val RGB_PATTERN = Regex("#([A-Fa-f0-9]{6})")
 private const val RGB_LENGTH = 7
 
-internal class ColorAnnotator : Annotator {
+internal class KotlinColorAnnotator : Annotator {
     override fun annotate(
         element: PsiElement,
         holder: AnnotationHolder
