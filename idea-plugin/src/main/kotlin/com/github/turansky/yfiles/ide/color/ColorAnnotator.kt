@@ -8,25 +8,28 @@ import com.intellij.psi.PsiElement
 import com.intellij.xml.util.ColorIconCache
 import com.intellij.xml.util.ColorMap
 import org.jetbrains.kotlin.idea.core.util.range
+import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 import java.awt.Color
 import javax.swing.Icon
 
-internal class ColorAnnotator : Annotator {
-    private val providers: List<ColorProvider> = listOf(
-        KotlinColorProvider()
-    )
 
+private val RGB_PATTERN = Regex("#([A-Fa-f0-9]{6})")
+private const val RGB_LENGTH = 7
+
+internal class ColorAnnotator : Annotator {
     override fun annotate(
         element: PsiElement,
         holder: AnnotationHolder
     ) {
-        val data = providers.asSequence()
-            .mapNotNull { it.get(element) }
-            .firstOrNull()
-            ?: return
+        if (element !is KtLiteralStringTemplateEntry) return
+        val text = element.text ?: return
+
+        if (text.length != RGB_LENGTH || !RGB_PATTERN.matches(text)) {
+            return
+        }
 
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .gutterIconRenderer(IconRenderer(data.value))
+            .gutterIconRenderer(IconRenderer(text))
             .range(element.range)
             .create()
     }
