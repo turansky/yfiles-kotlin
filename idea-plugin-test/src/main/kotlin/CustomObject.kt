@@ -1,4 +1,3 @@
-import yfiles.lang.ClassMetadata
 import yfiles.lang.YObject
 import yfiles.styles.IArrow
 import kotlinx.browser.window
@@ -31,3 +30,18 @@ fun colorTest() {
     val color2 = Color("#00FF00")
     val color3 = Color("#0000FF")
 }
+
+// language=CSS
+val CSS = """
+    #red {
+        background-color: red    
+    }
+    
+    #green {
+        background-color: lime    
+    }
+    
+    #blue {
+        background-color: blue    
+    }
+""".trimIndent()
