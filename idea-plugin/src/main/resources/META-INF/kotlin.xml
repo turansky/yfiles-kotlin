@@ -16,6 +16,12 @@
       enabledByDefault="true"
       implementationClass="com.github.turansky.yfiles.ide.inspections.InheritanceInspection"
     />
+
+    <!-- Color -->
+    <annotator
+      language="kotlin"
+      implementationClass="com.github.turansky.yfiles.ide.color.ColorAnnotator"
+    />
   </extensions>
 
   <extensions defaultExtensionNs="org.jetbrains.kotlin">
