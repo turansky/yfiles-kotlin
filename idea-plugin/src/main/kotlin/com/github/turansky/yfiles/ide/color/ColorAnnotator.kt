@@ -6,6 +6,7 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.xml.util.ColorIconCache
+import com.intellij.xml.util.ColorMap
 import org.jetbrains.kotlin.idea.core.util.range
 import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 import java.awt.Color
@@ -38,14 +39,7 @@ private class IconRenderer(
     private val colorText: String
 ) : GutterIconRenderer() {
     private val color: Color
-        get() {
-            val code = colorText.substring(1).toInt(16)
-            return Color(
-                code shr 16 and 0xFF,
-                code shr 8 and 0xFF,
-                code and 0xFF
-            )
-        }
+        get() = ColorMap.getColor(colorText)
 
     override fun getIcon(): Icon =
         ColorIconCache.getIconCache()
@@ -58,6 +52,6 @@ private class IconRenderer(
         colorText.hashCode()
 
     companion object {
-        private const val ICON_SIZE = 10
+        private const val ICON_SIZE = 8
     }
 }
