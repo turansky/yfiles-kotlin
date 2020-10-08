@@ -26,9 +26,17 @@ class OtherCustomObject : YObject {
 abstract class AbstractArrow : IArrow {}
 
 fun colorTest() {
-    val color1 = Color("#FF0000")
-    val color2 = Color("#00FF00")
-    val color3 = Color("#0000FF")
+    val color_11_1 = Color("#F00")
+    val color_11_2 = Color("#0F0")
+    val color_11_3 = Color("#00F")
+
+    val color_12_1 = Color("#FF0000")
+    val color_12_2 = Color("#00FF00")
+    val color_12_3 = Color("#0000FF")
+
+    val color_21_1 = Color("rgb(255, 0, 0)")
+    val color_21_2 = Color("rgb(0, 255, 0)")
+    val color_21_3 = Color("rgb(0, 0, 255)")
 }
 
 // language=CSS
