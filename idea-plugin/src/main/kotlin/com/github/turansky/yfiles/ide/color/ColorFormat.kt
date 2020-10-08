@@ -4,6 +4,16 @@ import com.intellij.xml.util.ColorMap
 import java.awt.Color
 
 enum class ColorFormat {
+    NAMED {
+        override fun matches(color: String): Boolean =
+            ColorMap.getHexCodeForColorName(color) != null
+
+        override fun parse(color: String): Color {
+            val code = ColorMap.getHexCodeForColorName(color)!!
+            return ColorMap.getColor(code)!!
+        }
+    },
+
     SHORT_HEX {
         private val PATTERN = Regex("#[A-Fa-f0-9]{3}")
         private val LENGTH = 4
