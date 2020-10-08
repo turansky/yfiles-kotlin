@@ -6,10 +6,6 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.core.util.range
 import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 
-
-private val RGB_PATTERN = Regex("#([A-Fa-f0-9]{6})")
-private const val RGB_LENGTH = 7
-
 internal class KotlinColorAnnotator : Annotator {
     override fun annotate(
         element: PsiElement,
@@ -17,11 +13,10 @@ internal class KotlinColorAnnotator : Annotator {
     ) {
         if (element !is KtLiteralStringTemplateEntry) return
         val text = element.text ?: return
+        val format = ColorFormat.values()
+            .firstOrNull { it.matches(text) }
+            ?: return
 
-        if (text.length != RGB_LENGTH || !RGB_PATTERN.matches(text)) {
-            return
-        }
-
-        holder.createColorAnnotation(text, element.range)
+        holder.createColorAnnotation(text, format, element.range)
     }
 }
