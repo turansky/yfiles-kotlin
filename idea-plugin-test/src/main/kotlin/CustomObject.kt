@@ -46,14 +46,17 @@ fun colorTest() {
 // language=CSS
 val CSS = """
     #red {
-        background-color: red    
+        background-color: red   
+        border-color: hsl(0, 100%, 50%)
     }
     
     #green {
         background-color: lime    
+        border-color: hsl(120, 100%, 50%)
     }
     
     #blue {
         background-color: blue    
+        border-color: hsl(240, 100%, 50%)
     }
 """.trimIndent()
