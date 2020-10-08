@@ -47,6 +47,7 @@ internal class KotlinColorAnnotator : Annotator {
         holder: AnnotationHolder
     ) {
         val name = element.name ?: return
+        val range = element.nameIdentifier?.range ?: return
 
         if (element.isVar) return
         if (!element.isMember) return
@@ -60,6 +61,6 @@ internal class KotlinColorAnnotator : Annotator {
         val color = name.replace("_", "").toLowerCase()
         if (!ColorFormat.NAMED.matches(color)) return
 
-        holder.createColorAnnotation(color, ColorFormat.NAMED, element.range)
+        holder.createColorAnnotation(color, ColorFormat.NAMED, range)
     }
 }
