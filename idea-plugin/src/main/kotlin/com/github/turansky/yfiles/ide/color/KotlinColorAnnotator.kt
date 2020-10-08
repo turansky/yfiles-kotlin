@@ -11,7 +11,9 @@ import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.KtProperty
 
 private val COLOR_CLASS_NAMES = setOf(
-    FqName("yfiles.view.Color")
+    FqName("yfiles.view.Color"),
+    FqName("yfiles.view.Fill"),
+    FqName("yfiles.view.Stroke"),
 )
 
 internal class KotlinColorAnnotator : Annotator {
