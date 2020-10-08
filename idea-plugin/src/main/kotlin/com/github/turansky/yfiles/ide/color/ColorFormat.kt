@@ -30,6 +30,26 @@ enum class ColorFormat {
 
         override fun parse(color: String): Color =
             ColorMap.getColor(color)
+    },
+
+    RGB {
+        private val PATTERN = Regex("rgb\\((\\d{1,3}), (\\d{1,3}), (\\d{1,3})\\)")
+        private val LENGTH_RANGE = 12..18
+
+        override fun matches(color: String): Boolean =
+            color.length in LENGTH_RANGE && PATTERN.matches(color)
+
+        override fun parse(color: String): Color {
+            val (r, g, b) = PATTERN.find(color)!!
+                .groupValues
+                .asSequence()
+                .drop(1)
+                .map { it.toInt() }
+                .map { it and 255 }
+                .toList()
+
+            return Color(r, g, b)
+        }
     };
 
     abstract fun matches(color: String): Boolean
