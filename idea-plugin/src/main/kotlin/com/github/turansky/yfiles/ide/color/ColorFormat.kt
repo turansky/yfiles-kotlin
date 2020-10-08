@@ -60,6 +60,29 @@ enum class ColorFormat {
 
             return Color(r, g, b)
         }
+    },
+
+    HSL {
+        private val PATTERN = Regex("hsl\\((\\d{1,3}), (\\d{1,3})%, (\\d{1,3})%\\)")
+        private val LENGTH_RANGE = 14..20
+
+        override fun matches(color: String): Boolean =
+            color.length in LENGTH_RANGE && PATTERN.matches(color)
+
+        override fun parse(color: String): Color {
+            val (h, s, l) = PATTERN.find(color)!!
+                .groupValues
+                .asSequence()
+                .drop(1)
+                .map { it.toFloat() }
+                .toList()
+
+            return getHSLColor(
+                h = h,
+                s = minOf(s, 100f),
+                l = minOf(l, 100f)
+            )
+        }
     };
 
     abstract fun matches(color: String): Boolean
