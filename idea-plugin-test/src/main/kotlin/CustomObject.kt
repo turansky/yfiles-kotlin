@@ -45,6 +45,10 @@ fun colorTest() {
     val color_31_1 = Color("hsl(0, 100%, 50%)")
     val color_31_2 = Color("hsl(120, 100%, 50%)")
     val color_31_3 = Color("hsl(240, 100%, 50%)")
+
+    val color_71_1 = Color.RED
+    val color_71_2 = Color.LIME
+    val color_71_3 = Color.BLUE
 }
 
 // language=CSS
