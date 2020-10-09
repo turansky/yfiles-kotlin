@@ -5,15 +5,17 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.core.util.range
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
-import org.jetbrains.kotlin.psi.KtObjectDeclaration
-import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.*
 
 private val COLOR_CLASS_NAMES = setOf(
     FqName("yfiles.view.Color"),
     FqName("yfiles.view.Fill"),
     FqName("yfiles.view.Stroke"),
+)
+
+private val COLOR_METHOD_NAMES = setOf(
+    "Color",
+    "Fill",
 )
 
 internal class KotlinColorAnnotator : Annotator {
@@ -34,6 +36,10 @@ internal class KotlinColorAnnotator : Annotator {
         element: KtLiteralStringTemplateEntry,
         holder: AnnotationHolder
     ) {
+        val argument = element.parent.parent as? KtValueArgument ?: return
+        val expression = argument.parent.parent as? KtCallExpression ?: return
+        if (expression.calleeExpression?.text !in COLOR_METHOD_NAMES) return
+
         val text = element.text ?: return
         val format = ColorFormat.values()
             .firstOrNull { it.matches(text) }
