@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.ide.highlighter.markers
 
 import com.github.turansky.yfiles.ide.js.baseClassUsed
 import com.github.turansky.yfiles.ide.js.classFixTypeUsed
+import com.github.turansky.yfiles.ide.psi.descriptor
 import com.intellij.codeInsight.daemon.GutterIconDescriptor
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
@@ -10,7 +11,6 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.idea.project.platform
-import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.idea.util.ProjectRootsUtil
 import org.jetbrains.kotlin.platform.js.isJs
 import org.jetbrains.kotlin.psi.KtClass
@@ -62,7 +62,7 @@ private fun createClassMarker(
 ): LineMarkerInfo<*>? {
     if (!option.isEnabled) return null
 
-    val descriptor = klass.descriptor as? ClassDescriptor
+    val descriptor = klass.descriptor
         ?: return null
 
     if (!check(descriptor)) {
