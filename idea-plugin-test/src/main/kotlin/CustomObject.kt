@@ -4,6 +4,9 @@ import kotlinx.browser.window
 import yfiles.lang.IClassMetadata
 import yfiles.lang.classMetadata
 import yfiles.view.Color
+import yfiles.view.Color.Companion.BLUE
+import yfiles.view.Color.Companion.LIME
+import yfiles.view.Color.Companion.RED
 
 /**
  * [yfiles.styles.ITemplateStyleBindingContext.zoom]
@@ -49,6 +52,10 @@ fun colorTest() {
     val color_71_1 = Color.RED
     val color_71_2 = Color.LIME
     val color_71_3 = Color.BLUE
+
+    val color_72_1 = RED
+    val color_72_2 = LIME
+    val color_72_3 = BLUE
 }
 
 // language=CSS
