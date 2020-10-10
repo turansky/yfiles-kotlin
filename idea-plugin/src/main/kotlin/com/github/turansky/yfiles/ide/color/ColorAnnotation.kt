@@ -2,6 +2,7 @@ package com.github.turansky.yfiles.ide.color
 
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.util.TextRange
 import com.intellij.xml.util.ColorIconCache
@@ -13,6 +14,7 @@ internal fun AnnotationHolder.createColorAnnotation(
     range: TextRange
 ) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
+        .textAttributes(DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         .gutterIconRenderer(ColorIconRenderer(colorText, format))
         .range(range)
         .create()
