@@ -26,11 +26,20 @@ private class ColorIconRenderer(
         ColorIconCache.getIconCache()
             .getIcon(format.parse(colorText), ICON_SIZE)
 
-    override fun equals(other: Any?): Boolean =
-        this === other
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ColorIconRenderer
+
+        if (colorText != other.colorText) return false
+        if (format != other.format) return false
+
+        return true
+    }
 
     override fun hashCode(): Int =
-        colorText.hashCode()
+        31 + colorText.hashCode() + format.hashCode()
 
     companion object {
         private const val ICON_SIZE = 8
