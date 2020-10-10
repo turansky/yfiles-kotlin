@@ -41,7 +41,7 @@ private class ColorIconRenderer(
     }
 
     override fun hashCode(): Int =
-        31 + colorText.hashCode() + format.hashCode()
+        31 * colorText.hashCode() + format.hashCode()
 
     companion object {
         private const val ICON_SIZE = 8
