@@ -56,6 +56,7 @@ fun generateKotlinDeclarations(
     generateObstacleData(context)
     generateTooltipUtils(context)
     generateDragDropData(context)
+    generateYndefined(context)
 
     generateElementIdUtils(context)
     generateCreationPropertyUtils(context)
