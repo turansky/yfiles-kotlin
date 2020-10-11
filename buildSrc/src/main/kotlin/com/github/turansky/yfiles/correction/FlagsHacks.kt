@@ -1,12 +1,11 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.YFLAGS
 
 internal fun generateFlagsUtils(context: GeneratorContext) {
     // language=kotlin
-    context[YFLAGS, INLINE] =
+    context[YFLAGS] =
         """
             external interface YFlags<T: YFlags<T>>
             

@@ -1,13 +1,12 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 
 internal const val DATA_TAG = "yfiles.graph.DataTag"
 
 internal fun generateDataTagUtils(context: GeneratorContext) {
     // language=kotlin
-    context[DATA_TAG, INLINE] =
+    context[DATA_TAG] =
         """
             external interface DataTag<K : Any, V : Any>
             

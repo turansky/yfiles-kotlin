@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 
@@ -8,7 +7,7 @@ private val BINDING_LIKE = "yfiles.binding.BindingLike"
 
 internal fun generateBindingUtils(context: GeneratorContext) {
     // language=kotlin
-    context[BINDING_LIKE, INLINE] =
+    context[BINDING_LIKE] =
         """
             external interface BindingLike
             

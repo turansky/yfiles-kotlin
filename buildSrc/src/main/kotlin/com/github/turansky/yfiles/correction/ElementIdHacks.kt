@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_STRING
 
@@ -8,7 +7,7 @@ private const val ELEMENT_ID = "yfiles.graphml.ElementId"
 
 internal fun generateElementIdUtils(context: GeneratorContext) {
     // language=kotlin
-    context[ELEMENT_ID, INLINE] = """
+    context[ELEMENT_ID] = """
             @JsName("String")
             external class ElementId
             private constructor() 

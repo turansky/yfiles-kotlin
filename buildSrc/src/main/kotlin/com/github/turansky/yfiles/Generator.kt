@@ -99,8 +99,7 @@ enum class ContentMode {
     EXTENSIONS,
     DELEGATE,
     ITERATOR,
-    ALIASES,
-    INLINE
+    ALIASES
 }
 
 internal interface GeneratorContext {

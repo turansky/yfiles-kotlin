@@ -90,7 +90,7 @@ internal fun generateClassUtils(context: GeneratorContext) {
     """.trimIndent()
 
     // language=kotlin
-    context[INTERFACE_METADATA, INLINE] = """
+    context[INTERFACE_METADATA] = """
         @JsName("Object")
         abstract external class InterfaceMetadata<T: $YOBJECT>
         internal constructor() : $ICLASS_METADATA<T> {
