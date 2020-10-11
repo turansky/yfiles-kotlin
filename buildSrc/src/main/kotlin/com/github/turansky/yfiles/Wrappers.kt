@@ -726,6 +726,12 @@ private val FACTORY_METHODS = setOf(
     "create",
     "from",
 
+    "fromConstant",
+    "fromDelegate",
+    "fromArray",
+    "fromRectangle",
+
+    "createCommand",
     "createCandidate",
     "createCanvasContext",
     "createInputModeContext",
