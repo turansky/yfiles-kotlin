@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.yworks.yfiles:yfiles-kotlin:23.0.2-SNAPSHOT")
+    implementation("com.yworks.yfiles:yfiles-kotlin:23.0.3-SNAPSHOT")
 }
 
 tasks.wrapper {
