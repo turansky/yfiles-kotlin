@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 import org.jetbrains.kotlin.types.KotlinType
 
 private const val EXTERNAL_PRIVATE_CONSTRUCTOR = "private member of class"
+private const val EXTERNAL_EXTENSION_FUNCTION = "extension function"
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
@@ -54,9 +55,12 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.reifiedType.isYFilesInterface()
 
             WRONG_EXTERNAL_DECLARATION
-            -> psiElement is KtConstructor<*>
+            -> (psiElement is KtPrimaryConstructor
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
-                    && psiElement.isYFilesConstructor(bindingContext)
+                    && psiElement.isYFilesConstructor(bindingContext))
+                    || (psiElement is KtNamedFunction
+                    && diagnostic.messageParameter == EXTERNAL_EXTENSION_FUNCTION
+                    && psiElement.locatedInYFilesObject)
 
             EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
             -> psiElement is KtParameter
@@ -123,7 +127,7 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
     return descriptor.isYFilesInterface()
 }
 
-private fun KtConstructor<*>.isYFilesConstructor(
+private fun KtPrimaryConstructor.isYFilesConstructor(
     context: BindingContext
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent] ?: return false
@@ -133,7 +137,7 @@ private fun KtConstructor<*>.isYFilesConstructor(
 private fun KtParameter.isYFilesConstructorParameter(
     context: BindingContext
 ): Boolean {
-    val constructor = parent?.parent as? KtConstructor<*> ?: return false
+    val constructor = parent?.parent as? KtPrimaryConstructor ?: return false
     return constructor.isYFilesConstructor(context)
 }
 
@@ -181,3 +185,10 @@ private val KtCallableDeclaration?.locatedInYFilesFile: Boolean
         return file.packageFqName.isYFiles
     }
 
+private val KtNamedFunction.locatedInYFilesObject: Boolean
+    get() {
+        val parentObject = this.parent.parent as? KtObjectDeclaration
+            ?: return false
+
+        return parentObject.fqName?.isYFiles ?: false
+    }
