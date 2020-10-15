@@ -225,7 +225,7 @@ private fun fixMethodParameterNullability(source: Source) {
         .filter { it[PARAMETERS].length() == 1 }
         .map { it[PARAMETERS].single() }
         .map { it as JSONObject }
-        .onEach { require(it[TYPE] == "yfiles.layout.LayoutGraph") }
+        .onEach { require(it[TYPE] == LAYOUT_GRAPH) }
         .forEach { it.changeNullability(false) }
 
     source.types()

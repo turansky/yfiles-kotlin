@@ -43,6 +43,7 @@ const val YLIST = "yfiles.algorithms.YList"
 const val YPOINT = "yfiles.algorithms.YPoint"
 const val EDGE_LIST = "yfiles.algorithms.EdgeList"
 
+const val GRAPH = "yfiles.algorithms.Graph"
 const val NODE = "yfiles.algorithms.Node"
 const val EDGE = "yfiles.algorithms.Edge"
 const val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
@@ -56,6 +57,8 @@ const val ITEM_EVENT_ARGS = "yfiles.collections.ItemEventArgs"
 
 const val SEGMENT_INFO = "yfiles.router.SegmentInfo"
 const val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"
+
+const val LAYOUT_GRAPH = "yfiles.layout.LayoutGraph"
 
 const val INODE_LABEL_LAYOUT = "yfiles.layout.INodeLabelLayout"
 const val IEDGE_LABEL_LAYOUT = "yfiles.layout.IEdgeLabelLayout"
