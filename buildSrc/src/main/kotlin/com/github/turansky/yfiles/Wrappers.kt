@@ -739,6 +739,11 @@ private val FACTORY_METHODS = setOf(
     "combine"
 )
 
+private val RECEIVER_TYPES = setOf(
+    GRAPH,
+    LAYOUT_GRAPH
+)
+
 internal class Method(
     source: JSONObject,
     private val parent: Type,
@@ -773,6 +778,11 @@ internal class Method(
 
     val functional: Boolean
         get() = typeparameters.isEmpty()
+
+    private val hasReceiver: Boolean by lazy {
+        static && parameters.size in 1..3
+                && parameters.first().type in RECEIVER_TYPES
+    }
 
     private val documentation: String
         get() = getDocumentation(
@@ -865,7 +875,9 @@ internal class Method(
 
         val returnSignature = getReturnSignature(definedExternally)
         val modifier = if (additionalOperator || definedExternally) " final" else kotlinModifier()
-        var code = "$annotation $modifier $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
+        val receiver = if (hasReceiver) parameters.first().type + "." else ""
+        val parametersString = kotlinParametersString(hasReceiver)
+        var code = "$annotation $modifier $operator fun ${generics.declaration}$receiver$methodName($parametersString)$returnSignature"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code
@@ -1002,12 +1014,16 @@ internal sealed class MethodBase(
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
 
-    protected fun kotlinParametersString(): String =
-        parameters.byCommaLine {
-            val modifiers = exp(it.modifiers.vararg, "vararg ")
-            val body = exp(it.modifiers.optional && !overridden, EQ_DE)
-            "$modifiers ${it.declaration} $body"
-        }
+    protected fun kotlinParametersString(
+        ignoreFirstParameter: Boolean = false
+    ): String =
+        parameters
+            .drop(if (ignoreFirstParameter) 1 else 0)
+            .byCommaLine {
+                val modifiers = exp(it.modifiers.vararg, "vararg ")
+                val body = exp(it.modifiers.optional && !overridden, EQ_DE)
+                "$modifiers ${it.declaration} $body"
+            }
 
     override fun compareTo(other: Declaration): Int {
         val result = super.compareTo(other)
