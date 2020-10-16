@@ -980,10 +980,7 @@ internal class Method(
     }
 
     override fun toExtensionCode(): String {
-        if (static) {
-            return toStaticExtensionCode()
-        }
-
+        require(!static)
         require(!protected)
         requireNotNull(operatorName)
 
@@ -997,17 +994,6 @@ internal class Method(
                 "inline operator fun $genericDeclaration ${parent.classDeclaration}.$operatorName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
-    }
-
-    private fun toStaticExtensionCode(): String {
-        val type = parent.name
-        val parameter = parameters[1]
-
-        return """
-            inline operator fun $type.$operatorName(${parameter.declaration}): $type {
-                return $type.$name(this, ${parameter.name})
-            }
-        """.trimIndent()
     }
 }
 
