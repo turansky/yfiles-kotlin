@@ -796,6 +796,7 @@ internal class Method(
             remarks = remarks,
             preconditions = preconditions,
             postconditions = postconditions,
+            hasReceiver = hasReceiver,
             parameters = parameters,
             typeparameters = typeparameters,
             returns = returns,
@@ -1245,6 +1246,7 @@ private fun getDocumentation(
     dpdata: DpData? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
+    hasReceiver: Boolean = false,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -1260,6 +1262,7 @@ private fun getDocumentation(
         dpdata = dpdata,
         preconditions = preconditions,
         postconditions = postconditions,
+        hasReceiver = hasReceiver,
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
@@ -1292,6 +1295,7 @@ private fun getDocumentationLines(
     dpdata: DpData? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
+    hasReceiver: Boolean = false,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -1342,8 +1346,11 @@ private fun getDocumentationLines(
         it.toDoc()
     }
 
+    var receiverMode = hasReceiver
     parameters?.flatMapTo(lines) {
-        it.toDoc()
+        it.toDoc(receiverMode).also {
+            receiverMode = false
+        }
     }
 
     returns?.doc?.let {
@@ -1390,11 +1397,14 @@ private fun getDocumentationLines(
     return lines.toList()
 }
 
-private fun IParameter.toDoc(): List<String> {
+private fun IParameter.toDoc(receiverMode: Boolean = false): List<String> {
     val summary = summary
         ?: return emptyList()
 
-    return param(name, summary)
+    return when {
+        receiverMode -> receiver(summary)
+        else -> param(name, summary)
+    }
 }
 
 private fun List<String>?.toNamedList(title: String): List<String> {
