@@ -758,7 +758,7 @@ private val EXCLUDED_RECEIVER_CLASSES = setOf(
 internal class Method(
     source: JSONObject,
     private val parent: Type,
-    private var operatorName: String? = null
+    private val operatorName: String? = null
 ) : MethodBase(source, parent) {
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
@@ -948,8 +948,7 @@ internal class Method(
         val secondParameterType = parameters[1].type
         if (secondParameterType != type && secondParameterType != DOUBLE) return null
 
-        return Method(source, parent)
-            .also { it.operatorName = operatorName }
+        return Method(source, parent, operatorName)
     }
 
     fun toOperatorExtension(): Method? {
@@ -975,8 +974,7 @@ internal class Method(
             source
         }
 
-        return Method(newSource, parent)
-            .also { it.operatorName = operatorName }
+        return Method(newSource, parent, operatorName)
     }
 
     override fun toExtensionCode(): String {
