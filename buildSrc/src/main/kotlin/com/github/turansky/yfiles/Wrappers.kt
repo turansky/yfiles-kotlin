@@ -795,9 +795,9 @@ internal class Method(
             !static -> false
             this.operatorName != null -> true
             parameters.size !in 1..3 -> false
+            parent.classId in EXCLUDED_RECEIVER_CLASSES -> false
             parent.classId in INCLUDED_RECEIVER_CLASSES -> true
             else -> parameters.first().type in RECEIVER_TYPES
-                    && parent.classId !in EXCLUDED_RECEIVER_CLASSES
         }
     }
 
