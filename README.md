@@ -26,6 +26,7 @@
 * [Factory methods](#factory-methods)
 * [Quick interface implementation](#quick-interface-implementation)
 * [Flags](#flags)
+* [Extensions](#extensions)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)
@@ -170,6 +171,25 @@ val inputMode = GraphViewerInputMode {
 }
 
 val nodesAreClickable = NODE in inputMode.clickableItems // true
+```
+
+## Extensions
+Most util methods available as extensions only.
+`Graph` and `LayoutGraph` - the most popular receivers. 
+```Kotlin
+import yfiles.algorithms.GraphChecker.isAcyclic
+import yfiles.algorithms.GraphChecker.isCyclic
+import yfiles.algorithms.Trees.isForest
+
+// ...
+
+val graph: Graph = DefaultLayoutGraph()
+// JS: GraphChecker.isCyclic(graph)
+graph.isCyclic()
+// JS: GraphChecker.isAcyclic(graph)
+graph.isAcyclic()
+// JS: Trees.isForest(graph)
+graph.isForest()
 ```
 
 ## `for` loop
