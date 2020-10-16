@@ -181,6 +181,12 @@ private fun fixConstructorParameterName(source: Source) {
         .flatMap(PARAMETERS)
         .single { it[NAME] == "millis" }
         .set(NAME, "milliseconds")
+
+    source.type("SvgDefsManager")
+        .flatMap(CONSTRUCTORS)
+        .flatMap(PARAMETERS)
+        .single { it[NAME] == "defsElement" }
+        .set(NAME, "defs")
 }
 
 private fun fixMethodParameterName(source: Source) {
