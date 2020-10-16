@@ -153,6 +153,10 @@ private fun fixConstantType(source: Source) {
 }
 
 private fun fixPropertyType(source: Source) {
+    source.type("IRenderContext")
+        .property("defsElement")
+        .set(TYPE, JS_SVG_DEFS_ELEMENT)
+
     source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")

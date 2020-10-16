@@ -47,7 +47,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
 
     JS_SVG_ELEMENT to SVG_ELEMENT,
-    "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
+    JS_SVG_DEFS_ELEMENT to "org.w3c.dom.svg.SVGDefsElement",
     "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
     "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
     "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
