@@ -139,8 +139,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
     val extensionMethods: List<Method> by lazy {
-        (if (id == IENUMERABLE) methods.mapNotNull { it.toOperatorExtension() } else emptyList()) +
-                staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+        if (id == IENUMERABLE) methods.mapNotNull { it.toOperatorExtension() } else emptyList()
     }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -758,7 +757,7 @@ private val EXCLUDED_RECEIVER_CLASSES = setOf(
 internal class Method(
     source: JSONObject,
     private val parent: Type,
-    private val operatorName: String? = null
+    operatorName: String? = null
 ) : MethodBase(source, parent) {
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
@@ -790,9 +789,11 @@ internal class Method(
     val functional: Boolean
         get() = typeparameters.isEmpty()
 
+    private val operatorName = operatorName ?: getStaticOperatorExtensionName()
     private val hasReceiver: Boolean by lazy {
         when {
             !static -> false
+            this.operatorName != null -> true
             parameters.size !in 1..3 -> false
             parent.classId in INCLUDED_RECEIVER_CLASSES -> true
             else -> parameters.first().type in RECEIVER_TYPES
@@ -884,10 +885,10 @@ internal class Method(
         val methodName = if (staticCreate) "invoke" else operatorName ?: name
         val annotation = if (staticCreate || additionalOperator) "@JsName(\"$name\")\n" else ""
 
-        val definedExternally = if (additionalOperator) {
-            parent is Interface
-        } else {
-            !static && !abstract && parent is Interface
+        val definedExternally = when {
+            static -> false
+            additionalOperator -> parent is Interface
+            else -> !static && !abstract && parent is Interface
         }
 
         val returnSignature = getReturnSignature(definedExternally)
@@ -934,7 +935,8 @@ internal class Method(
         return documentation + code
     }
 
-    fun toStaticOperatorExtension(): Method? {
+    private fun getStaticOperatorExtensionName(): String? {
+        if (!static) return null
         val operatorName = OPERATOR_NAME_MAP[name] ?: return null
         if (parameters.size != 2) return null
         val returns = returns ?: return null
@@ -948,7 +950,7 @@ internal class Method(
         val secondParameterType = parameters[1].type
         if (secondParameterType != type && secondParameterType != DOUBLE) return null
 
-        return Method(source, parent, operatorName)
+        return operatorName
     }
 
     fun toOperatorExtension(): Method? {
