@@ -744,6 +744,11 @@ private val RECEIVER_TYPES = setOf(
     LAYOUT_GRAPH
 )
 
+private val NO_RECEIVER_CLASSES = setOf(
+    "yfiles.algorithms.AbortHandler",
+    "yfiles.algorithms.Bfs"
+)
+
 internal class Method(
     source: JSONObject,
     private val parent: Type,
@@ -782,6 +787,7 @@ internal class Method(
     private val hasReceiver: Boolean by lazy {
         static && parameters.size in 1..3
                 && parameters.first().type in RECEIVER_TYPES
+                && parent.classId !in NO_RECEIVER_CLASSES
     }
 
     private val documentation: String
