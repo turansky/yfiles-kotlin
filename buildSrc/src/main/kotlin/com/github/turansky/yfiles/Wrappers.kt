@@ -744,7 +744,13 @@ private val RECEIVER_TYPES = setOf(
     LAYOUT_GRAPH
 )
 
-private val NO_RECEIVER_CLASSES = setOf(
+private val INCLUDED_RECEIVER_CLASSES = setOf(
+    "yfiles.view.CanvasComponent",
+    "yfiles.view.DropTarget",
+    "yfiles.view.SvgVisual"
+)
+
+private val EXCLUDED_RECEIVER_CLASSES = setOf(
     "yfiles.algorithms.AbortHandler",
     "yfiles.algorithms.Bfs"
 )
@@ -785,9 +791,13 @@ internal class Method(
         get() = typeparameters.isEmpty()
 
     private val hasReceiver: Boolean by lazy {
-        static && parameters.size in 1..3
-                && parameters.first().type in RECEIVER_TYPES
-                && parent.classId !in NO_RECEIVER_CLASSES
+        when {
+            !static -> false
+            parameters.size !in 1..3 -> false
+            parent.classId in INCLUDED_RECEIVER_CLASSES -> true
+            else -> parameters.first().type in RECEIVER_TYPES
+                    && parent.classId !in EXCLUDED_RECEIVER_CLASSES
+        }
     }
 
     private val documentation: String
