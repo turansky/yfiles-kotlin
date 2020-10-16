@@ -302,6 +302,13 @@ private fun fixMethodParameterType(source: Source) {
             .filter { it[SIGNATURE] == PCC_HANDLER }
             .forEach { it.replaceInSignature(">>", "?>>") }
     }
+
+    source.type("SvgVisual")
+        .flatMap(METHODS)
+        .filter { it[NAME] == "setScale" || it[NAME] == "setTranslate" }
+        .map { it.firstParameter }
+        .onEach { check(it[TYPE] == JS_ELEMENT) }
+        .forEach { it[TYPE] = JS_SVG_ELEMENT }
 }
 
 private fun fixMethodNullability(source: Source) {
