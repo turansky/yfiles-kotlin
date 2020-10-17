@@ -931,7 +931,7 @@ internal class Method(
 
         val returnSignature = getReturnSignature(definedExternally)
         val modifier = if (additionalOperator || definedExternally) " final" else kotlinModifier()
-        val receiver = if (hasReceiver) parameters.first().type + "." else ""
+        val receiver = if (hasReceiver) parameters.first().typeDeclaration + "." else ""
         val parametersString = kotlinParametersString(hasReceiver)
         var code = "$annotation $modifier $operator fun ${generics.declaration}$receiver$methodName($parametersString)$returnSignature"
         when {
@@ -1091,10 +1091,11 @@ internal class Parameter(
     override val name: String by string()
     private val signature: String? by optString()
     val type: String by type { parse(it, signature).inMode(readOnly) }
+    val typeDeclaration: String by lazy { type + modifiers.nullability }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
 
-    val declaration: String by lazy { name + ": " + type + modifiers.nullability }
+    val declaration: String by lazy { name + ": " + typeDeclaration }
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter, ITypeParameter {
