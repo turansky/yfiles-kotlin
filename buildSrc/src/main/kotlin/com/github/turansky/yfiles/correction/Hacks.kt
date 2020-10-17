@@ -249,6 +249,13 @@ private fun fixMethodParameterNullability(source: Source) {
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
 
+    source.types("Substructures", "SeriesParallelLayout")
+        .flatMap(METHODS)
+        .filter { STATIC in it[MODIFIERS] }
+        .map { it.firstParameter }
+        .onEach { check(it[TYPE] == GRAPH) }
+        .forEach { it.changeNullability(false) }
+
     source.type("Font")
         .let { it.flatMap(CONSTRUCTORS) + it.method("createCopy") }
         .flatMap(PARAMETERS)
