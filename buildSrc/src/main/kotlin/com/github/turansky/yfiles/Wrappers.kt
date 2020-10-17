@@ -449,15 +449,16 @@ internal class Constructor(
 
         val map = parent.memberProperties
             .filter { it.name in parameterNames }
-            .takeIf { it.size == parameterNames.size }
-            ?.sortedBy { parameterNames.indexOf(it.name) }
-            ?.associateBy { it.name }
-            ?: return@lazy null
+            .ifEmpty { return@lazy null }
+            .sortedBy { parameterNames.indexOf(it.name) }
+            .associateBy { it.name }
 
-        val compatible = parameters.all {
-            val property = map.getValue(it.name)
-            property.type == it.type && property.nullability == it.modifiers.nullability
-        }
+        val compatible = parameters
+            .filter { map.containsKey(it.name) }
+            .all {
+                val property = map.getValue(it.name)
+                property.type == it.type && property.nullability == it.modifiers.nullability
+            }
 
         map.takeIf { compatible }
     }
@@ -504,7 +505,8 @@ internal class Constructor(
         val propertyMap = propertyParameterMap
         val parametersString = if (propertyMap != null) {
             "\n" + parameters.byCommaLine {
-                propertyMap.getValue(it.name).toPrimaryCode(it.modifiers.optional)
+                propertyMap[it.name]?.toPrimaryCode(it.modifiers.optional)
+                    ?: it.toParameterString()
             }
         } else {
             kotlinParametersString()
@@ -1053,16 +1055,18 @@ internal sealed class MethodBase(
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
 
+    protected fun Parameter.toParameterString(): String {
+        val vararg = exp(modifiers.vararg, "vararg ")
+        val body = exp(modifiers.optional && !overridden, EQ_DE)
+        return "$vararg $declaration $body"
+    }
+
     protected fun kotlinParametersString(
         ignoreFirstParameter: Boolean = false
     ): String =
         parameters
             .drop(if (ignoreFirstParameter) 1 else 0)
-            .byCommaLine {
-                val modifiers = exp(it.modifiers.vararg, "vararg ")
-                val body = exp(it.modifiers.optional && !overridden, EQ_DE)
-                "$modifiers ${it.declaration} $body"
-            }
+            .byCommaLine { it.toParameterString() }
 
     override fun compareTo(other: Declaration): Int {
         val result = super.compareTo(other)
