@@ -831,9 +831,10 @@ internal class Method(
         when {
             !static -> false
             this.operatorName != null -> true
-            parameters.size !in 1..3 -> false
+            parameters.isEmpty() -> false
             parent.name in EXCLUDED_RECEIVER_CLASSES -> false
-            parent.name in INCLUDED_RECEIVER_CLASSES -> true
+            parent.name in INCLUDED_RECEIVER_CLASSES
+                    && parameters.size <= 3 -> true
             else -> parameters.first().type in RECEIVER_TYPES
         }
     }
