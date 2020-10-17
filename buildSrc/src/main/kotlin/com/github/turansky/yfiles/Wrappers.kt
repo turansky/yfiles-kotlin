@@ -764,6 +764,11 @@ private val FACTORY_METHODS = setOf(
     "combine"
 )
 
+private val APPLY_METHODS = setOf(
+    "setFill",
+    "setStroke"
+)
+
 private val RECEIVER_TYPES = setOf(
     GRAPH,
     LAYOUT_GRAPH
@@ -832,6 +837,7 @@ internal class Method(
             !static -> false
             this.operatorName != null -> true
             parameters.isEmpty() -> false
+            name in APPLY_METHODS -> true
             parent.name in EXCLUDED_RECEIVER_CLASSES -> false
             parent.name in INCLUDED_RECEIVER_CLASSES
                     && parameters.size <= 3 -> true
@@ -921,8 +927,12 @@ internal class Method(
         val additionalOperator = operatorName != null
         val operator = exp(staticCreate || additionalOperator || isOperatorMode(), "operator")
 
-        val methodName = if (staticCreate) "invoke" else operatorName ?: name
-        val annotation = if (staticCreate || additionalOperator) "@JsName(\"$name\")\n" else ""
+        val methodName = when {
+            staticCreate -> "invoke"
+            name in APPLY_METHODS -> "applyTo"
+            else -> operatorName ?: name
+        }
+        val annotation = if (methodName != name) "@JsName(\"$name\")\n" else ""
 
         val definedExternally = when {
             static -> false
