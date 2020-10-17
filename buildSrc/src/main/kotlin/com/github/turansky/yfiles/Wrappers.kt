@@ -406,6 +406,11 @@ internal sealed class TypedDeclaration(
         get() = true
 }
 
+private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
+    "CellEntrance",
+    "PartitionCell"
+)
+
 internal class Constructor(
     source: JSONObject,
     parent: Class
@@ -416,7 +421,7 @@ internal class Constructor(
     override val overridden: Boolean = false
 
     private val propertyParameterMap: Map<String, Property>? by lazy {
-        if (parent.secondaryConstructors.isNotEmpty())
+        if (parent.secondaryConstructors.isNotEmpty() && parent.name !in IGNORE_SECONDARY_CONSTRUCTORS)
             return@lazy null
 
         if (parameters.isEmpty())
