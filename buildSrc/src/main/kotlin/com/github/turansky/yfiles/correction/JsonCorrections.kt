@@ -66,7 +66,16 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("LayoutGraphHider", "g") to "graph",
 
     ConstructorParameterData("LineSegment", "p1") to "firstEndPoint",
-    ConstructorParameterData("LineSegment", "p2") to "secondEndPoint"
+    ConstructorParameterData("LineSegment", "p2") to "secondEndPoint",
+
+    ConstructorParameterData("HandleSerializationEventArgs", "serializationType") to "sourceType",
+    ConstructorParameterData("QueryTypeEventArgs", "xName") to "xmlName",
+    ConstructorParameterData("XmlName", "ns") to "namespace",
+
+    ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
+
+    ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
+    ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio"
 )
 
 internal val PARAMETERS_CORRECTION = mapOf(
