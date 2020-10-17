@@ -191,6 +191,21 @@ private fun fixConstructorParameterName(source: Source) {
         .flatMap(PARAMETERS)
         .single { it[NAME] == "defsElement" }
         .set(NAME, "defs")
+
+    source.type("LayoutGraphHider")
+        .flatMap(CONSTRUCTORS)
+        .flatMap(PARAMETERS)
+        .single { it[NAME] == "g" }
+        .set(NAME, "graph")
+
+    val nameMap = mapOf(
+        "p1" to "firstEndPoint",
+        "p2" to "secondEndPoint"
+    )
+    source.type("LineSegment")
+        .flatMap(CONSTRUCTORS)
+        .flatMap(PARAMETERS)
+        .forEach { it[NAME] = nameMap.getValue(it[NAME]) }
 }
 
 private fun fixMethodParameterName(source: Source) {
