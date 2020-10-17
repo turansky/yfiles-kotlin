@@ -8,12 +8,12 @@
 
 ## [Gradle Plugin](gradle-plugin)
 + Resolve inheritance problems
-+ Optimize yFiles imports <sup>**new**</sup>
++ Optimize yFiles imports
   + while [ES modules](https://youtrack.jetbrains.com/issue/KT-8373) not supported
 
 ## [IDEA Plugin](idea-plugin)
 + Check [inheritance rules](gradle-plugin) on the fly
-+ Highlight binding syntax <sup>**new**</sup>
++ Highlight binding syntax
 
 ## Table of contents
 * [Generation](#generation)
@@ -26,7 +26,7 @@
 * [Factory methods](#factory-methods)
 * [Quick interface implementation](#quick-interface-implementation)
 * [Flags](#flags)
-* [Extensions](#extensions)
+* [Extensions <sup>**new**</sup>](#extensions)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)
