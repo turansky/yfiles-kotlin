@@ -725,6 +725,7 @@ private val FACTORY_METHODS = setOf(
     "create",
     "from",
 
+    "convertFrom",
     "fromConstant",
     "fromDelegate",
     "fromArray",
@@ -878,7 +879,8 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val staticCreate = static && name in FACTORY_METHODS && parent.name != "List"
+        val staticCreate = static && name in FACTORY_METHODS
+                && parent.name != "List" && parent.name != "XmlName" && !parent.name.endsWith("s")
         val additionalOperator = operatorName != null
         val operator = exp(staticCreate || additionalOperator || isOperatorMode(), "operator")
 
