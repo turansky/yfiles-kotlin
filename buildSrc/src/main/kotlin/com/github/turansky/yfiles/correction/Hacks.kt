@@ -180,32 +180,13 @@ private fun fixPropertyNullability(source: Source) {
 }
 
 private fun fixConstructorParameterName(source: Source) {
-    source.type("TimeSpan")
-        .flatMap(CONSTRUCTORS)
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "millis" }
-        .set(NAME, "milliseconds")
-
-    source.type("SvgDefsManager")
-        .flatMap(CONSTRUCTORS)
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "defsElement" }
-        .set(NAME, "defs")
-
-    source.type("LayoutGraphHider")
-        .flatMap(CONSTRUCTORS)
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "g" }
-        .set(NAME, "graph")
-
-    val nameMap = mapOf(
-        "p1" to "firstEndPoint",
-        "p2" to "secondEndPoint"
-    )
-    source.type("LineSegment")
-        .flatMap(CONSTRUCTORS)
-        .flatMap(PARAMETERS)
-        .forEach { it[NAME] = nameMap.getValue(it[NAME]) }
+    for ((data, fixedName) in CONSTRUCTOR_PARAMETERS_CORRECTION) {
+        source.type(data.className)
+            .flatMap(CONSTRUCTORS)
+            .flatMap(PARAMETERS)
+            .single { it[NAME] == data.parameterName }
+            .set(NAME, fixedName)
+    }
 }
 
 private fun fixMethodParameterName(source: Source) {
