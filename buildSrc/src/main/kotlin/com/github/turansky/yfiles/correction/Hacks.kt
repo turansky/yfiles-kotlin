@@ -268,6 +268,13 @@ private fun fixMethodParameterNullability(source: Source) {
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
 
+    source.type("Font")
+        .let { it.flatMap(CONSTRUCTORS) + it.method("createCopy") }
+        .flatMap(PARAMETERS)
+        .filter { it[TYPE] != JS_NUMBER }
+        .map { it[MODIFIERS] }
+        .forEach { it.removeItem(CANBENULL) }
+
     source.types()
         .optFlatMap(EVENTS)
         .eventListeners()
