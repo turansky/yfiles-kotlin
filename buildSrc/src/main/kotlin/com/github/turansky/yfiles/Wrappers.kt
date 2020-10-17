@@ -745,14 +745,14 @@ private val RECEIVER_TYPES = setOf(
 )
 
 private val INCLUDED_RECEIVER_CLASSES = setOf(
-    "yfiles.view.CanvasComponent",
-    "yfiles.view.DropTarget",
-    "yfiles.view.SvgVisual"
+    "CanvasComponent",
+    "DropTarget",
+    "SvgVisual"
 )
 
 private val EXCLUDED_RECEIVER_CLASSES = setOf(
-    "yfiles.algorithms.AbortHandler",
-    "yfiles.algorithms.Bfs"
+    "AbortHandler",
+    "Bfs"
 )
 
 internal class Method(
@@ -796,8 +796,8 @@ internal class Method(
             !static -> false
             this.operatorName != null -> true
             parameters.size !in 1..3 -> false
-            parent.classId in EXCLUDED_RECEIVER_CLASSES -> false
-            parent.classId in INCLUDED_RECEIVER_CLASSES -> true
+            parent.name in EXCLUDED_RECEIVER_CLASSES -> false
+            parent.name in INCLUDED_RECEIVER_CLASSES -> true
             else -> parameters.first().type in RECEIVER_TYPES
         }
     }
