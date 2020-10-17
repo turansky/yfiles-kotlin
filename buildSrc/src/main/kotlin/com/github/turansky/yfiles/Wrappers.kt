@@ -194,8 +194,15 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
-    val primaryConstructor: Constructor? = constructors.firstOrNull()
-    val secondaryConstructors: List<Constructor> = constructors.drop(1)
+    val useLastConstuctorAsPrimary = name in USE_LAST_CONSTRUCTOR_AS_PRIMARY
+    val primaryConstructor: Constructor? = when {
+        useLastConstuctorAsPrimary -> constructors.last()
+        else -> constructors.firstOrNull()
+    }
+    val secondaryConstructors: List<Constructor> = when {
+        useLastConstuctorAsPrimary -> constructors.dropLast(1)
+        else -> constructors.drop(1)
+    }
 
     fun isHidden(property: Property): Boolean =
         primaryConstructor?.hasPropertyParameter(property.name) ?: false
@@ -406,10 +413,20 @@ internal sealed class TypedDeclaration(
         get() = true
 }
 
+private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
+    "YPoint",
+    "YRectangle",
+    "Point2D",
+    "MutablePoint",
+    "MutableRectangle",
+    "Rect",
+    "Insets"
+)
+
 private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
     "CellEntrance",
     "PartitionCell"
-)
+) + USE_LAST_CONSTRUCTOR_AS_PRIMARY
 
 internal class Constructor(
     source: JSONObject,
