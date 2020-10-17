@@ -745,6 +745,17 @@ private val RECEIVER_TYPES = setOf(
 )
 
 private val INCLUDED_RECEIVER_CLASSES = setOf(
+    "Graph",
+    "Trees",
+    "YOrientedRectangle",
+    "YRectangle",
+    "YPoint",
+
+    "GeomUtilities",
+
+    "IEdge",
+    "Table",
+
     "CanvasComponent",
     "DropTarget",
     "SvgVisual"
