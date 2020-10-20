@@ -75,7 +75,13 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
 
     ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
-    ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio"
+    ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
+
+    ConstructorParameterData("Animator", "canvas") to "canvasComponent",
+    ConstructorParameterData("ItemSelectionChangedEventArgs", "selected") to "itemSelected",
+    ConstructorParameterData("KeyEventArgs", "type") to "eventType",
+    ConstructorParameterData("ModelManager", "canvas") to "canvasComponent",
+    ConstructorParameterData("SvgVisual", "element") to "svgElement"
 )
 
 internal val PARAMETERS_CORRECTION = mapOf(
