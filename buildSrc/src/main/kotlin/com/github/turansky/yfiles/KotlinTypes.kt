@@ -40,14 +40,14 @@ private val STANDARD_TYPE_MAP = mapOf(
 
     "Document" to "org.w3c.dom.Document",
     "Node" to "org.w3c.dom.Node",
-    "Element" to ELEMENT,
+    JS_ELEMENT to ELEMENT,
     "HTMLElement" to HTML_ELEMENT,
     "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
     "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
     "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
 
     JS_SVG_ELEMENT to SVG_ELEMENT,
-    "SVGDefsElement" to "org.w3c.dom.svg.SVGDefsElement",
+    JS_SVG_DEFS_ELEMENT to "org.w3c.dom.svg.SVGDefsElement",
     "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
     "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
     "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",

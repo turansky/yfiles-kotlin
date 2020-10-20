@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.4.10"
-    id("org.jetbrains.intellij") version "0.4.26"
-    id("com.github.turansky.kfc.version") version "0.16.0"
+    id("org.jetbrains.intellij") version "0.5.0"
+    id("com.github.turansky.kfc.version") version "1.0.0"
 }
 
 repositories {
@@ -16,7 +16,7 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2020.2.2"
+    version = "2020.2.3"
 
     setPlugins(
         "java",
@@ -51,7 +51,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.6.1"
+        gradleVersion = "6.7"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

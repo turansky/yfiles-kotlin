@@ -1,9 +1,6 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.FINAL
-import com.github.turansky.yfiles.PRIVATE
-import com.github.turansky.yfiles.RO
-import com.github.turansky.yfiles.STATIC
+import com.github.turansky.yfiles.*
 import com.github.turansky.yfiles.json.jArray
 import com.github.turansky.yfiles.json.jObject
 
@@ -11,6 +8,7 @@ internal fun applyResultHacks(source: Source) {
     source.types()
         .filter { it[GROUP] == "class" }
         .filter { FINAL in it[MODIFIERS] }
+        .filterNot { ENUM_LIKE in it[MODIFIERS] }
         .filterNot { it.has(EXTENDS) }
         .filterNot { it.has(CONSTRUCTORS) }
         .filter { it.has(PROPERTIES) }

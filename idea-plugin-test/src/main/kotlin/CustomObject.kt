@@ -1,4 +1,3 @@
-import yfiles.lang.ClassMetadata
 import yfiles.lang.YObject
 import yfiles.styles.IArrow
 import kotlinx.browser.window

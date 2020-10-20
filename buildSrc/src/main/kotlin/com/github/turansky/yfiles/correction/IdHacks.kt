@@ -1,13 +1,12 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.json.get
 import org.json.JSONObject
 
 internal fun generateIdUtils(context: GeneratorContext) {
     // language=kotlin
-    context[YID, INLINE] = """
+    context[YID] = """
             external interface Id: $YOBJECT
             
             inline fun Id(source:Any):Id = 

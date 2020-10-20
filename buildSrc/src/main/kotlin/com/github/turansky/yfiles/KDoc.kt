@@ -31,6 +31,10 @@ fun constructor(summary: String): String =
 fun property(name: String): String =
     "@property $name"
 
+fun receiver(summary: String): List<String> =
+    "@receiver $summary"
+        .asMultiline()
+
 fun param(name: String, summary: String): List<String> =
     "@param [$name] $summary"
         .asMultiline()

@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
@@ -9,7 +8,7 @@ private const val STYLE_TAG = "yfiles.styles.StyleTag"
 
 internal fun generateStyleTagUtils(context: GeneratorContext) {
     // language=kotlin
-    context[STYLE_TAG, INLINE] = """
+    context[STYLE_TAG] = """
             external interface StyleTag
             
             inline fun StyleTag(source:Any):StyleTag = 

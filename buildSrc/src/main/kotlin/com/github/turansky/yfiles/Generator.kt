@@ -56,15 +56,12 @@ fun generateKotlinDeclarations(
     generateObstacleData(context)
     generateTooltipUtils(context)
     generateDragDropData(context)
+    generateYndefined(context)
 
     generateElementIdUtils(context)
     generateCreationPropertyUtils(context)
     generateSerializationUtils(context)
     generateEdgeDirectednessUtils(context)
-
-    val timeSpanClass = types.first { it.classId == "yfiles.lang.TimeSpan" } as Class
-    generateTimeSpanExtensions(context, timeSpanClass)
-    generateLookupExtensions(context)
 
     addIteratorSupport(context)
     generateDpKeyDelegates(context)
@@ -100,12 +97,10 @@ fun generateVsdxKotlinDeclarations(
 
 enum class ContentMode {
     CLASS,
-    INTERFACE,
     EXTENSIONS,
     DELEGATE,
     ITERATOR,
-    ALIASES,
-    INLINE
+    ALIASES
 }
 
 internal interface GeneratorContext {
@@ -117,8 +112,6 @@ internal interface GeneratorContext {
 
     fun clean()
 }
-
-private const val NOTHING_TO_INLINE = "@file:Suppress(\"NOTHING_TO_INLINE\")\n"
 
 private class SimpleGeneratorContext(
     private val sourceDir: File,
@@ -145,22 +138,12 @@ private class SimpleGeneratorContext(
         } + ".kt"
 
         val moduleDeclaration = when (mode) {
-            CLASS, INTERFACE -> moduleAnnotation
+            CLASS -> moduleAnnotation
             else -> ""
         }
 
-        val suppressNothingToInline = when (mode) {
-            EXTENSIONS -> classId == YOBJECT || classId == YENUM || classId == BASE_CLASS
-            DELEGATE -> classId != DP_KEY_BASE
-            INLINE -> true
-            else -> false
-        }
-
-        val suppresses = exp(suppressNothingToInline, NOTHING_TO_INLINE)
-
         val text = "// $GENERATOR_COMMENT\n\n" +
                 moduleDeclaration +
-                suppresses +
                 "package $packageId\n\n" +
                 content.clear(classId)
                     .replace(DOC_BASE_URL, docBaseUrl)

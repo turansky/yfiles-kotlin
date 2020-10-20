@@ -8,12 +8,12 @@
 
 ## [Gradle Plugin](gradle-plugin)
 + Resolve inheritance problems
-+ Optimize yFiles imports <sup>**new**</sup>
++ Optimize yFiles imports
   + while [ES modules](https://youtrack.jetbrains.com/issue/KT-8373) not supported
 
 ## [IDEA Plugin](idea-plugin)
 + Check [inheritance rules](gradle-plugin) on the fly
-+ Highlight binding syntax <sup>**new**</sup>
++ Highlight binding syntax
 
 ## Table of contents
 * [Generation](#generation)
@@ -26,6 +26,7 @@
 * [Factory methods](#factory-methods)
 * [Quick interface implementation](#quick-interface-implementation)
 * [Flags](#flags)
+* [Extensions <sup>**new**</sup>](#extensions)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)
@@ -49,7 +50,7 @@
 | :---                        |         :---:         |      :---:        |
 | Documentation               |        [API][12]      |     [API][22]     |
 | Module                      |        `yfiles`       | `vsdx-export-for-yfiles-for-html` |
-| Version                     |         `23.0.2`      |      `1.3.0`      |
+| Version                     |         `23.0.3`      |      `1.3.1`      |
 | Module format               |         `ES6`         |       `ES6`       |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  | **`vsdx-kotlin`** |
 | Nullability fixes           |         3200+         |         -         |
@@ -170,6 +171,25 @@ val inputMode = GraphViewerInputMode {
 }
 
 val nodesAreClickable = NODE in inputMode.clickableItems // true
+```
+
+## Extensions
+Most util methods available as extensions only.
+`Graph` and `LayoutGraph` - the most popular receivers. 
+```Kotlin
+import yfiles.algorithms.GraphChecker.isAcyclic
+import yfiles.algorithms.GraphChecker.isCyclic
+import yfiles.algorithms.Trees.isForest
+
+// ...
+
+val graph: Graph = DefaultLayoutGraph()
+// JS: GraphChecker.isCyclic(graph)
+graph.isCyclic()
+// JS: GraphChecker.isAcyclic(graph)
+graph.isAcyclic()
+// JS: Trees.isForest(graph)
+graph.isForest()
 ```
 
 ## `for` loop

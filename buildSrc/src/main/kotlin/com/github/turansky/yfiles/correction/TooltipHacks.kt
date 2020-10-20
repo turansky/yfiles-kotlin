@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.HTML_ELEMENT
 
@@ -8,7 +7,7 @@ private const val TOOL_TIP_CONTENT = "yfiles.view.ToolTipContent"
 
 internal fun generateTooltipUtils(context: GeneratorContext) {
     // language=kotlin
-    context[TOOL_TIP_CONTENT, INLINE] = """
+    context[TOOL_TIP_CONTENT] = """
             external interface ToolTipContent
             
             inline fun ToolTipContent(source:$HTML_ELEMENT):$TOOL_TIP_CONTENT = 

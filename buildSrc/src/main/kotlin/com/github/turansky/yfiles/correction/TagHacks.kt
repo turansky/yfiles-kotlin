@@ -1,6 +1,5 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.ContentMode.INLINE
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.JS_ANY
 import com.github.turansky.yfiles.JS_OBJECT
@@ -10,7 +9,7 @@ internal const val TAG = "yfiles.graph.Tag"
 
 internal fun generateTagUtils(context: GeneratorContext) {
     // language=kotlin
-    context[TAG, INLINE] =
+    context[TAG] =
         """
             external interface Tag
             

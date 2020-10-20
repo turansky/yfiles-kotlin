@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles
 
-import com.github.turansky.yfiles.ContentMode.*
+import com.github.turansky.yfiles.ContentMode.ALIASES
+import com.github.turansky.yfiles.ContentMode.CLASS
 
 private const val SUPPRESS_TYPE_VARIANCE_CONFLICT = "@Suppress(\"TYPE_VARIANCE_CONFLICT\", \"TYPE_VARIANCE_CONFLICT_IN_EXPANDED_TYPE\")\n"
 
@@ -35,13 +36,10 @@ internal class KotlinFileGenerator(
         context: GeneratorContext,
         generatedFile: GeneratedFile
     ) {
-        val data = generatedFile.data
-        val mode = if (generatedFile is InterfaceFile) INTERFACE else CLASS
-
         val content = generatedFile.content()
         val companionContent = generatedFile.companionContent()
 
-        context[data.fileId, mode] = if (companionContent != null) {
+        context[generatedFile.data.fileId, CLASS] = if (companionContent != null) {
             "$content\n\n\n$companionContent"
         } else {
             content
@@ -289,6 +287,7 @@ internal class KotlinFileGenerator(
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
                     ?.run { lines { it.toExtensionCode() } },
+                declaration.getExtensions(),
                 declaration.getComponents()
             )
 
@@ -358,6 +357,7 @@ internal class KotlinFileGenerator(
                 defaultDeclarations
                     .takeIf { it.isNotEmpty() }
                     ?.lines { it.toExtensionCode() },
+                declaration.getExtensions(),
                 declaration.getComponents()
             ).takeIf { it.isNotEmpty() }
                 ?.joinToString("\n\n")

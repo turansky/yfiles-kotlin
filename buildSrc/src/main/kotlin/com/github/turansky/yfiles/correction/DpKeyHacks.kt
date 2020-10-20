@@ -104,7 +104,7 @@ private const val DP_KEY_BASE_DECLARATION = "$DP_KEY_BASE<"
 private val DP_KEY_GENERIC_MAP = mapOf(
     DP_KEY_BASE_CLASS to DP_KEY_BASE_KEY,
 
-    "GraphDpKey" to "yfiles.algorithms.Graph",
+    "GraphDpKey" to GRAPH,
 
     "NodeDpKey" to NODE,
     "EdgeDpKey" to EDGE,

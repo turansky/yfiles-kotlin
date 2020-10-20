@@ -59,6 +59,25 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("WaitInputMode", "inputModeContext") to true
 )
 
+internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
+    ConstructorParameterData("TimeSpan", "millis") to "milliseconds",
+
+    ConstructorParameterData("SvgDefsManager", "defsElement") to "defs",
+    ConstructorParameterData("LayoutGraphHider", "g") to "graph",
+
+    ConstructorParameterData("LineSegment", "p1") to "firstEndPoint",
+    ConstructorParameterData("LineSegment", "p2") to "secondEndPoint",
+
+    ConstructorParameterData("HandleSerializationEventArgs", "serializationType") to "sourceType",
+    ConstructorParameterData("QueryTypeEventArgs", "xName") to "xmlName",
+    ConstructorParameterData("XmlName", "ns") to "namespace",
+
+    ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
+
+    ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
+    ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio"
+)
+
 internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("IComparable", "compareTo", "obj") to "o",
     ParameterData("TimeSpan", "compareTo", "obj") to "o",
@@ -711,6 +730,11 @@ internal val SYSTEM_FUNCTIONS = listOf(
     "equals",
     "hashCode",
     "toString"
+)
+
+internal data class ConstructorParameterData(
+    val className: String,
+    val parameterName: String
 )
 
 internal data class ParameterData(

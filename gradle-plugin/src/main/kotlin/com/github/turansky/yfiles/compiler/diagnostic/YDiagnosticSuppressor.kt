@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.diagnostics.Diagnostic
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters1
 import org.jetbrains.kotlin.diagnostics.DiagnosticWithParameters2
+import org.jetbrains.kotlin.diagnostics.Errors.NOTHING_TO_INLINE
 import org.jetbrains.kotlin.diagnostics.Errors.USELESS_IS_CHECK
 import org.jetbrains.kotlin.diagnostics.Errors.WRONG_MODIFIER_CONTAINING_DECLARATION
 import org.jetbrains.kotlin.js.resolve.diagnostics.ErrorsJs.*
@@ -20,6 +21,7 @@ import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 import org.jetbrains.kotlin.types.KotlinType
 
 private const val EXTERNAL_PRIVATE_CONSTRUCTOR = "private member of class"
+private const val EXTERNAL_EXTENSION_FUNCTION = "extension function"
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
@@ -51,9 +53,12 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.reifiedType.isYFilesInterface()
 
             WRONG_EXTERNAL_DECLARATION
-            -> psiElement is KtConstructor<*>
+            -> (psiElement is KtPrimaryConstructor
                     && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
-                    && psiElement.isYFilesConstructor(bindingContext)
+                    && psiElement.isYFilesConstructor(bindingContext))
+                    || (psiElement is KtNamedFunction
+                    && diagnostic.messageParameter == EXTERNAL_EXTENSION_FUNCTION
+                    && psiElement.locatedInYFilesObject)
 
             EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
             -> psiElement is KtParameter
@@ -75,6 +80,9 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
             // TODO: check type parameter
             NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE
             -> psiElement.isYFilesExtension()
+
+            NOTHING_TO_INLINE
+            -> psiElement.isYFilesExtensionModifier()
 
             else -> false
         }
@@ -117,7 +125,7 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
     return descriptor.isYFilesInterface()
 }
 
-private fun KtConstructor<*>.isYFilesConstructor(
+private fun KtPrimaryConstructor.isYFilesConstructor(
     context: BindingContext
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent] ?: return false
@@ -127,7 +135,7 @@ private fun KtConstructor<*>.isYFilesConstructor(
 private fun KtParameter.isYFilesConstructorParameter(
     context: BindingContext
 ): Boolean {
-    val constructor = parent?.parent as? KtConstructor<*> ?: return false
+    val constructor = parent?.parent as? KtPrimaryConstructor ?: return false
     return constructor.isYFilesConstructor(context)
 }
 
@@ -159,8 +167,26 @@ private fun PsiElement.isYFilesExtension(): Boolean {
         else -> null
     }
 
-    val file = declaration?.parent as? KtFile
-        ?: return false
-
-    return file.packageFqName.isYFiles
+    return declaration.locatedInYFilesFile
 }
+
+private fun PsiElement.isYFilesExtensionModifier(): Boolean =
+    (this as? LeafPsiElement)
+        ?.parentDeclaration
+        .locatedInYFilesFile
+
+private val KtCallableDeclaration?.locatedInYFilesFile: Boolean
+    get() {
+        val file = this?.parent as? KtFile
+            ?: return false
+
+        return file.packageFqName.isYFiles
+    }
+
+private val KtNamedFunction.locatedInYFilesObject: Boolean
+    get() {
+        val parentObject = this.parent.parent as? KtObjectDeclaration
+            ?: return false
+
+        return parentObject.fqName?.isYFiles ?: false
+    }

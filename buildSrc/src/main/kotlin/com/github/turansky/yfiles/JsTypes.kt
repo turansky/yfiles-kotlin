@@ -15,5 +15,7 @@ const val JS_CLASS = "JsClass"
 
 const val JS_BLOB = "Blob"
 
+const val JS_ELEMENT = "Element"
 const val JS_SVG_ELEMENT = "SVGElement"
+const val JS_SVG_DEFS_ELEMENT = "SVGDefsElement"
 const val JS_SVG_SVG_ELEMENT = "SVGSVGElement"

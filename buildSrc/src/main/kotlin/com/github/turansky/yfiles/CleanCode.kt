@@ -49,9 +49,15 @@ private fun String.getImportedClasses(): List<String> {
         .filterNot { it.startsWith(" *") }
         .joinToString("\n")
 
+    val additionalImports = if ("js.yclass" in this)
+        listOf("yfiles.lang.yclass")
+    else
+        emptyList()
+
     return YFILES_CLASS_DECLARATION
         .findAll(code)
         .map { it.value }
+        .plus(additionalImports)
         .distinct()
         .plus(
             STANDARD_IMPORTED_TYPES

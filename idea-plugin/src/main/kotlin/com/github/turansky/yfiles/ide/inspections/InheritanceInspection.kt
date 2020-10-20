@@ -3,6 +3,7 @@ package com.github.turansky.yfiles.ide.inspections
 import com.github.turansky.yfiles.ide.js.implementsYFilesInterface
 import com.github.turansky.yfiles.ide.js.implementsYObjectDirectly
 import com.github.turansky.yfiles.ide.js.isYFilesInterface
+import com.github.turansky.yfiles.ide.psi.descriptor
 import com.intellij.codeInspection.ProblemHighlightType.GENERIC_ERROR
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
@@ -11,7 +12,6 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind.*
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.project.platform
-import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.lexer.KtTokens.INLINE_KEYWORD
 import org.jetbrains.kotlin.platform.js.isJs
 import org.jetbrains.kotlin.psi.KtClass
@@ -40,12 +40,9 @@ private class YVisitor(
     }
 
     override fun visitClassOrObject(classOrObject: KtClassOrObject) {
-        val descriptor = classOrObject.descriptor as? ClassDescriptor
+        val descriptor = classOrObject.descriptor
+            ?.takeIf { !it.isExternal }
             ?: return
-
-        if (descriptor.isExternal) {
-            return
-        }
 
         when (descriptor.kind) {
             CLASS -> if (classOrObject is KtClass) visitClass(classOrObject, descriptor)

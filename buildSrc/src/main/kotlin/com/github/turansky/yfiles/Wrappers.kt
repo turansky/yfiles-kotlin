@@ -139,8 +139,7 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
     val extensionMethods: List<Method> by lazy {
-        (if (id == IENUMERABLE) methods.mapNotNull { it.toOperatorExtension() } else emptyList()) +
-                staticMethods.mapNotNull { it.toStaticOperatorExtension() }
+        if (id == IENUMERABLE) methods.mapNotNull { it.toOperatorExtension() } else emptyList()
     }
 
     private val typeparameters: List<TypeParameter> by list(::TypeParameter)
@@ -195,8 +194,15 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
-    val primaryConstructor: Constructor? = constructors.firstOrNull()
-    val secondaryConstructors: List<Constructor> = constructors.drop(1)
+    val useLastConstuctorAsPrimary = name in USE_LAST_CONSTRUCTOR_AS_PRIMARY
+    val primaryConstructor: Constructor? = when {
+        useLastConstuctorAsPrimary -> constructors.last()
+        else -> constructors.firstOrNull()
+    }
+    val secondaryConstructors: List<Constructor> = when {
+        useLastConstuctorAsPrimary -> constructors.dropLast(1)
+        else -> constructors.drop(1)
+    }
 
     fun isHidden(property: Property): Boolean =
         primaryConstructor?.hasPropertyParameter(property.name) ?: false
@@ -407,6 +413,22 @@ internal sealed class TypedDeclaration(
         get() = true
 }
 
+private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
+    "YOrientedRectangle",
+    "YPoint",
+    "YRectangle",
+    "Point2D",
+    "MutablePoint",
+    "MutableRectangle",
+    "Rect",
+    "Insets"
+)
+
+private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
+    "CellEntrance",
+    "PartitionCell"
+) + USE_LAST_CONSTRUCTOR_AS_PRIMARY
+
 internal class Constructor(
     source: JSONObject,
     parent: Class
@@ -417,7 +439,7 @@ internal class Constructor(
     override val overridden: Boolean = false
 
     private val propertyParameterMap: Map<String, Property>? by lazy {
-        if (parent.secondaryConstructors.isNotEmpty())
+        if (parent.secondaryConstructors.isNotEmpty() && parent.name !in IGNORE_SECONDARY_CONSTRUCTORS)
             return@lazy null
 
         if (parameters.isEmpty())
@@ -427,15 +449,16 @@ internal class Constructor(
 
         val map = parent.memberProperties
             .filter { it.name in parameterNames }
-            .takeIf { it.size == parameterNames.size }
-            ?.sortedBy { parameterNames.indexOf(it.name) }
-            ?.associateBy { it.name }
-            ?: return@lazy null
+            .ifEmpty { return@lazy null }
+            .sortedBy { parameterNames.indexOf(it.name) }
+            .associateBy { it.name }
 
-        val compatible = parameters.all {
-            val property = map.getValue(it.name)
-            property.type == it.type && property.nullability == it.modifiers.nullability
-        }
+        val compatible = parameters
+            .filter { map.containsKey(it.name) }
+            .all {
+                val property = map.getValue(it.name)
+                property.type == it.type && property.nullability == it.modifiers.nullability
+            }
 
         map.takeIf { compatible }
     }
@@ -482,7 +505,8 @@ internal class Constructor(
         val propertyMap = propertyParameterMap
         val parametersString = if (propertyMap != null) {
             "\n" + parameters.byCommaLine {
-                propertyMap.getValue(it.name).toPrimaryCode(it.modifiers.optional)
+                propertyMap[it.name]?.toPrimaryCode(it.modifiers.optional)
+                    ?: it.toParameterString()
             }
         } else {
             kotlinParametersString()
@@ -726,6 +750,13 @@ private val FACTORY_METHODS = setOf(
     "create",
     "from",
 
+    "convertFrom",
+    "fromConstant",
+    "fromDelegate",
+    "fromArray",
+    "fromRectangle",
+
+    "createCommand",
     "createCandidate",
     "createCanvasContext",
     "createInputModeContext",
@@ -733,10 +764,42 @@ private val FACTORY_METHODS = setOf(
     "combine"
 )
 
+private val APPLY_METHODS = setOf(
+    "setFill",
+    "setStroke"
+)
+
+private val RECEIVER_TYPES = setOf(
+    GRAPH,
+    LAYOUT_GRAPH
+)
+
+private val INCLUDED_RECEIVER_CLASSES = setOf(
+    "Graph",
+    "Trees",
+    "YOrientedRectangle",
+    "YRectangle",
+    "YPoint",
+
+    "GeomUtilities",
+
+    "IEdge",
+    "Table",
+
+    "CanvasComponent",
+    "DropTarget",
+    "SvgVisual"
+)
+
+private val EXCLUDED_RECEIVER_CLASSES = setOf(
+    "AbortHandler",
+    "Bfs"
+)
+
 internal class Method(
     source: JSONObject,
     private val parent: Type,
-    private var operatorName: String? = null
+    operatorName: String? = null
 ) : MethodBase(source, parent) {
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
@@ -768,12 +831,27 @@ internal class Method(
     val functional: Boolean
         get() = typeparameters.isEmpty()
 
+    private val operatorName = operatorName ?: getStaticOperatorExtensionName()
+    private val hasReceiver: Boolean by lazy {
+        when {
+            !static -> false
+            this.operatorName != null -> true
+            parameters.isEmpty() -> false
+            name in APPLY_METHODS -> true
+            parent.name in EXCLUDED_RECEIVER_CLASSES -> false
+            parent.name in INCLUDED_RECEIVER_CLASSES
+                    && parameters.size <= 3 -> true
+            else -> parameters.first().type in RECEIVER_TYPES
+        }
+    }
+
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
             remarks = remarks,
             preconditions = preconditions,
             postconditions = postconditions,
+            hasReceiver = hasReceiver,
             parameters = parameters,
             typeparameters = typeparameters,
             returns = returns,
@@ -844,22 +922,29 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val staticCreate = static && name in FACTORY_METHODS && parent.name != "List"
+        val staticCreate = static && name in FACTORY_METHODS
+                && parent.name != "List" && parent.name != "XmlName" && !parent.name.endsWith("s")
         val additionalOperator = operatorName != null
         val operator = exp(staticCreate || additionalOperator || isOperatorMode(), "operator")
 
-        val methodName = if (staticCreate) "invoke" else operatorName ?: name
-        val annotation = if (staticCreate || additionalOperator) "@JsName(\"$name\")\n" else ""
+        val methodName = when {
+            staticCreate -> "invoke"
+            name in APPLY_METHODS -> "applyTo"
+            else -> operatorName ?: name
+        }
+        val annotation = if (methodName != name) "@JsName(\"$name\")\n" else ""
 
-        val definedExternally = if (additionalOperator) {
-            parent is Interface
-        } else {
-            !static && !abstract && parent is Interface
+        val definedExternally = when {
+            static -> false
+            additionalOperator -> parent is Interface
+            else -> !static && !abstract && parent is Interface
         }
 
         val returnSignature = getReturnSignature(definedExternally)
         val modifier = if (additionalOperator || definedExternally) " final" else kotlinModifier()
-        var code = "$annotation $modifier $operator fun ${generics.declaration}$methodName(${kotlinParametersString()})$returnSignature"
+        val receiver = if (hasReceiver) parameters.first().typeDeclaration + "." else ""
+        val parametersString = kotlinParametersString(hasReceiver)
+        var code = "$annotation $modifier $operator fun ${generics.declaration}$receiver$methodName($parametersString)$returnSignature"
         when {
             deprecated ->
                 code = DEPRECATED_ANNOTATION + "\n" + code
@@ -899,7 +984,8 @@ internal class Method(
         return documentation + code
     }
 
-    fun toStaticOperatorExtension(): Method? {
+    private fun getStaticOperatorExtensionName(): String? {
+        if (!static) return null
         val operatorName = OPERATOR_NAME_MAP[name] ?: return null
         if (parameters.size != 2) return null
         val returns = returns ?: return null
@@ -913,8 +999,7 @@ internal class Method(
         val secondParameterType = parameters[1].type
         if (secondParameterType != type && secondParameterType != DOUBLE) return null
 
-        return Method(source, parent)
-            .also { it.operatorName = operatorName }
+        return operatorName
     }
 
     fun toOperatorExtension(): Method? {
@@ -940,15 +1025,11 @@ internal class Method(
             source
         }
 
-        return Method(newSource, parent)
-            .also { it.operatorName = operatorName }
+        return Method(newSource, parent, operatorName)
     }
 
     override fun toExtensionCode(): String {
-        if (static) {
-            return toStaticExtensionCode()
-        }
-
+        require(!static)
         require(!protected)
         requireNotNull(operatorName)
 
@@ -962,17 +1043,6 @@ internal class Method(
                 "inline operator fun $genericDeclaration ${parent.classDeclaration}.$operatorName($extParameters)$returnSignature {\n" +
                 "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
                 "}"
-    }
-
-    private fun toStaticExtensionCode(): String {
-        val type = parent.name
-        val parameter = parameters[1]
-
-        return """
-            inline operator fun $type.$operatorName(${parameter.declaration}): $type {
-                return $type.$name(this, ${parameter.name})
-            }
-        """.trimIndent()
     }
 }
 
@@ -996,12 +1066,18 @@ internal sealed class MethodBase(
     protected val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, id)
 
-    protected fun kotlinParametersString(): String =
-        parameters.byCommaLine {
-            val modifiers = exp(it.modifiers.vararg, "vararg ")
-            val body = exp(it.modifiers.optional && !overridden, EQ_DE)
-            "$modifiers ${it.declaration} $body"
-        }
+    protected fun Parameter.toParameterString(): String {
+        val vararg = exp(modifiers.vararg, "vararg ")
+        val body = exp(modifiers.optional && !overridden, EQ_DE)
+        return "$vararg $declaration $body"
+    }
+
+    protected fun kotlinParametersString(
+        ignoreFirstParameter: Boolean = false
+    ): String =
+        parameters
+            .drop(if (ignoreFirstParameter) 1 else 0)
+            .byCommaLine { it.toParameterString() }
 
     override fun compareTo(other: Declaration): Int {
         val result = super.compareTo(other)
@@ -1026,10 +1102,11 @@ internal class Parameter(
     override val name: String by string()
     private val signature: String? by optString()
     val type: String by type { parse(it, signature).inMode(readOnly) }
+    val typeDeclaration: String by lazy { type + modifiers.nullability }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
 
-    val declaration: String by lazy { name + ": " + type + modifiers.nullability }
+    val declaration: String by lazy { name + ": " + typeDeclaration }
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter, ITypeParameter {
@@ -1217,6 +1294,7 @@ private fun getDocumentation(
     dpdata: DpData? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
+    hasReceiver: Boolean = false,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -1232,6 +1310,7 @@ private fun getDocumentation(
         dpdata = dpdata,
         preconditions = preconditions,
         postconditions = postconditions,
+        hasReceiver = hasReceiver,
         parameters = parameters,
         typeparameters = typeparameters,
         returns = returns,
@@ -1264,6 +1343,7 @@ private fun getDocumentationLines(
     dpdata: DpData? = null,
     preconditions: List<String>? = null,
     postconditions: List<String>? = null,
+    hasReceiver: Boolean = false,
     parameters: List<IParameter>? = null,
     typeparameters: List<TypeParameter>? = null,
     returns: IReturns? = null,
@@ -1314,8 +1394,11 @@ private fun getDocumentationLines(
         it.toDoc()
     }
 
+    var receiverMode = hasReceiver
     parameters?.flatMapTo(lines) {
-        it.toDoc()
+        it.toDoc(receiverMode).also {
+            receiverMode = false
+        }
     }
 
     returns?.doc?.let {
@@ -1362,11 +1445,14 @@ private fun getDocumentationLines(
     return lines.toList()
 }
 
-private fun IParameter.toDoc(): List<String> {
+private fun IParameter.toDoc(receiverMode: Boolean = false): List<String> {
     val summary = summary
         ?: return emptyList()
 
-    return param(name, summary)
+    return when {
+        receiverMode -> receiver(summary)
+        else -> param(name, summary)
+    }
 }
 
 private fun List<String>?.toNamedList(title: String): List<String> {

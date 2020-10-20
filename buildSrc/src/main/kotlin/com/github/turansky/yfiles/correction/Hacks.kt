@@ -153,6 +153,10 @@ private fun fixConstantType(source: Source) {
 }
 
 private fun fixPropertyType(source: Source) {
+    source.type("IRenderContext")
+        .property("defsElement")
+        .set(TYPE, JS_SVG_DEFS_ELEMENT)
+
     source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")
@@ -176,11 +180,13 @@ private fun fixPropertyNullability(source: Source) {
 }
 
 private fun fixConstructorParameterName(source: Source) {
-    source.type("TimeSpan")
-        .flatMap(CONSTRUCTORS)
-        .flatMap(PARAMETERS)
-        .single { it[NAME] == "millis" }
-        .set(NAME, "milliseconds")
+    for ((data, fixedName) in CONSTRUCTOR_PARAMETERS_CORRECTION) {
+        source.type(data.className)
+            .flatMap(CONSTRUCTORS)
+            .flatMap(PARAMETERS)
+            .single { it[NAME] == data.parameterName }
+            .set(NAME, fixedName)
+    }
 }
 
 private fun fixMethodParameterName(source: Source) {
@@ -225,7 +231,7 @@ private fun fixMethodParameterNullability(source: Source) {
         .filter { it[PARAMETERS].length() == 1 }
         .map { it[PARAMETERS].single() }
         .map { it as JSONObject }
-        .onEach { require(it[TYPE] == "yfiles.layout.LayoutGraph") }
+        .onEach { require(it[TYPE] == LAYOUT_GRAPH) }
         .forEach { it.changeNullability(false) }
 
     source.types()
@@ -242,6 +248,20 @@ private fun fixMethodParameterNullability(source: Source) {
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
+
+    source.types("Substructures", "SeriesParallelLayout")
+        .flatMap(METHODS)
+        .filter { STATIC in it[MODIFIERS] }
+        .map { it.firstParameter }
+        .onEach { check(it[TYPE] == GRAPH) }
+        .forEach { it.changeNullability(false) }
+
+    source.type("Font")
+        .let { it.flatMap(CONSTRUCTORS) + it.method("createCopy") }
+        .flatMap(PARAMETERS)
+        .filter { it[TYPE] != JS_NUMBER }
+        .map { it[MODIFIERS] }
+        .forEach { it.removeItem(CANBENULL) }
 
     source.types()
         .optFlatMap(EVENTS)
@@ -292,6 +312,13 @@ private fun fixMethodParameterType(source: Source) {
             .filter { it[SIGNATURE] == PCC_HANDLER }
             .forEach { it.replaceInSignature(">>", "?>>") }
     }
+
+    source.type("SvgVisual")
+        .flatMap(METHODS)
+        .filter { it[NAME] == "setScale" || it[NAME] == "setTranslate" }
+        .map { it.firstParameter }
+        .onEach { check(it[TYPE] == JS_ELEMENT) }
+        .forEach { it[TYPE] = JS_SVG_ELEMENT }
 }
 
 private fun fixMethodNullability(source: Source) {
