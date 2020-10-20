@@ -421,12 +421,17 @@ private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
     "MutablePoint",
     "MutableRectangle",
     "Rect",
-    "Insets"
+    "Insets",
+
+    "GridInfo"
 )
 
 private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
     "CellEntrance",
-    "PartitionCell"
+    "PartitionCell",
+
+    "SolidColorFill",
+    "Stroke"
 ) + USE_LAST_CONSTRUCTOR_AS_PRIMARY
 
 internal class Constructor(
