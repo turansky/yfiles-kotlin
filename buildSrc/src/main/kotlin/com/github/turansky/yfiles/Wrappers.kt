@@ -795,8 +795,7 @@ private val INCLUDED_RECEIVER_CLASSES = setOf(
 )
 
 private val EXCLUDED_RECEIVER_CLASSES = setOf(
-    "AbortHandler",
-    "Bfs"
+    "AbortHandler"
 )
 
 internal class Method(
