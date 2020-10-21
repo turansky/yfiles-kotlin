@@ -82,6 +82,10 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
     ConstructorParameterData("OrthogonalInterval", "isVertical") to "vertical",
 
+    ConstructorParameterData("TemplateLabelStyle", "renderTemplateId") to "styleResourceKey",
+    ConstructorParameterData("TemplateNodeStyle", "renderTemplateId") to "styleResourceKey",
+    ConstructorParameterData("TemplatePortStyle", "renderTemplateId") to "styleResourceKey",
+
     ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
     ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
 

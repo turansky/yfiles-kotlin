@@ -438,6 +438,8 @@ private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
     "BusDescriptor",
     "SegmentInfoBase",
 
+    "CollapsibleNodeStyleDecorator",
+
     "GridInfo"
 )
 
