@@ -28,15 +28,23 @@ internal class ConfigurablePropertyPlugin : Plugin<Project> {
                     val jsTarget = kotlinOptions.target
                     if (jsTarget != KotlinJs.TARGET_V5) {
                         logger.warn("Unsupported JS target '$jsTarget'. Fix for KT-42364 won't be applied!")
-                    } else if (name in KotlinJs.COMPILE_TASK_NAMES) {
-                        val outputFile = file(kotlinOptions.outputFile!!)
-                        val content = outputFile.readText()
-                        val newContent = content
-                            .replace(DESCRIPTOR_REGEX, "$1\n    configurable: true,$2")
+                        return@doLast
+                    }
 
-                        if (newContent != content) {
-                            outputFile.writeText(newContent)
-                        }
+                    if (name !in KotlinJs.COMPILE_TASK_NAMES)
+                        return@doLast
+
+                    val outputFile = file(kotlinOptions.outputFile!!)
+                    // IR invalid folder check
+                    if (outputFile.parentFile.name != "kotlin")
+                        return@doLast
+
+                    val content = outputFile.readText()
+                    val newContent = content
+                        .replace(DESCRIPTOR_REGEX, "$1\n    configurable: true,$2")
+
+                    if (newContent != content) {
+                        outputFile.writeText(newContent)
                     }
                 }
             }
