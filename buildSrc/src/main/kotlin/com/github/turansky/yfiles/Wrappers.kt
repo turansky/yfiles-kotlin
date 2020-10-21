@@ -435,12 +435,16 @@ private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
     "LabelCandidate",
     "LayoutExecutor",
 
+    "BusDescriptor",
+    "SegmentInfoBase",
+
     "GridInfo"
 )
 
 private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
     "CellEntrance",
     "PartitionCell",
+    "OrthogonalInterval",
 
     "SolidColorFill",
     "Stroke"
