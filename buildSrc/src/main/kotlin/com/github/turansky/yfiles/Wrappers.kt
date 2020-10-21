@@ -412,12 +412,16 @@ internal sealed class TypedDeclaration(
 }
 
 private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
+    "Point2D",
+    "Rectangle2D",
     "YOrientedRectangle",
     "YPoint",
     "YRectangle",
-    "Point2D",
+
     "MutablePoint",
     "MutableRectangle",
+    "MutableSize",
+    "OrientedRectangle",
     "Rect",
     "Insets",
 
