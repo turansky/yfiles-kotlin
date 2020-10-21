@@ -68,6 +68,9 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("LineSegment", "p1") to "firstEndPoint",
     ConstructorParameterData("LineSegment", "p2") to "secondEndPoint",
 
+    ConstructorParameterData("NodeEventArgs", "oldParent") to "parent",
+    ConstructorParameterData("NodeEventArgs", "oldIsGroupNode") to "isGroupNode",
+
     ConstructorParameterData("HandleSerializationEventArgs", "serializationType") to "sourceType",
     ConstructorParameterData("QueryTypeEventArgs", "xName") to "xmlName",
     ConstructorParameterData("XmlName", "ns") to "namespace",
