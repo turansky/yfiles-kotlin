@@ -89,6 +89,11 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
     ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
 
+    ConstructorParameterData("DefaultNodePlacer", "minFirstSegmentLength") to "minimumFirstSegmentLength",
+    ConstructorParameterData("DefaultNodePlacer", "minLastSegmentLength") to "minimumLastSegmentLength",
+    ConstructorParameterData("DefaultNodePlacer", "minSlope") to "minimumSlope",
+    ConstructorParameterData("DefaultNodePlacer", "minSlopeHeight") to "minimumSlopeHeight",
+
     ConstructorParameterData("Animator", "canvas") to "canvasComponent",
     ConstructorParameterData("ItemSelectionChangedEventArgs", "selected") to "itemSelected",
     ConstructorParameterData("KeyEventArgs", "type") to "eventType",
