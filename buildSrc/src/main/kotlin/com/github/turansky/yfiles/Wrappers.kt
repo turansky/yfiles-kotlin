@@ -199,10 +199,8 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         useLastConstuctorAsPrimary -> constructors.last()
         else -> constructors.firstOrNull()
     }
-    val secondaryConstructors: List<Constructor> = when {
-        useLastConstuctorAsPrimary -> constructors.dropLast(1)
-        else -> constructors.drop(1)
-    }
+    val secondaryConstructors: List<Constructor> =
+        constructors - listOfNotNull(primaryConstructor)
 
     fun isHidden(property: Property): Boolean =
         primaryConstructor?.hasPropertyParameter(property.name) ?: false
