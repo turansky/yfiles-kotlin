@@ -43,7 +43,7 @@ internal fun Interface.getComponents(): String? =
     }
 
 private fun Class.constructorComponents(): String {
-    val constructor = if (useLastConstuctorAsPrimary) {
+    val constructor = if (useLastConstructorAsPrimary) {
         primaryConstructor!!
     } else {
         secondaryConstructors

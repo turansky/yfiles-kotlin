@@ -181,11 +181,20 @@ private fun fixPropertyNullability(source: Source) {
 
 private fun fixConstructorParameterName(source: Source) {
     for ((data, fixedName) in CONSTRUCTOR_PARAMETERS_CORRECTION) {
-        source.type(data.className)
-            .flatMap(CONSTRUCTORS)
-            .flatMap(PARAMETERS)
-            .single { it[NAME] == data.parameterName }
-            .set(NAME, fixedName)
+        source.type(data.className) {
+            flatMap(CONSTRUCTORS)
+                .flatMap(PARAMETERS)
+                .filter { it[NAME] == data.parameterName }
+                .ifEmpty { TODO("Check '${data.parameterName}'!") }
+                .forEach { it[NAME] = fixedName }
+
+            if (data.className != "TimeSpan") {
+                check(
+                    flatMap(PROPERTIES)
+                        .any { it[NAME] == fixedName }
+                )
+            }
+        }
     }
 }
 

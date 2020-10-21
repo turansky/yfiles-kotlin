@@ -68,14 +68,37 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("LineSegment", "p1") to "firstEndPoint",
     ConstructorParameterData("LineSegment", "p2") to "secondEndPoint",
 
+    ConstructorParameterData("NodeEventArgs", "oldParent") to "parent",
+    ConstructorParameterData("NodeEventArgs", "oldIsGroupNode") to "isGroupNode",
+    ConstructorParameterData("FoldingEdgeStateId", "sourceCollapsed") to "sourceIsCollapsed",
+    ConstructorParameterData("FoldingEdgeStateId", "targetCollapsed") to "targetIsCollapsed",
+
     ConstructorParameterData("HandleSerializationEventArgs", "serializationType") to "sourceType",
     ConstructorParameterData("QueryTypeEventArgs", "xName") to "xmlName",
     ConstructorParameterData("XmlName", "ns") to "namespace",
 
+    ConstructorParameterData("GivenSequenceSequencer", "c") to "sequenceComparer",
+
     ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
+    ConstructorParameterData("OrthogonalInterval", "isVertical") to "vertical",
+
+    ConstructorParameterData("TemplateLabelStyle", "renderTemplateId") to "styleResourceKey",
+    ConstructorParameterData("TemplateNodeStyle", "renderTemplateId") to "styleResourceKey",
+    ConstructorParameterData("TemplatePortStyle", "renderTemplateId") to "styleResourceKey",
 
     ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
-    ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio"
+    ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
+
+    ConstructorParameterData("DefaultNodePlacer", "minFirstSegmentLength") to "minimumFirstSegmentLength",
+    ConstructorParameterData("DefaultNodePlacer", "minLastSegmentLength") to "minimumLastSegmentLength",
+    ConstructorParameterData("DefaultNodePlacer", "minSlope") to "minimumSlope",
+    ConstructorParameterData("DefaultNodePlacer", "minSlopeHeight") to "minimumSlopeHeight",
+
+    ConstructorParameterData("Animator", "canvas") to "canvasComponent",
+    ConstructorParameterData("ItemSelectionChangedEventArgs", "selected") to "itemSelected",
+    ConstructorParameterData("KeyEventArgs", "type") to "eventType",
+    ConstructorParameterData("ModelManager", "canvas") to "canvasComponent",
+    ConstructorParameterData("SvgVisual", "element") to "svgElement"
 )
 
 internal val PARAMETERS_CORRECTION = mapOf(

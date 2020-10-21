@@ -194,15 +194,13 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
-    val useLastConstuctorAsPrimary = name in USE_LAST_CONSTRUCTOR_AS_PRIMARY
+    val useLastConstructorAsPrimary = name in USE_LAST_CONSTRUCTOR_AS_PRIMARY
     val primaryConstructor: Constructor? = when {
-        useLastConstuctorAsPrimary -> constructors.last()
+        useLastConstructorAsPrimary -> constructors.last()
         else -> constructors.firstOrNull()
     }
-    val secondaryConstructors: List<Constructor> = when {
-        useLastConstuctorAsPrimary -> constructors.dropLast(1)
-        else -> constructors.drop(1)
-    }
+    val secondaryConstructors: List<Constructor> =
+        constructors - listOfNotNull(primaryConstructor)
 
     fun isHidden(property: Property): Boolean =
         primaryConstructor?.hasPropertyParameter(property.name) ?: false
@@ -414,19 +412,46 @@ internal sealed class TypedDeclaration(
 }
 
 private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
+    "Point2D",
+    "Rectangle2D",
     "YOrientedRectangle",
     "YPoint",
     "YRectangle",
-    "Point2D",
+
     "MutablePoint",
     "MutableRectangle",
+    "MutableSize",
+    "OrientedRectangle",
     "Rect",
-    "Insets"
+    "Insets",
+
+    "FoldingEdgeStateId",
+    "MapperMetadata",
+
+    "DefaultPortCandidate",
+    "EdgeSegmentSnapLine",
+
+    "DiscreteNodeLabelLayoutModel",
+    "LabelCandidate",
+    "LayoutExecutor",
+
+    "BusDescriptor",
+    "SegmentInfoBase",
+
+    "CollapsibleNodeStyleDecorator",
+
+    "DefaultNodePlacer",
+
+    "GridInfo"
 )
 
 private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
     "CellEntrance",
-    "PartitionCell"
+    "PartitionCell",
+    "OrthogonalInterval",
+
+    "SolidColorFill",
+    "Stroke"
 ) + USE_LAST_CONSTRUCTOR_AS_PRIMARY
 
 internal class Constructor(
@@ -792,8 +817,7 @@ private val INCLUDED_RECEIVER_CLASSES = setOf(
 )
 
 private val EXCLUDED_RECEIVER_CLASSES = setOf(
-    "AbortHandler",
-    "Bfs"
+    "AbortHandler"
 )
 
 internal class Method(
