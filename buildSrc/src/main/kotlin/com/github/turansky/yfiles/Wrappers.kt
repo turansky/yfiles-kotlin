@@ -431,6 +431,10 @@ private val USE_LAST_CONSTRUCTOR_AS_PRIMARY = setOf(
     "DefaultPortCandidate",
     "EdgeSegmentSnapLine",
 
+    "DiscreteNodeLabelLayoutModel",
+    "LabelCandidate",
+    "LayoutExecutor",
+
     "GridInfo"
 )
 
