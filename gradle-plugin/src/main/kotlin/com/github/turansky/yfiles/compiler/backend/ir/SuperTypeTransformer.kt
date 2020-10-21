@@ -47,12 +47,12 @@ internal class SuperTypeTransformer(
         if (!declaration.transformRequired)
             return declaration
 
-        val baseClass = baseClass(declaration.superTypes)
+        val baseClass = context.irFactory.baseClass(declaration.superTypes)
         baseClasses.add(baseClass)
 
         declaration.superTypes += baseClass.typeWith(emptyList())
         if (declaration.companionObject() == null) {
-            val companionObject = createCompanionObject()
+            val companionObject = context.irFactory.createCompanionObject()
             declaration.declarations += companionObject
             companionObject.parent = declaration
         }
@@ -77,7 +77,9 @@ internal class SuperTypeTransformer(
             startOffset = expression.startOffset,
             endOffset = expression.endOffset,
             type = context.irBuiltIns.unitType,
-            symbol = callSuperConstructor
+            symbol = callSuperConstructor,
+            typeArgumentsCount = 0,
+            valueArgumentsCount = 0
         )
 
         val thisValue = IrGetValueImpl(

@@ -82,7 +82,9 @@ internal class EnumTransformer(
             startOffset = sourceCall.startOffset,
             endOffset = sourceCall.endOffset,
             type = type,
-            symbol = function
+            symbol = function,
+            typeArgumentsCount = 1,
+            valueArgumentsCount = 2
         )
 
         call.putTypeArgument(0, type)
@@ -110,7 +112,9 @@ internal class EnumTransformer(
             startOffset = sourceCall.startOffset,
             endOffset = sourceCall.endOffset,
             type = resultType,
-            symbol = function
+            symbol = function,
+            typeArgumentsCount = 1,
+            valueArgumentsCount = if (hasParameter) 2 else 1
         )
 
         call.putTypeArgument(0, enumClass.defaultType)
