@@ -80,6 +80,7 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("GivenSequenceSequencer", "c") to "sequenceComparer",
 
     ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
+    ConstructorParameterData("OrthogonalInterval", "isVertical") to "vertical",
 
     ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
     ConstructorParameterData("DefaultTreeLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",

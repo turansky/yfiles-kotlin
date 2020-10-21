@@ -184,8 +184,9 @@ private fun fixConstructorParameterName(source: Source) {
         source.type(data.className) {
             flatMap(CONSTRUCTORS)
                 .flatMap(PARAMETERS)
-                .single { it[NAME] == data.parameterName }
-                .set(NAME, fixedName)
+                .filter { it[NAME] == data.parameterName }
+                .ifEmpty { TODO("Check '${data.parameterName}'!") }
+                .forEach { it[NAME] = fixedName }
 
             if (data.className != "TimeSpan") {
                 check(
