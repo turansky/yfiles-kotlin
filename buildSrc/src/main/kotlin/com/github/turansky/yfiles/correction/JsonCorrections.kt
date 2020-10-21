@@ -70,6 +70,8 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
 
     ConstructorParameterData("NodeEventArgs", "oldParent") to "parent",
     ConstructorParameterData("NodeEventArgs", "oldIsGroupNode") to "isGroupNode",
+    ConstructorParameterData("FoldingEdgeStateId", "sourceCollapsed") to "sourceIsCollapsed",
+    ConstructorParameterData("FoldingEdgeStateId", "targetCollapsed") to "targetIsCollapsed",
 
     ConstructorParameterData("HandleSerializationEventArgs", "serializationType") to "sourceType",
     ConstructorParameterData("QueryTypeEventArgs", "xName") to "xmlName",
