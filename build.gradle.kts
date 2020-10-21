@@ -5,6 +5,7 @@ plugins {
 allprojects {
     repositories {
         jcenter()
+        maven("https://kotlin.bintray.com/kotlin-eap")
     }
 }
 
