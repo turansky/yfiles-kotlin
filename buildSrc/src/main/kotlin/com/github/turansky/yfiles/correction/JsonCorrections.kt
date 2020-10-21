@@ -77,6 +77,8 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("QueryTypeEventArgs", "xName") to "xmlName",
     ConstructorParameterData("XmlName", "ns") to "namespace",
 
+    ConstructorParameterData("GivenSequenceSequencer", "c") to "sequenceComparer",
+
     ConstructorParameterData("EdgeCellInfo", "enterSegmentNo") to "enterSegmentIndex",
 
     ConstructorParameterData("DefaultSeriesParallelLayoutPortAssignment", "ratio") to "borderGapToPortGapRatio",
