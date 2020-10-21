@@ -55,12 +55,17 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && diagnostic.reifiedType.isYFilesInterface()
 
             WRONG_EXTERNAL_DECLARATION
-            -> (psiElement is KtPrimaryConstructor
-                    && diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
-                    && psiElement.isYFilesConstructor(bindingContext))
-                    || (psiElement is KtNamedFunction
-                    && diagnostic.messageParameter == EXTERNAL_EXTENSION_FUNCTION
-                    && psiElement.locatedInYFilesObject)
+            -> when (psiElement) {
+                is KtPrimaryConstructor
+                -> diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
+                        && psiElement.isYFilesConstructor(bindingContext)
+
+                is KtNamedFunction
+                -> diagnostic.messageParameter == EXTERNAL_EXTENSION_FUNCTION
+                        && psiElement.locatedInYFilesObject
+
+                else -> false
+            }
 
             EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
             -> psiElement is KtParameter
