@@ -79,7 +79,7 @@ internal class SuperTypeTransformer(
             type = context.irBuiltIns.unitType,
             symbol = callSuperConstructor,
             typeArgumentsCount = 0,
-            valueArgumentsCount = 0
+            valueArgumentsCount = 1
         )
 
         val thisValue = IrGetValueImpl(
