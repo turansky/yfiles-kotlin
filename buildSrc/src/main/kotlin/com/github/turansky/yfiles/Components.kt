@@ -52,10 +52,13 @@ private fun Class.constructorComponents(): String =
 
 private fun Interface.indexAccessComponents(getMethod: String): String =
     (1..5).joinToString("\n") { index ->
-        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index() = $getMethod(${index - 1})"
+        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index(): T = $getMethod(${index - 1})"
     }
 
-private fun Type.components(vararg properties: String): String =
+private fun Class.components(vararg properties: String): String =
     properties.asSequence()
-        .mapIndexed { index, property -> "inline operator fun $classId.component${index + 1}() = $property" }
+        .mapIndexed { index, property ->
+            val type = memberProperties.first { it.name == property }.type
+            "inline operator fun $classId.component${index + 1}(): $type = $property"
+        }
         .joinToString("\n")
