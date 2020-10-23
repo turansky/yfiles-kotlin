@@ -230,12 +230,17 @@ internal class KotlinFileGenerator(
                 ""
             }
 
+            val components = declaration.getComponents()
+                ?.let { it + "\n\n" }
+                ?: ""
+
             return documentation +
                     externalAnnotation +
                     "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     enumContent +
                     super.content() + "\n\n" +
+                    components +
                     companionObjectContent + "\n" +
                     "}" +
                     enumCompanionContent()
@@ -288,8 +293,7 @@ internal class KotlinFileGenerator(
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
                     ?.run { lines { it.toExtensionCode() } },
-                declaration.getExtensions(),
-                declaration.getComponents()
+                declaration.getExtensions()
             )
 
             val events = memberEvents

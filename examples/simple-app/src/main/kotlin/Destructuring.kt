@@ -2,8 +2,6 @@
 
 import yfiles.algorithms.YPoint
 import yfiles.algorithms.YPoint.Companion.plus
-import yfiles.algorithms.component1
-import yfiles.algorithms.component2
 
 fun destructuring() {
     val p1 = YPoint(4.0, 8.0)
