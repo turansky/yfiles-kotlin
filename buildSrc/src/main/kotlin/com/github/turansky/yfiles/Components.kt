@@ -60,8 +60,11 @@ private fun Class.components(vararg properties: String): String =
         .mapIndexed { index, property ->
             val type = memberProperties.first { it.name == property }.type
             """
+                /**
+                 * @return [$property]
+                 */    
                 @JsName("__ygen_${property}_negy__")
-                operator fun component${index + 1}(): $type
+                final operator fun component${index + 1}(): $type
             """.trimIndent()
         }
         .joinToString("\n")
