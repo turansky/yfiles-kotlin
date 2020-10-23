@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.vsdx
 
 import com.github.turansky.yfiles.IENUMERABLE
+import com.github.turansky.yfiles.ILIST_ENUMERABLE
 import com.github.turansky.yfiles.Interface
 import com.github.turansky.yfiles.correction.ID
 import com.github.turansky.yfiles.correction.METHODS
@@ -14,7 +15,7 @@ internal fun fakeVsdxInterfaces(): List<Interface> {
             methodNames = setOf("getEnumerator")
         ),
         fakeVsdxInterface(
-            id = "yfiles.collections.IListEnumerable",
+            id = ILIST_ENUMERABLE,
             methodNames = setOf("getEnumerator", "get")
         )
     )
