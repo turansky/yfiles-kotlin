@@ -42,21 +42,11 @@ internal fun Interface.getComponents(): String? =
         else -> null
     }
 
-private fun Class.constructorComponents(): String {
-    val constructor = if (useLastConstructorAsPrimary) {
-        primaryConstructor!!
-    } else {
-        secondaryConstructors
-            .asSequence()
-            .maxBy { it.parameters.size }
-            .let { it ?: primaryConstructor!! }
-    }
-
-    return constructor
+private fun Class.constructorComponents(): String =
+    primaryConstructor!!
         .parameters
         .map { it.name }
         .let { components(*it.toTypedArray()) }
-}
 
 private fun Interface.indexAccessComponents(getMethod: String): String =
     (1..5).joinToString("\n") { index ->
