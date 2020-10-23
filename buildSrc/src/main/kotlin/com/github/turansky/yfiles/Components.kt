@@ -34,14 +34,18 @@ internal fun Class.getComponents(): String? =
 
 internal fun Interface.getComponents(): String? =
     when (classId) {
-        "yfiles.collections.IEnumerable"
-        -> indexAccessComponents("elementAt")
-
-        "yfiles.collections.IList",
-        "yfiles.collections.IListEnumerable"
+        ILIST,
+        ILIST_ENUMERABLE
         -> indexAccessComponents("get")
 
         else -> null
+    }
+
+internal fun Interface.getComponentExtensions(): String? =
+    if (classId == IENUMERABLE) {
+        indexAccessComponentExtensions("elementAt")
+    } else {
+        null
     }
 
 private fun Class.constructorComponents(): String =
@@ -50,7 +54,15 @@ private fun Class.constructorComponents(): String =
         .map { it.name }
         .let { components(*it.toTypedArray()) }
 
-private fun Interface.indexAccessComponents(getMethod: String): String =
+private fun indexAccessComponents(getMethod: String): String =
+    (1..5).joinToString("\n") { index ->
+        """
+            @JsName("__ygen_${getMethod}_${index - 1}_negy__")
+            final operator fun component$index(): T
+        """.trimIndent()
+    }
+
+private fun Interface.indexAccessComponentExtensions(getMethod: String): String =
     (1..5).joinToString("\n") { index ->
         "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index(): T = $getMethod(${index - 1})"
     }

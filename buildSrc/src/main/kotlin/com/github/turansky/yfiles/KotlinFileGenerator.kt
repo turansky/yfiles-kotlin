@@ -334,11 +334,16 @@ internal class KotlinFileGenerator(
                 .replace("IEnumerable<", "IEnumerable<out ")
                 .replace("IListEnumerable<", "IListEnumerable<out ")
 
+            val components = declaration.getComponents()
+                ?.let { it + "\n\n" }
+                ?: ""
+
             return documentation +
                     externalAnnotation +
                     exp(data.fqn == IENUMERABLE, SUPPRESS_TYPE_VARIANCE_CONFLICT) +
                     "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
+                    components +
                     companionObjectContent + "\n" +
                     "}"
         }
@@ -363,7 +368,7 @@ internal class KotlinFileGenerator(
                     .takeIf { it.isNotEmpty() }
                     ?.lines { it.toExtensionCode() },
                 declaration.getExtensions(),
-                declaration.getComponents()
+                declaration.getComponentExtensions()
             ).takeIf { it.isNotEmpty() }
                 ?.joinToString("\n\n")
     }
