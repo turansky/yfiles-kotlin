@@ -21,7 +21,9 @@ internal fun Class.getComponents(): String? =
         "yfiles.geometry.OrientedRectangle",
 
         "yfiles.geometry.Insets",
-        "yfiles.geometry.Tangent"
+        "yfiles.geometry.Tangent",
+
+        "yfiles.view.Color"
         -> constructorComponents()
 
         "yfiles.algorithms.YVector"
