@@ -793,6 +793,13 @@ private val APPLY_METHODS = setOf(
     "setStroke"
 )
 
+private val RECEIVER_METHOD_NAMES = setOf(
+    "getCellBounds",
+    "placeNodeInCell",
+    "getOriginalEdge",
+    "reverseEdgeLayout"
+)
+
 private val RECEIVER_TYPES = setOf(
     GRAPH,
     LAYOUT_GRAPH
@@ -864,6 +871,7 @@ internal class Method(
             parent.name in EXCLUDED_RECEIVER_CLASSES -> false
             parent.name in INCLUDED_RECEIVER_CLASSES
                     && parameters.size <= 3 -> true
+            name in RECEIVER_METHOD_NAMES -> true
             else -> parameters.first().type in RECEIVER_TYPES
         }
     }
