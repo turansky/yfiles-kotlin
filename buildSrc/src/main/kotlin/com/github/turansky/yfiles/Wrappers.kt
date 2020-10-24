@@ -194,9 +194,8 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     }
 
     private val constructors: List<Constructor> by declarationList(::Constructor)
-    val useLastConstructorAsPrimary = name in USE_LAST_CONSTRUCTOR_AS_PRIMARY
     val primaryConstructor: Constructor? = when {
-        useLastConstructorAsPrimary -> constructors.last()
+        name in USE_LAST_CONSTRUCTOR_AS_PRIMARY -> constructors.last()
         else -> constructors.firstOrNull()
     }
     val secondaryConstructors: List<Constructor> =

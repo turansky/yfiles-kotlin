@@ -21,7 +21,9 @@ internal fun Class.getComponents(): String? =
         "yfiles.geometry.OrientedRectangle",
 
         "yfiles.geometry.Insets",
-        "yfiles.geometry.Tangent"
+        "yfiles.geometry.Tangent",
+
+        "yfiles.view.Color"
         -> constructorComponents()
 
         "yfiles.algorithms.YVector"
@@ -32,38 +34,49 @@ internal fun Class.getComponents(): String? =
 
 internal fun Interface.getComponents(): String? =
     when (classId) {
-        "yfiles.collections.IEnumerable"
-        -> indexAccessComponents("elementAt")
-
-        "yfiles.collections.IList",
-        "yfiles.collections.IListEnumerable"
+        ILIST,
+        ILIST_ENUMERABLE
         -> indexAccessComponents("get")
 
         else -> null
     }
 
-private fun Class.constructorComponents(): String {
-    val constructor = if (useLastConstructorAsPrimary) {
-        primaryConstructor!!
+internal fun Interface.getComponentExtensions(): String? =
+    if (classId == IENUMERABLE) {
+        indexAccessComponentExtensions("elementAt")
     } else {
-        secondaryConstructors
-            .asSequence()
-            .maxBy { it.parameters.size }
-            .let { it ?: primaryConstructor!! }
+        null
     }
 
-    return constructor
+private fun Class.constructorComponents(): String =
+    primaryConstructor!!
         .parameters
         .map { it.name }
         .let { components(*it.toTypedArray()) }
-}
 
-private fun Interface.indexAccessComponents(getMethod: String): String =
+private fun indexAccessComponents(getMethod: String): String =
     (1..5).joinToString("\n") { index ->
-        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index() = $getMethod(${index - 1})"
+        """
+            @JsName("__ygen_${getMethod}_${index - 1}_negy__")
+            final operator fun component$index(): T
+        """.trimIndent()
     }
 
-private fun Type.components(vararg properties: String): String =
+private fun Interface.indexAccessComponentExtensions(getMethod: String): String =
+    (1..5).joinToString("\n") { index ->
+        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index(): T = $getMethod(${index - 1})"
+    }
+
+private fun Class.components(vararg properties: String): String =
     properties.asSequence()
-        .mapIndexed { index, property -> "inline operator fun $classId.component${index + 1}() = $property" }
+        .mapIndexed { index, property ->
+            val type = memberProperties.first { it.name == property }.type
+            """
+                /**
+                 * @return [$property]
+                 */    
+                @JsName("__ygen_${property}_negy__")
+                final operator fun component${index + 1}(): $type
+            """.trimIndent()
+        }
         .joinToString("\n")

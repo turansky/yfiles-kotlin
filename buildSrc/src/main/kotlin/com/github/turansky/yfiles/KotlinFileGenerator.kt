@@ -203,7 +203,8 @@ internal class KotlinFileGenerator(
         }
 
         private fun isObject(): Boolean {
-            return declaration.generics.isEmpty() &&
+            return !declaration.abstract &&
+                    declaration.generics.isEmpty() &&
                     declaration.primaryConstructor == null &&
                     memberDeclarations.isEmpty() &&
                     !data.marker
@@ -229,12 +230,17 @@ internal class KotlinFileGenerator(
                 ""
             }
 
+            val components = declaration.getComponents()
+                ?.let { it + "\n\n" }
+                ?: ""
+
             return documentation +
                     externalAnnotation +
                     "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     enumContent +
                     super.content() + "\n\n" +
+                    components +
                     companionObjectContent + "\n" +
                     "}" +
                     enumCompanionContent()
@@ -287,8 +293,7 @@ internal class KotlinFileGenerator(
                 memberExtensionFunctions
                     .takeIf { it.isNotEmpty() }
                     ?.run { lines { it.toExtensionCode() } },
-                declaration.getExtensions(),
-                declaration.getComponents()
+                declaration.getExtensions()
             )
 
             val events = memberEvents
@@ -329,11 +334,16 @@ internal class KotlinFileGenerator(
                 .replace("IEnumerable<", "IEnumerable<out ")
                 .replace("IListEnumerable<", "IListEnumerable<out ")
 
+            val components = declaration.getComponents()
+                ?.let { it + "\n\n" }
+                ?: ""
+
             return documentation +
                     externalAnnotation +
                     exp(data.fqn == IENUMERABLE, SUPPRESS_TYPE_VARIANCE_CONFLICT) +
                     "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
+                    components +
                     companionObjectContent + "\n" +
                     "}"
         }
@@ -358,7 +368,7 @@ internal class KotlinFileGenerator(
                     .takeIf { it.isNotEmpty() }
                     ?.lines { it.toExtensionCode() },
                 declaration.getExtensions(),
-                declaration.getComponents()
+                declaration.getComponentExtensions()
             ).takeIf { it.isNotEmpty() }
                 ?.joinToString("\n\n")
     }
