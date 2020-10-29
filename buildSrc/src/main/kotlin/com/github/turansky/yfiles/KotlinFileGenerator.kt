@@ -424,4 +424,4 @@ internal class KotlinFileGenerator(
 private fun List<Constant>.toContent(): String =
     asSequence()
         .map { it.toEnumValue() }
-        .joinToString(separator = ",\n\n", postfix = ";\n")
+        .joinToString(separator = ",\n\n", postfix = ",\n\n;\n")
