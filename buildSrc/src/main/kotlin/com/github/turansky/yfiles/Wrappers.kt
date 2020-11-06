@@ -691,7 +691,7 @@ internal class Property(
             str += """
 
                 @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
-                get() = definedExternally
+                get
             """.trimIndent()
         }
 
