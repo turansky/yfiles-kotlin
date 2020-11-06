@@ -667,6 +667,9 @@ internal class Property(
         var str = ""
 
         val definedExternally = parent is Interface && !abstract
+        if (definedExternally) {
+            check(!overridden && !protected)
+        }
 
         if (overridden) {
             str += exp(final, "final ") + "override "
@@ -697,13 +700,6 @@ internal class Property(
 
         if (modifiers.deprecated) {
             str = DEPRECATED_ANNOTATION + "\n" + str
-        }
-
-        if (definedExternally) {
-            str += "\nget() = definedExternally"
-            if (mode.writable) {
-                str += "\nset(value) = definedExternally"
-            }
         }
 
         return str
