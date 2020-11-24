@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.4.10"
-    id("org.jetbrains.intellij") version "0.6.3"
+    kotlin("jvm") version "1.4.20"
+    id("org.jetbrains.intellij") version "0.6.4"
     id("com.github.turansky.kfc.version") version "1.0.0"
 }
 
@@ -20,7 +20,7 @@ intellij {
 
     setPlugins(
         "java",
-        "org.jetbrains.kotlin:1.4.10-release-IJ2020.2-1",
+        "org.jetbrains.kotlin:1.4.20-release-IJ2020.2-1",
         "JavaScript"
     )
 }
