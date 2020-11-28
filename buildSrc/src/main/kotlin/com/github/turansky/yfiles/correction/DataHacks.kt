@@ -142,7 +142,8 @@ private fun getDefaultTypeParameter(name: String, type: String): String =
 private fun getDefaultObjectTypeParameter(name: String): String =
     when (name) {
         "busIDAcceptor",
-        "partitionIDDP" -> YID
+        "partitionIDDP"
+        -> YID
 
         else -> "*"
     }

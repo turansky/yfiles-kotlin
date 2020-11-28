@@ -922,9 +922,12 @@ internal class Method(
     private fun nullablePromiseResult(generic: String): Boolean =
         when (generic) {
             STRING -> name == "editLabelCore" || name == "edit"
+
             IEDGE,
             ILABEL,
-            "$IENUMERABLE<$IMODEL_ITEM>" -> true
+            "$IENUMERABLE<$IMODEL_ITEM>"
+            -> true
+
             else -> false
         }
 

@@ -93,10 +93,12 @@ private fun getGeneric(
     when (methodName) {
         "sortNodes",
         "GivenSequenceSequencer",
-        "MultiComponentLayerer" -> return NODE
+        "MultiComponentLayerer"
+        -> return NODE
 
         "sortEdges", "sortInEdges", "sortOutEdges",
-        "createCompoundComparer" -> return EDGE
+        "createCompoundComparer"
+        -> return EDGE
 
         "SwimlaneDescriptor" -> return SWIMLANE_DESCRIPTOR
     }

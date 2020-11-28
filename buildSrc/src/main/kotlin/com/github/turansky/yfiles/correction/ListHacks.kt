@@ -90,7 +90,8 @@ private fun fixReturnType(source: Source) {
                 "getCells",
                 "getCellsForNode",
                 "getCellsForObstacle",
-                "getNeighbors" -> PARTITION_CELL
+                "getNeighbors"
+                -> PARTITION_CELL
 
                 "getNodes" -> NODE
                 "getObstacles" -> OBSTACLE
