@@ -53,11 +53,6 @@ pluginBundle {
     }
 }
 
-// TODO: remove after Gradle update on Kotlin 1.4
-tasks.compileKotlin {
-    kotlinOptions.allWarningsAsErrors = false
-}
-
 tasks.wrapper {
     gradleVersion = "6.8-rc-1"
     distributionType = Wrapper.DistributionType.ALL
