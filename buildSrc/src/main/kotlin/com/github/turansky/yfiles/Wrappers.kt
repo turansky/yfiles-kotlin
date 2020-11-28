@@ -135,7 +135,8 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
     val memberExtensionProperties: List<Property> = properties.filter { !it.static && it.generated }
     val staticProperties: List<Property> = properties.filter { it.static }
 
-    protected val methods: List<Method> by declarationList(::Method)
+    // TODO check compilation WA
+    protected val methods: List<Method> by declarationList { source, type -> Method(source, type) }
     val memberMethods: List<Method> = methods.filter { !it.static }
     val staticMethods: List<Method> = methods.filter { it.static && !it.qii }
     val extensionMethods: List<Method> by lazy {
