@@ -16,11 +16,11 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2020.2.3"
+    version = "2020.3"
 
     setPlugins(
         "java",
-        "org.jetbrains.kotlin:1.4.20-release-IJ2020.2-1",
+        "org.jetbrains.kotlin",
         "JavaScript"
     )
 }
