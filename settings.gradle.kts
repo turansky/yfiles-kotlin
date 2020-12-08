@@ -2,7 +2,7 @@ rootProject.name = "yfiles-kotlin"
 
 pluginManagement {
     plugins {
-        kotlin("js") version "1.4.20"
+        kotlin("js") version "1.4.21"
 
         val kfcVersion = "1.3.0"
         id("com.github.turansky.kfc.library") version kfcVersion
