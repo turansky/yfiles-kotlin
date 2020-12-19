@@ -40,7 +40,8 @@ internal fun getVisualTemplateParameter(className: String): String =
         "EdgeDecorationInstaller",
         "EdgeFocusIndicatorInstaller",
         "EdgeHighlightIndicatorInstaller",
-        "EdgeSelectionIndicatorInstaller" -> IBEND
+        "EdgeSelectionIndicatorInstaller"
+        -> IBEND
 
         "LabelPositionHandler",
 
@@ -49,7 +50,8 @@ internal fun getVisualTemplateParameter(className: String): String =
         "OverviewInputMode",
 
         "OrientedRectangleIndicatorInstaller",
-        "RectangleIndicatorInstaller" -> JS_VOID
+        "RectangleIndicatorInstaller"
+        -> JS_VOID
 
         else -> throw IllegalArgumentException("Unable to calculate type parameter for class '$className'")
     }

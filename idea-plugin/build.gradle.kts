@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.4.20"
-    id("org.jetbrains.intellij") version "0.6.4"
-    id("com.github.turansky.kfc.version") version "1.0.0"
+    kotlin("jvm") version "1.4.21"
+    id("org.jetbrains.intellij") version "0.6.5"
+    id("com.github.turansky.kfc.version") version "1.3.0"
 }
 
 repositories {
@@ -16,11 +16,11 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2020.2.3"
+    version = "2020.3"
 
     setPlugins(
         "java",
-        "org.jetbrains.kotlin:1.4.20-release-IJ2020.2-1",
+        "org.jetbrains.kotlin",
         "JavaScript"
     )
 }
@@ -51,7 +51,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.8-rc-1"
+        gradleVersion = "6.8-rc-3"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

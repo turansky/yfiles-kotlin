@@ -1,6 +1,7 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
+
 internal fun generatePartitionCellUtils(context: GeneratorContext) {
     // language=kotlin
     context["yfiles.router.PartitionCellKey"] = """

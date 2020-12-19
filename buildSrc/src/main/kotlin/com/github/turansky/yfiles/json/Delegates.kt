@@ -168,8 +168,7 @@ internal fun int(): Prop<Int> =
 
 internal fun boolean(): Prop<Boolean> = prop { key ->
     when (optString(key)) {
-        "",
-        "!1" -> false
+        "", "!1" -> false
         "!0" -> true
         else -> getBoolean(key)
     }
