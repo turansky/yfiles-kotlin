@@ -71,6 +71,7 @@ private fun createClassMarker(
 
     val anchor = klass.nameIdentifier ?: klass
 
+    @Suppress("DEPRECATION")
     return LineMarkerInfo(
         anchor,
         anchor.textRange,

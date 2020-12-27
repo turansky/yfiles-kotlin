@@ -1,5 +1,3 @@
-// TODO: Remove after fix https://youtrack.jetbrains.com/issue/KT-42364
-
 package com.github.turansky.yfiles.gradle.plugin
 
 import org.gradle.api.Plugin
@@ -18,11 +16,10 @@ private object KotlinJs {
     val TARGET_V5 = "v5"
 }
 
-private val DESCRIPTOR_REGEX = Regex("(Object\\.defineProperty\\(.+\\.prototype, '[a-zA-Z]+', \\{)(\\n\\s+get:)")
 private val COMPONENT_PROPERTY_REGEX = Regex("__ygen_(\\w+)_negy__\\(\\)")
 private val COMPONENT_METHOD_REGEX = Regex("__ygen_(\\w+)_(\\d)_negy__\\(\\)")
 
-internal class ConfigurablePropertyPlugin : Plugin<Project> {
+internal class ComponentPropertyPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
         plugins.withId(KotlinJs.PLUGIN_ID) {
             tasks.withType<KotlinJsCompile>().configureEach {
@@ -43,7 +40,6 @@ internal class ConfigurablePropertyPlugin : Plugin<Project> {
 
                     val content = outputFile.readText()
                     val newContent = content
-                        .replace(DESCRIPTOR_REGEX, "$1\n    configurable: true,$2")
                         .replace(COMPONENT_METHOD_REGEX, "$1($2)")
                         .replace(COMPONENT_PROPERTY_REGEX, "$1")
 

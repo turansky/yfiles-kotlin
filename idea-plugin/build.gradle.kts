@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.4.21"
     id("org.jetbrains.intellij") version "0.6.5"
-    id("com.github.turansky.kfc.version") version "1.3.0"
+    id("com.github.turansky.kfc.version") version "2.1.0"
 }
 
 repositories {
@@ -29,8 +29,7 @@ tasks {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "1.8"
-            // TODO: uncomment after Gradle update on Kotlin 1.4
-            // allWarningsAsErrors = true
+            allWarningsAsErrors = true
         }
     }
 
