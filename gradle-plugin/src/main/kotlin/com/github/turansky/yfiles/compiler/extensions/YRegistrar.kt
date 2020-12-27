@@ -19,6 +19,7 @@ class YRegistrar : ComponentRegistrar {
 
         StorageComponentContainerContributor.registerExtension(project, YStorageComponentContainerContributor())
 
+        @Suppress("DEPRECATION")
         Extensions.getRootArea()
             .getExtensionPoint(DiagnosticSuppressor.EP_NAME)
             .registerExtension(YDiagnosticSuppressor()) { /* do nothing */ }
