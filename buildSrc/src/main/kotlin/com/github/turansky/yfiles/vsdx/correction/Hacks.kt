@@ -13,6 +13,7 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.geometry.Insets",
     "yfiles.geometry.Point",
     "yfiles.geometry.Size",
+    "yfiles.geometry.Rect",
 
     IMODEL_ITEM,
     INODE,
@@ -297,6 +298,9 @@ private fun JSONObject.fixSummary() {
         .replace(YFILES_API_REGEX) {
             val dataType = it.groupValues[1]
             val type = when {
+                "." !in dataType && dataType.first().isLowerCase()
+                -> dataType
+
                 dataType.startsWith("vsdx.")
                 -> dataType.removePrefix("vsdx.")
 
