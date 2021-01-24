@@ -51,6 +51,10 @@ private fun String.fixMarkdown(): String {
         .replace(" IEnumerable>TSource<)", " IEnumerable<TSource>)")
         .replace(" IEnumerable>TSource&lt; ", " `IEnumerable<TSource>` ")
         .replace("IEnumerable&lt;IEdge&gt;", "IEnumerable<IEdge>")
+        .replace(
+            "@link y.layout.hierarchic.incremental.NodeData#TYPE_NORMAL normal nodes}",
+            "[normal nodes][yfiles.hierarchic.NodeDataType.NORMAL]"
+        )
         .replace(" &lt; ", " < ")
         .replace(" &lt;0", " <0")
         .replace("B&#xE9;zier", "Bézier")

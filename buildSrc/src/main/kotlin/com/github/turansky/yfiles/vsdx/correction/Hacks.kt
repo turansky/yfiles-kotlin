@@ -13,6 +13,7 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.geometry.Insets",
     "yfiles.geometry.Point",
     "yfiles.geometry.Size",
+    "yfiles.geometry.Rect",
 
     IMODEL_ITEM,
     INODE,
@@ -275,6 +276,7 @@ private fun fixMethodModifier(source: VsdxSource) {
 }
 
 private val YFILES_API_REGEX = Regex("""<api-link data-type="([a-zA-Z.]+)"\s*></api-link>""")
+private val OLD_API_REGEX = Regex("""\{@link[\r\n\s]{0,3}([a-zA-Z.#]+)}""")
 private val P_START_REGEX = Regex("""<p>\r\n\s{3,}""")
 private val PRE_REGEX = Regex("""<pre>([\s\S]+?)</pre>""")
 
@@ -294,9 +296,18 @@ private fun JSONObject.fixSummary() {
     }
 
     val summary = get(SUMMARY)
+        .replace(OLD_API_REGEX) {
+            val member = it.groupValues[1]
+                .replace("#", ".")
+
+            "[$member]"
+        }
         .replace(YFILES_API_REGEX) {
             val dataType = it.groupValues[1]
             val type = when {
+                "." !in dataType && dataType.first().isLowerCase()
+                -> dataType
+
                 dataType.startsWith("vsdx.")
                 -> dataType.removePrefix("vsdx.")
 

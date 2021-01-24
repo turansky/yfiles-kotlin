@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    implementation("com.yworks.yfiles:yfiles-kotlin:23.0.3-SNAPSHOT")
+    implementation("com.yworks.yfiles:yfiles-kotlin:23.0.4-SNAPSHOT")
 }
 
 tasks.wrapper {
-    gradleVersion = "6.8-rc-3"
+    gradleVersion = "6.8.1"
     distributionType = Wrapper.DistributionType.ALL
 }
