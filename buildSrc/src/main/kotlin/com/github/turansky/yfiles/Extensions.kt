@@ -35,5 +35,46 @@ internal fun Interface.getExtensions(): String? =
                 lookupValue(T::class.js.yclass)      
         """.trimIndent()
 
+        IMAPPER_REGISTRY
+        -> getMapperRegistryExtensions()
+
         else -> null
     }
+
+private fun getMapperRegistryExtensions(): String {
+    return sequenceOf(
+        getMapperRegistryExtensions(INODE_LABEL_LAYOUT_DP_KEY, ILABEL),
+        getMapperRegistryExtensions(IEDGE_LABEL_LAYOUT_DP_KEY, ILABEL),
+        getMapperRegistryExtensions(GRAPH_DP_KEY, GRAPH, IGRAPH)
+    ).joinToString("\n\n")
+}
+
+private fun getMapperRegistryExtensions(
+    dpKeyType: String,
+    keyType: String,
+    modelKeyType: String = keyType
+): String {
+    var keyClass = "$keyType.yclass"
+    if (keyType != modelKeyType)
+        keyClass += ".unsafeCast<$YCLASS<$modelKeyType>>()"
+
+    val valueClass = "tag.asDynamic().valueType.unsafeCast<YClass<V>>()"
+
+    // language=kotlin
+    return """
+        inline fun <V : Any> IMapperRegistry.createConstantMapper( 
+            tag: $dpKeyType<V> ,
+            constant: V?
+        ):IMapper<$modelKeyType, V> = 
+            createConstantMapper($keyClass, $valueClass, tag, constant)
+        
+        inline fun <V : Any> IMapperRegistry.createDelegateMapper( 
+            tag: $dpKeyType<V> ,
+            noinline getter: MapperDelegate<$modelKeyType, V>
+        ):IMapper<$modelKeyType, V> =
+            createDelegateMapper($keyClass, $valueClass, tag, getter)
+
+        inline fun <V : Any> IMapperRegistry.createMapper(tag: $dpKeyType<V>):Mapper<$modelKeyType, V> =
+            createMapper($keyClass, $valueClass, tag)
+    """.trimIndent()
+}
