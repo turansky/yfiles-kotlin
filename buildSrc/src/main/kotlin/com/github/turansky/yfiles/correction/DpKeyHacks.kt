@@ -141,8 +141,8 @@ private fun fixClass(source: Source) {
         .updateDpKeyGeneric(TYPE, "*")
 }
 
-internal fun dpKeyBase(typeParameter: String): String = "yfiles.algorithms.DpKeyBase<*,$typeParameter>"
-internal fun graphDpKey(typeParameter: String): String = "yfiles.algorithms.GraphDpKey<$typeParameter>"
+internal fun dpKeyBase(typeParameter: String): String = "$DP_KEY_BASE<*,$typeParameter>"
+internal fun graphDpKey(typeParameter: String): String = "$GRAPH_DP_KEY<$typeParameter>"
 internal fun nodeDpKey(typeParameter: String): String = "yfiles.algorithms.NodeDpKey<$typeParameter>"
 internal fun edgeDpKey(typeParameter: String): String = "yfiles.algorithms.EdgeDpKey<$typeParameter>"
 internal fun labelDpKey(typeParameter: String): String = "yfiles.algorithms.ILabelLayoutDpKey<$typeParameter>"
