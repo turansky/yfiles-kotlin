@@ -119,6 +119,8 @@ private fun fixClass(source: Source) {
     source.type(DP_KEY_BASE_CLASS) {
         addFirstTypeParameter(DP_KEY_BASE_KEY, YOBJECT)
 
+        addProperty("valueType", "$YCLASS<TValue>")
+
         methodParameters(
             "equalsCore",
             "other",

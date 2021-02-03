@@ -58,7 +58,7 @@ private fun getMapperRegistryExtensions(
     if (keyType != modelKeyType)
         keyClass += ".unsafeCast<$YCLASS<$modelKeyType>>()"
 
-    val valueClass = "tag.asDynamic().valueType.unsafeCast<YClass<V>>()"
+    val valueClass = "tag.valueType"
 
     // language=kotlin
     return """
