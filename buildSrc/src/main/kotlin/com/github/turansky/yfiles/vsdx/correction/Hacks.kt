@@ -20,7 +20,7 @@ private val YFILES_TYPE_MAP = sequenceOf(
     IEDGE,
     ILABEL,
     IPORT,
-    "yfiles.graph.IGraph",
+    IGRAPH,
 
     ILABEL_MODEL_PARAMETER,
     "yfiles.graph.InteriorStretchLabelModel",

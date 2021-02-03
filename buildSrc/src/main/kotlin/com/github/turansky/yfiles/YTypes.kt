@@ -28,6 +28,7 @@ const val IEDGE = "yfiles.graph.IEdge"
 const val IPORT = "yfiles.graph.IPort"
 const val ILABEL = "yfiles.graph.ILabel"
 const val IBEND = "yfiles.graph.IBend"
+const val IGRAPH = "yfiles.graph.IGraph"
 
 const val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
 const val STRIPE_TYPES = "yfiles.graph.StripeTypes"
