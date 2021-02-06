@@ -42,7 +42,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild("201.6487")
-        untilBuild("203.*")
+        untilBuild("211.*")
     }
 
     publishPlugin {
