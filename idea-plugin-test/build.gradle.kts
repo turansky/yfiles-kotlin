@@ -6,7 +6,7 @@ plugins {
 
 repositories {
     gradlePluginPortal()
-    jcenter()
+    mavenCentral()
     mavenLocal()
 }
 
