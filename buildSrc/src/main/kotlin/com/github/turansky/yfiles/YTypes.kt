@@ -19,6 +19,7 @@ const val ICLONEABLE = "yfiles.lang.ICloneable"
 const val EVENT_HANDLER1 = "yfiles.lang.EventHandler1"
 
 const val ILOOKUP = "yfiles.graph.ILookup"
+const val IMAPPER_REGISTRY = "yfiles.graph.IMapperRegistry"
 
 const val ITAG_OWNER = "yfiles.graph.ITagOwner"
 const val IMODEL_ITEM = "yfiles.graph.IModelItem"
@@ -27,6 +28,7 @@ const val IEDGE = "yfiles.graph.IEdge"
 const val IPORT = "yfiles.graph.IPort"
 const val ILABEL = "yfiles.graph.ILabel"
 const val IBEND = "yfiles.graph.IBend"
+const val IGRAPH = "yfiles.graph.IGraph"
 
 const val GRAPH_ITEM_TYPES = "yfiles.graph.GraphItemTypes"
 const val STRIPE_TYPES = "yfiles.graph.StripeTypes"
@@ -49,6 +51,9 @@ const val EDGE = "yfiles.algorithms.Edge"
 const val GRAPH_OBJECT = "yfiles.algorithms.GraphObject"
 
 const val DP_KEY_BASE = "yfiles.algorithms.DpKeyBase"
+const val GRAPH_DP_KEY = "yfiles.algorithms.GraphDpKey"
+const val IEDGE_LABEL_LAYOUT_DP_KEY = "yfiles.algorithms.IEdgeLabelLayoutDpKey"
+const val INODE_LABEL_LAYOUT_DP_KEY = "yfiles.algorithms.INodeLabelLayoutDpKey"
 
 const val IENUMERABLE = "yfiles.collections.IEnumerable"
 const val ICOLLECTION = "yfiles.collections.ICollection"

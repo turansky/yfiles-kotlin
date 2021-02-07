@@ -4,12 +4,12 @@ plugins {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 
 tasks.wrapper {
-    gradleVersion = "6.8.1"
+    gradleVersion = "6.8.2"
     distributionType = Wrapper.DistributionType.ALL
 }
 

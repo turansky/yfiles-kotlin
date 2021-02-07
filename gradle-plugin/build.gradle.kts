@@ -5,11 +5,11 @@ plugins {
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.turansky.kfc.plugin-publish") version "2.3.0"
 
-    kotlin("jvm") version "1.4.30-RC"
+    kotlin("jvm") version "1.4.30"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 kotlinDslPluginOptions {
@@ -54,6 +54,6 @@ pluginBundle {
 }
 
 tasks.wrapper {
-    gradleVersion = "6.8.1"
+    gradleVersion = "6.8.2"
     distributionType = Wrapper.DistributionType.ALL
 }

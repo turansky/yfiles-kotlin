@@ -1,11 +1,11 @@
 plugins {
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.30"
     id("org.jetbrains.intellij") version "0.6.5"
     id("com.github.turansky.kfc.version") version "2.3.0"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -16,7 +16,7 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2020.3.1"
+    version = "2020.3.2"
 
     setPlugins(
         "java",
@@ -42,7 +42,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild("201.6487")
-        untilBuild("203.*")
+        untilBuild("211.*")
     }
 
     publishPlugin {
@@ -50,7 +50,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.8.1"
+        gradleVersion = "6.8.2"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

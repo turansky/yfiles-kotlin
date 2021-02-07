@@ -1,12 +1,12 @@
 plugins {
-    kotlin("js") version "1.4.21"
-    id("com.github.turansky.kfc.library") version "2.1.0"
-    id("com.github.turansky.yfiles") version "5.4.0"
+    kotlin("js") version "1.4.30"
+    id("com.github.turansky.kfc.library") version "2.3.0"
+    id("com.github.turansky.yfiles") version "6.0.0"
 }
 
 repositories {
     gradlePluginPortal()
-    jcenter()
+    mavenCentral()
     mavenLocal()
 }
 
@@ -15,6 +15,6 @@ dependencies {
 }
 
 tasks.wrapper {
-    gradleVersion = "6.8.1"
+    gradleVersion = "6.8.2"
     distributionType = Wrapper.DistributionType.ALL
 }

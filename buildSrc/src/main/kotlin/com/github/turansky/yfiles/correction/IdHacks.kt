@@ -18,8 +18,8 @@ private val ID_DP_KEYS = setOf(
     edgeDpKey(JS_ANY),
     nodeDpKey(JS_ANY),
 
-    "yfiles.algorithms.IEdgeLabelLayoutDpKey<$JS_ANY>",
-    "yfiles.algorithms.INodeLabelLayoutDpKey<$JS_ANY>"
+    "$IEDGE_LABEL_LAYOUT_DP_KEY<$JS_ANY>",
+    "$INODE_LABEL_LAYOUT_DP_KEY<$JS_ANY>"
 )
 
 internal fun applyIdHacks(source: Source) {
