@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("org.jetbrains.intellij") version "0.7.2"
-    id("com.github.turansky.kfc.version") version "2.3.0"
+    id("com.github.turansky.kfc.version") version "3.5.0"
 }
 
 repositories {
@@ -16,7 +16,7 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2020.3.2"
+    version = "2020.3.3"
 
     setPlugins(
         "java",

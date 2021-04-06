@@ -47,6 +47,6 @@ tasks {
 
     named("compileKotlinJs") {
         dependsOn(generateDeclarations)
-        finalizedBy("publishToMavenLocal")
+        finalizedBy(publishToMavenLocal)
     }
 }
