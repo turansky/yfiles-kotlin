@@ -24,7 +24,7 @@ internal object YDeclarationChecker : DeclarationChecker {
     override fun check(
         declaration: KtDeclaration,
         descriptor: DeclarationDescriptor,
-        context: DeclarationCheckerContext
+        context: DeclarationCheckerContext,
     ) {
         if (declaration !is KtClassOrObject) return
         if (descriptor !is ClassDescriptor) return
@@ -38,7 +38,7 @@ internal object YDeclarationChecker : DeclarationChecker {
     }
 
     private fun ClassDescriptor.check(
-        reportError: (DiagnosticFactory0<KtClassOrObject>) -> Unit
+        reportError: (DiagnosticFactory0<KtClassOrObject>) -> Unit,
     ) {
         when {
             kind != ClassKind.CLASS

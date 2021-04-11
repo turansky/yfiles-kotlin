@@ -9,6 +9,6 @@ internal fun generateName(vararg names: String): String =
 
 internal fun generateName(
     descriptor: ClassDescriptor,
-    additionalName: String
+    additionalName: String,
 ): String =
     generateName(descriptor.name.identifier, additionalName)

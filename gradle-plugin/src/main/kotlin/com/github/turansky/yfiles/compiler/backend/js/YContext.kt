@@ -16,7 +16,7 @@ internal fun TranslationContext.toValueReference(descriptor: DeclarationDescript
 
 internal fun TranslationContext.findFunction(
     packageName: FqName,
-    functionName: Name
+    functionName: Name,
 ): JsExpression {
     val descriptor = getFunctionByName(
         currentModule.getPackage(packageName).memberScope,
@@ -27,7 +27,7 @@ internal fun TranslationContext.findFunction(
 
 internal fun TranslationContext.jsFunction(
     description: String,
-    vararg statements: JsStatement
+    vararg statements: JsStatement,
 ): JsFunction =
     JsFunction(
         scope(),
@@ -37,7 +37,7 @@ internal fun TranslationContext.jsFunction(
 
 internal fun TranslationContext.jsFunction(
     description: String,
-    statements: List<JsStatement>
+    statements: List<JsStatement>,
 ): JsFunction =
     JsFunction(
         scope(),
@@ -47,7 +47,7 @@ internal fun TranslationContext.jsFunction(
 
 internal fun TranslationContext.declareConstantValue(
     suggestedName: String,
-    value: JsExpression
+    value: JsExpression,
 ): JsExpression =
     declareConstantValue(
         suggestedName,

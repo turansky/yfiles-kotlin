@@ -24,13 +24,13 @@ private const val EXTERNAL_EXTENSION_FUNCTION = "extension function"
 
 class YDiagnosticSuppressor : DiagnosticSuppressor {
     override fun isSuppressed(
-        diagnostic: Diagnostic
+        diagnostic: Diagnostic,
     ): Boolean =
         false
 
     override fun isSuppressed(
         diagnostic: Diagnostic,
-        bindingContext: BindingContext?
+        bindingContext: BindingContext?,
     ): Boolean {
         bindingContext ?: return false
 
@@ -50,45 +50,45 @@ class YDiagnosticSuppressor : DiagnosticSuppressor {
                     && psiElement.right.isYFilesInterface(bindingContext)
              */
 
-            EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT
+            EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT,
             -> psiElement is KtCallExpression || psiElement is KtTypeReference
                     && diagnostic.reifiedType.isYFilesInterface()
 
-            WRONG_EXTERNAL_DECLARATION
+            WRONG_EXTERNAL_DECLARATION,
             -> when (psiElement) {
-                is KtPrimaryConstructor
+                is KtPrimaryConstructor,
                 -> diagnostic.messageParameter == EXTERNAL_PRIVATE_CONSTRUCTOR
                         && psiElement.isYFilesConstructor(bindingContext)
 
-                is KtNamedFunction
+                is KtNamedFunction,
                 -> diagnostic.messageParameter == EXTERNAL_EXTENSION_FUNCTION
                         && psiElement.locatedInYFilesObject
 
                 else -> false
             }
 
-            EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER
+            EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER,
             -> psiElement is KtParameter
                     && psiElement.isYFilesConstructorParameter(bindingContext)
 
-            NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE
+            NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE,
             -> psiElement is KtCallableDeclaration
                     && psiElement.isYFilesInterfaceMember(bindingContext)
 
-            WRONG_MODIFIER_CONTAINING_DECLARATION
+            WRONG_MODIFIER_CONTAINING_DECLARATION,
             -> psiElement is LeafPsiElement
                     && diagnostic.keywordToken == "final"
                     && psiElement.parentDeclaration?.isYFilesInterfaceMember(bindingContext) ?: false
 
-            NESTED_CLASS_IN_EXTERNAL_INTERFACE
+            NESTED_CLASS_IN_EXTERNAL_INTERFACE,
             -> psiElement is KtObjectDeclaration
                     && psiElement.isYFilesInterfaceCompanion(bindingContext)
 
             // TODO: check type parameter
-            NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE
+            NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE,
             -> psiElement.isYFilesExtension()
 
-            NOTHING_TO_INLINE
+            NOTHING_TO_INLINE,
             -> psiElement.isYFilesExtensionModifier()
 
             else -> false
@@ -118,7 +118,7 @@ private val LeafPsiElement.parentDeclaration: KtCallableDeclaration?
     get() = parent?.parent as? KtCallableDeclaration
 
 private fun KtTypeReference?.isYFilesInterface(
-    context: BindingContext
+    context: BindingContext,
 ): Boolean =
     context[BindingContext.TYPE, this]
         .isYFilesInterface()
@@ -133,21 +133,21 @@ private fun KotlinType?.isYFilesInterface(): Boolean {
 }
 
 private fun KtPrimaryConstructor.isYFilesConstructor(
-    context: BindingContext
+    context: BindingContext,
 ): Boolean {
     val descriptor = context[BindingContext.CLASS, parent] ?: return false
     return descriptor.locatedInYFilesPackage
 }
 
 private fun KtParameter.isYFilesConstructorParameter(
-    context: BindingContext
+    context: BindingContext,
 ): Boolean {
     val constructor = parent?.parent as? KtPrimaryConstructor ?: return false
     return constructor.isYFilesConstructor(context)
 }
 
 private fun KtCallableDeclaration.isYFilesInterfaceMember(
-    context: BindingContext
+    context: BindingContext,
 ): Boolean {
     if (this !is KtProperty && this !is KtNamedFunction)
         return false
@@ -157,7 +157,7 @@ private fun KtCallableDeclaration.isYFilesInterfaceMember(
 }
 
 private fun KtObjectDeclaration.isYFilesInterfaceCompanion(
-    context: BindingContext
+    context: BindingContext,
 ): Boolean {
     if (!isCompanion()) return false
     val descriptor = context[BindingContext.CLASS, parent?.parent] ?: return false
