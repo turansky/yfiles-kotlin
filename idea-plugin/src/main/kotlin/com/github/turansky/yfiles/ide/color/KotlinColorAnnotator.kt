@@ -21,20 +21,20 @@ private val COLOR_METHOD_NAMES = setOf(
 internal class KotlinColorAnnotator : Annotator {
     override fun annotate(
         element: PsiElement,
-        holder: AnnotationHolder
+        holder: AnnotationHolder,
     ) {
         when (element) {
-            is KtLiteralStringTemplateEntry
+            is KtLiteralStringTemplateEntry,
             -> annotate(element, holder)
 
-            is KtProperty
+            is KtProperty,
             -> annotate(element, holder)
         }
     }
 
     private fun annotate(
         element: KtLiteralStringTemplateEntry,
-        holder: AnnotationHolder
+        holder: AnnotationHolder,
     ) {
         val argument = element.parent.parent as? KtValueArgument ?: return
         val expression = argument.parent.parent as? KtCallExpression ?: return
@@ -50,7 +50,7 @@ internal class KotlinColorAnnotator : Annotator {
 
     private fun annotate(
         element: KtProperty,
-        holder: AnnotationHolder
+        holder: AnnotationHolder,
     ) {
         val name = element.name ?: return
         val range = element.nameIdentifier?.range ?: return

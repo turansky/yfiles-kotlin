@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 class JavaScriptPsiFinder : PsiFinder {
     override fun findClass(
         context: PsiElement,
-        className: String
+        className: String,
     ): JSClass? =
         JavaScriptIndex.getInstance(context.project)
             .getClassByName(className.substringAfterLast("."), true)
@@ -17,7 +17,7 @@ class JavaScriptPsiFinder : PsiFinder {
     override fun findProperty(
         context: PsiElement,
         className: String,
-        propertyName: String
+        propertyName: String,
     ): PsiElement? =
         findClass(context, className)
             ?.findFieldByName(propertyName)

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 class JavaPsiFinder : PsiFinder {
     override fun findClass(
         context: PsiElement,
-        className: String
+        className: String,
     ): PsiClass? =
         JavaPsiFacade.getInstance(context.project)
             .findClass("com.yworks.$className", context.resolveScope)
@@ -15,7 +15,7 @@ class JavaPsiFinder : PsiFinder {
     override fun findProperty(
         context: PsiElement,
         className: String,
-        propertyName: String
+        propertyName: String,
     ): PsiElement? =
         findClass(context, className)
             ?.findMethodsByName(propertyName.toMethodName(), true)

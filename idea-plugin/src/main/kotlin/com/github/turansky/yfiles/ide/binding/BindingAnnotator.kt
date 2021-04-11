@@ -11,7 +11,7 @@ import com.intellij.psi.xml.XmlAttributeValue
 internal class BindingAnnotator : Annotator {
     override fun annotate(
         element: PsiElement,
-        holder: AnnotationHolder
+        holder: AnnotationHolder,
     ) {
         if (element !is XmlAttributeValue) return
         if (!element.bindingEnabled) return
@@ -28,7 +28,7 @@ internal class BindingAnnotator : Annotator {
 
 private fun AnnotationHolder.info(
     token: BindingToken,
-    range: TextRange
+    range: TextRange,
 ) {
     val severity = when (token) {
         ERROR -> HighlightSeverity.ERROR

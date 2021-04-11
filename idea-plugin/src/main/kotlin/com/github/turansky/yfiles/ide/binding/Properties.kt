@@ -11,5 +11,5 @@ internal interface IProperty {
 
 private class SimpleProperty(
     override val className: String,
-    override val name: String
+    override val name: String,
 ) : IProperty

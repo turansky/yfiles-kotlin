@@ -61,7 +61,7 @@ private fun StringBuilder.renderSeeAlsoBlock() {
 
 private fun StringBuilder.renderSection(
     title: String,
-    content: StringBuilder.() -> Unit
+    content: StringBuilder.() -> Unit,
 ) {
     append(SECTION_HEADER_START, title, ":", SECTION_SEPARATOR)
     content()
@@ -70,14 +70,14 @@ private fun StringBuilder.renderSection(
 
 private fun StringBuilder.reference(
     reference: String,
-    title: String = reference
+    title: String = reference,
 ) {
     createHyperlink(this, reference, title, true)
 }
 
 private fun StringBuilder.link(
     title: String,
-    href: String
+    href: String,
 ) {
     append("""<a href="$href">$title</a>""")
 }

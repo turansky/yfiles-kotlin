@@ -11,7 +11,7 @@ import javax.swing.Icon
 internal fun AnnotationHolder.createColorAnnotation(
     colorText: String,
     format: ColorFormat,
-    range: TextRange
+    range: TextRange,
 ) {
     newSilentAnnotation(HighlightSeverity.INFORMATION)
         .textAttributes(DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
@@ -22,7 +22,7 @@ internal fun AnnotationHolder.createColorAnnotation(
 
 private class ColorIconRenderer(
     private val colorText: String,
-    private val format: ColorFormat
+    private val format: ColorFormat,
 ) : GutterIconRenderer() {
     override fun getIcon(): Icon =
         ColorIconCache.getIconCache()

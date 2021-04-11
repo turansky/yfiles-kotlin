@@ -10,7 +10,7 @@ import com.intellij.psi.xml.XmlAttributeValue
 internal class ClassReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    private val className: String
+    private val className: String,
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, true) {
     override fun resolve(): PsiElement? =
         DefaultPsiFinder.findClass(element, className)
@@ -19,7 +19,7 @@ internal class ClassReference(
 internal open class PropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    private val property: IProperty
+    private val property: IProperty,
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, true) {
     override fun resolve(): PsiElement? =
         DefaultPsiFinder.findProperty(element, property.className, property.name)
@@ -28,7 +28,7 @@ internal open class PropertyReference(
 internal fun ContextPropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    propertyName: String
+    propertyName: String,
 ): PsiReference {
     val property = when {
         "." !in propertyName -> null
@@ -55,7 +55,7 @@ internal fun ContextPropertyReference(
 private class ContextPropertyReference(
     element: XmlAttributeValue,
     rangeInElement: TextRange,
-    private val property: IProperty?
+    private val property: IProperty?,
 ) : PsiReferenceBase<XmlAttributeValue>(element, rangeInElement, property != null) {
     override fun resolve(): PsiElement? =
         if (property != null) {

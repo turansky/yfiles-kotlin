@@ -10,20 +10,20 @@ internal object DefaultPsiFinder : PsiFinder {
 
     override fun findClass(
         context: PsiElement,
-        className: String
+        className: String,
     ): PsiElement? =
         find { it.findClass(context, className) }
 
     override fun findProperty(
         context: PsiElement,
         className: String,
-        propertyName: String
+        propertyName: String,
     ): PsiElement? =
         find { it.findProperty(context, className, propertyName) }
 
     override fun findPropertyVariants(
         context: PsiElement,
-        classNames: List<String>
+        classNames: List<String>,
     ): Array<out Any>? =
         find { it.findPropertyVariants(context, classNames) }
 }
