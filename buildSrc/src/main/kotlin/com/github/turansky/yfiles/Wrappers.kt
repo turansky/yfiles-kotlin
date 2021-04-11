@@ -383,7 +383,7 @@ private fun parseSeeAlso(source: JSONObject): SeeAlso =
 
 private fun seeAlsoDocs(
     parent: TypeDeclaration,
-    memberId: String?
+    memberId: String?,
 ): List<SeeAlsoDoc> {
     val docId = memberId
         ?: return emptyList()
@@ -395,7 +395,7 @@ private fun seeAlsoDocs(
 
 internal sealed class TypedDeclaration(
     source: JSONObject,
-    protected val parent: TypeDeclaration
+    protected val parent: TypeDeclaration,
 ) : Declaration(source) {
     private val signature: String? by optString()
     val type: String by type {
@@ -456,7 +456,7 @@ private val IGNORE_SECONDARY_CONSTRUCTORS = setOf(
 
 internal class Constructor(
     source: JSONObject,
-    parent: Class
+    parent: Class,
 ) : MethodBase(source, parent) {
     private val modifiers: ConstructorModifiers by wrapStringList(::ConstructorModifiers)
     val public = modifiers.visibility == ConstructorVisibility.PUBLIC
@@ -552,14 +552,14 @@ internal class Constructor(
 
 internal sealed class Constant(
     source: JSONObject,
-    parent: TypeDeclaration
+    parent: TypeDeclaration,
 ) : TypedDeclaration(source, parent) {
     abstract fun toEnumValue(): String
 }
 
 private class TypeConstant(
     source: JSONObject,
-    parent: TypeDeclaration
+    parent: TypeDeclaration,
 ) : Constant(source, parent) {
     private val modifiers: ConstantModifiers by wrapStringList(::ConstantModifiers)
     private val dpdata: DpData? by optNamed(::DpData)
@@ -583,7 +583,7 @@ private class TypeConstant(
 
 private class EnumConstant(
     source: JSONObject,
-    parent: TypeDeclaration
+    parent: TypeDeclaration,
 ) : Constant(source, parent) {
     private val value: Int by int()
 
@@ -609,7 +609,7 @@ private class EnumConstant(
 
 internal class Property(
     source: JSONObject,
-    parent: TypeDeclaration
+    parent: TypeDeclaration,
 ) : TypedDeclaration(source, parent) {
     private val modifiers: PropertyModifiers by wrapStringList(::PropertyModifiers)
     val static = modifiers.static
@@ -826,7 +826,7 @@ private val EXCLUDED_RECEIVER_CLASSES = setOf(
 internal class Method(
     source: JSONObject,
     private val parent: Type,
-    operatorName: String? = null
+    operatorName: String? = null,
 ) : MethodBase(source, parent) {
     private val modifiers: MethodModifiers by wrapStringList(::MethodModifiers)
     val abstract = modifiers.abstract
@@ -925,7 +925,7 @@ internal class Method(
 
             IEDGE,
             ILABEL,
-            "$IENUMERABLE<$IMODEL_ITEM>"
+            "$IENUMERABLE<$IMODEL_ITEM>",
             -> true
 
             else -> false
@@ -1084,7 +1084,7 @@ private val EXCLUDED_READ_ONLY = setOf(
 
 internal sealed class MethodBase(
     source: JSONObject,
-    private val parent: Type
+    private val parent: Type,
 ) : Declaration(source) {
     private val id: String? by optString()
     val parameters: List<Parameter> by list { Parameter(it, name !in EXCLUDED_READ_ONLY) }
@@ -1104,7 +1104,7 @@ internal sealed class MethodBase(
     }
 
     protected fun kotlinParametersString(
-        ignoreFirstParameter: Boolean = false
+        ignoreFirstParameter: Boolean = false,
     ): String =
         parameters
             .drop(if (ignoreFirstParameter) 1 else 0)
@@ -1128,7 +1128,7 @@ internal sealed class MethodBase(
 
 internal class Parameter(
     source: JSONObject,
-    private val readOnly: Boolean = true
+    private val readOnly: Boolean = true,
 ) : JsonWrapper(source), IParameter {
     override val name: String by string()
     private val signature: String? by optString()
@@ -1160,7 +1160,7 @@ internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParamet
 
 internal class CustomTypeParameter(
     override val name: String,
-    private val bound: String
+    private val bound: String,
 ) : ITypeParameter {
     override fun toCode(): String =
         "$name : $bound"
@@ -1174,7 +1174,7 @@ internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
 
 internal class Event(
     source: JSONObject,
-    private val parent: TypeDeclaration
+    private val parent: TypeDeclaration,
 ) : JsonWrapper(source) {
     val name: String by string()
     private val summary: String? by summary()
@@ -1228,7 +1228,7 @@ internal class Event(
 
 private class EventListener(
     source: JSONObject,
-    private val parent: HasClassId
+    private val parent: HasClassId,
 ) : JsonWrapper(source) {
     val name: String by string()
     val modifiers: EventListenerModifiers by wrapStringList(::EventListenerModifiers)
@@ -1256,7 +1256,7 @@ private class EventListener(
 }
 
 private fun type(
-    parse: (String) -> String
+    parse: (String) -> String,
 ): Prop<String> =
     string(parse)
 
@@ -1265,7 +1265,7 @@ private fun summary(): Prop<String?> = SummaryDelegate()
 private class SummaryDelegate : PropDelegate<String?>() {
     override fun read(
         source: JSONObject,
-        key: String
+        key: String,
     ): String? {
         val value = optString(source, key)
             ?: return null
@@ -1289,7 +1289,7 @@ private class RemarksDelegate : PropDelegate<String?>() {
 
     override fun read(
         source: JSONObject,
-        key: String
+        key: String,
     ): String? {
         val value = optString(source, key)
             ?.takeIf { it.isSummaryLike() or source.isRequiredRemarks() }
@@ -1315,7 +1315,7 @@ private fun eventListener(parent: HasClassId): Prop<EventListener> =
     named { EventListener(it, parent) }
 
 private fun <P : Declaration, T : Declaration> P.declarationList(
-    create: (JSONObject, P) -> T
+    create: (JSONObject, P) -> T,
 ): Prop<List<T>> =
     sortedList { source -> create(source, this) }
 
@@ -1333,7 +1333,7 @@ private fun getDocumentation(
     defaultValue: DefaultValue? = null,
     exceptions: List<ExceptionDescription>? = null,
     seeAlso: List<SeeAlso>? = null,
-    additionalDocumentation: String? = null
+    additionalDocumentation: String? = null,
 ): String {
     var lines = getDocumentationLines(
         summary = summary,
@@ -1384,7 +1384,7 @@ private fun getDocumentationLines(
     seeAlso: List<SeeAlso>? = null,
     primaryConstructor: Boolean = false,
     propertyName: String? = null,
-    properties: List<Property>? = null
+    properties: List<Property>? = null,
 ): List<String> {
     val lines = mutableListOf<String>()
     if (propertyName != null) {

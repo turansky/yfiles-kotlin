@@ -88,16 +88,16 @@ private fun fixComparerAsMethodParameter(source: Source) {
 
 private fun getGeneric(
     methodName: String,
-    parameterName: String
+    parameterName: String,
 ): String {
     when (methodName) {
         "sortNodes",
         "GivenSequenceSequencer",
-        "MultiComponentLayerer"
+        "MultiComponentLayerer",
         -> return NODE
 
         "sortEdges", "sortInEdges", "sortOutEdges",
-        "createCompoundComparer"
+        "createCompoundComparer",
         -> return EDGE
 
         "SwimlaneDescriptor" -> return SWIMLANE_DESCRIPTOR

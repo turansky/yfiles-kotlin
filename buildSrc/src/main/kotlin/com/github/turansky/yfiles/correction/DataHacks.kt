@@ -142,7 +142,7 @@ private fun getDefaultTypeParameter(name: String, type: String): String =
 private fun getDefaultObjectTypeParameter(name: String): String =
     when (name) {
         "busIDAcceptor",
-        "partitionIDDP"
+        "partitionIDDP",
         -> YID
 
         else -> "*"
@@ -164,7 +164,7 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "w",
         "weight",
         "initialLabel",
-        "communityIndex"
+        "communityIndex",
         -> INT
 
         "cost",
@@ -177,7 +177,7 @@ private fun getDefaultNumberTypeParameter(name: String): String =
         "edgeWeight",
         "heuristicCost",
         "supplyDP",
-        "initialPageRank"
+        "initialPageRank",
         -> DOUBLE
 
         else -> throw IllegalArgumentException("No type parameter for data map: $name")
@@ -238,7 +238,7 @@ private fun getDataMapsNumberTypeParameter(name: String): String =
         "subtreeSizeMap",
         "kValue",
         "finalLabel",
-        "communityIndex"
+        "communityIndex",
         -> INT
 
         "centrality",
@@ -250,7 +250,7 @@ private fun getDataMapsNumberTypeParameter(name: String): String =
         "nodeCentrality",
         "centralityMap",
         "pageRank",
-        "coefficientMap"
+        "coefficientMap",
         -> DOUBLE
 
         else -> throw IllegalArgumentException("No type parameter for data map: $name")

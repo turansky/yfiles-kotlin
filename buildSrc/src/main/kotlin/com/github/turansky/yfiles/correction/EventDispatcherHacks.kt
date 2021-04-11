@@ -51,7 +51,7 @@ internal fun applyEventDispatcherHacks(source: Source) {
 }
 
 private fun JSONObject.hasParentDispatcher(
-    source: Source
+    source: Source,
 ): Boolean {
     if (has(EXTENDS)) {
         val extends = getType(get(EXTENDS), source)
@@ -76,7 +76,7 @@ private fun JSONObject.hasParentDispatcher(
 
 private fun getType(
     classId: String,
-    source: Source
+    source: Source,
 ): JSONObject {
     val className = classId
         .substringBefore("<")

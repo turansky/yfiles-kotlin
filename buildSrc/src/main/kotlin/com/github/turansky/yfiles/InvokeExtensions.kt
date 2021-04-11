@@ -21,7 +21,7 @@ private val INVOKE_TARGETS = setOf(
 internal fun invokeExtension(
     className: String,
     generics: Generics,
-    final: Boolean = false
+    final: Boolean = false,
 ): String? {
     if (className !in INVOKE_TARGETS) {
         return null

@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 internal fun generateResourceTypes(
     devguide: JSONObject,
-    context: GeneratorContext
+    context: GeneratorContext,
 ) {
     val keyDeclarations = devguide
         .flatMap(CHILDREN)
@@ -102,7 +102,7 @@ internal fun generateResourceTypes(
 
 private fun constDeclaration(
     key: String,
-    defaultValue: String
+    defaultValue: String,
 ): String {
     val name = key
         .replace(Regex("([a-z])([A-Z])"), "$1_$2")
@@ -119,7 +119,7 @@ private fun constDeclaration(
 private fun keyDeclaration(
     key: String,
     name: String,
-    defaultValue: String
+    defaultValue: String,
 ): String =
     // language=kotlin
     """
@@ -133,7 +133,7 @@ private fun keyDeclaration(
 private fun hotkeyDeclaration(
     key: String,
     name: String,
-    defaultValue: String
+    defaultValue: String,
 ): String =
     // language=kotlin
     """

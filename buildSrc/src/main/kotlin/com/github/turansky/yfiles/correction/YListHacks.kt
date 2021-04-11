@@ -81,7 +81,7 @@ private fun fixMethodParameter(source: Source) {
 
 private fun getGeneric(
     methodName: String,
-    parameterName: String
+    parameterName: String,
 ): String {
     when {
         methodName == "splice" && parameterName == "list" ->

@@ -54,25 +54,25 @@ private fun getEventHandlerData(eventType: String): HandlerData {
     }
 
     return when (eventType) {
-        "yfiles.lang.EventArgs"
+        "yfiles.lang.EventArgs",
         -> EMPTY_HANDLER_DATA
 
-        "yfiles.lang.PropertyChangedEventArgs"
+        "yfiles.lang.PropertyChangedEventArgs",
         -> PROPERTY_HANDLER_DATA
 
-        "yfiles.input.InputModeEventArgs"
+        "yfiles.input.InputModeEventArgs",
         -> INPUT_MODE_HANDLER_DATA
 
-        "yfiles.input.TextEventArgs"
+        "yfiles.input.TextEventArgs",
         -> TEXT_HANDLER_DATA
 
-        "yfiles.input.MarqueeSelectionEventArgs"
+        "yfiles.input.MarqueeSelectionEventArgs",
         -> MARQUEE_HANDLER_DATA
 
-        "yfiles.input.LassoSelectionEventArgs"
+        "yfiles.input.LassoSelectionEventArgs",
         -> LASSO_HANDLER_DATA
 
-        "yfiles.input.HoveredItemChangedEventArgs"
+        "yfiles.input.HoveredItemChangedEventArgs",
         -> HOVER_HANDLER_DATA
 
         else ->
@@ -127,5 +127,5 @@ private val HOVER_HANDLER_DATA =
 
 internal data class HandlerData(
     val handlerType: String,
-    val listenerBody: String
+    val listenerBody: String,
 )

@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles
 
 internal class ClassRegistry(
-    types: List<Type>
+    types: List<Type>,
 ) {
     companion object {
         lateinit var instance: ClassRegistry
@@ -41,7 +41,7 @@ internal class ClassRegistry(
     private fun functionOverridden(
         className: String,
         functionName: String,
-        checkCurrentClass: Boolean
+        checkCurrentClass: Boolean,
     ): Boolean {
         if (checkCurrentClass) {
             val funs = functionsMap.getValue(className)
@@ -57,7 +57,7 @@ internal class ClassRegistry(
     private fun propertyOverridden(
         className: String,
         propertyName: String,
-        checkCurrentClass: Boolean
+        checkCurrentClass: Boolean,
     ): Boolean {
         if (checkCurrentClass) {
             val props = propertiesMap.getValue(className)
@@ -73,7 +73,7 @@ internal class ClassRegistry(
     private fun listenerOverridden(
         className: String,
         listenerName: String,
-        checkCurrentClass: Boolean
+        checkCurrentClass: Boolean,
     ): Boolean {
         if (checkCurrentClass) {
             val listeners = listenerMap.getValue(className)

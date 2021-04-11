@@ -64,7 +64,7 @@ private fun JSONObject.mergeDeclarations() {
 
 private fun JSONObject.merge(
     key: JArrayKey,
-    staticKey: JArrayKey
+    staticKey: JArrayKey,
 ) {
     if (!has(staticKey)) {
         return

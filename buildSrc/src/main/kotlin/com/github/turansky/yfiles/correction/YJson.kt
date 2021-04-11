@@ -13,7 +13,7 @@ internal fun JSONObject.allMethodParameters(): Sequence<JSONObject> =
 
 internal fun JSONObject.methodParameters(
     methodName: String,
-    parameterName: String
+    parameterName: String,
 ): Iterable<JSONObject> =
     methodParameters(
         methodName,
@@ -24,7 +24,7 @@ internal fun JSONObject.methodParameters(
 internal fun JSONObject.methodParameters(
     methodName: String,
     parameterName: String,
-    parameterFilter: (JSONObject) -> Boolean
+    parameterFilter: (JSONObject) -> Boolean,
 ): Iterable<JSONObject> {
     val result = get(METHODS)
         .objects { it[NAME] == methodName }
@@ -54,7 +54,7 @@ internal fun Sequence<JSONObject>.eventListeners(): Sequence<JSONObject> =
 
 internal fun JSONObject.addProperty(
     propertyName: String,
-    type: String
+    type: String,
 ) {
     get(PROPERTIES)
         .put(
@@ -68,14 +68,14 @@ internal fun JSONObject.addProperty(
 
 internal fun JSONObject.replaceInType(
     oldValue: String,
-    newValue: String
+    newValue: String,
 ) {
     set(TYPE, get(TYPE).replace(oldValue, newValue))
 }
 
 internal fun JSONObject.replaceInSignature(
     oldValue: String,
-    newValue: String
+    newValue: String,
 ) {
     set(SIGNATURE, get(SIGNATURE).replace(oldValue, newValue))
 }
@@ -101,7 +101,7 @@ private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
 
 internal fun JSONObject.setSingleTypeParameter(
     name: String = "T",
-    bound: String? = null
+    bound: String? = null,
 ) {
     set(
         TYPE_PARAMETERS,
@@ -113,7 +113,7 @@ internal fun JSONObject.setSingleTypeParameter(
 
 internal fun JSONObject.addFirstTypeParameter(
     name: String,
-    bound: String? = null
+    bound: String? = null,
 ) {
     val parameters = get(TYPE_PARAMETERS)
         .toMutableList()
@@ -125,7 +125,7 @@ internal fun JSONObject.addFirstTypeParameter(
 
 internal fun JSONObject.setTypeParameters(
     name1: String,
-    name2: String
+    name2: String,
 ) {
     set(
         TYPE_PARAMETERS,
@@ -139,7 +139,7 @@ internal fun JSONObject.setTypeParameters(
 internal fun JSONObject.setKeyValueTypeParameters(
     keyName: String = "K",
     valueName: String = "V",
-    keyBound: String = JS_OBJECT
+    keyBound: String = JS_OBJECT,
 ) {
     set(
         TYPE_PARAMETERS,
@@ -152,7 +152,7 @@ internal fun JSONObject.setKeyValueTypeParameters(
 
 internal fun typeParameter(
     name: String,
-    bound: String? = null
+    bound: String? = null,
 ): JSONObject =
     jObject(NAME to name).apply {
         if (bound != null) {

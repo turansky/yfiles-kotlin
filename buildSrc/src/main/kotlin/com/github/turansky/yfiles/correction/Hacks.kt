@@ -490,7 +490,7 @@ private fun fieldToProperties(source: Source) {
 }
 
 private fun JSONObject.addMethod(
-    methodData: MethodData
+    methodData: MethodData,
 ) {
     if (!has(METHODS)) {
         set(METHODS, emptyList<Any>())
