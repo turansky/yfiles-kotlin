@@ -12,10 +12,6 @@ repositories {
     mavenCentral()
 }
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
-}
-
 dependencies {
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
