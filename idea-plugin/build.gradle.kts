@@ -12,7 +12,7 @@ intellij {
     pluginName = "yfiles"
 
     type = "IU"
-    version = "2021.1"
+    version = "2021.1.1"
 
     setPlugins(
         "java",
