@@ -36,7 +36,7 @@ internal class ComponentPropertyPlugin : Plugin<Project> {
 
                     val outputFile = file(kotlinOptions.outputFile!!)
                     // IR invalid folder check
-                    if (outputFile.parentFile.name != "kotlin")
+                    if (!outputFile.name.endsWith(".js"))
                         return@doLast
 
                     val content = outputFile.readText()
