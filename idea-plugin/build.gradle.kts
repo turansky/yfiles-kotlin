@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.5.0"
     id("org.jetbrains.intellij") version "0.7.3"
-    id("com.github.turansky.kfc.version") version "4.0.0"
+    id("com.github.turansky.kfc.version") version "4.3.0"
 }
 
 repositories {
@@ -24,7 +24,7 @@ intellij {
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             // TODO: restore after Gradle update
             allWarningsAsErrors = false
         }
