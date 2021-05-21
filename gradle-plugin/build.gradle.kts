@@ -51,6 +51,6 @@ pluginBundle {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.0"
+    gradleVersion = "7.0.2"
     distributionType = Wrapper.DistributionType.ALL
 }
