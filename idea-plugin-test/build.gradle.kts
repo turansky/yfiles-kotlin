@@ -1,6 +1,6 @@
 plugins {
-    kotlin("js") version "1.5.0"
-    id("com.github.turansky.kfc.library") version "4.0.0"
+    kotlin("js") version "1.5.10"
+    id("com.github.turansky.kfc.library") version "4.8.3"
     id("com.github.turansky.yfiles") version "6.4.0"
 }
 
