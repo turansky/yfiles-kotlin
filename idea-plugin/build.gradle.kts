@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "1.5.10"
-    id("org.jetbrains.intellij") version "0.7.3"
+    id("org.jetbrains.intellij") version "1.0"
     id("com.github.turansky.kfc.version") version "4.8.4"
 }
 
@@ -9,15 +9,17 @@ repositories {
 }
 
 intellij {
-    pluginName = "yfiles"
+    pluginName.set("yfiles")
 
-    type = "IU"
-    version = "2021.1.1"
+    type.set("IU")
+    version.set("2021.1.1")
 
-    setPlugins(
-        "java",
-        "org.jetbrains.kotlin",
-        "JavaScript"
+    plugins.set(
+        listOf(
+            "java",
+            "org.jetbrains.kotlin",
+            "JavaScript"
+        )
     )
 }
 
@@ -38,12 +40,12 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild("201.6487")
-        untilBuild("211.*")
+        sinceBuild.set("201.6487")
+        untilBuild.set("211.*")
     }
 
     publishPlugin {
-        setToken(project.property("intellij.publish.token"))
+        token.set(project.property("intellij.publish.token") as String)
     }
 
     wrapper {
