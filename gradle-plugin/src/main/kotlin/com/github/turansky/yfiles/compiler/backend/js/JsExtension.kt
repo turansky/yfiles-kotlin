@@ -15,7 +15,7 @@ class JsExtension : JsSyntheticTranslateExtension {
         declaration: KtPureClassOrObject,
         descriptor: ClassDescriptor,
         translator: DeclarationBodyVisitor,
-        context: TranslationContext
+        context: TranslationContext,
     ) {
         when {
             descriptor.isExternal
@@ -35,7 +35,7 @@ class JsExtension : JsSyntheticTranslateExtension {
 
 private fun TranslationContext.generateCustomYObject(
     descriptor: ClassDescriptor,
-    translator: DeclarationBodyVisitor
+    translator: DeclarationBodyVisitor,
 ) {
     val yobject = descriptor.getSuperInterfaces().single()
     val baseClass = toValueReference(yobject)
@@ -45,7 +45,7 @@ private fun TranslationContext.generateCustomYObject(
 
 private fun TranslationContext.generateBaseClass(
     descriptor: ClassDescriptor,
-    translator: DeclarationBodyVisitor
+    translator: DeclarationBodyVisitor,
 ) {
     val baseClassName = generateName(descriptor, "BaseClass")
     val baseClass = declareConstantValue(

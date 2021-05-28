@@ -25,7 +25,7 @@ class YLineMarkerProvider : LineMarkerProviderDescriptor() {
 
     override fun collectSlowLineMarkers(
         elements: List<PsiElement>,
-        result: MutableCollection<in LineMarkerInfo<*>>
+        result: MutableCollection<in LineMarkerInfo<*>>,
     ) {
         if (elements.isEmpty()) return
         if (LineMarkerOptions.allOptions.none { option -> option.isEnabled }) return
@@ -58,7 +58,7 @@ private fun createClassMarker(
     klass: KtClass,
     option: GutterIconDescriptor.Option,
     check: (ClassDescriptor) -> Boolean,
-    tooltipProvider: () -> String
+    tooltipProvider: () -> String,
 ): LineMarkerInfo<*>? {
     if (!option.isEnabled) return null
 

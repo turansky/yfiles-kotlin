@@ -23,10 +23,10 @@ internal fun Class.getComponents(): String? =
         "yfiles.geometry.Insets",
         "yfiles.geometry.Tangent",
 
-        "yfiles.view.Color"
+        "yfiles.view.Color",
         -> constructorComponents()
 
-        "yfiles.algorithms.YVector"
+        "yfiles.algorithms.YVector",
         -> components("x", "y")
 
         else -> null
@@ -35,7 +35,7 @@ internal fun Class.getComponents(): String? =
 internal fun Interface.getComponents(): String? =
     when (classId) {
         ILIST,
-        ILIST_ENUMERABLE
+        ILIST_ENUMERABLE,
         -> indexAccessComponents("get")
 
         else -> null

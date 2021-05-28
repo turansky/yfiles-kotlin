@@ -3,7 +3,7 @@ package com.github.turansky.yfiles
 internal fun String.between(
     start: String,
     end: String,
-    firstEnd: Boolean = false
+    firstEnd: Boolean = false,
 ): String {
     val startIndex = indexOf(start)
     require(startIndex != -1)

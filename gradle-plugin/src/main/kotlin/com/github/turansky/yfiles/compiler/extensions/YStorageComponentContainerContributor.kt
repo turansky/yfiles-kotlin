@@ -11,7 +11,7 @@ class YStorageComponentContainerContributor : StorageComponentContainerContribut
     override fun registerModuleComponents(
         container: StorageComponentContainer,
         platform: TargetPlatform,
-        moduleDescriptor: ModuleDescriptor
+        moduleDescriptor: ModuleDescriptor,
     ) {
         container.useInstance(YDeclarationChecker)
     }

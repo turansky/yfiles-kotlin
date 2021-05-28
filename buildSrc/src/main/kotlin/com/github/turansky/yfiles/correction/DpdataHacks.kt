@@ -328,7 +328,7 @@ private fun fixMaps(source: Source) {
                         else -> when (it[TYPE]) {
                             IDATA_PROVIDER,
                             IDATA_ACCEPTOR,
-                            IDATA_MAP
+                            IDATA_MAP,
                             -> it.addGeneric(typeParameters)
                         }
                     }

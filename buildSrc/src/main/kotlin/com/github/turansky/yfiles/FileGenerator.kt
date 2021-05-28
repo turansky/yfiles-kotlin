@@ -5,7 +5,7 @@ internal interface FileGenerator {
 }
 
 internal open class GeneratorData(
-    val fqn: String
+    val fqn: String,
 ) {
     private val names = fqn.split(".")
     private val packageNames = names.subList(0, names.size - 1)
@@ -16,7 +16,7 @@ internal open class GeneratorData(
 
 internal class TypeGeneratorData(
     fqn: String,
-    alias: String?
+    alias: String?,
 ) : GeneratorData(fqn) {
     val jsName = alias ?: name
 
@@ -41,7 +41,7 @@ internal class TypeGeneratorData(
 }
 
 internal fun es6GeneratorData(
-    declaration: Type
+    declaration: Type,
 ) = TypeGeneratorData(
     fqn = declaration.classId,
     alias = declaration.es6name

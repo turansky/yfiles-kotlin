@@ -19,7 +19,7 @@ internal val CONTEXT_PROPERTY_VARIANTS: Array<out Any> by lazy {
 }
 
 internal enum class ContextProperty(
-    override val className: String = CONTEXT
+    override val className: String = CONTEXT,
 ) : IProperty {
     bounds,
     canvasComponent,

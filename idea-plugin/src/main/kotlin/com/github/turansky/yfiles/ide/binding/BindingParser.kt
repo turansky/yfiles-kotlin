@@ -88,12 +88,12 @@ internal object BindingParser {
 internal data class BindingParseResult(
     val token: BindingToken,
     val range: TextRange,
-    val directive: BindingDirective? = null
+    val directive: BindingDirective? = null,
 )
 
 private fun BindingParseResult(
     token: BindingToken,
-    offset: Int
+    offset: Int,
 ): BindingParseResult =
     BindingParseResult(token, TextRange.from(offset, 1))
 

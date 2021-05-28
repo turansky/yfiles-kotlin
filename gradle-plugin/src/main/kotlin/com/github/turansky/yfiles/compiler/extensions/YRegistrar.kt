@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor
 class YRegistrar : ComponentRegistrar {
     override fun registerProjectComponents(
         project: MockProject,
-        configuration: CompilerConfiguration
+        configuration: CompilerConfiguration,
     ) {
         JsSyntheticTranslateExtension.registerExtension(project, JsExtension())
 

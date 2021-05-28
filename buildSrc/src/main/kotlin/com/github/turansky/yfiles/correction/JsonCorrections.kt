@@ -757,50 +757,50 @@ internal val SYSTEM_FUNCTIONS = listOf(
 
 internal data class ConstructorParameterData(
     val className: String,
-    val parameterName: String
+    val parameterName: String,
 )
 
 internal data class ParameterData(
     val className: String,
     val methodName: String,
     val parameterName: String,
-    val last: Boolean = false
+    val last: Boolean = false,
 )
 
 internal data class PropertyDeclaration(
     val className: String,
-    val propertyName: String
+    val propertyName: String,
 )
 
 internal data class PropertyData(
     val className: String,
     val propertyName: String,
-    val type: String
+    val type: String,
 )
 
 internal data class MethodDeclaration(
     val className: String,
-    val methodName: String
+    val methodName: String,
 )
 
 internal data class MethodData(
     val className: String,
     val methodName: String,
     val parameters: List<MethodParameterData> = emptyList(),
-    val result: ResultData? = null
+    val result: ResultData? = null,
 )
 
 internal data class MethodParameterData(
     val name: String,
     val type: String,
-    private val nullable: Boolean = false
+    private val nullable: Boolean = false,
 ) {
     val modifiers = if (nullable) setOf(CANBENULL) else emptySet()
 }
 
 internal data class ResultData(
     val type: String,
-    private val nullable: Boolean = false
+    private val nullable: Boolean = false,
 ) {
     val modifiers = if (nullable) setOf(CANBENULL) else emptySet()
 }

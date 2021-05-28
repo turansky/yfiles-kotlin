@@ -23,7 +23,7 @@ internal fun addSizeExtensions(source: Source) {
 private fun JSONObject.addGeneratedProperty(
     name: String,
     type: String,
-    body: String
+    body: String,
 ) {
     val property = jObject(
         NAME to name,

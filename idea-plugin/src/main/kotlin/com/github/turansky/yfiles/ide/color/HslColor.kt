@@ -6,7 +6,7 @@ fun getHSLColor(
     h: Float,
     s: Float,
     l: Float,
-    a: Float = 1f
+    a: Float = 1f,
 ): Color {
     check(s in 0f..100f)
     check(l in 0f..100f)
@@ -30,7 +30,7 @@ fun getHSLColor(
 private fun toRGB(
     p: Float,
     q: Float,
-    h: Float
+    h: Float,
 ): Float {
     var hue = h
     if (hue < 0) hue += 1f

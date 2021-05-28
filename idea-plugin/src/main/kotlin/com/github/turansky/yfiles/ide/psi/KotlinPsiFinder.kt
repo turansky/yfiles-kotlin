@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.psi.psiUtil.findPropertyByName
 class KotlinPsiFinder : PsiFinder {
     override fun findClass(
         context: PsiElement,
-        className: String
+        className: String,
     ): KtClassOrObject? =
         KotlinFullClassNameIndex.getInstance()
             .get(className, context.project, context.resolveScope)
@@ -21,14 +21,14 @@ class KotlinPsiFinder : PsiFinder {
     override fun findProperty(
         context: PsiElement,
         className: String,
-        propertyName: String
+        propertyName: String,
     ): PsiElement? =
         findClass(context, className)
             ?.findPropertyByName(propertyName)
 
     override fun findPropertyVariants(
         context: PsiElement,
-        classNames: List<String>
+        classNames: List<String>,
     ): Array<out Any>? {
         val classes = classNames
             .mapNotNull { findClass(context, it) }

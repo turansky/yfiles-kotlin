@@ -1,35 +1,34 @@
 plugins {
-    kotlin("jvm") version "1.4.32"
-    id("org.jetbrains.intellij") version "0.7.2"
-    id("com.github.turansky.kfc.version") version "3.5.0"
+    kotlin("jvm") version "1.5.10"
+    id("org.jetbrains.intellij") version "1.0"
+    id("com.github.turansky.kfc.version") version "4.8.4"
 }
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-}
-
 intellij {
-    pluginName = "yfiles"
+    pluginName.set("yfiles")
 
-    type = "IU"
-    version = "2020.3.3"
+    type.set("IU")
+    version.set("2021.1.1")
 
-    setPlugins(
-        "java",
-        "org.jetbrains.kotlin",
-        "JavaScript"
+    plugins.set(
+        listOf(
+            "java",
+            "org.jetbrains.kotlin",
+            "JavaScript"
+        )
     )
 }
 
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
-            allWarningsAsErrors = true
+            jvmTarget = "11"
+            // TODO: restore after Gradle update
+            allWarningsAsErrors = false
         }
     }
 
@@ -41,16 +40,16 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild("201.6487")
-        untilBuild("211.*")
+        sinceBuild.set("201.6487")
+        untilBuild.set("211.*")
     }
 
     publishPlugin {
-        setToken(project.property("intellij.publish.token"))
+        token.set(project.property("intellij.publish.token") as String)
     }
 
     wrapper {
-        gradleVersion = "6.8.3"
+        gradleVersion = "7.0.2"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

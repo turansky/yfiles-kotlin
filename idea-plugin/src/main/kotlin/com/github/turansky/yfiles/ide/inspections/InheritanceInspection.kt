@@ -24,14 +24,14 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 class InheritanceInspection : AbstractKotlinInspection() {
     override fun buildVisitor(
         holder: ProblemsHolder,
-        isOnTheFly: Boolean
+        isOnTheFly: Boolean,
     ): PsiElementVisitor {
         return YVisitor(holder)
     }
 }
 
 private class YVisitor(
-    private val holder: ProblemsHolder
+    private val holder: ProblemsHolder,
 ) : KtVisitorVoid() {
     override fun visitKtFile(file: KtFile) {
         if (file.platform.isJs()) {
@@ -49,7 +49,8 @@ private class YVisitor(
 
             OBJECT,
             INTERFACE,
-            ENUM_CLASS -> checkInterfaces(classOrObject, descriptor)
+            ENUM_CLASS,
+            -> checkInterfaces(classOrObject, descriptor)
 
             else -> {
                 // do nothing
@@ -59,7 +60,7 @@ private class YVisitor(
 
     private fun visitClass(
         klass: KtClass,
-        descriptor: ClassDescriptor
+        descriptor: ClassDescriptor,
     ) {
         if (!descriptor.implementsYFilesInterface) {
             return
@@ -83,7 +84,7 @@ private class YVisitor(
 
     private fun checkInterfaces(
         classOrObject: KtClassOrObject,
-        descriptor: ClassDescriptor
+        descriptor: ClassDescriptor,
     ) {
         if (descriptor.implementsYFilesInterface) {
             val keyword = classOrObject.getDeclarationKeyword() ?: return
@@ -93,7 +94,7 @@ private class YVisitor(
 
     private fun registerProblem(
         psiElement: PsiElement,
-        message: String
+        message: String,
     ) {
         holder.registerProblem(
             psiElement,
@@ -104,7 +105,7 @@ private class YVisitor(
 
     private fun registerSuperTypesError(
         classOrObject: KtClassOrObject,
-        message: String
+        message: String,
     ) {
         val superTypeList = classOrObject.getSuperTypeList()
             ?: return

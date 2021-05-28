@@ -15,7 +15,7 @@ internal const val DOC_BASE_URL = "%doc-base-url%"
 fun generateKotlinDeclarations(
     apiFile: File,
     devguideFile: File,
-    sourceDir: File
+    sourceDir: File,
 ) {
     val source = apiFile.readApiJson {
         applyHacks(this)
@@ -71,7 +71,7 @@ fun generateKotlinDeclarations(
 
 fun generateVsdxKotlinDeclarations(
     apiFile: File,
-    sourceDir: File
+    sourceDir: File,
 ) {
     val source = apiFile.readApiJson {
         applyVsdxHacks(this)
@@ -107,7 +107,7 @@ internal interface GeneratorContext {
     operator fun set(
         classId: String,
         mode: ContentMode? = null,
-        content: String
+        content: String,
     )
 
     fun clean()
@@ -116,14 +116,14 @@ internal interface GeneratorContext {
 private class SimpleGeneratorContext(
     private val sourceDir: File,
     moduleName: String,
-    private val docBaseUrl: String
+    private val docBaseUrl: String,
 ) : GeneratorContext {
     private val moduleAnnotation = "@file:JsModule(\"$moduleName\")\n\n"
 
     override fun set(
         classId: String,
         mode: ContentMode?,
-        content: String
+        content: String,
     ) {
         val packageId = classId.substringBeforeLast(".")
         val className = classId.substringAfterLast(".")

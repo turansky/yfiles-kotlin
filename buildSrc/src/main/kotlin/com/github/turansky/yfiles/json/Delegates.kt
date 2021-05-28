@@ -16,12 +16,12 @@ internal abstract class PropDelegate<T> : Prop<T> {
 
     abstract fun read(
         source: JSONObject,
-        key: String
+        key: String,
     ): T
 
     override operator fun getValue(
         thisRef: HasSource,
-        property: KProperty<*>
+        property: KProperty<*>,
     ): T {
         if (!initialized) {
             initialized = true
@@ -34,22 +34,22 @@ internal abstract class PropDelegate<T> : Prop<T> {
 }
 
 private fun <T> prop(
-    read: JSONObject.(key: String) -> T
+    read: JSONObject.(key: String) -> T,
 ): Prop<T> = SimplePropDelegate(read)
 
 private fun <T, R> prop(
     read: JSONObject.(key: String) -> T,
-    transform: T.() -> R
+    transform: T.() -> R,
 ): Prop<R> = prop { key ->
     read(key).transform()
 }
 
 internal fun <T : Any> named(
-    create: (source: JSONObject) -> T
+    create: (source: JSONObject) -> T,
 ): Prop<T> = prop(JSONObject::getJSONObject, create)
 
 internal fun <T : Any> optNamed(
-    create: (source: JSONObject) -> T
+    create: (source: JSONObject) -> T,
 ): Prop<T?> = prop { key ->
     if (has(key)) {
         create(getJSONObject(key))
@@ -60,7 +60,7 @@ internal fun <T : Any> optNamed(
 
 internal fun <T : Any> optNamed(
     name: String,
-    create: (source: JSONObject) -> T?
+    create: (source: JSONObject) -> T?,
 ): Prop<T?> = prop {
     if (has(name)) {
         create(getJSONObject(name))
@@ -70,23 +70,23 @@ internal fun <T : Any> optNamed(
 }
 
 private class SimplePropDelegate<T>(
-    private val getData: (source: JSONObject, key: String) -> T
+    private val getData: (source: JSONObject, key: String) -> T,
 ) : PropDelegate<T>() {
     override fun read(
         source: JSONObject,
-        key: String
+        key: String,
     ): T = getData(source, key)
 }
 
 internal fun <T : Any> list(
-    transform: (JSONObject) -> T
+    transform: (JSONObject) -> T,
 ): Prop<List<T>> =
     prop(::objectSequence) {
         map(transform).toList()
     }
 
 internal fun <T : Comparable<T>> sortedList(
-    transform: (JSONObject) -> T
+    transform: (JSONObject) -> T,
 ): Prop<List<T>> =
     prop(::objectSequence) {
         map(transform).sorted().toList()
@@ -94,7 +94,7 @@ internal fun <T : Comparable<T>> sortedList(
 
 private fun objectSequence(
     source: JSONObject,
-    key: String
+    key: String,
 ): Sequence<JSONObject> {
     if (!source.has(key)) {
         return emptySequence()
@@ -109,20 +109,20 @@ private fun objectSequence(
 internal fun stringList(): Prop<List<String>> = prop(::stringList)
 
 internal fun stringList(
-    transform: (String) -> String
+    transform: (String) -> String,
 ): Prop<List<String>> =
     prop(::stringList) {
         map(transform)
     }
 
 internal fun <T : Any> wrapStringList(
-    wrap: (List<String>) -> T
+    wrap: (List<String>) -> T,
 ): Prop<T> =
     prop(::stringList, wrap)
 
 private fun stringList(
     source: JSONObject,
-    key: String
+    key: String,
 ): List<String> {
     if (!source.has(key)) {
         return emptyList()
@@ -143,7 +143,7 @@ internal fun optString(): Prop<String?> =
 
 internal fun optString(
     source: JSONObject,
-    key: String
+    key: String,
 ): String? =
     source.optString(key, null)
         ?.takeIf { it.isNotEmpty() }
@@ -152,13 +152,13 @@ internal fun string(): Prop<String> =
     prop(::string)
 
 internal fun string(
-    transform: (String) -> String
+    transform: (String) -> String,
 ): Prop<String> =
     prop(::string, transform)
 
 private fun string(
     source: JSONObject,
-    key: String
+    key: String,
 ): String =
     source.getString(key)
         .apply { check(isNotEmpty()) }

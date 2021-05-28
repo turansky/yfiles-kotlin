@@ -8,7 +8,7 @@ private val MULTIPLIERS = listOf(
 
 internal fun timeSpanExtensions(timeSpanClass: Class): String {
     val parameters = timeSpanClass.secondaryConstructors
-        .maxBy { it.parameters.size }!!
+        .maxByOrNull { it.parameters.size }!!
         .parameters
 
     return parameters

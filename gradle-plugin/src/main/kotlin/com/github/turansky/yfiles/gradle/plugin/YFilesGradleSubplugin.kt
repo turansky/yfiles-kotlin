@@ -16,12 +16,12 @@ class YFilesGradleSubplugin : KotlinCompilerPluginSupportPlugin {
     }
 
     override fun isApplicable(
-        kotlinCompilation: KotlinCompilation<*>
+        kotlinCompilation: KotlinCompilation<*>,
     ): Boolean =
         kotlinCompilation.target.platformType == KotlinPlatformType.js
 
     override fun applyToCompilation(
-        kotlinCompilation: KotlinCompilation<*>
+        kotlinCompilation: KotlinCompilation<*>,
     ): Provider<List<SubpluginOption>> =
         kotlinCompilation.target.project
             .provider { emptyList() }

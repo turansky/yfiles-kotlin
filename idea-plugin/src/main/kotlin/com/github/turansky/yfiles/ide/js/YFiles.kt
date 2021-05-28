@@ -56,7 +56,7 @@ internal val ClassDescriptor.classFixTypeUsed: Boolean
     }
 
 private fun ClassDescriptor.checkClass(
-    check: (List<ClassDescriptor>) -> Boolean
+    check: (List<ClassDescriptor>) -> Boolean,
 ): Boolean =
     when {
         isExternal -> false

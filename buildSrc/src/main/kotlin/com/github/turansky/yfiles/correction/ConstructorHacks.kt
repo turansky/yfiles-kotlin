@@ -70,7 +70,7 @@ private fun mergeConstructors(type: JSONObject) {
 
 private fun getConstructorPair(
     first: JSONObject,
-    second: JSONObject
+    second: JSONObject,
 ): Pair<JSONObject, JSONObject>? =
     when (first.parametersCount - second.parametersCount) {
         -1 -> first to second
@@ -80,7 +80,7 @@ private fun getConstructorPair(
 
 private fun mergeRequired(
     first: JSONObject,
-    second: JSONObject
+    second: JSONObject,
 ): Boolean {
     if (first.parametersCount == 0) {
         return true

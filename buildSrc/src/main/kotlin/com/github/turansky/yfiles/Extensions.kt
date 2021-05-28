@@ -4,7 +4,7 @@ import com.github.turansky.yfiles.correction.timeSpanExtensions
 
 internal fun Class.getExtensions(): String? =
     when (classId) {
-        "yfiles.lang.TimeSpan"
+        "yfiles.lang.TimeSpan",
         -> timeSpanExtensions(this)
 
         else
@@ -14,14 +14,14 @@ internal fun Class.getExtensions(): String? =
 internal fun Interface.getExtensions(): String? =
     when (classId) {
         // language=kotlin
-        YOBJECT
+        YOBJECT,
         -> """
             inline fun <T: $YOBJECT> T.getClass(): $YCLASS<out T> =
                 $AS_DYNAMIC.getClass()
         """.trimIndent()
 
         // language=kotlin
-        ILOOKUP
+        ILOOKUP,
         -> """
             inline fun <reified T : $YOBJECT> $ILOOKUP.lookup(): T? =
                 lookup(T::class.js.yclass)     
@@ -35,7 +35,7 @@ internal fun Interface.getExtensions(): String? =
                 lookupValue(T::class.js.yclass)      
         """.trimIndent()
 
-        IMAPPER_REGISTRY
+        IMAPPER_REGISTRY,
         -> getMapperRegistryExtensions()
 
         else -> null
@@ -52,7 +52,7 @@ private fun getMapperRegistryExtensions(): String {
 private fun getMapperRegistryExtensions(
     dpKeyType: String,
     keyType: String,
-    modelKeyType: String = keyType
+    modelKeyType: String = keyType,
 ): String {
     var keyClass = "$keyType.yclass"
     if (keyType != modelKeyType)

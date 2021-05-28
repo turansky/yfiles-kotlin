@@ -201,7 +201,7 @@ private fun JSONObject.correctMethodParameters() {
 private fun getParameterType(
     className: String,
     methodName: String,
-    parameterName: String
+    parameterName: String,
 ): String {
     getType(parameterName)?.also {
         return it
@@ -237,7 +237,7 @@ private fun JSONObject.correctMethods() {
 
 private fun getReturnType(
     className: String,
-    methodName: String
+    methodName: String,
 ): String =
     when {
         methodName == "enum" -> JS_INT

@@ -233,7 +233,7 @@ private fun fixMethodParameters(source: Source) {
 
 private fun JSONObject.updateDpKeyGeneric(
     field: JStringKey,
-    generic: String
+    generic: String,
 ) {
     val value = get(field)
     require(value.startsWith(DP_KEY_BASE_DECLARATION))

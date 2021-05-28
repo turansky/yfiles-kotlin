@@ -5,7 +5,7 @@ import com.github.turansky.yfiles.between
 internal fun fixDecoratorProperties(
     source: Source,
     type: String,
-    addExtraTypeParameter: Boolean = false
+    addExtraTypeParameter: Boolean = false,
 ) {
     source.types()
         .filter { it[ID].run { startsWith("yfiles.graph.") && endsWith("Decorator") } }

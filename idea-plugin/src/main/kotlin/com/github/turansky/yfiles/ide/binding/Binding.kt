@@ -23,7 +23,7 @@ internal sealed class Binding {
 internal data class TagBinding(
     override val name: String?,
     override val converter: String?,
-    override val parameter: String?
+    override val parameter: String?,
 ) : Binding() {
     override val parentName: String = "tag"
     override val parentReference: String = TAG
@@ -32,7 +32,7 @@ internal data class TagBinding(
 internal data class TemplateBinding(
     override val name: String?,
     override val converter: String?,
-    override val parameter: String?
+    override val parameter: String?,
 ) : Binding() {
     override val parentName: String = "context"
     override val parentReference: String = ContextProperty.findParentClass(name)

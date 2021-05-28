@@ -1,7 +1,7 @@
 package com.github.turansky.yfiles.ide.binding
 
 internal enum class BindingDirective(
-    val key: String
+    val key: String,
 ) {
     BINDING("Binding"),
     TEMPLATE_BINDING("TemplateBinding"),

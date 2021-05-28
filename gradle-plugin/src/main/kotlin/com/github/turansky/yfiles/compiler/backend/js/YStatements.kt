@@ -24,7 +24,7 @@ private infix fun JsExpression.assignTo(value: JsExpression): JsStatement =
     jsAssignment(this, value).makeStmt()
 
 private fun TranslationContext.fixType(
-    descriptor: ClassDescriptor
+    descriptor: ClassDescriptor,
 ): JsStatement {
     val yclassCompanion = currentModule.findClassAcrossModuleDependencies(YCLASS_ID)!!
         .companionObjectDescriptor!!
@@ -43,7 +43,7 @@ private fun TranslationContext.fixType(
 
 internal fun TranslationContext.baseClass(
     interfaces: List<ClassDescriptor>,
-    name: String
+    name: String,
 ): JsExpression {
     val arguments = interfaces
         .map { toValueReference(it) }
@@ -59,7 +59,7 @@ internal fun TranslationContext.baseClass(
 //  https://youtrack.jetbrains.com/issue/KT-34735
 private fun TranslationContext.wrapBaseClass(
     baseClass: JsExpression,
-    name: String
+    name: String,
 ): JsExpression =
     addFunctionButNotExport(
         JsName(generateName("create", name)),
@@ -78,7 +78,7 @@ internal fun constructorSuperCall(parentClass: JsExpression): JsStatement =
 internal fun TranslationContext.configurePrototype(
     descriptor: ClassDescriptor,
     baseClass: JsExpression,
-    fixType: Boolean = false
+    fixType: Boolean = false,
 ) {
     declareConstantValue(
         suggestedName = generateName(descriptor, "prototypeConfigured"),
@@ -89,7 +89,7 @@ internal fun TranslationContext.configurePrototype(
 private fun TranslationContext.configurePrototypeMethod(
     descriptor: ClassDescriptor,
     baseClass: JsExpression,
-    fixType: Boolean
+    fixType: Boolean,
 ): JsExpression {
     val classId = descriptor.name.identifier
     val classRef = toValueReference(descriptor)

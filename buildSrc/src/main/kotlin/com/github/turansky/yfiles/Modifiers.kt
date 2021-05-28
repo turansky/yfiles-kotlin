@@ -35,7 +35,7 @@ private const val EXPERT = "expert"
 
 sealed class Modifiers(
     private val modifiers: List<String>,
-    validModifiers: Set<String>
+    validModifiers: Set<String>,
 ) {
     init {
         check(validModifiers.containsAll(modifiers)) {
@@ -122,7 +122,7 @@ internal class ConstantModifiers(modifiers: List<String>) : Modifiers(modifiers,
 
 internal enum class PropertyMode(
     val readable: Boolean,
-    val writable: Boolean
+    val writable: Boolean,
 ) {
     READ_WRITE(true, true),
     READ_ONLY(true, false),

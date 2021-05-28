@@ -12,7 +12,7 @@ private val ENUM_COMPANION_MAP = mapOf(
 
 internal class KotlinFileGenerator(
     private val types: Iterable<Type>,
-    private val functionSignatures: Iterable<FunctionSignature>
+    private val functionSignatures: Iterable<FunctionSignature>,
 ) : FileGenerator {
     override fun generate(context: GeneratorContext) {
         context.clean()
@@ -34,7 +34,7 @@ internal class KotlinFileGenerator(
 
     private fun generate(
         context: GeneratorContext,
-        generatedFile: GeneratedFile
+        generatedFile: GeneratedFile,
     ) {
         val content = generatedFile.content()
         val companionContent = generatedFile.companionContent()
@@ -48,7 +48,7 @@ internal class KotlinFileGenerator(
 
     private fun generate(
         context: GeneratorContext,
-        signatures: List<FunctionSignature>
+        signatures: List<FunctionSignature>,
     ) {
         val firstFqn = signatures.first().classId
         context[firstFqn, ALIASES] = signatures

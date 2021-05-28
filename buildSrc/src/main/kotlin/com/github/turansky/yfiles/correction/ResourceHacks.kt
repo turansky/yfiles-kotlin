@@ -66,7 +66,7 @@ internal fun applyResourceHacks(source: Source) {
 
 private fun getType(
     className: String,
-    name: String
+    name: String,
 ): String {
     val typeParameter = when {
         name == "TEMPLATE_KEY" -> JS_STRING

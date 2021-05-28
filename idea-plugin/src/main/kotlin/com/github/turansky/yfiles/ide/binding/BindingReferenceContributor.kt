@@ -19,7 +19,7 @@ internal class BindingReferenceContributor : PsiReferenceContributor() {
 private class BindingReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(
         element: PsiElement,
-        context: ProcessingContext
+        context: ProcessingContext,
     ): Array<out PsiReference> {
         element as XmlAttributeValue
 
@@ -38,7 +38,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
             when (token) {
                 BindingToken.KEYWORD -> when (directive) {
                     BINDING,
-                    TEMPLATE_BINDING
+                    TEMPLATE_BINDING,
                     -> result += ClassReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
@@ -46,7 +46,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                     )
 
                     CONVERTER,
-                    PARAMETER
+                    PARAMETER,
                     -> result += PropertyReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
@@ -55,7 +55,7 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                 }
 
                 BindingToken.ARGUMENT -> when (directive) {
-                    TEMPLATE_BINDING
+                    TEMPLATE_BINDING,
                     -> result += ContextPropertyReference(
                         element = element,
                         rangeInElement = range.shiftRight(valueOffset),
