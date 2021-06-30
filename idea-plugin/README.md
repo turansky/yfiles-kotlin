@@ -5,7 +5,7 @@
 
 # yFiles IDEA plugin
 + Check [inheritance rules](../gradle-plugin) on the fly
-+ Highlight binding syntax <sup>**new**</sup>
++ Highlight binding syntax
 
 ## Examples
 ![Example #1](assets/template-binding-autocomplete.png)

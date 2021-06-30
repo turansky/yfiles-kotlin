@@ -26,7 +26,7 @@
 * [Factory methods](#factory-methods)
 * [Quick interface implementation](#quick-interface-implementation)
 * [Flags](#flags)
-* [Extensions <sup>**new**</sup>](#extensions)
+* [Extensions](#extensions)
 * [`for` loop](#for-loop)
   * [`IEnumerable`](#ienumerable)
   * [`ICursor`](#icursor)

@@ -7,7 +7,7 @@
 ## Goal
 - Safe [interface implementing](http://docs.yworks.com/yfileshtml/#/dguide/framework_basic_interfaces#framework_implementing_interfaces)
 - OOB `YObject` support
-- Optimize yFiles imports <sup>**new**</sup>
+- Optimize yFiles imports
   - while [ES modules](https://youtrack.jetbrains.com/issue/KT-8373) not supported
 
 ## Interface(s) implementing
