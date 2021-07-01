@@ -150,6 +150,11 @@ private fun fixConstantType(source: Source) {
 }
 
 private fun fixPropertyType(source: Source) {
+    source.type("BalloonLayoutData")
+        .property("outEdgeComparer")
+        .also { require(it[SIGNATURE] == "function($IEDGE,$IEDGE):number") }
+        .set(SIGNATURE, "$ICOMPARER<$IEDGE>")
+
     source.type("IRenderContext")
         .property("defsElement")
         .set(TYPE, JS_SVG_DEFS_ELEMENT)
