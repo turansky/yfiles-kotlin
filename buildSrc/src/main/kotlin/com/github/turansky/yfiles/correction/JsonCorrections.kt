@@ -162,8 +162,8 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
     ParameterData("DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
     ParameterData("PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
-    ParameterData("IArrow", "getBoundsProvider", "directionVector") to "direction",
     ParameterData("StripeSelection", "isSelected", "stripe") to "item",
+    ParameterData("DefaultPortCandidateDescriptor", "isInPath", "path") to "lassoPath",
 
     ParameterData("NodeReshapeHandleProvider", "getHandle", "inputModeContext") to "context",
     ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext") to "context",
