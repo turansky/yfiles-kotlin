@@ -123,6 +123,8 @@ internal val DOUBLE_PROPERTIES = setOf(
     "upX",
     "upY",
     "angle",
+    "insets",
+    "fanLength",
     "initialAngle",
     "upperAngle",
     "lowerAngle",
@@ -250,6 +252,7 @@ internal val DOUBLE_PROPERTIES = setOf(
     "center",
     "gridOriginX",
     "gridOriginY",
+
     "edgeLengthPenalty",
     "bendPenalty",
     "edgeCrossingPenalty",
@@ -268,6 +271,10 @@ internal val DOUBLE_PROPERTIES = setOf(
     "portViolationPenalty",
     "invalidEdgeGroupingPenalty",
     "singleSideSelfLoopPenalty",
+    "sketchViolationPenalty",
+    "adjacentEdgeCrossingPenalty",
+    "selfCrossingPenalty",
+
     "minimumPolylineSegmentLength",
     "preferredOctilinearSegmentLength",
     "inset",
@@ -332,6 +339,8 @@ internal val DOUBLE_PROPERTIES = setOf(
     "mouseWheelDeltaX",
     "wheelDeltaX",
 
+    "curveUTurnSymmetry",
+
     "Eps",
 
     // static
@@ -393,6 +402,10 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "theta",
     "theta",
     "factor",
+
+    "newZoom",
+    "frequency",
+    "magnitude",
 
     "cut",
     "orthogonalMin",

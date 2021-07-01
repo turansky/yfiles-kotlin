@@ -121,6 +121,11 @@ internal val INT_PROPERTIES = setOf(
 
     "minimumClusterSize",
     "maximumClusterSize",
+    "cycleSubstructureSize",
+    "chainSubstructureSize",
+    "parallelSubstructureSize",
+    "starSubstructureSize",
+
     "toolTipLeaveAnimationMaximumDuration",
 
     // ???
