@@ -59,11 +59,15 @@ private val CLASS_MODIFIERS = setOf(
     ABSTRACT,
     FINAL,
 
+    DEPRECATED,
+
     PUBLIC,
     EXPERT
 )
 
 internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CLASS_MODIFIERS) {
+    val deprecated = has(DEPRECATED)
+
     val mode: ClassMode = when {
         has(ENUM_LIKE) -> ClassMode.ENUM
         has(ABSTRACT) -> ClassMode.ABSTRACT

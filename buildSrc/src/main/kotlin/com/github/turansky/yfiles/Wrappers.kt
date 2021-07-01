@@ -183,6 +183,11 @@ internal sealed class ExtendedType(source: JSONObject) : Type(source) {
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
     private val modifiers: ClassModifiers by wrapStringList(::ClassModifiers)
+
+    val annotations: String = if (modifiers.deprecated) {
+        DEPRECATED_ANNOTATION + "\n"
+    } else ""
+
     val final: Boolean = modifiers.mode == ClassMode.FINAL
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
     val enumLike: Boolean = modifiers.mode == ClassMode.ENUM
