@@ -236,6 +236,12 @@ private fun JSONObject.updateDpKeyGeneric(
     generic: String,
 ) {
     val value = get(field)
+
+    // TODO: check
+    if (field == EXTENDS && value == "yfiles.algorithms.ILabelLayoutDpKey<TValue>") {
+        return
+    }
+
     require(value.startsWith(DP_KEY_BASE_DECLARATION))
     set(field, value.replace(DP_KEY_BASE_DECLARATION, "$DP_KEY_BASE_DECLARATION$generic,"))
 }
