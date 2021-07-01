@@ -240,6 +240,8 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("HighlightIndicatorManager", "removeHighlight", "item") to false,
     ParameterData("SelectionIndicatorManager", "addSelection", "item") to false,
     ParameterData("SelectionIndicatorManager", "removeSelection", "item") to false,
+    ParameterData("WebGL2SelectionIndicatorManager", "addSelection", "item") to false,
+    ParameterData("WebGL2SelectionIndicatorManager", "removeSelection", "item") to false,
 
     ParameterData("ItemModelManager", "itemAddedHandler", "source") to false
 )
