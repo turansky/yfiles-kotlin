@@ -40,8 +40,6 @@ internal fun applyHacks(api: JSONObject) {
 
     fixNullability(source)
 
-    addMissedMethods(source)
-
     applyIdHacks(source)
     applyBindingHacks(source)
     applyBusinessObjectHacks(source)
@@ -335,13 +333,6 @@ private fun fixMethodNullability(source: Source) {
             .flatMap(METHODS)
             .filter { it[NAME] == declaration.methodName }
             .forEach { it.changeNullability(nullable) }
-    }
-}
-
-private fun addMissedMethods(source: Source) {
-    MISSED_METHODS.forEach { data ->
-        source.type(data.className)
-            .addMethod(data)
     }
 }
 
