@@ -42,13 +42,10 @@ internal fun Interface.getExtensions(): String? =
     }
 
 private fun getMapperRegistryExtensions(): String {
-    return sequenceOf(
-        getMapperRegistryExtensions(INODE_LABEL_LAYOUT_DP_KEY, ILABEL),
-        getMapperRegistryExtensions(IEDGE_LABEL_LAYOUT_DP_KEY, ILABEL),
-        getMapperRegistryExtensions(GRAPH_DP_KEY, GRAPH, IGRAPH)
-    ).joinToString("\n\n")
+    return getMapperRegistryExtensions(GRAPH_DP_KEY, GRAPH, IGRAPH)
 }
 
+@Suppress("SameParameterValue")
 private fun getMapperRegistryExtensions(
     dpKeyType: String,
     keyType: String,
