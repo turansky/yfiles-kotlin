@@ -90,6 +90,11 @@ private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
     val modifiers = get(MODIFIERS)
     val index = modifiers.indexOf(modifier)
 
+    // TEMP WORKAROUND
+    if ((index == -1) != value) {
+        return
+    }
+
     require((index == -1) == value)
 
     if (value) {
