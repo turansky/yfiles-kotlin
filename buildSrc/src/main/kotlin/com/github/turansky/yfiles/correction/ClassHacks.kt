@@ -489,7 +489,7 @@ private fun addClassBounds(source: Source) {
         .first()
         .set(BOUNDS, arrayOf(IMODEL_ITEM))
 
-    source.type("GraphModelManager")
+    source.types("GraphModelManager", "WebGL2GraphModelManager")
         .flatMap(METHODS)
         .filter { it[NAME] == "createHitTester" || it[NAME] == "typedHitElementsAt" }
         .flatMap(TYPE_PARAMETERS)
