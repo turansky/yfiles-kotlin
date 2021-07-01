@@ -1039,6 +1039,7 @@ internal class Method(
     fun toOperatorExtension(): Method? {
         when {
             parameters.size != 1 -> return null
+            parameters[0].modifiers.vararg -> return null
             protected -> return null
             overridden -> return null
         }
