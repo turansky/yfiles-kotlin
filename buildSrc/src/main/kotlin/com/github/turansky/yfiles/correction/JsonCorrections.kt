@@ -425,50 +425,10 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
 )
 
 internal val MISSED_PROPERTIES = listOf(
-    PropertyData(className = "YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
     PropertyData(className = "Arrow", propertyName = "length", type = JS_NUMBER)
 )
 
 internal val MISSED_METHODS = listOf(
-    MethodData(className = "Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(
-        className = "MutableRectangle",
-        methodName = "clone",
-        result = ResultData(JS_OBJECT)
-    ),
-    MethodData(
-        className = "OrientedRectangle",
-        methodName = "clone",
-        result = ResultData(JS_OBJECT)
-    ),
-
-    MethodData(
-        className = "YList",
-        methodName = "add",
-        parameters = listOf(
-            MethodParameterData("item", JS_OBJECT, false)
-        )
-    ),
-
-    MethodData(
-        className = "CompositeUndoUnit",
-        methodName = "tryMergeUnit",
-        parameters = listOf(
-            MethodParameterData("unit", "IUndoUnit")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "CompositeUndoUnit",
-        methodName = "tryReplaceUnit",
-        parameters = listOf(
-            MethodParameterData("unit", "IUndoUnit")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-
     MethodData(
         className = "EdgePathLabelModel",
         methodName = "getParameters",
