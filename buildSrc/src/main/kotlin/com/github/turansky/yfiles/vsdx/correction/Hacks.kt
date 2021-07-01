@@ -71,7 +71,7 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[Document,Element,string]" to "SVGElement",
 
     "[Promise<$JS_VOID>,undefined]" to "Promise<$JS_VOID>",
-    "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
+    "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA_RESPONSE>",
     "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
     "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>",
     "Promise<${VISUAL.substringAfterLast(".")}>" to "Promise<$VISUAL>"
