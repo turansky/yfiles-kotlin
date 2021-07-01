@@ -424,10 +424,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "RotatableNodePlacerBase", methodName = "createProcessor") to true
 )
 
-internal val MISSED_PROPERTIES = listOf(
-    PropertyData(className = "Arrow", propertyName = "length", type = JS_NUMBER)
-)
-
 internal val MISSED_METHODS = listOf(
     MethodData(
         className = "EdgePathLabelModel",
