@@ -152,12 +152,7 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
     ParameterData("GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
-    ParameterData("LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-
     ParameterData("DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
-    ParameterData("IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
-    ParameterData("LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
 
     ParameterData("ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
     ParameterData("StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
