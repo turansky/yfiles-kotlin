@@ -10,7 +10,7 @@ private val DEFAULT_COMPARERS = setOf(
 )
 
 private fun comparer(generic: String): String =
-    "yfiles.collections.IComparer<$generic>"
+    "$ICOMPARER<$generic>"
 
 internal fun applyComparerHacks(source: Source) {
     fixComparerInheritors(source)

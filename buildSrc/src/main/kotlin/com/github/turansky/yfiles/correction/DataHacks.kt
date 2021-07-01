@@ -134,7 +134,7 @@ private fun getDefaultTypeParameter(name: String, type: String): String =
         JS_NUMBER -> getDefaultNumberTypeParameter(name)
         JS_OBJECT -> getDefaultObjectTypeParameter(name)
 
-        "yfiles.collections.IComparer<T>" -> "yfiles.collections.IComparer<*>"
+        "$ICOMPARER<T>" -> "$ICOMPARER<*>"
 
         else -> type
     }
