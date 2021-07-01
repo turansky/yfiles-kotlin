@@ -27,6 +27,8 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleLabel", "owner") to true,
     PropertyDeclaration("SimplePort", "owner") to true,
 
+    PropertyDeclaration("ICursor", "current") to false,
+
     PropertyDeclaration("INodeData", "firstSameLayerEdgeCell") to true,
     PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
     PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
