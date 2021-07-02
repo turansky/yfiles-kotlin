@@ -46,6 +46,7 @@ fun generateKotlinDeclarations(
     generateTagUtils(context)
     generateDataTagUtils(context)
     generateStyleTagUtils(context)
+    generateNodeTypeUtils(context)
     generateResourceUtils(context)
     generateConvertersUtils(context)
     generateEventDispatcherUtils(context)
