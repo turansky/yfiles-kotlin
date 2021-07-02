@@ -145,6 +145,9 @@ private fun getDefaultObjectTypeParameter(name: String): String =
         "partitionIDDP",
         -> YID
 
+        "nodeType",
+        -> INODE_TYPE
+
         else -> "*"
     }
 
