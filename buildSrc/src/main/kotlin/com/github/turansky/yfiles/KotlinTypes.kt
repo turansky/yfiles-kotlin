@@ -21,6 +21,8 @@ internal const val HTML_ELEMENT = "org.w3c.dom.HTMLElement"
 internal const val SVG_ELEMENT = "org.w3c.dom.svg.SVGElement"
 internal const val SVG_SVG_ELEMENT = "org.w3c.dom.svg.SVGSVGElement"
 
+internal const val WEBGL2_RENDERING_CONTEXT = "org.khronos.webgl.WebGL2RenderingContext"
+
 internal fun getKotlinType(type: String): String? =
     STANDARD_TYPE_MAP[type]
 
@@ -58,9 +60,7 @@ private val STANDARD_TYPE_MAP = mapOf(
 
     "WebGLProgram" to "org.khronos.webgl.WebGLProgram",
     "WebGLRenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
-
-    // TODO: use right alias
-    "WebGL2RenderingContext" to "org.khronos.webgl.WebGLRenderingContext",
+    "WebGL2RenderingContext" to WEBGL2_RENDERING_CONTEXT,
 
     JS_BLOB to BLOB,
 
