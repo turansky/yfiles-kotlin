@@ -75,6 +75,7 @@ internal fun applyHacks(api: JSONObject) {
     applyDataTagHacks(source)
     applyStyleTagHacks(source)
     applyNodeTypeHacks(source)
+    applyLayoutDescriptorHacks(source)
     applyResourceHacks(source)
     applyTemplatesHacks(source)
     applyTemplateLoadersHacks(source)
