@@ -287,9 +287,17 @@ private val STANDARD_TYPE_MAP = sequenceOf(
     "Promise",
 
     "addExportFinishedListener",
-    "SvgSupport.applySvg"
+
+    "MasterProviderContext.coordinateConverter",
+    "Page.pageHeight",
+    "Page.pageWidth",
+    "ShapeProcessingContext.coordinateConverter",
+    "SvgSupport.applySvg",
+    "VsdxExportConfiguration.margins",
+    "VsdxIO.addGraph",
 ).associateBy { it }
     .plus(JS_BLOB to BLOB)
+    .plus("GraphComponent.contentRect" to "yfiles.view.GraphComponent.contentRect")
 
 private fun JSONObject.fixSummary() {
     if (!has(SUMMARY)) {
