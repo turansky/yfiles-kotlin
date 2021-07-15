@@ -69,7 +69,7 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[number,vsdx.Value<number>]" to "Value<number>",
     "[vsdx.PageLike,vsdx.Shape]" to "PageLike",
     "[Document,Element,string]" to "SVGElement",
-    "[vsdx.CoordinateConverter,vsdx.Media]" to "Media",
+    "[vsdx.CoordinateConverter,vsdx.Media]" to "CoordinateConverter",
 
     "[Promise<$JS_VOID>,undefined]" to "Promise<$JS_VOID>",
     "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA_RESPONSE>",
