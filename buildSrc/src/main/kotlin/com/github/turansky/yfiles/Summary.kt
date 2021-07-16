@@ -63,6 +63,7 @@ private fun String.fixMarkdown(): String {
         .replace(" &lt;0", " <0")
         .replace("B&#xE9;zier", "Bézier")
         .replace("""<pre class="programlisting"><code class="js">""", "\n```\n")
+        .replace("""<pre class="programlisting"><code class="javascript">""", "\n```\n")
         .replace("<pre><code>", "\n```\n")
         .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")
