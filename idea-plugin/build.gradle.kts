@@ -25,11 +25,7 @@ intellij {
 
 tasks {
     compileKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
-            // TODO: restore after Gradle update
-            allWarningsAsErrors = false
-        }
+        kotlinOptions.jvmTarget = "11"
     }
 
     runIde {

@@ -17,11 +17,6 @@ dependencies {
     compileOnly(kotlin("compiler-embeddable"))
 }
 
-// TODO: remove after Gradle update
-tasks.compileKotlin {
-    kotlinOptions.allWarningsAsErrors = false
-}
-
 gradlePlugin {
     plugins {
         create("yfiles") {
