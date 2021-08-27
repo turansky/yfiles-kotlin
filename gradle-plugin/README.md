@@ -1,13 +1,13 @@
 [![CI Status](https://github.com/turansky/yfiles-kotlin/workflows/gradle%20plugin/badge.svg)](https://github.com/turansky/yfiles-kotlin/actions)
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com/github/turansky/yfiles/com.github.turansky.yfiles.gradle.plugin/maven-metadata.xml.svg?label=plugin&logo=gradle)](https://plugins.gradle.org/plugin/com.github.turansky.yfiles)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.5.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.5.30-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 # yFiles Gradle Plugin for Kotlin/JS
 
 ## Goal
 - Safe [interface implementing](http://docs.yworks.com/yfileshtml/#/dguide/framework_basic_interfaces#framework_implementing_interfaces)
 - OOB `YObject` support
-- Optimize yFiles imports <sup>**new**</sup>
+- Optimize yFiles imports
   - while [ES modules](https://youtrack.jetbrains.com/issue/KT-8373) not supported
 
 ## Interface(s) implementing

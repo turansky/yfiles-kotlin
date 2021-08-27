@@ -192,8 +192,6 @@ private fun fixClass(source: Source) {
 }
 
 private fun fixEnum(source: Source) {
-    val ENUM = "yfiles.lang.Enum"
-
     source.type("Enum") {
         set(ID, YENUM)
         set(NAME, "YEnum")
@@ -206,7 +204,7 @@ private fun fixEnum(source: Source) {
             .onEach {
                 val returns = it[RETURNS]
                 when (returns[TYPE]) {
-                    ENUM -> returns[TYPE] = "T"
+                    JS_NUMBER -> returns[TYPE] = "T"
                     "Array<$JS_NUMBER>" -> returns[TYPE] = "Array<T>"
                 }
             }
@@ -214,7 +212,7 @@ private fun fixEnum(source: Source) {
             .forEach {
                 when (it[TYPE]) {
                     YCLASS -> it.addGeneric("T")
-                    ENUM -> it[TYPE] = "$YENUM<T>"
+                    JS_NUMBER -> it[TYPE] = "$YENUM<T>"
                 }
             }
     }
@@ -491,7 +489,7 @@ private fun addClassBounds(source: Source) {
         .first()
         .set(BOUNDS, arrayOf(IMODEL_ITEM))
 
-    source.type("GraphModelManager")
+    source.types("GraphModelManager", "WebGL2GraphModelManager")
         .flatMap(METHODS)
         .filter { it[NAME] == "createHitTester" || it[NAME] == "typedHitElementsAt" }
         .flatMap(TYPE_PARAMETERS)

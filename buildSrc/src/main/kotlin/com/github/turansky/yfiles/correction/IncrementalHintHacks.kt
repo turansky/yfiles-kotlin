@@ -21,10 +21,6 @@ internal fun applyIncrementalHintHacks(source: Source) {
 
     source.type("IncrementalHintItemMapping").also {
         it[EXTENDS] = it[EXTENDS].replace(",$JS_ANY,", ",$INCREMENTAL_HINT,")
-
-        it.method("provideMapperForContext")
-            .get(RETURNS)
-            .also { it.replaceInType(",$JS_ANY>", ",$INCREMENTAL_HINT>") }
     }
 
     source.types("HierarchicLayout", "HierarchicLayoutCore")

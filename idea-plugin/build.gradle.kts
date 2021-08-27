@@ -1,18 +1,14 @@
 plugins {
-    kotlin("jvm") version "1.5.10"
-    id("org.jetbrains.intellij") version "1.0"
-    id("com.github.turansky.kfc.version") version "4.8.4"
-}
-
-repositories {
-    mavenCentral()
+    kotlin("jvm") version "1.5.30"
+    id("org.jetbrains.intellij") version "1.1.4"
+    id("com.github.turansky.kfc.version") version "4.30.0"
 }
 
 intellij {
     pluginName.set("yfiles")
 
     type.set("IU")
-    version.set("2021.1.1")
+    version.set("2021.1.3")
 
     plugins.set(
         listOf(
@@ -25,11 +21,7 @@ intellij {
 
 tasks {
     compileKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
-            // TODO: restore after Gradle update
-            allWarningsAsErrors = false
-        }
+        kotlinOptions.jvmTarget = "11"
     }
 
     runIde {
@@ -41,7 +33,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("201.6487")
-        untilBuild.set("211.*")
+        untilBuild.set("214.*")
     }
 
     publishPlugin {
@@ -49,7 +41,6 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "7.0.2"
-        distributionType = Wrapper.DistributionType.ALL
+        gradleVersion = "7.2"
     }
 }

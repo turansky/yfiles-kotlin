@@ -9,10 +9,10 @@ internal fun summary(source: String): String {
 private val TYPE_CLEAN_REGEX_1 = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
 private val TYPE_CLEAN_REGEX_2 = Regex("( data-type=\"[a-zA-Z.]+)&lt;[^\"]+")
 
-private val TYPE_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\"></api-link>")
+private val TYPE_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\"\\s?></api-link>")
 private val TYPE_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-text=\"([^\"]+)\"></api-link>")
 
-private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
+private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
 private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
 
 private val DIGIT_CLEAN_REGEX = Regex("(\\.[0-9]+)d")
@@ -55,9 +55,16 @@ private fun String.fixMarkdown(): String {
             "@link y.layout.hierarchic.incremental.NodeData#TYPE_NORMAL normal nodes}",
             "[normal nodes][yfiles.hierarchic.NodeDataType.NORMAL]"
         )
+        .replace(
+            "[ShapeProcessingContext..coordinateConverter]",
+            "[ShapeProcessingContext.coordinateConverter]"
+        )
         .replace(" &lt; ", " < ")
         .replace(" &lt;0", " <0")
         .replace("B&#xE9;zier", "Bézier")
+        .replace("""<pre class="programlisting"><code class="js">""", "\n```\n")
+        .replace("""<pre class="programlisting"><code class='js'>""", "\n```\n")
+        .replace("""<pre class="programlisting"><code class="javascript">""", "\n```\n")
         .replace("<pre><code>", "\n```\n")
         .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")

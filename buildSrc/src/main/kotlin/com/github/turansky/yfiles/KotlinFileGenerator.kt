@@ -162,6 +162,8 @@ internal class KotlinFileGenerator(
             get() {
                 val typeDeclaration: String = when {
                     data.isYBase -> ""
+                    // TODO: use common solution
+                    data.name == "TreeAnalyzer" -> ""
                     else -> {
                         val name = if (data.isYObject) data.jsName else data.name
                         val generic = name + declaration.generics.placeholder
@@ -236,6 +238,7 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
+                    declaration.annotations +
                     "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
                     enumContent +

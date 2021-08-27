@@ -40,9 +40,6 @@ internal fun applyHacks(api: JSONObject) {
 
     fixNullability(source)
 
-    addMissedProperties(source)
-    addMissedMethods(source)
-
     applyIdHacks(source)
     applyBindingHacks(source)
     applyBusinessObjectHacks(source)
@@ -77,6 +74,8 @@ internal fun applyHacks(api: JSONObject) {
     applyTagHacks(source)
     applyDataTagHacks(source)
     applyStyleTagHacks(source)
+    applyNodeTypeHacks(source)
+    applyLayoutDescriptorHacks(source)
     applyResourceHacks(source)
     applyTemplatesHacks(source)
     applyTemplateLoadersHacks(source)
@@ -153,6 +152,11 @@ private fun fixConstantType(source: Source) {
 }
 
 private fun fixPropertyType(source: Source) {
+    source.type("BalloonLayoutData")
+        .property("outEdgeComparer")
+        .also { require(it[SIGNATURE] == "function($IEDGE,$IEDGE):number") }
+        .set(SIGNATURE, "$ICOMPARER<$IEDGE>")
+
     source.type("IRenderContext")
         .property("defsElement")
         .set(TYPE, JS_SVG_DEFS_ELEMENT)
@@ -160,7 +164,7 @@ private fun fixPropertyType(source: Source) {
     source.types("SeriesParallelLayoutData", "TreeLayoutData")
         .forEach {
             it.property("outEdgeComparers")
-                .set(TYPE, "yfiles.layout.ItemMapping<$INODE,yfiles.collections.IComparer<$IEDGE>>")
+                .set(TYPE, "yfiles.layout.ItemMapping<$INODE,$ICOMPARER<$IEDGE>>")
         }
 }
 
@@ -336,21 +340,6 @@ private fun fixMethodNullability(source: Source) {
             .flatMap(METHODS)
             .filter { it[NAME] == declaration.methodName }
             .forEach { it.changeNullability(nullable) }
-    }
-}
-
-private fun addMissedProperties(source: Source) {
-    MISSED_PROPERTIES
-        .forEach { data ->
-            source.type(data.className)
-                .addProperty(data.propertyName, data.type)
-        }
-}
-
-private fun addMissedMethods(source: Source) {
-    MISSED_METHODS.forEach { data ->
-        source.type(data.className)
-            .addMethod(data)
     }
 }
 

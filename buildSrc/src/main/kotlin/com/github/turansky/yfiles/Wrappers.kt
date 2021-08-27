@@ -183,6 +183,11 @@ internal sealed class ExtendedType(source: JSONObject) : Type(source) {
 
 internal class Class(source: JSONObject) : ExtendedType(source) {
     private val modifiers: ClassModifiers by wrapStringList(::ClassModifiers)
+
+    val annotations: String = if (modifiers.deprecated) {
+        DEPRECATED_ANNOTATION + "\n"
+    } else ""
+
     val final: Boolean = modifiers.mode == ClassMode.FINAL
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
     val enumLike: Boolean = modifiers.mode == ClassMode.ENUM
@@ -727,8 +732,6 @@ private val OPERATOR_MAP = mapOf(
 private val OPERATOR_NAME_MAP = mapOf(
     "elementAt" to "get",
 
-    "combineWith" to "plus",
-
     "add" to "plus",
     "getEnlarged" to "plus",
 
@@ -1036,6 +1039,7 @@ internal class Method(
     fun toOperatorExtension(): Method? {
         when {
             parameters.size != 1 -> return null
+            parameters[0].modifiers.vararg -> return null
             protected -> return null
             overridden -> return null
         }

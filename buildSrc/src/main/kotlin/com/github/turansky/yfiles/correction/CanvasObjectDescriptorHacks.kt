@@ -13,6 +13,7 @@ internal fun applyCanvasObjectDescriptorHacks(source: Source) {
         sequenceOf(
             "ALWAYS_DIRTY_INSTANCE" to IVISUAL_CREATOR,
             "ALWAYS_DIRTY_LOOKUP" to ILOOKUP,
+            "ALWAYS_DIRTY_VISUAL" to VISUAL,
             "DYNAMIC_DIRTY_INSTANCE" to IVISUAL_CREATOR,
             "DYNAMIC_DIRTY_LOOKUP" to ILOOKUP,
             "VISUAL" to VISUAL,

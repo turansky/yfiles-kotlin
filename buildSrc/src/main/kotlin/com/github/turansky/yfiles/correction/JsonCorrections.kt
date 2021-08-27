@@ -27,6 +27,10 @@ internal val PROPERTY_NULLABILITY_CORRECTION = mapOf(
     PropertyDeclaration("SimpleLabel", "owner") to true,
     PropertyDeclaration("SimplePort", "owner") to true,
 
+    PropertyDeclaration("ICursor", "current") to false,
+    PropertyDeclaration("DpKeyBase", "name") to false,
+    PropertyDeclaration("DpKeyBase", "declaringType") to false,
+
     PropertyDeclaration("INodeData", "firstSameLayerEdgeCell") to true,
     PropertyDeclaration("INodeData", "nodeLayoutDescriptor") to true,
     PropertyDeclaration("INodeData", "swimLaneDescriptor") to true,
@@ -152,12 +156,7 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("GraphMLParseValueSerializerContext", "lookup", "serviceType") to "type",
     ParameterData("GraphMLWriteValueSerializerContext", "lookup", "serviceType") to "type",
 
-    ParameterData("LayoutData", "apply", "layoutGraphAdapter") to "adapter",
-
     ParameterData("DefaultLayerSequencer", "sequenceNodeLayers", "glayers") to "layers",
-    ParameterData("IncrementalHintItemMapping", "provideMapperForContext", "hintsFactory") to "context",
-    ParameterData("LayerConstraintData", "apply", "layoutGraphAdapter") to "adapter",
-    ParameterData("SequenceConstraintData", "apply", "layoutGraphAdapter") to "adapter",
 
     ParameterData("ReparentStripeHandler", "reparent", "stripe") to "movedStripe",
     ParameterData("StripeDropInputMode", "updatePreview", "newLocation") to "dragLocation",
@@ -165,8 +164,8 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("IElementFactory", "createConnectorNode", "edgesIds") to "edgeIds",
     ParameterData("DynamicObstacleDecomposition", "init", "partitionBounds") to "bounds",
     ParameterData("PathBasedEdgeStyleRenderer", "isInPath", "path") to "lassoPath",
-    ParameterData("IArrow", "getBoundsProvider", "directionVector") to "direction",
     ParameterData("StripeSelection", "isSelected", "stripe") to "item",
+    ParameterData("DefaultPortCandidateDescriptor", "isInPath", "path") to "lassoPath",
 
     ParameterData("NodeReshapeHandleProvider", "getHandle", "inputModeContext") to "context",
     ParameterData("NodeReshapeHandlerHandle", "cancelDrag", "inputModeContext") to "context",
@@ -245,6 +244,8 @@ internal val PARAMETERS_NULLABILITY_CORRECTION = mapOf(
     ParameterData("HighlightIndicatorManager", "removeHighlight", "item") to false,
     ParameterData("SelectionIndicatorManager", "addSelection", "item") to false,
     ParameterData("SelectionIndicatorManager", "removeSelection", "item") to false,
+    ParameterData("WebGL2SelectionIndicatorManager", "addSelection", "item") to false,
+    ParameterData("WebGL2SelectionIndicatorManager", "removeSelection", "item") to false,
 
     ParameterData("ItemModelManager", "itemAddedHandler", "source") to false
 )
@@ -427,281 +428,6 @@ internal val METHOD_NULLABILITY_MAP = mapOf(
     MethodDeclaration(className = "LeftRightNodePlacer", methodName = "createProcessor") to true,
     MethodDeclaration(className = "NodePlacerBase", methodName = "createProcessor") to true,
     MethodDeclaration(className = "RotatableNodePlacerBase", methodName = "createProcessor") to true
-)
-
-internal val MISSED_PROPERTIES = listOf(
-    PropertyData(className = "YList", propertyName = "isReadOnly", type = JS_BOOLEAN),
-    PropertyData(className = "Arrow", propertyName = "length", type = JS_NUMBER)
-)
-
-internal val MISSED_METHODS = listOf(
-    MethodData(className = "Matrix", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "MutablePoint", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(className = "MutableSize", methodName = "clone", result = ResultData(JS_OBJECT)),
-    MethodData(
-        className = "MutableRectangle",
-        methodName = "clone",
-        result = ResultData(JS_OBJECT)
-    ),
-    MethodData(
-        className = "OrientedRectangle",
-        methodName = "clone",
-        result = ResultData(JS_OBJECT)
-    ),
-
-    MethodData(
-        className = "YList",
-        methodName = "add",
-        parameters = listOf(
-            MethodParameterData("item", JS_OBJECT, false)
-        )
-    ),
-
-    MethodData(
-        className = "CompositeUndoUnit",
-        methodName = "tryMergeUnit",
-        parameters = listOf(
-            MethodParameterData("unit", "IUndoUnit")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "CompositeUndoUnit",
-        methodName = "tryReplaceUnit",
-        parameters = listOf(
-            MethodParameterData("unit", "IUndoUnit")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-
-    MethodData(
-        className = "EdgePathLabelModel",
-        methodName = "getParameters",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("model", "ILabelModel")
-        ),
-        result = ResultData("$IENUMERABLE<$ILABEL_MODEL_PARAMETER>")
-    ),
-    MethodData(
-        className = "EdgePathLabelModel",
-        methodName = "getGeometry",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("layoutParameter", ILABEL_MODEL_PARAMETER)
-        ),
-        result = ResultData("yfiles.geometry.IOrientedRectangle")
-    ),
-
-    MethodData(
-        className = "EdgeSegmentLabelModel",
-        methodName = "getParameters",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("model", "ILabelModel")
-        ),
-        result = ResultData("$IENUMERABLE<$ILABEL_MODEL_PARAMETER>")
-    ),
-    MethodData(
-        className = "EdgeSegmentLabelModel",
-        methodName = "getGeometry",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("layoutParameter", ILABEL_MODEL_PARAMETER)
-        ),
-        result = ResultData("yfiles.geometry.IOrientedRectangle")
-    ),
-
-    MethodData(
-        className = "GenericLabelModel",
-        methodName = "canConvert",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-            MethodParameterData("value", JS_OBJECT)
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "GenericLabelModel",
-        methodName = "getParameters",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("model", "ILabelModel")
-        ),
-        result = ResultData("$IENUMERABLE<$ILABEL_MODEL_PARAMETER>")
-    ),
-    MethodData(
-        className = "GenericLabelModel",
-        methodName = "convert",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-            MethodParameterData("value", JS_OBJECT)
-        ),
-        result = ResultData("yfiles.graphml.MarkupExtension")
-    ),
-    MethodData(
-        className = "GenericLabelModel",
-        methodName = "getGeometry",
-        parameters = listOf(
-            MethodParameterData("label", "ILabel"),
-            MethodParameterData("layoutParameter", ILABEL_MODEL_PARAMETER)
-        ),
-        result = ResultData("yfiles.geometry.IOrientedRectangle")
-    ),
-
-    MethodData(
-        className = "GenericPortLocationModel",
-        methodName = "canConvert",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-            MethodParameterData("value", JS_OBJECT)
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "GenericPortLocationModel",
-        methodName = "convert",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.graphml.IWriteContext"),
-            MethodParameterData("value", JS_OBJECT)
-        ),
-        result = ResultData("yfiles.graphml.MarkupExtension")
-    ),
-    MethodData(
-        className = "GenericPortLocationModel",
-        methodName = "getEnumerator",
-        result = ResultData("yfiles.collections.IEnumerator<IPortLocationModelParameter>")
-    ),
-
-    MethodData(
-        className = "PortRelocationHandleProvider",
-        methodName = "getHandle",
-        parameters = listOf(
-            MethodParameterData("context", "IInputModeContext"),
-            MethodParameterData("edge", IEDGE),
-            MethodParameterData("sourceHandle", JS_BOOLEAN)
-        ),
-        result = ResultData("IHandle", true)
-    ),
-
-    MethodData(
-        className = "Arrow",
-        methodName = "getBoundsProvider",
-        parameters = listOf(
-            MethodParameterData("edge", IEDGE),
-            MethodParameterData("atSource", JS_BOOLEAN),
-            MethodParameterData("anchor", "yfiles.geometry.Point"),
-            MethodParameterData("direction", "yfiles.geometry.Point")
-        ),
-        result = ResultData("yfiles.view.IBoundsProvider")
-    ),
-    MethodData(
-        className = "Arrow",
-        methodName = "getVisualCreator",
-        parameters = listOf(
-            MethodParameterData("edge", IEDGE),
-            MethodParameterData("atSource", JS_BOOLEAN),
-            MethodParameterData("anchor", "yfiles.geometry.Point"),
-            MethodParameterData("direction", "yfiles.geometry.Point")
-        ),
-        result = ResultData("yfiles.view.IVisualCreator")
-    ),
-    MethodData(className = "Arrow", methodName = "clone", result = ResultData(JS_OBJECT)),
-
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "createVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext")
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "updateVisual",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.IRenderContext"),
-            MethodParameterData("oldVisual", "yfiles.view.Visual", true)
-        ),
-        result = ResultData("yfiles.view.Visual", true)
-    ),
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "isInBox",
-        parameters = listOf(
-            MethodParameterData("context", IINPUT_MODE_CONTEXT),
-            MethodParameterData("rectangle", "yfiles.geometry.Rect")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "isVisible",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.ICanvasContext"),
-            MethodParameterData("rectangle", "yfiles.geometry.Rect")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "getBounds",
-        parameters = listOf(
-            MethodParameterData("context", "yfiles.view.ICanvasContext")
-        ),
-        result = ResultData("yfiles.geometry.Rect")
-    ),
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "isHit",
-        parameters = listOf(
-            MethodParameterData("context", IINPUT_MODE_CONTEXT),
-            MethodParameterData("location", "yfiles.geometry.Point")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-    MethodData(
-        className = "DefaultPortCandidateDescriptor",
-        methodName = "isInPath",
-        parameters = listOf(
-            MethodParameterData("context", IINPUT_MODE_CONTEXT),
-            MethodParameterData("lassoPath", "yfiles.geometry.GeneralPath")
-        ),
-        result = ResultData(JS_BOOLEAN)
-    ),
-
-    MethodData(
-        className = "VoidPathGeometry",
-        methodName = "getPath",
-        result = ResultData("yfiles.geometry.GeneralPath", true)
-    ),
-    MethodData(
-        className = "VoidPathGeometry",
-        methodName = "getSegmentCount",
-        result = ResultData(JS_NUMBER)
-    ),
-    MethodData(
-        className = "VoidPathGeometry",
-        methodName = "getTangent",
-        parameters = listOf(
-            MethodParameterData("ratio", JS_NUMBER)
-        ),
-        result = ResultData("yfiles.geometry.Tangent", true)
-    ),
-    MethodData(
-        className = "VoidPathGeometry",
-        methodName = "getTangentForSegment",
-        parameters = listOf(
-            MethodParameterData("segmentIndex", JS_NUMBER),
-            MethodParameterData("ratio", JS_NUMBER)
-        ),
-        result = ResultData("yfiles.geometry.Tangent", true)
-    ),
-    MethodData(
-        className = "NodeLabelModelStripeLabelModelAdapter",
-        methodName = "createDefaultParameter",
-        result = ResultData(ILABEL_MODEL_PARAMETER)
-    )
 )
 
 internal val DUPLICATED_PROPERTIES = listOf(

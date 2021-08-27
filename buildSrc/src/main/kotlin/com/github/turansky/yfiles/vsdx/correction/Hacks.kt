@@ -69,9 +69,10 @@ private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
     "[number,vsdx.Value<number>]" to "Value<number>",
     "[vsdx.PageLike,vsdx.Shape]" to "PageLike",
     "[Document,Element,string]" to "SVGElement",
+    "[vsdx.CoordinateConverter,vsdx.Media]" to "CoordinateConverter",
 
     "[Promise<$JS_VOID>,undefined]" to "Promise<$JS_VOID>",
-    "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA>",
+    "Promise<{data:string,format:string}>" to "Promise<$IMAGE_DATA_RESPONSE>",
     "Promise<{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet}>" to "Promise<$MASTER_STATE>",
     "Promise<[{master:vsdx.Master,fillStyle:vsdx.StyleSheet,lineStyle:vsdx.StyleSheet,textStyle:vsdx.StyleSheet},null]>" to "Promise<$MASTER_STATE?>",
     "Promise<${VISUAL.substringAfterLast(".")}>" to "Promise<$VISUAL>"
@@ -286,9 +287,17 @@ private val STANDARD_TYPE_MAP = sequenceOf(
     "Promise",
 
     "addExportFinishedListener",
-    "SvgSupport.applySvg"
+
+    "MasterProviderContext.coordinateConverter",
+    "Page.pageHeight",
+    "Page.pageWidth",
+    "ShapeProcessingContext.coordinateConverter",
+    "SvgSupport.applySvg",
+    "VsdxExportConfiguration.margins",
+    "VsdxIO.addGraph",
 ).associateBy { it }
     .plus(JS_BLOB to BLOB)
+    .plus("GraphComponent.contentRect" to "yfiles.view.GraphComponent.contentRect")
 
 private fun JSONObject.fixSummary() {
     if (!has(SUMMARY)) {

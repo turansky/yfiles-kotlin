@@ -3,23 +3,14 @@ plugins {
     `kotlin-dsl`
 
     id("com.gradle.plugin-publish") version "0.15.0"
-    id("com.github.turansky.kfc.plugin-publish") version "4.8.4"
+    id("com.github.turansky.kfc.plugin-publish") version "4.30.0"
 
-    kotlin("jvm") version "1.5.10"
-}
-
-repositories {
-    mavenCentral()
+    kotlin("jvm") version "1.5.30"
 }
 
 dependencies {
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))
-}
-
-// TODO: remove after Gradle update
-tasks.compileKotlin {
-    kotlinOptions.allWarningsAsErrors = false
 }
 
 gradlePlugin {
@@ -51,6 +42,5 @@ pluginBundle {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.0.2"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "7.2"
 }

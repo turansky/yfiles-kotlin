@@ -16,7 +16,7 @@ internal class ImportOptimizePlugin : Plugin<Project> {
         plugins.withId(KOTLIN_JS) {
             tasks.withType<KotlinJsDce>().configureEach {
                 doLast {
-                    createImportFile(destinationDir)
+                    createImportFile(destinationDirectory.get().asFile)
                 }
             }
         }

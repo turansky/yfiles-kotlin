@@ -134,7 +134,7 @@ private fun getDefaultTypeParameter(name: String, type: String): String =
         JS_NUMBER -> getDefaultNumberTypeParameter(name)
         JS_OBJECT -> getDefaultObjectTypeParameter(name)
 
-        "yfiles.collections.IComparer<T>" -> "yfiles.collections.IComparer<*>"
+        "$ICOMPARER<T>" -> "$ICOMPARER<*>"
 
         else -> type
     }
@@ -144,6 +144,9 @@ private fun getDefaultObjectTypeParameter(name: String): String =
         "busIDAcceptor",
         "partitionIDDP",
         -> YID
+
+        "nodeType",
+        -> INODE_TYPE
 
         else -> "*"
     }

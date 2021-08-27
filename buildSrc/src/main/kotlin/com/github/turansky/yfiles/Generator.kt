@@ -37,6 +37,8 @@ fun generateKotlinDeclarations(
     val fileGenerator = KotlinFileGenerator(types, apiRoot.functionSignatures)
     fileGenerator.generate(context)
 
+    generateWebGL2Classes(context)
+
     generateIdUtils(context)
     generateObservableDelegates(context)
     generateBindingUtils(context)
@@ -44,6 +46,8 @@ fun generateKotlinDeclarations(
     generateTagUtils(context)
     generateDataTagUtils(context)
     generateStyleTagUtils(context)
+    generateNodeTypeUtils(context)
+    generateLayoutDescriptorUtils(context)
     generateResourceUtils(context)
     generateConvertersUtils(context)
     generateEventDispatcherUtils(context)
