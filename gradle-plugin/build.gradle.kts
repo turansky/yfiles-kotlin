@@ -8,10 +8,6 @@ plugins {
     kotlin("jvm") version "1.5.21"
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compileOnly(kotlin("gradle-plugin"))
     compileOnly(kotlin("compiler-embeddable"))

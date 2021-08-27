@@ -12,6 +12,12 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 include("yfiles-kotlin")
 include("vsdx-kotlin")
 

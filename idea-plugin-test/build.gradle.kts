@@ -4,12 +4,6 @@ plugins {
     id("com.github.turansky.yfiles") version "6.7.0"
 }
 
-repositories {
-    gradlePluginPortal()
-    mavenCentral()
-    mavenLocal()
-}
-
 dependencies {
     implementation("com.yworks.yfiles:yfiles-kotlin:24.0.2-SNAPSHOT")
 }
