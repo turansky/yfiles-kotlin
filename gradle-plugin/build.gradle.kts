@@ -3,9 +3,9 @@ plugins {
     `kotlin-dsl`
 
     id("com.gradle.plugin-publish") version "0.15.0"
-    id("com.github.turansky.kfc.plugin-publish") version "4.21.0"
+    id("com.github.turansky.kfc.plugin-publish") version "4.30.0"
 
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.30"
 }
 
 dependencies {

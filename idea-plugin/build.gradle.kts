@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.30"
     id("org.jetbrains.intellij") version "1.1.4"
-    id("com.github.turansky.kfc.version") version "4.21.0"
+    id("com.github.turansky.kfc.version") version "4.30.0"
 }
 
 intellij {
