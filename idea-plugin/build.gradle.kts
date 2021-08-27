@@ -4,6 +4,10 @@ plugins {
     id("com.github.turansky.kfc.version") version "4.30.0"
 }
 
+repositories {
+    mavenCentral()
+}
+
 intellij {
     pluginName.set("yfiles")
 
