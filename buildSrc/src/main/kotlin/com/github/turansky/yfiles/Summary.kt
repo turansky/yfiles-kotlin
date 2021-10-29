@@ -65,6 +65,7 @@ private fun String.fixMarkdown(): String {
         .replace("""<pre class="programlisting"><code class="js">""", "\n```\n")
         .replace("""<pre class="programlisting"><code class='js'>""", "\n```\n")
         .replace("""<pre class="programlisting"><code class="javascript">""", "\n```\n")
+        .replace("""<pre class="programlisting"><code class="css">""", "\n```\n")
         .replace("<pre><code>", "\n```\n")
         .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")
