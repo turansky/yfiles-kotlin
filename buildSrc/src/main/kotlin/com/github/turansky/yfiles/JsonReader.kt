@@ -16,13 +16,12 @@ private const val QII = "qii"
 internal fun File.readJson(): JSONObject =
     readText(UTF_8)
         .run { substring(indexOf("{")) }
-        .fixArrayDeclaration()
         .fixInsetsDeclaration()
         .let { JSONObject(it) }
-        .also { it.fixArrayDeclaration() }
 
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
+        .apply { fixArrayDeclaration() }
         .apply { removeNamespaces() }
         .apply { fixInsetsDeclaration() }
         .apply { mergeDeclarations() }
@@ -69,9 +68,7 @@ private fun JSONObject.fixArrayDeclaration() {
     if (optString("dimension") != "[]")
         return
 
-    if (type == "yfiles.algorithms.INodeMap")
-        return
-
+    remove("dimension")
     put("type", "Array<$type>")
 }
 
@@ -80,9 +77,6 @@ private fun JSONArray.fixArrayDeclaration() {
         item.fixArrayDeclaration()
     }
 }
-
-private fun String.fixArrayDeclaration(): String =
-    replace(Regex("""type\:\"([^\"]+)\"\,dimension\:\"\[\]\""""), """type:"Array<$1>"""")
 
 private fun JSONObject.fixInsetsDeclaration() =
     flatMap(TYPES)
