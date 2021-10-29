@@ -28,6 +28,8 @@ internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
         .apply { removeFromFactories() }
         .apply { removeRedundantCreateFactories() }
         .toString()
+        .replace("yfiles.geometry.IPoint[]", "Array<yfiles.geometry.IPoint>")
+        .replace("yfiles.layout.LabelLayoutData[]", "Array<yfiles.layout.LabelLayoutData>")
         .fixSystemPackage()
         .fixClassDeclaration()
         .run { JSONObject(this) }
