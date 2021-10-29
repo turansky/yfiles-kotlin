@@ -16,8 +16,10 @@ private const val QII = "qii"
 internal fun File.readJson(): JSONObject =
     readText(UTF_8)
         .run { substring(indexOf("{")) }
+        .fixArrayDeclaration()
         .fixInsetsDeclaration()
-        .run { JSONObject(this) }
+        .let { JSONObject(it) }
+        .also { it.fixArrayDeclaration() }
 
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
@@ -48,6 +50,39 @@ private fun String.fixClassDeclaration(): String =
 
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
+
+private fun Any.fixArrayDeclaration() {
+    when (this) {
+        is JSONObject -> fixArrayDeclaration()
+        is JSONArray -> fixArrayDeclaration()
+    }
+}
+
+private fun JSONObject.fixArrayDeclaration() {
+    for (key in keys()) {
+        get(key).fixArrayDeclaration()
+    }
+
+    val type = optString("type")
+        .ifEmpty { return }
+
+    if (optString("dimension") != "[]")
+        return
+
+    if (type == "yfiles.algorithms.INodeMap")
+        return
+
+    put("type", "Array<$type>")
+}
+
+private fun JSONArray.fixArrayDeclaration() {
+    for (item in this) {
+        item.fixArrayDeclaration()
+    }
+}
+
+private fun String.fixArrayDeclaration(): String =
+    replace(Regex("""type\:\"([^\"]+)\"\,dimension\:\"\[\]\""""), """type:"Array<$1>"""")
 
 private fun JSONObject.fixInsetsDeclaration() =
     flatMap(TYPES)
