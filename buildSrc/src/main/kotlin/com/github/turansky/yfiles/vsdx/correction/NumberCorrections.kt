@@ -29,7 +29,10 @@ private val INT_NAMES = setOf(
 
     "action",
     "calendar",
-    "format"
+    "format",
+
+    "fromPart",
+    "toPart",
 )
 
 private val INT_SUFFIXES = setOf(
