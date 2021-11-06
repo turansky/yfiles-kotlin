@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.5.31"
-    id("org.jetbrains.intellij") version "1.2.0"
-    id("com.github.turansky.kfc.version") version "4.34.0"
+    id("org.jetbrains.intellij") version "1.2.1"
+    id("com.github.turansky.kfc.version") version "4.42.0"
 }
 
 repositories {
@@ -12,7 +12,7 @@ intellij {
     pluginName.set("yfiles")
 
     type.set("IU")
-    version.set("2021.2.2")
+    version.set("2021.2.3")
 
     plugins.set(
         listOf(
