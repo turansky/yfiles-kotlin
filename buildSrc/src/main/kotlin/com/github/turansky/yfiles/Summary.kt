@@ -19,6 +19,7 @@ private val DIGIT_CLEAN_REGEX = Regex("(\\.[0-9]+)d")
 
 private fun String.fixApiLinks(): String {
     return this
+        .replace("""data-member="create factory method"""", """data-member="create"""")
         .replace(" data-text=\"\"", "")
         .replace(" infinite\"\"=\"\"", "")
         .replace(TYPE_CLEAN_REGEX_1, "$1")
