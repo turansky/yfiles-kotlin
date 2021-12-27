@@ -12,7 +12,7 @@ intellij {
     pluginName.set("yfiles")
 
     type.set("IU")
-    version.set("2021.2.3")
+    version.set("2021.3")
 
     plugins.set(
         listOf(
@@ -36,7 +36,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("201.6487")
+        sinceBuild.set("212.5712")
         untilBuild.set("214.*")
     }
 
