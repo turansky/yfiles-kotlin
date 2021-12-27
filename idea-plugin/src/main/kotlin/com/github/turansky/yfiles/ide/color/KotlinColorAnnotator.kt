@@ -64,7 +64,7 @@ internal class KotlinColorAnnotator : Annotator {
         val klass = companion.parent?.parent as? KtClass ?: return
         if (klass.fqName !in COLOR_CLASS_NAMES) return
 
-        val color = name.replace("_", "").toLowerCase()
+        val color = name.replace("_", "").lowercase()
         if (!ColorFormat.NAMED.matches(color)) return
 
         holder.createColorAnnotation(color, ColorFormat.NAMED, range)

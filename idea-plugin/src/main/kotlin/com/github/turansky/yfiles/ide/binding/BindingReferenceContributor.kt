@@ -34,7 +34,6 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
 
         val result = mutableListOf<PsiReference>()
         BindingParser.parse(value).forEach { (token, range, directive) ->
-            @Suppress("NON_EXHAUSTIVE_WHEN")
             when (token) {
                 BindingToken.KEYWORD -> when (directive) {
                     BINDING,
@@ -52,6 +51,8 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                         rangeInElement = range.shiftRight(valueOffset),
                         property = Properties.TEMPLATE_CONVERTERS
                     )
+
+                    else -> Unit
                 }
 
                 BindingToken.ARGUMENT -> when (directive) {
@@ -61,7 +62,11 @@ private class BindingReferenceProvider : PsiReferenceProvider() {
                         rangeInElement = range.shiftRight(valueOffset),
                         propertyName = binding.name!!
                     )
+
+                    else -> Unit
                 }
+
+                else -> Unit
             }
         }
 
