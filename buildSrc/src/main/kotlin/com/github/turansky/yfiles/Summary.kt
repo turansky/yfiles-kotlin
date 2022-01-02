@@ -1,9 +1,13 @@
 package com.github.turansky.yfiles
 
 internal fun summary(source: String): String {
-    return source
+    val result = source
         .fixApiLinks()
         .fixMarkdown()
+
+    return result.trimStart()
+        .takeIf { !it.startsWith("- ") }
+        ?: result
 }
 
 private val TYPE_CLEAN_REGEX_1 = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
