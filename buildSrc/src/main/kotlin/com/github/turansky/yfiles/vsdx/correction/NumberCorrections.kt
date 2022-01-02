@@ -39,6 +39,7 @@ private val INT_SUFFIXES = setOf(
     "Index",
     "Count",
     "Type",
+    "Mode",
     "Code",
 
     "Window",
