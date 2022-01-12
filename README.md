@@ -55,7 +55,7 @@
 | :---                        |:---------------------:|:---------------------------------:|
 | Documentation               |       [API][12]       |             [API][22]             |
 | Module                      |       `yfiles`        | `vsdx-export-for-yfiles-for-html` |
-| Version                     |       `24.0.4`        |              `2.3.0`              |
+| Version                     |       `24.0.4`        |              `2.3.1`              |
 | Module format               |         `ES6`         |               `ES6`               |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  |         **`vsdx-kotlin`**         |
 | Nullability fixes           |         3200+         |                 -                 |
