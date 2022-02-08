@@ -24,7 +24,7 @@ class JavaPsiFinder : PsiFinder {
     private fun String.toMethodName(): String =
         when {
             startsWith("is") -> this
-            endsWith("ed") -> "is" + capitalize()
-            else -> "get" + capitalize()
+            endsWith("ed") -> "is" + replaceFirstChar { it.uppercase() }
+            else -> "get" + replaceFirstChar { it.uppercase() }
         }
 }

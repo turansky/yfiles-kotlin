@@ -3,7 +3,7 @@ plugins {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.2"
+    gradleVersion = "7.4"
 }
 
 // TODO: remove after migration

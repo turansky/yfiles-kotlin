@@ -320,6 +320,15 @@ private fun JSONObject.fixSummary() {
                 dataType.startsWith("vsdx.")
                 -> dataType.removePrefix("vsdx.")
 
+                dataType == "Connect.fromCell" || dataType == "Connect.toCell"
+                -> "String"
+
+                dataType == "Connect.fromPart" || dataType == "Connect.toPart"
+                -> "Int"
+
+                dataType == "Connect.fromSheet" || dataType == "Connect.toSheet"
+                -> "Shape"
+
                 else -> YFILES_TYPE_MAP[dataType] ?: STANDARD_TYPE_MAP.getValue(dataType)
             }
 

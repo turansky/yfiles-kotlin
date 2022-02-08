@@ -1,7 +1,0 @@
-{
-  "name": "yfiles-kotlin",
-  "private": true,
-  "dependencies": {
-    "kotlin": "1.4.10"
-  }
-}

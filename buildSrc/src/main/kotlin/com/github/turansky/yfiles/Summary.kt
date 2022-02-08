@@ -1,9 +1,13 @@
 package com.github.turansky.yfiles
 
 internal fun summary(source: String): String {
-    return source
+    val result = source
         .fixApiLinks()
         .fixMarkdown()
+
+    return result.trimStart()
+        .takeIf { !it.startsWith("- ") }
+        ?: result
 }
 
 private val TYPE_CLEAN_REGEX_1 = Regex("( data-type=\"[a-zA-Z.]+)<[^\"]+")
@@ -19,6 +23,7 @@ private val DIGIT_CLEAN_REGEX = Regex("(\\.[0-9]+)d")
 
 private fun String.fixApiLinks(): String {
     return this
+        .replace("""data-member="create factory method"""", """data-member="create"""")
         .replace(" data-text=\"\"", "")
         .replace(" infinite\"\"=\"\"", "")
         .replace(TYPE_CLEAN_REGEX_1, "$1")
@@ -65,6 +70,7 @@ private fun String.fixMarkdown(): String {
         .replace("""<pre class="programlisting"><code class="js">""", "\n```\n")
         .replace("""<pre class="programlisting"><code class='js'>""", "\n```\n")
         .replace("""<pre class="programlisting"><code class="javascript">""", "\n```\n")
+        .replace("""<pre class="programlisting"><code class="css">""", "\n```\n")
         .replace("<pre><code>", "\n```\n")
         .replace("</code></pre>", "\n```\n")
         .replace("<code>", "`")

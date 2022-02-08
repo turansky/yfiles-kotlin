@@ -71,13 +71,13 @@ private fun createClassMarker(
 
     val anchor = klass.nameIdentifier ?: klass
 
-    @Suppress("DEPRECATION")
     return LineMarkerInfo(
         anchor,
         anchor.textRange,
-        LineMarkerOptions.baseClassOption.icon,
+        LineMarkerOptions.baseClassOption.icon!!,
         { tooltipProvider() },
         null,
-        GutterIconRenderer.Alignment.RIGHT
+        GutterIconRenderer.Alignment.RIGHT,
+        { tooltipProvider() },
     )
 }

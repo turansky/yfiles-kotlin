@@ -17,16 +17,19 @@ internal fun File.readJson(): JSONObject =
     readText(UTF_8)
         .run { substring(indexOf("{")) }
         .fixInsetsDeclaration()
-        .run { JSONObject(this) }
+        .let { JSONObject(it) }
 
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
+        .apply { fixArrayDeclaration() }
         .apply { removeNamespaces() }
         .apply { fixInsetsDeclaration() }
         .apply { mergeDeclarations() }
         .apply { removeFromFactories() }
         .apply { removeRedundantCreateFactories() }
         .toString()
+        .replace("yfiles.geometry.IPoint[]", "Array<yfiles.geometry.IPoint>")
+        .replace("yfiles.layout.LabelLayoutData[]", "Array<yfiles.layout.LabelLayoutData>")
         .fixSystemPackage()
         .fixClassDeclaration()
         .run { JSONObject(this) }
@@ -48,6 +51,34 @@ private fun String.fixClassDeclaration(): String =
 
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
+
+private fun Any.fixArrayDeclaration() {
+    when (this) {
+        is JSONObject -> fixArrayDeclaration()
+        is JSONArray -> fixArrayDeclaration()
+    }
+}
+
+private fun JSONObject.fixArrayDeclaration() {
+    for (key in keys()) {
+        get(key).fixArrayDeclaration()
+    }
+
+    val type = optString("type")
+        .ifEmpty { return }
+
+    if (optString("dimension") != "[]")
+        return
+
+    remove("dimension")
+    put("type", "Array<$type>")
+}
+
+private fun JSONArray.fixArrayDeclaration() {
+    for (item in this) {
+        item.fixArrayDeclaration()
+    }
+}
 
 private fun JSONObject.fixInsetsDeclaration() =
     flatMap(TYPES)

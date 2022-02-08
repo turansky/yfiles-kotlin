@@ -70,7 +70,7 @@ fun generateKotlinDeclarations(
     addIteratorSupport(context)
     generateDpKeyDelegates(context)
 
-    generateResourceTypes(devguideFile.readJson(), context)
+    generateResourceTypes(devguideFile, context)
 }
 
 fun generateVsdxKotlinDeclarations(

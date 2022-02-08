@@ -1,21 +1,17 @@
 package com.github.turansky.yfiles
 
 import com.github.turansky.yfiles.ContentMode.CLASS
-import com.github.turansky.yfiles.correction.*
-import org.json.JSONObject
+import java.io.File
 
 internal fun generateResourceTypes(
-    devguide: JSONObject,
+    devguide: File,
     context: GeneratorContext,
 ) {
     val keyDeclarations = devguide
-        .flatMap(CHILDREN)
-        .optFlatMap(CHILDREN)
-        .optFlatMap(CHILDREN)
-        .optFlatMap(CHILDREN)
-        .first { it.opt(ID) == "tab_resource_defaults" }
-        .get(CONTENT)
-        .between("<tbody ", "</tbody>")
+        .readText()
+        .substringAfter("""id:"tab_resource_defaults"""")
+        .substringAfter("<tbody ")
+        .substringBefore("</tbody>")
         .splitToSequence("</para>")
         .map { it.substringAfterLast(">") }
         .chunked(2)

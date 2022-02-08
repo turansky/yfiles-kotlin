@@ -29,13 +29,17 @@ private val INT_NAMES = setOf(
 
     "action",
     "calendar",
-    "format"
+    "format",
+
+    "fromPart",
+    "toPart",
 )
 
 private val INT_SUFFIXES = setOf(
     "Index",
     "Count",
     "Type",
+    "Mode",
     "Code",
 
     "Window",

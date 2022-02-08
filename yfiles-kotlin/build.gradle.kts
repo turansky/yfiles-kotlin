@@ -2,11 +2,11 @@ import com.github.turansky.yfiles.generateKotlinDeclarations
 import de.undercouch.gradle.tasks.download.Download
 
 plugins {
-    id("com.github.turansky.kfc.library")
+    id("io.github.turansky.kfc.library")
     id("com.github.turansky.yfiles")
 
     id("de.undercouch.download")
-    id("com.github.turansky.kfc.maven-publish")
+    id("io.github.turansky.kfc.maven-publish")
 }
 
 val kotlinSourceDir: File
