@@ -9,5 +9,5 @@ dependencies {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.4"
+    gradleVersion = "7.4.2"
 }
