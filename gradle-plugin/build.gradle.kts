@@ -3,7 +3,7 @@ plugins {
     `kotlin-dsl`
 
     id("com.gradle.plugin-publish") version "0.20.0"
-    id("io.github.turansky.kfc.plugin-publish") version "5.2.1"
+    id("io.github.turansky.kfc.plugin-publish") version "5.5.0"
 
     kotlin("jvm") version "1.6.20"
 }
