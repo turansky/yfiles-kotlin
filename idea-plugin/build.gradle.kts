@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "1.6.10"
-    id("org.jetbrains.intellij") version "1.5.2"
+    id("org.jetbrains.intellij") version "1.5.3"
     id("io.github.turansky.kfc.version") version "5.9.1"
 }
 
@@ -12,7 +12,7 @@ intellij {
     pluginName.set("yfiles")
 
     type.set("IU")
-    version.set("2021.3.3")
+    version.set("2022.1")
 
     plugins.set(
         listOf(
@@ -37,7 +37,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("212.5712")
-        untilBuild.set("214.*")
+        untilBuild.set("222.*")
     }
 
     publishPlugin {
