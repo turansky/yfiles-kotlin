@@ -62,7 +62,7 @@ private fun TranslationContext.wrapBaseClass(
     name: String,
 ): JsExpression =
     addFunctionButNotExport(
-        JsName(generateName("create", name)),
+        JsName(generateName("create", name), false),
         jsFunction(
             "$name factory method",
             JsReturn(baseClass)
@@ -106,7 +106,7 @@ private fun TranslationContext.configurePrototypeMethod(
     }.toList()
 
     return addFunctionButNotExport(
-        JsName(generateName("configure", classId, "prototype")),
+        JsName(generateName("configure", classId, "prototype"), false),
         jsFunction(
             "$classId prototype configuration",
             statements
