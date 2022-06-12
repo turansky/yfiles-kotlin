@@ -3,8 +3,6 @@ package com.github.turansky.yfiles
 import com.github.turansky.yfiles.ContentMode.ALIASES
 import com.github.turansky.yfiles.ContentMode.CLASS
 
-private const val SUPPRESS_TYPE_VARIANCE_CONFLICT = "@Suppress(\"TYPE_VARIANCE_CONFLICT\", \"TYPE_VARIANCE_CONFLICT_IN_EXPANDED_TYPE\")\n"
-
 private val ENUM_COMPANION_MAP = mapOf(
     "BipartitionAlgorithm" to "BipartitionMark",
     "DfsAlgorithm" to "DfsState"
@@ -329,8 +327,17 @@ internal class KotlinFileGenerator(
 
     inner class InterfaceFile(private val declaration: Interface) : GeneratedFile(declaration) {
         override fun content(): String {
-            val content = super.content()
+            var content = super.content()
                 .replace("abstract ", "")
+
+            if (data.fqn == IENUMERABLE) {
+                content = content
+                    .replace("item: T", "item: @UnsafeVariance T")
+                    .replace("items: T", "items: @UnsafeVariance T")
+                    .replace("elements: $IENUMERABLE<T>", "elements: $IENUMERABLE<@UnsafeVariance T>")
+                    .replace("toList():$LIST<T>", "toList():$LIST<@UnsafeVariance T>")
+                    .replace("Func3<T, T, T>", "Func3<@UnsafeVariance T, @UnsafeVariance T, @UnsafeVariance T>")
+            }
 
             val interfaceDeclaration = classDeclaration
                 .replace("IEnumerator<", "IEnumerator<out ")
@@ -343,7 +350,6 @@ internal class KotlinFileGenerator(
 
             return documentation +
                     externalAnnotation +
-                    exp(data.fqn == IENUMERABLE, SUPPRESS_TYPE_VARIANCE_CONFLICT) +
                     "external interface $interfaceDeclaration ${parentString()} {\n" +
                     content + "\n\n" +
                     components +
