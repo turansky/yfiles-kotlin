@@ -25,7 +25,7 @@ internal class SuperTypeTransformer(
     private val IrClass.transformRequired
         get() = when {
             isExternal -> false
-            isInline -> false
+            isValue -> false
             !isClass -> false
             else -> implementsYFilesInterface
         }
