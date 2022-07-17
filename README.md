@@ -2,7 +2,7 @@
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com/github/turansky/yfiles/com.github.turansky.yfiles.gradle.plugin/maven-metadata.xml.svg?label=plugin&logo=gradle)](https://plugins.gradle.org/plugin/com.github.turansky.yfiles)
 [![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/v/13384-yfiles?label=plugin&logo=intellij-idea)](https://plugins.jetbrains.com/plugin/13384-yfiles/)
 [![IntelliJ IDEA Plugin](https://img.shields.io/jetbrains/plugin/d/13384-yfiles?logo=intellij-idea)](https://plugins.jetbrains.com/plugin/13384-yfiles/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.6.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.7.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
 # Kotlin/JS support for yFiles
 
@@ -55,7 +55,7 @@
 | :---                        |:---------------------:|:---------------------------------:|
 | Documentation               |       [API][12]       |             [API][22]             |
 | Module                      |       `yfiles`        | `vsdx-export-for-yfiles-for-html` |
-| Version                     |       `24.0.4`        |              `2.3.1`              |
+| Version                     |       `24.0.6`        |              `2.3.1`              |
 | Module format               |         `ES6`         |               `ES6`               |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  |         **`vsdx-kotlin`**         |
 | Nullability fixes           |         3200+         |                 -                 |

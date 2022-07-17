@@ -61,6 +61,7 @@ const val ILIST_ENUMERABLE = "yfiles.collections.IListEnumerable"
 const val ILIST = "yfiles.collections.IList"
 const val ITEM_EVENT_ARGS = "yfiles.collections.ItemEventArgs"
 const val ICOMPARER = "yfiles.collections.IComparer"
+const val LIST = "yfiles.collections.List"
 
 const val SEGMENT_INFO = "yfiles.router.SegmentInfo"
 const val SWIMLANE_DESCRIPTOR = "yfiles.hierarchic.SwimlaneDescriptor"

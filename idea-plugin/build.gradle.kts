@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
-    id("org.jetbrains.intellij") version "1.3.1"
-    id("io.github.turansky.kfc.version") version "5.0.1"
+    kotlin("jvm") version "1.7.10"
+    id("org.jetbrains.intellij") version "1.6.0"
+    id("io.github.turansky.kfc.version") version "5.52.0"
 }
 
 repositories {
@@ -12,7 +12,7 @@ intellij {
     pluginName.set("yfiles")
 
     type.set("IU")
-    version.set("2021.3.1")
+    version.set("2022.1.3")
 
     plugins.set(
         listOf(
@@ -37,7 +37,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("212.5712")
-        untilBuild.set("214.*")
+        untilBuild.set("222.*")
     }
 
     publishPlugin {
@@ -45,6 +45,6 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "7.4"
+        gradleVersion = "7.5"
     }
 }
