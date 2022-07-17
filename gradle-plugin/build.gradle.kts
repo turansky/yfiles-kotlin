@@ -2,7 +2,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
 
-    id("com.gradle.plugin-publish") version "0.21.0"
+    id("com.gradle.plugin-publish") version "1.0.0"
     id("io.github.turansky.kfc.plugin-publish") version "5.52.0"
 
     kotlin("jvm") version "1.7.10"
@@ -22,6 +22,8 @@ gradlePlugin {
     plugins {
         create("yfiles") {
             id = "com.github.turansky.yfiles"
+            displayName = "yFiles Kotlin/JS plugin"
+            description = "yFiles class framework helper for Kotlin/JS"
             implementationClass = "com.github.turansky.yfiles.gradle.plugin.YFilesGradleSubplugin"
         }
     }
@@ -33,17 +35,14 @@ pluginBundle {
     website = REPO_URL
     vcsUrl = REPO_URL
 
-    plugins.getByName("yfiles") {
-        displayName = "yFiles Kotlin/JS plugin"
-        description = "yFiles class framework helper for Kotlin/JS"
-        tags = listOf(
+    pluginTags = mapOf(
+        "yfiles" to listOf(
             "yfiles",
             "kotlin",
             "kotlin-js",
             "javascript"
         )
-        version = project.version.toString()
-    }
+    )
 }
 
 tasks.wrapper {
