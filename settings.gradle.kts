@@ -8,7 +8,7 @@ pluginManagement {
         id("io.github.turansky.kfc.library") version kfcVersion
         id("io.github.turansky.kfc.maven-publish") version kfcVersion
 
-        id("de.undercouch.download") version "5.0.1"
+        id("de.undercouch.download") version "5.1.0"
     }
 }
 
