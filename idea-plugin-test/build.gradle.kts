@@ -1,7 +1,7 @@
 plugins {
     kotlin("js") version "1.7.10"
-    id("io.github.turansky.kfc.library") version "5.52.0"
-    id("com.github.turansky.yfiles") version "6.11.0"
+    id("io.github.turansky.kfc.library") version "5.56.0"
+    id("com.github.turansky.yfiles") version "6.20.0"
 }
 
 dependencies {
