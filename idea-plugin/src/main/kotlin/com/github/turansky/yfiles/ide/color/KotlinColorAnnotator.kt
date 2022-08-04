@@ -3,7 +3,6 @@ package com.github.turansky.yfiles.ide.color
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.idea.core.util.range
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.*
 
@@ -45,7 +44,7 @@ internal class KotlinColorAnnotator : Annotator {
             .firstOrNull { it.matches(text) }
             ?: return
 
-        holder.createColorAnnotation(text, format, element.range)
+        holder.createColorAnnotation(text, format, element.textRange)
     }
 
     private fun annotate(
@@ -53,7 +52,7 @@ internal class KotlinColorAnnotator : Annotator {
         holder: AnnotationHolder,
     ) {
         val name = element.name ?: return
-        val range = element.nameIdentifier?.range ?: return
+        val range = element.nameIdentifier?.textRange ?: return
 
         if (element.isVar) return
         if (!element.isMember) return
