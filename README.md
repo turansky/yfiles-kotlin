@@ -55,7 +55,7 @@
 | :---                        |:---------------------:|:---------------------------------:|
 | Documentation               |       [API][12]       |             [API][22]             |
 | Module                      |       `yfiles`        | `vsdx-export-for-yfiles-for-html` |
-| Version                     |       `24.0.6`        |              `2.3.1`              |
+| Version                     |       `25.0.0`        |              `2.3.2`              |
 | Module format               |         `ES6`         |               `ES6`               |
 | **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  |         **`vsdx-kotlin`**         |
 | Nullability fixes           |         3200+         |                 -                 |
@@ -109,14 +109,14 @@ val graph: IGraph = DefaultGraph()
 val node = graph.createNode()
 
 // for classes
-val t13: TimeSpan? = node.lookup()      // reified lookup type
+val t13: TimeSpan = node.lookup()      // reified lookup type
 val t14 = node.lookup<TimeSpan>()       // 'TimeSpan?'
 
 val t23: TimeSpan = node.lookupValue()  // reified lookup type
 val t24 = node.lookupValue<TimeSpan>()  // 'TimeSpan'
 
 // for interfaces
-val h13: IHitTestable? = node.lookup()      // reified lookup type
+val h13: IHitTestable = node.lookup()      // reified lookup type
 val h14 = node.lookup<IHitTestable>()       // 'IHitTestable?'
 
 val h23: IHitTestable = node.lookupValue()  // reified lookup type
@@ -129,8 +129,8 @@ val h24 = node.lookupValue<IHitTestable>()  // 'IHitTestable'
 val clazz: YClass<IVisibilityTestable> = IVisibilityTestable.yclass
 
 // strict lookup
-val visibilityTestable: IVisibilityTestable? = renderer.lookup(IVisibilityTestable.yclass)
-val boundsProvider: IBoundsProvider? = renderer.lookup(IBoundsProvider.yclass)
+val visibilityTestable: IVisibilityTestable = renderer.lookup(IVisibilityTestable.yclass)
+val boundsProvider: IBoundsProvider = renderer.lookup(IBoundsProvider.yclass)
 ```
 
 ## Factory methods
