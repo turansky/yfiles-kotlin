@@ -3,7 +3,7 @@ package com.github.turansky.yfiles.ide.documentation
 import com.github.turansky.yfiles.ide.binding.Binding
 import com.github.turansky.yfiles.ide.binding.TagBinding
 import com.github.turansky.yfiles.ide.binding.TemplateBinding
-import com.intellij.codeInsight.documentation.DocumentationManager.createHyperlink
+import com.intellij.codeInsight.documentation.DocumentationManagerUtil.createHyperlink
 import com.intellij.lang.documentation.DocumentationMarkup.*
 
 private const val SVG_TEMPLATES_URL: String = "https://docs.yworks.com/yfileshtml/#/dguide/custom-styles_template-styles"
