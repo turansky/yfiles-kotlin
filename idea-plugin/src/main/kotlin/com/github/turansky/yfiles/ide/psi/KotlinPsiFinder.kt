@@ -14,7 +14,7 @@ class KotlinPsiFinder : PsiFinder {
         context: PsiElement,
         className: String,
     ): KtClassOrObject? =
-        KotlinFullClassNameIndex.getInstance()
+        KotlinFullClassNameIndex
             .get(className, context.project, context.resolveScope)
             .firstOrNull()
 
