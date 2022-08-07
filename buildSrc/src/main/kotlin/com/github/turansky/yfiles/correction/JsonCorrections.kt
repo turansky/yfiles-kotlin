@@ -101,7 +101,6 @@ internal val CONSTRUCTOR_PARAMETERS_CORRECTION = mapOf(
     ConstructorParameterData("Animator", "canvas") to "canvasComponent",
     ConstructorParameterData("ItemSelectionChangedEventArgs", "selected") to "itemSelected",
     ConstructorParameterData("KeyEventArgs", "type") to "eventType",
-    ConstructorParameterData("ModelManager", "canvas") to "canvasComponent",
     ConstructorParameterData("SvgVisual", "element") to "svgElement"
 )
 
