@@ -51,6 +51,8 @@ internal fun getVisualTemplateParameter(className: String): String =
 
         "OrientedRectangleIndicatorInstaller",
         "RectangleIndicatorInstaller",
+
+        "Theme",
         -> JS_VOID
 
         else -> throw IllegalArgumentException("Unable to calculate type parameter for class '$className'")
