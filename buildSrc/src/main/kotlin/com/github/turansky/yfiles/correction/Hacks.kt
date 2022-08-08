@@ -403,7 +403,8 @@ private val THIS_TYPES = setOf(
     "List"
 )
 
-private const val FUNC_RUDIMENT = ",number,$IENUMERABLE<T>"
+private const val FUNC_RUDIMENT_1 = ",number,$IENUMERABLE<T>"
+private const val FUNC_RUDIMENT_2 = ",$IENUMERABLE<T>,number"
 private const val FROM_FUNC_RUDIMENT = "Func4<TSource,number,Object,T>"
 
 private fun removeThisParameters(source: Source) {
@@ -426,9 +427,10 @@ private fun removeThisParameters(source: Source) {
         .filter { it.has(SIGNATURE) }
         .forEach {
             val signature = it[SIGNATURE]
-            if (FUNC_RUDIMENT in signature) {
+            if (FUNC_RUDIMENT_1 in signature || FUNC_RUDIMENT_2 in signature) {
                 it[SIGNATURE] = signature
-                    .replace(FUNC_RUDIMENT, "")
+                    .replace(FUNC_RUDIMENT_1, "")
+                    .replace(FUNC_RUDIMENT_2, "")
                     .replace("Action3<T>", "Action1<T>")
                     .replace("Func4<T,boolean>", "Predicate<T>")
                     .replace("Func4<", "Func2<")
