@@ -47,7 +47,10 @@ private fun String.fixClassDeclaration(): String =
         .replace(""""name":"Class"""", """"name":"YClass"""")
         .replace(""""yfiles.lang.Class"""", """"$YCLASS"""")
         .replace(""""Array<yfiles.lang.Class>"""", """"Array<$YCLASS>"""")
-        .replace(""""yfiles.collections.Map<yfiles.lang.Class,$JS_OBJECT>"""", """"yfiles.collections.Map<$YCLASS,$JS_OBJECT>"""")
+        .replace(
+            """"yfiles.collections.Map<yfiles.lang.Class,$JS_OBJECT>"""",
+            """"yfiles.collections.Map<$YCLASS,$JS_OBJECT>""""
+        )
 
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
@@ -138,7 +141,7 @@ private fun JSONObject.removeFromFactories() {
             .firstOrNull { it.isFromFactory() }
             ?: return@forEach
 
-        if (" are converted to " in type[REMARKS]) {
+        if (type.has(REMARKS) && " are converted to " in type[REMARKS]) {
             fromFactory.firstParameter[TYPE] = JS_STRING
         } else {
             type[METHODS].removeAll { it === fromFactory }
