@@ -81,7 +81,7 @@ private fun parseGenericParameters(parameters: String): List<String> {
 }
 
 internal fun String.asReadOnly(): String =
-    replace("Array<", "Array<out ")
+    replace("Array<", "ReadonlyArray<")
         .replace("$ICOLLECTION<", "$ICOLLECTION<out ")
         .replace("$ILIST<", "$ILIST<out ")
 

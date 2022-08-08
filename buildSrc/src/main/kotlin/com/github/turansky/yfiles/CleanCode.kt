@@ -49,10 +49,12 @@ private fun String.getImportedClasses(): List<String> {
         .filterNot { it.startsWith(" *") }
         .joinToString("\n")
 
-    val additionalImports = if ("js.yclass" in this)
-        listOf("yfiles.lang.yclass")
-    else
-        emptyList()
+    val additionalImports = mutableListOf<String>()
+    if ("js.yclass" in this)
+        additionalImports += "yfiles.lang.yclass"
+
+    if ("Array<" in this)
+        additionalImports += "kotlinx.js.ReadonlyArray"
 
     return YFILES_CLASS_DECLARATION
         .findAll(code)
