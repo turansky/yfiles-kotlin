@@ -37,6 +37,8 @@ private val STANDARD_TYPE_MAP = mapOf(
     "Date" to "kotlin.js.Date",
     "Function" to "() -> $UNIT",
 
+    "Record" to "kotlinx.js.Record",
+
     "Event" to "org.w3c.dom.events.Event",
     "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
 
