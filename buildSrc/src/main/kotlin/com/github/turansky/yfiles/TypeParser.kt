@@ -32,7 +32,7 @@ internal fun parseType(type: String): String {
         "o is T",
         -> return "Boolean /* o is T */"
 
-        "yfiles.layout.ItemMapping<yfiles.graph.INode,function(yfiles.graph.INode,yfiles.graph.INode):number>",
+        "yfiles.layout.ItemMapping<yfiles.graph.INode,function(yfiles.graph.INode,yfiles.graph.INode):Double>",
         -> return "yfiles.layout.ItemMapping<yfiles.graph.INode,yfiles.lang.Func3<yfiles.graph.INode,yfiles.graph.INode,Int>>"
 
         "ItemMapping<IModelItem, IComparable|string|number|boolean>",
