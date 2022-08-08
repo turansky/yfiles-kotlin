@@ -43,7 +43,7 @@ internal fun Interface.getComponents(): String? =
 
 internal fun Interface.getComponentExtensions(): String? =
     if (classId == IENUMERABLE) {
-        indexAccessComponentExtensions("elementAt")
+        indexAccessComponentExtensions("at")
     } else {
         null
     }
@@ -62,9 +62,11 @@ private fun indexAccessComponents(getMethod: String): String =
         """.trimIndent()
     }
 
-private fun Interface.indexAccessComponentExtensions(getMethod: String): String =
+private fun Interface.indexAccessComponentExtensions(
+    getMethod: String,
+): String =
     (1..5).joinToString("\n") { index ->
-        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index(): T = $getMethod(${index - 1})"
+        "inline operator fun ${generics.wrapperDeclaration} $classId${generics.asAliasParameters()}.component$index(): T = $getMethod(${index - 1})!!"
     }
 
 private fun Class.components(vararg properties: String): String =
