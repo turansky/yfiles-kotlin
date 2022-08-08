@@ -236,7 +236,7 @@ private fun addClassGeneric(source: Source) {
         .forEach {
             it.setSingleTypeParameter(bound = YOBJECT)
 
-            if (it[NAME] != "lookup") {
+            if (it[NAME] != "lookup" || !it.typeParameter[TYPE].endsWith("<T>")) {
                 it.typeParameter.addGeneric("T")
 
                 it[RETURNS][TYPE] = "T"
