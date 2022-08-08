@@ -128,6 +128,10 @@ internal val INT_PROPERTIES = setOf(
 
     "toolTipLeaveAnimationMaximumDuration",
 
+    "groupSubstructureSize",
+    "samplingRate",
+    "treeSubstructureSize",
+
     // ???
     "maximumIterations",
     "maximumFlow",

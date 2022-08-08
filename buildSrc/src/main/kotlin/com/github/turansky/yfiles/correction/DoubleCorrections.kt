@@ -343,6 +343,21 @@ internal val DOUBLE_PROPERTIES = setOf(
 
     "Eps",
 
+    "contentAreaInsets",
+    "cornerRadius",
+    "cornerSize",
+    "iconOffset",
+    "iconSize",
+    "margins",
+    "portCrossingPenalty",
+    "sourceCropping",
+    "tabHeight",
+    "tabInset",
+    "tabSlope",
+    "tabWidth",
+    "targetCropping",
+    "textWrappingPadding",
+
     // static
     "enlargementAbsolute",
     "enlargementRelative"
