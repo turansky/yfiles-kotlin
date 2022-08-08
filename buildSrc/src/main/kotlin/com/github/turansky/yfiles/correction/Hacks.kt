@@ -135,10 +135,6 @@ private fun fixFunctionGenerics(source: Source) {
 }
 
 private fun fixReturnType(source: Source) {
-    // TEMP
-    source.type("IEnumerable")
-        .method("at")[RETURNS][TYPE] = "T?"
-
     source.type("DiscreteEdgeLabelLayoutModel")
         .method("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
 

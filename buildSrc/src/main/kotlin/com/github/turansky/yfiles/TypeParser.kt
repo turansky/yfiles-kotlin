@@ -8,13 +8,36 @@ internal fun parse(
     signature: String?,
     documentedType: List<String>,
 ): String {
-    val result = parseType(signature ?: type)
+    var result = parseType(signature ?: type)
     if (documentedType.isEmpty())
         return result
 
     val comment = documentedType
         .map { it.replace("\n", "") }
+        .map { it.replace("    ", "") }
         .joinToString(" | ")
+
+    result = when (comment) {
+        "T | undefined" -> "T?"
+        "HTMLElement | SVGElement" -> ELEMENT
+        "SVGGElement | SVGTextElement" -> SVG_ELEMENT
+        "MouseEventArgs | TouchEventArgs" -> "yfiles.lang.EventArgs"
+        else -> when {
+            documentedType.first() == "TDataItem[]"
+            -> "Array<TDataItem>"
+
+            documentedType.all { it.endsWith("EdgeStyle") }
+            -> "yfiles.styles.IEdgeStyle"
+
+            documentedType.all { it.endsWith("LabelStyle") }
+            -> "yfiles.styles.ILabelStyle"
+
+            documentedType.all { it.endsWith("NodeStyle") }
+            -> "yfiles.styles.INodeStyle"
+
+            else -> result
+        }
+    }
 
     return "$result /* $comment */"
 }
