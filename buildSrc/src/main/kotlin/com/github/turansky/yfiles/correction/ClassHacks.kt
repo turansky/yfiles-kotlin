@@ -489,7 +489,7 @@ private fun addClassBounds(source: Source) {
     source.type("ResultItemMapping")
         .flatMap(TYPE_PARAMETERS)
         .first()
-        .set(BOUNDS, arrayOf(IMODEL_ITEM))
+        .set(BOUNDS, arrayOf(JS_ANY))
 
     source.types("GraphModelManager", "WebGL2GraphModelManager")
         .flatMap(METHODS)
