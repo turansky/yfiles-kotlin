@@ -25,7 +25,16 @@ internal fun parseType(type: String): String {
         return "$ICOMPARABLE<*>"
     }
 
+    if (type.endsWith("|null"))
+        return parseType(type.removeSuffix("|null")) + "?"
+
     when (type) {
+        "o is T",
+        -> return "Boolean /* o is T */"
+
+        "yfiles.layout.ItemMapping<yfiles.graph.INode,function(yfiles.graph.INode,yfiles.graph.INode):number>",
+        -> return "yfiles.layout.ItemMapping<yfiles.graph.INode,yfiles.lang.Func3<yfiles.graph.INode,yfiles.graph.INode,Int>>"
+
         "ItemMapping<IModelItem, IComparable|string|number|boolean>",
         -> return "yfiles.layout.ItemMapping<IModelItem, Comparable<*>>"
 
