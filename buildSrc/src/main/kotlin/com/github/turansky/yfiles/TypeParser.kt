@@ -25,6 +25,14 @@ internal fun parseType(type: String): String {
         return "$ICOMPARABLE<*>"
     }
 
+    when (type) {
+        "ItemMapping<IModelItem, IComparable|string|number|boolean>",
+        -> return "yfiles.layout.ItemMapping<IModelItem, Comparable<*>>"
+
+        "ItemMapping<INode, IComparable|string|number|boolean>",
+        -> return "yfiles.layout.ItemMapping<INode, Comparable<*>>"
+    }
+
     getKotlinType(type)?.let {
         return it
     }
