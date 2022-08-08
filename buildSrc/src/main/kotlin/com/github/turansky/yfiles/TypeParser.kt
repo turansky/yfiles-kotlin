@@ -3,8 +3,20 @@ package com.github.turansky.yfiles
 private const val GENERIC_START = "<"
 private const val GENERIC_END = ">"
 
-internal fun parse(type: String, signature: String?): String {
-    return parseType(signature ?: type)
+internal fun parse(
+    type: String,
+    signature: String?,
+    documentedType: List<String>,
+): String {
+    val result = parseType(signature ?: type)
+    if (documentedType.isEmpty())
+        return result
+
+    val comment = documentedType
+        .map { it.replace("\n", "") }
+        .joinToString(" | ")
+
+    return "$result /* $comment */"
 }
 
 internal fun parseType(type: String): String {

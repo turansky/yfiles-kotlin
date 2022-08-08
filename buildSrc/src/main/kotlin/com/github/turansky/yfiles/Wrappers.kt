@@ -403,8 +403,9 @@ internal sealed class TypedDeclaration(
     protected val parent: TypeDeclaration,
 ) : Declaration(source) {
     private val signature: String? by optString()
+    private val documentedType by stringList()
     val type: String by type {
-        parse(it, signature).run {
+        parse(it, signature, documentedType).run {
             if (fixGeneric) asReadOnly() else this
         }
     }
@@ -1136,7 +1137,8 @@ internal class Parameter(
 ) : JsonWrapper(source), IParameter {
     override val name: String by string()
     private val signature: String? by optString()
-    val type: String by type { parse(it, signature).inMode(readOnly) }
+    private val documentedType by stringList()
+    val type: String by type { parse(it, signature, documentedType).inMode(readOnly) }
     val typeDeclaration: String by lazy { type + modifiers.nullability }
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
@@ -1172,7 +1174,8 @@ internal class CustomTypeParameter(
 
 internal class Returns(source: JSONObject) : JsonWrapper(source), IReturns {
     private val signature: String? by optString()
-    val type: String by type { parse(it, signature).asReadOnly() }
+    private val documentedType by stringList()
+    val type: String by type { parse(it, signature, documentedType).asReadOnly() }
     override val doc: String? by summary()
 }
 
