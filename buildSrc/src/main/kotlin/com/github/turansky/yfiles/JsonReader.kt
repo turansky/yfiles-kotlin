@@ -46,6 +46,7 @@ private fun String.fixClassDeclaration(): String =
     replace(""""id":"yfiles.lang.Class"""", """"id":"$YCLASS","es6name":"Class"""")
         .replace(""""name":"Class"""", """"name":"YClass"""")
         .replace(""""yfiles.lang.Class"""", """"$YCLASS"""")
+        .replace(""""yfiles.lang.Class<T>"""", """"$YCLASS<T>"""")
         .replace(""""Array<yfiles.lang.Class>"""", """"Array<$YCLASS>"""")
         .replace(
             """"yfiles.collections.Map<yfiles.lang.Class,$JS_OBJECT>"""",

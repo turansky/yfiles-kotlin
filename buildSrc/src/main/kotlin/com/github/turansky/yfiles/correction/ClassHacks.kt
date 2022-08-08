@@ -236,9 +236,11 @@ private fun addClassGeneric(source: Source) {
         .forEach {
             it.setSingleTypeParameter(bound = YOBJECT)
 
-            it.typeParameter.addGeneric("T")
+            if (it[NAME] != "lookup") {
+                it.typeParameter.addGeneric("T")
 
-            it[RETURNS][TYPE] = "T"
+                it[RETURNS][TYPE] = "T"
+            }
 
             it[MODIFIERS]
                 .put(CANBENULL)
