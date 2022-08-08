@@ -458,5 +458,10 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "maxLength",
     "childForkCoordinate",
     "rootForkCoordinate",
-    "gapLength"
+    "gapLength",
+
+    "amount",
+    "extent",
+    "pulseWidth",
+    "threshold",
 )
