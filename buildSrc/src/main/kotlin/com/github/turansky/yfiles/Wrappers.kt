@@ -941,7 +941,7 @@ internal class Method(
 
         if (type.startsWith("$PROMISE<")) {
             val newGeneric = when (val generic = type.between("<", ">")) {
-                ANY -> "Nothing?"
+                ANY -> "kotlinx.js.Void"
                 ELEMENT -> SVG_SVG_ELEMENT
                 else -> generic + exp(nullablePromiseResult(generic), "?")
             }
