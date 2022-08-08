@@ -73,6 +73,17 @@ internal val DOUBLE_METHODS = setOf(
     "getClusteringCoefficient",
     "getProjection", // TODO: fix nullability
 
+    "getAngle",
+    "getCornerRadius",
+    "getCornerSize",
+    "getFanLength",
+    "getIconOffset",
+    "getIconSize",
+    "getTabHeight",
+    "getTabInset",
+    "getTabSlope",
+    "getTabWidth",
+
     // ???
     "getChannelCoordinate",
     "getSubchannelRank",

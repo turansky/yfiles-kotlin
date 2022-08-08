@@ -16,6 +16,7 @@ internal val INT_METHODS = setOf(
     "indexOf",
     "binarySearch",
     "findIndex",
+    "findLastIndex",
     "removeAll",
     "degree",
     "inDegree",
