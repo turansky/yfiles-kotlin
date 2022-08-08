@@ -28,6 +28,7 @@ internal fun getKotlinType(type: String): String? =
 
 private val STANDARD_TYPE_MAP = mapOf(
     JS_VOID to "Nothing?",
+    " unknown" to "*",
 
     JS_ANY to ANY,
     JS_OBJECT to ANY,
