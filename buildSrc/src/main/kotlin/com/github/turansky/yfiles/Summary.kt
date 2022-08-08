@@ -17,7 +17,7 @@ private val TYPE_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\"\\s?></ap
 private val TYPE_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-text=\"([^\"]+)\"></api-link>")
 
 private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
-private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
+private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
 
 private val DIGIT_CLEAN_REGEX = Regex("(\\.[0-9]+)d")
 
