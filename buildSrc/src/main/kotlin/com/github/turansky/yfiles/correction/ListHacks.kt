@@ -21,7 +21,6 @@ private fun fixProperty(source: Source) {
     sequenceOf(
         Triple("CompositeLayoutStage", "layoutStages", "yfiles.layout.ILayoutStage"),
 
-        Triple("EdgeInfo", "edgeCellInfos", "yfiles.router.EdgeCellInfo"),
         Triple("EdgeRouter", "registeredPartitionExtensions", "yfiles.router.IGraphPartitionExtension"),
         Triple("EdgeRouter", "registeredPathSearchExtensions", "yfiles.router.PathSearchExtension"),
 
