@@ -109,7 +109,6 @@ private fun getGeneric(
 private fun fixProperty(source: Source) {
     sequenceOf(
         Triple("ILayer", "sameLayerEdges", EDGE),
-        Triple("EdgeCellInfo", "cellSegmentInfos", "yfiles.router.CellSegmentInfo")
     ).forEach { (className, propertyName, generic) ->
         source.type(className)
             .property(propertyName)
