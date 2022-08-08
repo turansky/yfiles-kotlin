@@ -19,7 +19,14 @@ private val EXCLUDED_TYPES = setOf(
 
     "yfiles.lang.delegate",
     "yfiles.lang.Exception",
-    "yfiles.lang.Trait"
+    "yfiles.lang.Trait",
+
+    "yfiles.styles.BevelNodeStyle",
+    "yfiles.styles.BevelNodeStyleRenderer",
+    "yfiles.styles.PanelNodeStyle",
+    "yfiles.styles.PanelNodeStyleRenderer",
+    "yfiles.styles.ShinyPlateNodeStyle",
+    "yfiles.styles.ShinyPlateNodeStyleRenderer",
 )
 
 internal fun excludeUnusedTypes(api: JSONObject) {
