@@ -9,6 +9,7 @@ internal val DOUBLE: String = Double::class.simpleName!!
 internal val BOOLEAN: String = Boolean::class.simpleName!!
 
 internal const val PROMISE = "kotlin.js.Promise"
+internal const val PROMISE_RESULT = "kotlinx.js.PromiseResult"
 internal const val READ_ONLY_PROPERTY = "kotlin.properties.ReadOnlyProperty"
 internal const val READ_WRITE_PROPERTY = "kotlin.properties.ReadWriteProperty"
 internal const val KCLASS = "kotlin.reflect.KClass"
@@ -68,6 +69,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     JS_BLOB to BLOB,
 
     "Promise" to PROMISE,
+    "PromiseResult" to PROMISE_RESULT,
     JS_CLASS to "kotlin.js.JsClass"
 )
 

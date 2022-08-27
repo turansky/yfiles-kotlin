@@ -17,11 +17,20 @@ internal fun parse(
         .map { it.replace("    ", "") }
         .joinToString(" | ")
 
+    if ("Promise<" in comment)
+        println(comment)
+
     result = when (comment) {
         "T | undefined" -> "T?"
         "HTMLElement | SVGElement" -> ELEMENT
         "SVGGElement | SVGTextElement" -> SVG_ELEMENT
         "MouseEventArgs | TouchEventArgs" -> "yfiles.lang.EventArgs"
+
+        "Promise<IEdge | null> | IEdge" -> "$PROMISE_RESULT<$IEDGE?>"
+        "Promise<INode | null> | INode" -> "$PROMISE_RESULT<$INODE?>"
+        "Promise<string | null> | string" -> "$PROMISE_RESULT<$STRING?>"
+        "string | HTMLElement | Promise<string | HTMLElement>" -> "$PROMISE_RESULT<$ANY /* string | HTMLElement */>"
+
         else -> when {
             documentedType.first() == "TDataItem[]"
             -> "Array<TDataItem>"
