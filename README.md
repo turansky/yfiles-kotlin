@@ -51,19 +51,19 @@
 
 ## Description
 
-| JS library                  | [yFiles for HTML][11] |         [VSDX Export][21]         |
-| :---                        |:---------------------:|:---------------------------------:|
-| Documentation               |       [API][12]       |             [API][22]             |
-| Module                      |       `yfiles`        | `vsdx-export-for-yfiles-for-html` |
-| Version                     |       `25.0.1`        |              `2.3.2`              |
-| Module format               |         `ES6`         |               `ES6`               |
-| **Kotlin/JS Declarations**  |  **`yfiles-kotlin`**  |         **`vsdx-kotlin`**         |
-| Nullability fixes           |         3200+         |                 -                 |
-| Numberability*              |           ✔           |                 ✔                 |
-| Strict [`Class`][31] generic  |           ✔           |                 ✔                 |
-| Trait support**             |           ✔           |                 ✔                 |
-| Operators                   |           ✔           |                 ✔                 |
-| Operator aliases            |           ✔           |                 ✔                 |
+| JS library                   | [yFiles for HTML][11] |         [VSDX Export][21]         |
+|:-----------------------------|:---------------------:|:---------------------------------:|
+| Documentation                |       [API][12]       |             [API][22]             |
+| Module                       |       `yfiles`        | `vsdx-export-for-yfiles-for-html` |
+| Version                      |       `25.0.1`        |              `2.3.2`              |
+| Module format                |         `ES6`         |               `ES6`               |
+| **Kotlin/JS Declarations**   |  **`yfiles-kotlin`**  |         **`vsdx-kotlin`**         |
+| Nullability fixes            |         3200+         |                 -                 |
+| Numberability*               |           ✔           |                 ✔                 |
+| Strict [`Class`][31] generic |           ✔           |                 ✔                 |
+| Trait support**              |           ✔           |                 ✔                 |
+| Operators                    |           ✔           |                 ✔                 |
+| Operator aliases             |           ✔           |                 ✔                 |
 
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
