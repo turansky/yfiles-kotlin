@@ -37,8 +37,6 @@ fun generateKotlinDeclarations(
     val fileGenerator = KotlinFileGenerator(types, apiRoot.functionSignatures)
     fileGenerator.generate(context)
 
-    generateWebGL2Classes(context)
-
     generateIdUtils(context)
     generateObservableDelegates(context)
     generateBindingUtils(context)

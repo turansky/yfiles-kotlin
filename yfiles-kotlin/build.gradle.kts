@@ -13,7 +13,7 @@ val kotlinWrappersVersion = property("kotlin-wrappers.version") as String
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-    implementation("org.jetbrains.kotlin-wrappers:kotlin-js")
+    implementation("org.jetbrains.kotlin-wrappers:kotlin-browser")
 }
 
 val kotlinSourceDir: File
