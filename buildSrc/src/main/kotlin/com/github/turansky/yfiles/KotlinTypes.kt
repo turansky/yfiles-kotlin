@@ -15,12 +15,12 @@ internal const val READ_WRITE_PROPERTY = "kotlin.properties.ReadWriteProperty"
 internal const val KCLASS = "kotlin.reflect.KClass"
 internal const val KPROPERTY = "kotlin.reflect.KProperty"
 
-internal const val BLOB = "org.w3c.files.Blob"
+internal const val BLOB = "web.buffer.Blob"
 
-internal const val ELEMENT = "org.w3c.dom.Element"
-internal const val HTML_ELEMENT = "org.w3c.dom.HTMLElement"
-internal const val SVG_ELEMENT = "org.w3c.dom.svg.SVGElement"
-internal const val SVG_SVG_ELEMENT = "org.w3c.dom.svg.SVGSVGElement"
+internal const val ELEMENT = "dom.Element"
+internal const val HTML_ELEMENT = "dom.html.HTMLElement"
+internal const val SVG_ELEMENT = "dom.svg.SVGElement"
+internal const val SVG_SVG_ELEMENT = "dom.svg.SVGSVGElement"
 
 internal const val WEBGL2_RENDERING_CONTEXT = "webgl.WebGL2RenderingContext"
 
@@ -41,25 +41,25 @@ private val STANDARD_TYPE_MAP = mapOf(
 
     "Record" to "kotlinx.js.Record",
 
-    "Event" to "org.w3c.dom.events.Event",
-    "KeyboardEvent" to "org.w3c.dom.events.KeyboardEvent",
+    "Event" to "web.events.Event",
+    "KeyboardEvent" to "dom.events.KeyboardEvent",
 
-    "Document" to "org.w3c.dom.Document",
-    "Node" to "org.w3c.dom.Node",
+    "Document" to "dom.Document",
+    "Node" to "dom.Node",
     JS_ELEMENT to ELEMENT,
     "HTMLElement" to HTML_ELEMENT,
-    "HTMLInputElement" to "org.w3c.dom.HTMLInputElement",
-    "HTMLDivElement" to "org.w3c.dom.HTMLDivElement",
+    "HTMLInputElement" to "dom.html.HTMLInputElement",
+    "HTMLDivElement" to "dom.html.HTMLDivElement",
 
-    "ImageData" to "org.w3c.dom.ImageData",
-    "CanvasRenderingContext2D" to "org.w3c.dom.CanvasRenderingContext2D",
+    "ImageData" to "canvas.ImageData",
+    "CanvasRenderingContext2D" to "canvas.CanvasRenderingContext2D",
 
     JS_SVG_ELEMENT to SVG_ELEMENT,
-    JS_SVG_DEFS_ELEMENT to "org.w3c.dom.svg.SVGDefsElement",
-    "SVGGElement" to "org.w3c.dom.svg.SVGGElement",
-    "SVGImageElement" to "org.w3c.dom.svg.SVGImageElement",
-    "SVGPathElement" to "org.w3c.dom.svg.SVGPathElement",
-    "SVGTextElement" to "org.w3c.dom.svg.SVGTextElement",
+    JS_SVG_DEFS_ELEMENT to "dom.svg.SVGDefsElement",
+    "SVGGElement" to "dom.svg.SVGGElement",
+    "SVGImageElement" to "dom.svg.SVGImageElement",
+    "SVGPathElement" to "dom.svg.SVGPathElement",
+    "SVGTextElement" to "dom.svg.SVGTextElement",
     JS_SVG_SVG_ELEMENT to SVG_SVG_ELEMENT,
 
     "WebGLProgram" to "webgl.WebGLProgram",

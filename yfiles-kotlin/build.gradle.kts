@@ -12,8 +12,8 @@ plugins {
 val kotlinWrappersVersion = property("kotlin-wrappers.version") as String
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-    implementation("org.jetbrains.kotlin-wrappers:kotlin-browser")
+    api(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
+    api("org.jetbrains.kotlin-wrappers:kotlin-browser")
 }
 
 val kotlinSourceDir: File

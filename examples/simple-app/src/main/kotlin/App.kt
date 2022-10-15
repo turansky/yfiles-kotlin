@@ -1,4 +1,4 @@
-import org.w3c.dom.HTMLDivElement
+import dom.html.HTMLDivElement
 import yfiles.graph.DefaultGraph
 import yfiles.graph.invoke
 import yfiles.hierarchic.HierarchicLayout
