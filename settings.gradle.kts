@@ -4,7 +4,7 @@ pluginManagement {
     plugins {
         kotlin("js") version "1.7.20"
 
-        val kfcVersion = "5.65.0"
+        val kfcVersion = "5.70.0"
         id("io.github.turansky.kfc.library") version kfcVersion
         id("io.github.turansky.kfc.maven-publish") version kfcVersion
 
