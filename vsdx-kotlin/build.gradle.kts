@@ -20,7 +20,7 @@ dependencies {
 val kotlinSourceDir: File
     get() = kotlin
         .sourceSets
-        .get("main")
+        .get("jsMain")
         .kotlin
         .sourceDirectories
         .first()
