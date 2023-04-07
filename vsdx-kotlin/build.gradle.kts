@@ -15,7 +15,7 @@ dependencies {
     api(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
     api("org.jetbrains.kotlin-wrappers:kotlin-browser")
 
-    implementation(project(":yfiles-kotlin"))
+    jsMainImplementation(project(":yfiles-kotlin"))
 }
 
 val kotlinSourceDir: File

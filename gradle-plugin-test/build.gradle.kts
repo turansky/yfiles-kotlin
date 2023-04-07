@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":yfiles-kotlin"))
+    jsMainImplementation(project(":yfiles-kotlin"))
 
-    testImplementation(kotlin("test-js"))
+    jsTestImplementation(kotlin("test-js"))
 }

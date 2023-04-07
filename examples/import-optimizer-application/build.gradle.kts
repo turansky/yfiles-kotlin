@@ -27,6 +27,6 @@ tasks {
 }
 
 dependencies {
-    implementation(project(":yfiles-kotlin"))
-    implementation(project(":examples:import-optimizer-library"))
+    jsMainImplementation(project(":yfiles-kotlin"))
+    jsMainImplementation(project(":examples:import-optimizer-library"))
 }
