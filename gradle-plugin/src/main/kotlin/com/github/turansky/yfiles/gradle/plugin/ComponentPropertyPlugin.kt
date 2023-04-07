@@ -3,7 +3,7 @@ package com.github.turansky.yfiles.gradle.plugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 private object KotlinJs {
     val PLUGIN_ID = "org.jetbrains.kotlin.js"
@@ -23,7 +23,7 @@ private val COMPONENT_METHOD_REGEX = Regex("__ygen_(\\w+)_(\\d)_negy__\\(\\)")
 internal class ComponentPropertyPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
         plugins.withId(KotlinJs.PLUGIN_ID) {
-            tasks.withType<KotlinJsCompile>().configureEach {
+            tasks.withType<Kotlin2JsCompile>().configureEach {
                 doLast {
                     val jsTarget = kotlinOptions.target
                     if (jsTarget != KotlinJs.TARGET_V5) {
@@ -34,11 +34,7 @@ internal class ComponentPropertyPlugin : Plugin<Project> {
                     if (name !in KotlinJs.COMPILE_TASK_NAMES)
                         return@doLast
 
-                    val outputFile = file(kotlinOptions.outputFile!!)
-                    // IR invalid folder check
-                    if (!outputFile.name.endsWith(".js"))
-                        return@doLast
-
+                    val outputFile = destinationDirectory.file(moduleName.get() + ".js").get().asFile
                     val content = outputFile.readText()
                     val newContent = content
                         .replace(DESCRIPTOR_REGEX, "$1\n    configurable: true,$2")
