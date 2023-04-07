@@ -11,8 +11,8 @@ plugins {
 val kotlinWrappersVersion = property("kotlin-wrappers.version") as String
 
 dependencies {
-    api(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-    api("org.jetbrains.kotlin-wrappers:kotlin-browser")
+    jsMainApi(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
+    jsMainApi("org.jetbrains.kotlin-wrappers:kotlin-browser")
 }
 
 val kotlinSourceDir: File
@@ -61,6 +61,5 @@ tasks {
 
     named("compileKotlinJs") {
         dependsOn(generateDeclarations)
-        finalizedBy(publishToMavenLocal)
     }
 }
