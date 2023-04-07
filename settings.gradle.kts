@@ -6,7 +6,6 @@ pluginManagement {
 
         val kfcVersion = "7.2.0"
         id("io.github.turansky.kfc.library") version kfcVersion
-        id("io.github.turansky.kfc.maven-publish") version kfcVersion
 
         id("de.undercouch.download") version "5.3.0"
     }

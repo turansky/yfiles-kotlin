@@ -6,7 +6,6 @@ plugins {
     id("com.github.turansky.yfiles")
 
     id("de.undercouch.download")
-    id("io.github.turansky.kfc.maven-publish")
 }
 
 val kotlinWrappersVersion = property("kotlin-wrappers.version") as String
