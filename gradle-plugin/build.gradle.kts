@@ -12,9 +12,11 @@ dependencies {
     compileOnly(kotlin("compiler-embeddable"))
 }
 
-// TODO: remove after Gradle update
+// TODO: remove after migration
 tasks.compileKotlin {
-    kotlinOptions.allWarningsAsErrors = false
+    kotlinOptions.freeCompilerArgs += listOf(
+        "-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi",
+    )
 }
 
 gradlePlugin {
