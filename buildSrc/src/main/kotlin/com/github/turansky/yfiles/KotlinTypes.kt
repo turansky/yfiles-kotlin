@@ -9,7 +9,7 @@ internal val DOUBLE: String = Double::class.simpleName!!
 internal val BOOLEAN: String = Boolean::class.simpleName!!
 
 internal const val PROMISE = "kotlin.js.Promise"
-internal const val PROMISE_RESULT = "kotlinx.js.PromiseResult"
+internal const val PROMISE_RESULT = "js.promise.PromiseResult"
 internal const val READ_ONLY_PROPERTY = "kotlin.properties.ReadOnlyProperty"
 internal const val READ_WRITE_PROPERTY = "kotlin.properties.ReadWriteProperty"
 internal const val KCLASS = "kotlin.reflect.KClass"
@@ -17,10 +17,10 @@ internal const val KPROPERTY = "kotlin.reflect.KProperty"
 
 internal const val BLOB = "web.buffer.Blob"
 
-internal const val ELEMENT = "dom.Element"
-internal const val HTML_ELEMENT = "dom.html.HTMLElement"
-internal const val SVG_ELEMENT = "dom.svg.SVGElement"
-internal const val SVG_SVG_ELEMENT = "dom.svg.SVGSVGElement"
+internal const val ELEMENT = "web.dom.Element"
+internal const val HTML_ELEMENT = "web.html.HTMLElement"
+internal const val SVG_ELEMENT = "web.svg.SVGElement"
+internal const val SVG_SVG_ELEMENT = "web.svg.SVGSVGElement"
 
 internal const val WEBGL2_RENDERING_CONTEXT = "webgl.WebGL2RenderingContext"
 
@@ -28,7 +28,7 @@ internal fun getKotlinType(type: String): String? =
     STANDARD_TYPE_MAP[type]
 
 private val STANDARD_TYPE_MAP = mapOf(
-    JS_VOID to "kotlinx.js.Void",
+    JS_VOID to "js.core.Void",
     " unknown" to "*",
 
     JS_ANY to ANY,
@@ -39,27 +39,27 @@ private val STANDARD_TYPE_MAP = mapOf(
     "Date" to "kotlin.js.Date",
     "Function" to "() -> $UNIT",
 
-    "Record" to "kotlinx.js.Record",
+    "Record" to "js.core.Record",
 
     "Event" to "web.events.Event",
-    "KeyboardEvent" to "dom.events.KeyboardEvent",
+    "KeyboardEvent" to "web.uievents.KeyboardEvent",
 
-    "Document" to "dom.Document",
-    "Node" to "dom.Node",
+    "Document" to "web.dom.Document",
+    "Node" to "web.dom.Node",
     JS_ELEMENT to ELEMENT,
     "HTMLElement" to HTML_ELEMENT,
-    "HTMLInputElement" to "dom.html.HTMLInputElement",
-    "HTMLDivElement" to "dom.html.HTMLDivElement",
+    "HTMLInputElement" to "web.html.HTMLInputElement",
+    "HTMLDivElement" to "web.html.HTMLDivElement",
 
-    "ImageData" to "canvas.ImageData",
-    "CanvasRenderingContext2D" to "canvas.CanvasRenderingContext2D",
+    "ImageData" to "web.canvas.ImageData",
+    "CanvasRenderingContext2D" to "web.canvas.CanvasRenderingContext2D",
 
     JS_SVG_ELEMENT to SVG_ELEMENT,
-    JS_SVG_DEFS_ELEMENT to "dom.svg.SVGDefsElement",
-    "SVGGElement" to "dom.svg.SVGGElement",
-    "SVGImageElement" to "dom.svg.SVGImageElement",
-    "SVGPathElement" to "dom.svg.SVGPathElement",
-    "SVGTextElement" to "dom.svg.SVGTextElement",
+    JS_SVG_DEFS_ELEMENT to "web.svg.SVGDefsElement",
+    "SVGGElement" to "web.svg.SVGGElement",
+    "SVGImageElement" to "web.svg.SVGImageElement",
+    "SVGPathElement" to "web.svg.SVGPathElement",
+    "SVGTextElement" to "web.svg.SVGTextElement",
     JS_SVG_SVG_ELEMENT to SVG_SVG_ELEMENT,
 
     "WebGLProgram" to "webgl.WebGLProgram",

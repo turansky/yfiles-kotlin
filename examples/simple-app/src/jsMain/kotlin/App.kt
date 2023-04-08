@@ -1,4 +1,4 @@
-import dom.html.HTMLDivElement
+import web.html.HTMLDivElement
 import yfiles.graph.DefaultGraph
 import yfiles.graph.invoke
 import yfiles.hierarchic.HierarchicLayout
