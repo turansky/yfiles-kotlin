@@ -32,7 +32,7 @@ private fun fixCursor(source: Source) {
             val duplicatedPropertyName = className
                 .removePrefix("I")
                 .removeSuffix("Cursor")
-                .decapitalize()
+                .replaceFirstChar { it.lowercase() }
 
             get(PROPERTIES).removeAllObjects {
                 it[NAME] == duplicatedPropertyName

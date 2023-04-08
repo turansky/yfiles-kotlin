@@ -64,7 +64,7 @@ internal fun generateDpKeyDelegates(context: GeneratorContext) {
         }
 
         val classId = "yfiles.algorithms.$className"
-        val delegateName = className.removePrefix("I").decapitalize()
+        val delegateName = className.removePrefix("I").replaceFirstChar { it.lowercase() }
 
         // language=kotlin
         context[classId, DELEGATE] = """

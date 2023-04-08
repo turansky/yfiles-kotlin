@@ -32,7 +32,7 @@ internal fun applyContextLookupHacks(source: Source) {
                 .removePrefix("DEFAULT_")
                 .removeSuffix("_LOOKUP")
                 .lowercase()
-                .capitalize()
+                .replaceFirstChar { it.uppercase() }
                 .let { "yfiles.graph.I$it" }
 
             it.addGeneric(typeParameter)
