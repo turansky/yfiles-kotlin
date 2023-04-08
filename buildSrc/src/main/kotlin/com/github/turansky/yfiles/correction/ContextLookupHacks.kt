@@ -31,7 +31,7 @@ internal fun applyContextLookupHacks(source: Source) {
             val typeParameter = it[NAME]
                 .removePrefix("DEFAULT_")
                 .removeSuffix("_LOOKUP")
-                .toLowerCase()
+                .lowercase()
                 .capitalize()
                 .let { "yfiles.graph.I$it" }
 

@@ -103,7 +103,7 @@ private fun constDeclaration(
     val name = key
         .replace(Regex("([a-z])([A-Z])"), "$1_$2")
         .replace(".", "__")
-        .toUpperCase()
+        .uppercase()
 
     return if (key.endsWith("Key")) {
         hotkeyDeclaration(key, name, defaultValue)

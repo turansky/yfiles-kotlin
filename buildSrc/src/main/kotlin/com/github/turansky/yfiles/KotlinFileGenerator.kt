@@ -250,7 +250,7 @@ internal class KotlinFileGenerator(
         private fun primitiveContent(): String {
             val objectName = data.jsName
                 .removePrefix("Y")
-                .toUpperCase()
+                .uppercase()
                 .let { "__${it}__" }
 
             return documentation +

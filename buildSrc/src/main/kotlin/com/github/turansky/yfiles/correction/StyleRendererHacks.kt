@@ -31,5 +31,5 @@ private fun isStyleLikeId(id: String): Boolean =
 
 private fun isInterfaceLikeId(id: String): Boolean {
     val prefix = id.substringAfterLast(".").substring(0, 2)
-    return prefix != prefix.toUpperCase()
+    return prefix != prefix.uppercase()
 }
