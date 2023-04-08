@@ -19,31 +19,28 @@ tasks.compileKotlin {
     )
 }
 
+val REPO_URL = "https://github.com/turansky/yfiles-kotlin"
+
 gradlePlugin {
+    website.set(REPO_URL)
+    vcsUrl.set(REPO_URL)
+
     plugins {
         create("yfiles") {
             id = "com.github.turansky.yfiles"
             displayName = "yFiles Kotlin/JS plugin"
             description = "yFiles class framework helper for Kotlin/JS"
             implementationClass = "com.github.turansky.yfiles.gradle.plugin.YFilesGradleSubplugin"
+            tags.set(
+                listOf(
+                    "yfiles",
+                    "kotlin",
+                    "kotlin-js",
+                    "javascript"
+                )
+            )
         }
     }
-}
-
-val REPO_URL = "https://github.com/turansky/yfiles-kotlin"
-
-pluginBundle {
-    website = REPO_URL
-    vcsUrl = REPO_URL
-
-    pluginTags = mapOf(
-        "yfiles" to listOf(
-            "yfiles",
-            "kotlin",
-            "kotlin-js",
-            "javascript"
-        )
-    )
 }
 
 tasks.wrapper {
