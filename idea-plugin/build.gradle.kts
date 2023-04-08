@@ -12,7 +12,7 @@ intellij {
     pluginName.set("yfiles")
 
     type.set("IU")
-    version.set("2022.3")
+    version.set("2022.3.3")
 
     plugins.set(
         listOf(
