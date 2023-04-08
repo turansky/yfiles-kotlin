@@ -31,7 +31,11 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.styles.IPortStyle",
 
     "yfiles.styles.ArcEdgeStyle",
+    "yfiles.styles.ArrowEdgeStyle",
+    "yfiles.styles.ArrowNodeStyle",
+    "yfiles.styles.GroupNodeStyle",
     "yfiles.styles.PolylineEdgeStyle",
+    "yfiles.styles.RectangleNodeStyle",
     "yfiles.styles.BezierEdgeStyle",
     "yfiles.styles.VoidEdgeStyle",
     "yfiles.styles.IEdgePathCropper",
