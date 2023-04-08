@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    jsMainImplementation("com.yworks.yfiles:yfiles-kotlin:25.0.2-SNAPSHOT")
+    jsMainImplementation("com.yworks.yfiles:yfiles-kotlin:25.0.4-SNAPSHOT")
 }
 
 tasks.wrapper {
