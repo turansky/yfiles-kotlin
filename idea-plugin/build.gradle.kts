@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.7.22"
-    id("org.jetbrains.intellij") version "1.10.0"
-    id("io.github.turansky.kfc.version") version "5.71.0"
+    kotlin("jvm") version "1.8.20"
+    id("org.jetbrains.intellij") version "1.13.3"
+    id("io.github.turansky.kfc.version") version "7.2.0"
 }
 
 repositories {
@@ -37,7 +37,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("222.3345")
-        untilBuild.set("224.*")
+        untilBuild.set("231.*")
     }
 
     publishPlugin {
