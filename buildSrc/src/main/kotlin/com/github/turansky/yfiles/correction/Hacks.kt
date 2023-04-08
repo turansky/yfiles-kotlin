@@ -157,6 +157,11 @@ private fun fixPropertyType(source: Source) {
         .also { require(it[SIGNATURE] == "function($IEDGE,$IEDGE):number") }
         .set(SIGNATURE, "$ICOMPARER<$IEDGE>")
 
+    source.type("CactusGroupLayoutData")
+        .property("nodeComparer")
+        .also { require(it[SIGNATURE] == "function($INODE,$INODE):number") }
+        .set(SIGNATURE, "$ICOMPARER<$INODE>")
+
     source.type("IRenderContext")
         .property("defsElement")
         .set(TYPE, JS_SVG_DEFS_ELEMENT)
