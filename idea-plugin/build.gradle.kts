@@ -44,6 +44,10 @@ tasks {
         token.set(project.property("intellij.publish.token") as String)
     }
 
+    buildSearchableOptions {
+        enabled = false
+    }
+
     wrapper {
         gradleVersion = "8.0.2"
     }
