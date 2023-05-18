@@ -4,7 +4,7 @@ pluginManagement {
     plugins {
         kotlin("multiplatform") version "1.8.21"
 
-        val kfcVersion = "7.2.0"
+        val kfcVersion = "7.7.4"
         id("io.github.turansky.kfc.library") version kfcVersion
 
         id("de.undercouch.download") version "5.4.0"

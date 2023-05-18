@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.8.21" apply false
-    id("io.github.turansky.kfc.library") version "7.2.0"
+    id("io.github.turansky.kfc.library") version "7.7.4"
     id("com.github.turansky.yfiles") version "6.20.0"
 }
 
