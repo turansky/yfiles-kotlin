@@ -224,10 +224,12 @@ internal class KotlinFileGenerator(
                 ?.run { toPrimaryCode() }
                 ?: ""
 
-            val enumContent = if (declaration.enumLike) {
-                declaration.constants.toContent()
-            } else {
-                ""
+            // TODO: move in companion calculation?
+            var companionContent = companionObjectContent
+            if (declaration.enumLike) {
+                check("\n}" in companionContent)
+                companionContent = companionContent
+                    .replace("\n}", declaration.constants.toContent() + "\n}")
             }
 
             val components = declaration.getComponents()
@@ -239,10 +241,9 @@ internal class KotlinFileGenerator(
                     declaration.annotations +
                     "external ${declaration.kotlinModifier} class $classDeclaration $primaryConstructor ${parentString()} {\n" +
                     constructors() + "\n\n" +
-                    enumContent +
                     super.content() + "\n\n" +
                     components +
-                    companionObjectContent + "\n" +
+                    companionContent + "\n" +
                     "}" +
                     enumCompanionContent()
         }
@@ -318,8 +319,10 @@ internal class KotlinFileGenerator(
             return """
                 |
                 |@JsName("${data.jsName}")
-                |external enum class $name {
-                |${declaration.constants.toContent()}
+                |sealed external class $name {
+                |    companion object {
+                |        ${declaration.constants.toContent()}
+                |    }
                 |}
             """.trimMargin()
         }
@@ -396,10 +399,10 @@ internal class KotlinFileGenerator(
             return documentation +
                     externalAnnotation +
                     """
-                        |external enum class $name: $YENUM<$name> {
-                        |${declaration.constants.toContent()}
-                        |
-                        |   companion object: $ENUM_METADATA<$name>
+                        |external sealed class $name: $YENUM<$name> {
+                        |   companion object: $ENUM_METADATA<$name> {
+                        |       ${declaration.constants.toContent()}
+                        |   }
                         |}
                     """.trimMargin()
         }
@@ -432,5 +435,5 @@ internal class KotlinFileGenerator(
 
 private fun List<Constant>.toContent(): String =
     asSequence()
-        .map { it.toEnumValue() }
-        .joinToString(separator = ",\n\n", postfix = ",\n\n;\n")
+        .map { it.toCode() }
+        .joinToString("\n\n")

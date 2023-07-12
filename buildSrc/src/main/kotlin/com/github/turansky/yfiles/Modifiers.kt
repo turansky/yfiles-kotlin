@@ -48,10 +48,12 @@ sealed class Modifiers(
 }
 
 internal enum class ClassMode {
-    ENUM,
     FINAL,
     OPEN,
-    ABSTRACT
+    SEALED,
+    ABSTRACT,
+
+    ;
 }
 
 private val CLASS_MODIFIERS = setOf(
@@ -69,7 +71,7 @@ internal class ClassModifiers(modifiers: List<String>) : Modifiers(modifiers, CL
     val deprecated = has(DEPRECATED)
 
     val mode: ClassMode = when {
-        has(ENUM_LIKE) -> ClassMode.ENUM
+        has(ENUM_LIKE) -> ClassMode.SEALED
         has(ABSTRACT) -> ClassMode.ABSTRACT
         has(FINAL) -> ClassMode.FINAL
         else -> ClassMode.OPEN

@@ -190,12 +190,12 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
 
     val final: Boolean = modifiers.mode == ClassMode.FINAL
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
-    val enumLike: Boolean = modifiers.mode == ClassMode.ENUM
+    val enumLike: Boolean = modifiers.mode == ClassMode.SEALED
 
     val kotlinModifier: String = when (modifiers.mode) {
-        ClassMode.ENUM -> "enum"
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
+        ClassMode.SEALED -> "sealed"
         ClassMode.ABSTRACT -> "abstract"
     }
 
@@ -559,9 +559,7 @@ internal class Constructor(
 internal sealed class Constant(
     source: JSONObject,
     parent: TypeDeclaration,
-) : TypedDeclaration(source, parent) {
-    abstract fun toEnumValue(): String
-}
+) : TypedDeclaration(source, parent)
 
 private class TypeConstant(
     source: JSONObject,
@@ -582,9 +580,6 @@ private class TypeConstant(
         return documentation +
                 "$modifier val $name: $type"
     }
-
-    override fun toEnumValue(): String =
-        documentation + name
 }
 
 private class EnumConstant(
@@ -602,9 +597,6 @@ private class EnumConstant(
 
     override fun toCode(): String =
         documentation + "val $name: ${parent.classId}"
-
-    override fun toEnumValue(): String =
-        documentation + name
 
     override fun compareTo(other: Declaration): Int =
         when (other) {
