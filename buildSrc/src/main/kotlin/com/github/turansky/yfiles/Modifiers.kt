@@ -23,6 +23,7 @@ internal const val CONVERSION = "conversion"
 
 internal const val CANBENULL = "canbenull"
 private const val NOTNULL = "notnull"
+private const val CANBEUNDEFINED = "canbeundefined"
 
 internal const val DEPRECATED = "deprecated"
 
@@ -145,6 +146,7 @@ private val PROPERTY_MODIFIERS = setOf(
     PROTECTED,
 
     CANBENULL,
+    CANBEUNDEFINED,
 
     GENERATED,
 
@@ -185,6 +187,7 @@ private val METHOD_MODIFIERS = setOf(
     PROTECTED,
 
     CANBENULL,
+    CANBEUNDEFINED,
 
     DEPRECATED,
 
@@ -232,7 +235,8 @@ internal class ParameterModifiers(modifiers: List<String>) : Modifiers(modifiers
 private val EVENT_LISTENERS_MODIFIERS = setOf(
     ABSTRACT,
 
-    PUBLIC
+    EXPERT,
+    PUBLIC,
 )
 
 internal class EventListenerModifiers(modifiers: List<String>) : Modifiers(modifiers, EVENT_LISTENERS_MODIFIERS) {

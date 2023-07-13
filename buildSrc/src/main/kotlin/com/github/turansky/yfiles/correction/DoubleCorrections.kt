@@ -368,6 +368,8 @@ internal val DOUBLE_PROPERTIES = setOf(
     "tabWidth",
     "targetCropping",
     "textWrappingPadding",
+    "magnitude",
+    "pulseWidth",
 
     // static
     "enlargementAbsolute",
@@ -464,4 +466,7 @@ internal val DOUBLE_METHOD_PARAMETERS = setOf(
     "extent",
     "pulseWidth",
     "threshold",
+
+    "range",
+    "alignmentRange",
 )

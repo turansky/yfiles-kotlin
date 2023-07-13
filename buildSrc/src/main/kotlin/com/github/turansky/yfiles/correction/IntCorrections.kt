@@ -128,6 +128,7 @@ internal val INT_PROPERTIES = setOf(
     "starSubstructureSize",
 
     "toolTipLeaveAnimationMaximumDuration",
+    "webGLStaggeredLabelRenderingDuration",
 
     "groupSubstructureSize",
     "samplingRate",

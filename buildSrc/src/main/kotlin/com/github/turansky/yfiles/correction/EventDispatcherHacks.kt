@@ -2,8 +2,6 @@ package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.IEVENT_DISPATCHER
-import com.github.turansky.yfiles.JS_ANY
-import com.github.turansky.yfiles.JS_OBJECT
 import org.json.JSONObject
 
 internal fun generateEventDispatcherUtils(context: GeneratorContext) {
@@ -28,16 +26,15 @@ internal fun applyEventDispatcherHacks(source: Source) {
         "source"
     )
 
-    val likeObjectTypes = setOf(
-        JS_OBJECT,
-        JS_ANY
+    val likeThisTypes = setOf(
+        "this",
     )
 
     source.types()
         .optFlatMap(METHODS)
         .optFlatMap(PARAMETERS)
         .filter { it[NAME] in parameterNames }
-        .filter { it[TYPE] in likeObjectTypes }
+        .filter { it[TYPE] in likeThisTypes }
         .forEach { it[TYPE] = IEVENT_DISPATCHER }
 
     source.functionSignatures.apply {
@@ -45,7 +42,7 @@ internal fun applyEventDispatcherHacks(source: Source) {
             .map { getJSONObject(it) }
             .optFlatMap(PARAMETERS)
             .filter { it[NAME] in parameterNames }
-            .filter { it[TYPE] in likeObjectTypes }
+            .filter { it[TYPE] in likeThisTypes }
             .forEach { it[TYPE] = IEVENT_DISPATCHER }
     }
 }
