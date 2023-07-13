@@ -542,4 +542,14 @@ private fun fixMethodGenericBounds(source: Source) {
         .map { it[TYPE_PARAMETERS] }
         .map { it.single() as JSONObject }
         .forEach { it[BOUNDS] = arrayOf(IMODEL_ITEM) }
+
+    source.type("HtmlVisual")
+        .method("from")
+        .get(TYPE_PARAMETERS)
+        .getJSONObject(0)[BOUNDS] = arrayOf("Element")
+
+    source.type("SvgVisual")
+        .method("from")
+        .get(TYPE_PARAMETERS)
+        .getJSONObject(0)[BOUNDS] = arrayOf("SVGElement")
 }
