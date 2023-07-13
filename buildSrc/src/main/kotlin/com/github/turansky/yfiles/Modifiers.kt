@@ -174,7 +174,7 @@ internal class PropertyModifiers(modifiers: List<String>) : Modifiers(modifiers,
     val abstract = has(ABSTRACT)
     val protected = has(PROTECTED)
 
-    val canbenull = has(CANBENULL)
+    val canbenull = has(CANBENULL) || has(CANBEUNDEFINED)
     val nullability = exp(canbenull, "?")
 }
 
@@ -208,7 +208,7 @@ internal class MethodModifiers(modifiers: List<String>) : Modifiers(modifiers, M
     val internal = has(INTERNAL)
     val protected = has(PROTECTED)
 
-    private val canbenull = has(CANBENULL)
+    private val canbenull = has(CANBENULL) || has(CANBEUNDEFINED)
     val nullability = exp(canbenull, "?")
 
     val hidden = has(HIDDEN)
