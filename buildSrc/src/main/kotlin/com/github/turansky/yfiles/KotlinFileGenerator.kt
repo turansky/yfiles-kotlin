@@ -339,7 +339,7 @@ internal class KotlinFileGenerator(
                     .replace("items: T", "items: @UnsafeVariance T")
                     .replace("elements: $IENUMERABLE<T>", "elements: $IENUMERABLE<@UnsafeVariance T>")
                     .replace("toList():$LIST<T>", "toList():$LIST<@UnsafeVariance T>")
-                    .replace("Func3<T, T, T>", "Func3<@UnsafeVariance T, @UnsafeVariance T, @UnsafeVariance T>")
+                    .replace("Accumulator<T, T>", "Accumulator<T, @UnsafeVariance T>")
             }
 
             val interfaceDeclaration = classDeclaration
