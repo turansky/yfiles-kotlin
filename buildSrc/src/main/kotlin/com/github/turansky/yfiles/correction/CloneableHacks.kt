@@ -43,7 +43,14 @@ private fun fixImplementedType(source: Source) {
                 .filter { it[NAME] == "clone" }
                 .filterNot { it.has(PARAMETERS) }
                 .map { it[RETURNS] }
-                .forEach { it[TYPE] = type[ID] }
+                .forEach {
+                    val returnType = type[ID] +
+                            if (type.has(TYPE_PARAMETERS)) {
+                                "<" + type[TYPE_PARAMETERS].getJSONObject(0)[NAME] + ">"
+                            } else ""
+
+                    it[TYPE] = returnType
+                }
         }
 }
 
