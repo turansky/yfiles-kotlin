@@ -62,7 +62,7 @@ internal fun applyCanvasObjectInstallerHacks(source: Source) {
         .filter { it[ID].run { startsWith("yfiles.view.") && endsWith("Manager") } }
         .optFlatMap(METHODS)
         .filter { it[NAME] == "getInstaller" }
-        .forEach { it[RETURNS].addGeneric("T") }
+        .forEach { it[RETURNS].addGeneric(it.firstParameter[TYPE]) }
 }
 
 private val ITEM_NAMES = setOf(
