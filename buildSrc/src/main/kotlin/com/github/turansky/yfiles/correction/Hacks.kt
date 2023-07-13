@@ -167,11 +167,14 @@ private fun fixPropertyType(source: Source) {
         .property("defsElement")
         .set(TYPE, JS_SVG_DEFS_ELEMENT)
 
-    source.types("SeriesParallelLayoutData", "TreeLayoutData")
-        .forEach {
-            it.property("outEdgeComparers")
-                .set(TYPE, "yfiles.layout.ItemMapping<$INODE,$ICOMPARER<$IEDGE>>")
-        }
+    source.types(
+        "RadialLayoutData",
+        "SeriesParallelLayoutData",
+        "TreeLayoutData",
+    ).forEach {
+        it.property("outEdgeComparers")
+            .set(TYPE, "yfiles.layout.ItemMapping<$INODE,$ICOMPARER<$IEDGE>>")
+    }
 }
 
 private fun fixPropertyNullability(source: Source) {
