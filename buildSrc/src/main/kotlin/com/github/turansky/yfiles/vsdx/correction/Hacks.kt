@@ -100,6 +100,7 @@ internal fun applyVsdxHacks(api: JSONObject) {
     fixOptionTypes(source)
     fixGeneric(source)
     fixMethodModifier(source)
+    fixParameterName(source)
     fixSummary(source)
 }
 
@@ -278,6 +279,12 @@ private fun fixMethodModifier(source: VsdxSource) {
     source.types("IMasterProvider", "IShapeProcessingStep")
         .flatMap(METHODS)
         .forEach { it[MODIFIERS].put(ABSTRACT) }
+}
+
+private fun fixParameterName(source: VsdxSource) {
+    source.type("VsdxListCollection")
+        .method("get")
+        .firstParameter[NAME] = "index"
 }
 
 private val YFILES_API_REGEX = Regex("""<api-link data-type="([a-zA-Z.]+)"\s*></api-link>""")
