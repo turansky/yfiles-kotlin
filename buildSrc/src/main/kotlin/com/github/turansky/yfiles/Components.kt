@@ -32,15 +32,6 @@ internal fun Class.getComponents(): String? =
         else -> null
     }
 
-internal fun Interface.getComponents(): String? =
-    when (classId) {
-        ILIST,
-        ILIST_ENUMERABLE,
-        -> indexAccessComponents("get")
-
-        else -> null
-    }
-
 internal fun Interface.getComponentExtensions(): String? =
     if (classId == IENUMERABLE) {
         indexAccessComponentExtensions("at")
@@ -53,14 +44,6 @@ private fun Class.constructorComponents(): String =
         .parameters
         .map { it.name }
         .let { components(*it.toTypedArray()) }
-
-private fun indexAccessComponents(getMethod: String): String =
-    (1..5).joinToString("\n") { index ->
-        """
-            @JsName("__ygen_${getMethod}_${index - 1}_negy__")
-            final operator fun component$index(): T
-        """.trimIndent()
-    }
 
 private fun Interface.indexAccessComponentExtensions(
     getMethod: String,
