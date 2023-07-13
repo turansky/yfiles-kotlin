@@ -37,6 +37,7 @@ internal fun applyHacks(api: JSONObject) {
     fixMethodParameterNullability(source)
     fixMethodNullability(source)
     fixMethodGenericBounds(source)
+    fixFunctionSignatureBounds(source)
 
     fixNullability(source)
 
@@ -552,4 +553,14 @@ private fun fixMethodGenericBounds(source: Source) {
         .method("from")
         .get(TYPE_PARAMETERS)
         .getJSONObject(0)[BOUNDS] = arrayOf("SVGElement")
+}
+
+private fun fixFunctionSignatureBounds(source: Source) {
+    source.functionSignature("yfiles.view.DisposeVisualCallback")[TYPE_PARAMETERS]
+        .getJSONObject(0)
+        .also {
+            require(it[NAME] == "TVisualyfiles.view.Visual")
+            it[NAME] = "TVisual"
+            it[BOUNDS] = arrayOf("yfiles.view.Visual")
+        }
 }
