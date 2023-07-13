@@ -108,6 +108,9 @@ internal val PARAMETERS_CORRECTION = mapOf(
     ParameterData("IComparable", "compareTo", "obj") to "o",
     ParameterData("TimeSpan", "compareTo", "obj") to "o",
     ParameterData("IEnumerable", "includes", "value") to "item",
+    ParameterData("IListEnumerable", "get", "i") to "index",
+    ParameterData("ListEnumerable", "get", "i") to "index",
+    ParameterData("ResultItemCollection", "get", "i") to "index",
 
     ParameterData("YList", "insert", "element") to "item",
     ParameterData("YList", "remove", "o") to "item",
@@ -493,12 +496,6 @@ internal data class ParameterData(
 internal data class PropertyDeclaration(
     val className: String,
     val propertyName: String,
-)
-
-internal data class PropertyData(
-    val className: String,
-    val propertyName: String,
-    val type: String,
 )
 
 internal data class MethodDeclaration(
