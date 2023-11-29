@@ -2,12 +2,12 @@ rootProject.name = "yfiles-kotlin"
 
 pluginManagement {
     plugins {
-        kotlin("multiplatform") version "1.9.0"
+        kotlin("multiplatform") version "1.9.21"
 
-        val kfcVersion = "7.14.6"
+        val kfcVersion = "7.33.0"
         id("io.github.turansky.kfc.library") version kfcVersion
 
-        id("de.undercouch.download") version "5.4.0"
+        id("de.undercouch.download") version "5.5.0"
     }
 }
 
