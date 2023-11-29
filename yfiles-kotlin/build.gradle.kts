@@ -3,16 +3,14 @@ import de.undercouch.gradle.tasks.download.Download
 
 plugins {
     id("io.github.turansky.kfc.library")
+    id("io.github.turansky.kfc.wrappers")
     id("com.github.turansky.yfiles")
 
     id("de.undercouch.download")
 }
 
-val kotlinWrappersVersion = property("kotlin-wrappers.version") as String
-
 dependencies {
-    jsMainApi(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-    jsMainApi("org.jetbrains.kotlin-wrappers:kotlin-browser")
+    jsMainImplementation(wrappers("browser"))
 }
 
 val kotlinSourceDir: File

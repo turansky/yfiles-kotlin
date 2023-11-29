@@ -1,11 +1,11 @@
-import kotlinx.browser.window
+import web.prompts.alert
 import yfiles.lang.IClassMetadata
 import yfiles.lang.YObject
 import yfiles.lang.classMetadata
 
 class CustomObject : YObject {
     fun hallo() {
-        window.alert("Hallo from CustomObject!")
+        alert("Hallo from CustomObject!")
     }
 
     companion object : IClassMetadata<CustomObject> by classMetadata()
@@ -13,6 +13,6 @@ class CustomObject : YObject {
 
 class OtherCustomObject : YObject {
     fun hallo() {
-        window.alert("Hallo from OtherCustomObject!")
+        alert("Hallo from OtherCustomObject!")
     }
 }
