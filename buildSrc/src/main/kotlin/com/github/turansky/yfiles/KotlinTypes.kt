@@ -15,7 +15,7 @@ internal const val READ_WRITE_PROPERTY = "kotlin.properties.ReadWriteProperty"
 internal const val KCLASS = "kotlin.reflect.KClass"
 internal const val KPROPERTY = "kotlin.reflect.KProperty"
 
-internal const val BLOB = "web.buffer.Blob"
+internal const val BLOB = "web.blob.Blob"
 
 internal const val ELEMENT = "web.dom.Element"
 internal const val HTML_ELEMENT = "web.html.HTMLElement"
@@ -39,7 +39,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "Date" to "kotlin.js.Date",
     "Function" to "() -> $UNIT",
 
-    "Record" to "js.core.Record",
+    "Record" to "js.objects.Record",
 
     "Event" to "web.events.Event",
     "KeyboardEvent" to "web.uievents.KeyboardEvent",

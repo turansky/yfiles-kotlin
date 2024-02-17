@@ -54,7 +54,7 @@ private fun String.getImportedClasses(): List<String> {
         additionalImports += "yfiles.lang.yclass"
 
     if ("Array<" in this)
-        additionalImports += "js.core.ReadonlyArray"
+        additionalImports += "js.array.ReadonlyArray"
 
     return YFILES_CLASS_DECLARATION
         .findAll(code)
