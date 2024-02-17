@@ -4,7 +4,7 @@ plugins {
     id("com.gradle.plugin-publish") version "1.0.0"
     id("io.github.turansky.kfc.plugin-publish") version "7.33.0"
 
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "1.9.22"
 }
 
 dependencies {
