@@ -9,17 +9,15 @@ repositories {
 }
 
 intellij {
-    pluginName.set("yfiles")
+    pluginName = "yfiles"
 
-    type.set("IU")
-    version.set("2024.1")
+    type = "IU"
+    version = "2024.1"
 
-    plugins.set(
-        listOf(
-            "java",
-            "org.jetbrains.kotlin",
-            "JavaScript"
-        )
+    plugins = listOf(
+        "java",
+        "org.jetbrains.kotlin",
+        "JavaScript"
     )
 }
 
@@ -36,12 +34,12 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("241.*")
-        untilBuild.set("242.*")
+        sinceBuild = "241.*"
+        untilBuild = "242.*"
     }
 
     publishPlugin {
-        token.set(project.property("intellij.publish.token") as String)
+        token = project.property("intellij.publish.token") as String
     }
 
     buildSearchableOptions {
