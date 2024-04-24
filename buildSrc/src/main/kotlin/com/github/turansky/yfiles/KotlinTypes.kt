@@ -39,7 +39,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "Date" to "kotlin.js.Date",
     "Function" to "() -> $UNIT",
 
-    "ReadonlyRecord" to "js.objects.ReadonlyRecord",
+    "Record" to "js.objects.ReadonlyRecord",
 
     "Event" to "web.events.Event",
     "KeyboardEvent" to "web.uievents.KeyboardEvent",
@@ -51,7 +51,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "HTMLInputElement" to "web.html.HTMLInputElement",
     "HTMLDivElement" to "web.html.HTMLDivElement",
 
-    "ImageData" to "web.canvas.ImageData",
+    "ImageData" to "web.images.ImageData",
     "CanvasRenderingContext2D" to "web.canvas.CanvasRenderingContext2D",
 
     JS_SVG_ELEMENT to SVG_ELEMENT,
