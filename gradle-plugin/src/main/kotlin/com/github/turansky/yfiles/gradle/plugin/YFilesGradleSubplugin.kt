@@ -10,7 +10,6 @@ private val YFILES_COMPILER_PLUGIN_ID = "com.github.turansky.yfiles"
 class YFilesGradleSubplugin : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project): Unit = with(target) {
         plugins.apply(ImportOptimizePlugin::class)
-        plugins.apply(ComponentPropertyPlugin::class)
 
         rootProject.plugins.apply(IdeaCompanionPlugin::class)
     }
