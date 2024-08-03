@@ -9,6 +9,16 @@ import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
 private const val GENERATOR_COMMENT = "Automatically generated - do not modify!"
+private const val DEFAULT_SUPPRESSES = """
+@file:Suppress(
+    "NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE",
+    "EXTERNAL_CLASS_CONSTRUCTOR_PROPERTY_PARAMETER",
+    "NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE",
+    "WRONG_MODIFIER_CONTAINING_DECLARATION",
+    "WRONG_EXTERNAL_DECLARATION",
+    "NOTHING_TO_INLINE",
+)
+"""
 
 internal const val DOC_BASE_URL = "%doc-base-url%"
 
@@ -145,6 +155,7 @@ private class SimpleGeneratorContext(
         }
 
         val text = "// $GENERATOR_COMMENT\n\n" +
+                "$DEFAULT_SUPPRESSES\n\n" +
                 moduleDeclaration +
                 "package $packageId\n\n" +
                 content.clear(classId)

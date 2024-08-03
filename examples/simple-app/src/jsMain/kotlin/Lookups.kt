@@ -1,4 +1,8 @@
-@file:Suppress("unused", "UNUSED_VARIABLE")
+@file:Suppress(
+    "EXTERNAL_INTERFACE_AS_REIFIED_TYPE_ARGUMENT",
+    "unused",
+    "UNUSED_VARIABLE",
+)
 
 import yfiles.graph.DefaultGraph
 import yfiles.graph.IGraph
