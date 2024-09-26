@@ -1,5 +1,5 @@
 plugins {
-    id("io.github.turansky.kfc.library")
+    alias(kfc.plugins.library)
     id("com.github.turansky.yfiles")
 }
 

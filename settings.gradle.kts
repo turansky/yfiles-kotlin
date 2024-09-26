@@ -1,24 +1,24 @@
 rootProject.name = "yfiles-kotlin"
 
-pluginManagement {
-    plugins {
-        val kotlinVersion = "2.0.20"
-        kotlin("multiplatform") version kotlinVersion
-        kotlin("plugin.js-plain-objects") version kotlinVersion
-
-        val kfcVersion = "8.7.0"
-        id("io.github.turansky.kfc.library") version kfcVersion
-
-        id("de.undercouch.download") version "5.5.0"
-    }
-}
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
 
     versionCatalogs {
+        create("libs") {
+            val kotlinVersion = extra["kotlin.version"] as String
+            plugin("kotlin-multiplatform", "org.jetbrains.kotlin.multiplatform").version(kotlinVersion)
+            plugin("kotlin-js-plain-objects", "org.jetbrains.kotlin.plugin.js-plain-objects").version(kotlinVersion)
+
+            plugin("download", "de.undercouch.download").version("5.5.0")
+        }
+
+        create("kfc") {
+            val kfcVersion = extra["kfc.version"] as String
+            plugin("library", "io.github.turansky.kfc.library").version(kfcVersion)
+        }
+
         create("kotlinWrappers") {
             val wrappersVersion = extra["kotlin-wrappers.version"] as String
             from("org.jetbrains.kotlin-wrappers:kotlin-wrappers-catalog:$wrappersVersion")

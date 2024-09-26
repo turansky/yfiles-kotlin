@@ -2,10 +2,10 @@ import com.github.turansky.yfiles.generateKotlinDeclarations
 import de.undercouch.gradle.tasks.download.Download
 
 plugins {
-    id("io.github.turansky.kfc.library")
+    alias(kfc.plugins.library)
     id("com.github.turansky.yfiles")
 
-    id("de.undercouch.download")
+    alias(libs.plugins.download)
 }
 
 dependencies {
