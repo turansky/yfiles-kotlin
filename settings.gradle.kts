@@ -11,6 +11,9 @@ dependencyResolutionManagement {
             plugin("kotlin-multiplatform", "org.jetbrains.kotlin.multiplatform").version(kotlinVersion)
             plugin("kotlin-js-plain-objects", "org.jetbrains.kotlin.plugin.js-plain-objects").version(kotlinVersion)
 
+            val yfilesVersion = "--predefined--"
+            plugin("yfiles", "com.github.turansky.yfiles").version(yfilesVersion)
+
             plugin("download", "de.undercouch.download").version("5.5.0")
         }
 

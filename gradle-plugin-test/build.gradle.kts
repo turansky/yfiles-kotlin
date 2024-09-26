@@ -1,6 +1,6 @@
 plugins {
     alias(kfc.plugins.library)
-    id("com.github.turansky.yfiles")
+    alias(libs.plugins.yfiles)
 }
 
 dependencies {

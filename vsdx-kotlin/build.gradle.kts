@@ -3,7 +3,7 @@ import de.undercouch.gradle.tasks.download.Download
 
 plugins {
     alias(kfc.plugins.library)
-    id("com.github.turansky.yfiles")
+    alias(libs.plugins.yfiles)
 
     alias(libs.plugins.download)
 }
