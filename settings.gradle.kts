@@ -2,7 +2,7 @@ rootProject.name = "yfiles-kotlin"
 
 pluginManagement {
     plugins {
-        val kotlinVersion = "2.0.0"
+        val kotlinVersion = "2.0.20"
         kotlin("multiplatform") version kotlinVersion
         kotlin("plugin.js-plain-objects") version kotlinVersion
 
