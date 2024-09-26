@@ -3,14 +3,13 @@ import de.undercouch.gradle.tasks.download.Download
 
 plugins {
     id("io.github.turansky.kfc.library")
-    id("io.github.turansky.kfc.wrappers")
     id("com.github.turansky.yfiles")
 
     id("de.undercouch.download")
 }
 
 dependencies {
-    jsMainImplementation(wrappers("browser"))
+    jsMainImplementation(kotlinWrappers.browser)
 
     jsMainImplementation(project(":yfiles-kotlin"))
 }

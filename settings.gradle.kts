@@ -8,7 +8,6 @@ pluginManagement {
 
         val kfcVersion = "8.7.0"
         id("io.github.turansky.kfc.library") version kfcVersion
-        id("io.github.turansky.kfc.wrappers") version kfcVersion
 
         id("de.undercouch.download") version "5.5.0"
     }
@@ -17,6 +16,13 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
+    }
+
+    versionCatalogs {
+        create("kotlinWrappers") {
+            val wrappersVersion = extra["kotlin-wrappers.version"] as String
+            from("org.jetbrains.kotlin-wrappers:kotlin-wrappers-catalog:$wrappersVersion")
+        }
     }
 }
 
