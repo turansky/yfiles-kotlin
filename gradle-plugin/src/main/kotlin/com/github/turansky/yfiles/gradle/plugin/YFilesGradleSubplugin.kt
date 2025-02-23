@@ -2,16 +2,13 @@ package com.github.turansky.yfiles.gradle.plugin
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.apply
 import org.jetbrains.kotlin.gradle.plugin.*
 
 private val YFILES_COMPILER_PLUGIN_ID = "com.github.turansky.yfiles"
 
 class YFilesGradleSubplugin : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project): Unit = with(target) {
-        plugins.apply(ImportOptimizePlugin::class)
-
-        rootProject.plugins.apply(IdeaCompanionPlugin::class)
+        // add compiler support
     }
 
     override fun isApplicable(
