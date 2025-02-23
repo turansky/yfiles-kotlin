@@ -8,7 +8,7 @@ internal val INT: String = Int::class.simpleName!!
 internal val DOUBLE: String = Double::class.simpleName!!
 internal val BOOLEAN: String = Boolean::class.simpleName!!
 
-internal const val PROMISE = "kotlin.js.Promise"
+internal const val PROMISE = "js.promise.Promise"
 internal const val PROMISE_RESULT = "js.promise.PromiseResult"
 internal const val READ_ONLY_PROPERTY = "kotlin.properties.ReadOnlyProperty"
 internal const val READ_WRITE_PROPERTY = "kotlin.properties.ReadWriteProperty"
@@ -24,7 +24,7 @@ internal const val SVG_SVG_ELEMENT = "web.svg.SVGSVGElement"
 
 internal const val WEBGL2_RENDERING_CONTEXT = "web.gl.WebGL2RenderingContext"
 
-internal fun getKotlinType(type: String): String? =
+internal fun getKotlinType(type: String): String =
     STANDARD_TYPE_MAP[type]
 
 private val STANDARD_TYPE_MAP = mapOf(
