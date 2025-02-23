@@ -12,13 +12,6 @@ dependencies {
     compileOnly(kotlin("compiler-embeddable"))
 }
 
-// TODO: remove after migration
-tasks.compileKotlin {
-    kotlinOptions.freeCompilerArgs += listOf(
-        "-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi",
-    )
-}
-
 val REPO_URL = "https://github.com/turansky/yfiles-kotlin"
 
 gradlePlugin {
