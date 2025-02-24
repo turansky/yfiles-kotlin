@@ -24,7 +24,7 @@ internal const val SVG_SVG_ELEMENT = "web.svg.SVGSVGElement"
 
 internal const val WEBGL2_RENDERING_CONTEXT = "web.gl.WebGL2RenderingContext"
 
-internal fun getKotlinType(type: String): String =
+internal fun getKotlinType(type: String): String? =
     STANDARD_TYPE_MAP[type]
 
 private val STANDARD_TYPE_MAP = mapOf(
