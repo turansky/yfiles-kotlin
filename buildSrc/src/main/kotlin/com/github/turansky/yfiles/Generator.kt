@@ -9,7 +9,7 @@ import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
 
 private const val GENERATOR_COMMENT = "Automatically generated - do not modify!"
-private const val DEFAULT_SUPPRESSES = """
+private val DEFAULT_SUPPRESSES = """
 @file:Suppress(
     "NON_EXTERNAL_DECLARATION_IN_INAPPROPRIATE_FILE",
     "NON_ABSTRACT_MEMBER_OF_EXTERNAL_INTERFACE",
@@ -17,7 +17,7 @@ private const val DEFAULT_SUPPRESSES = """
     "WRONG_EXTERNAL_DECLARATION",
     "NOTHING_TO_INLINE",
 )
-"""
+""".trimIndent()
 
 internal const val DOC_BASE_URL = "%doc-base-url%"
 
