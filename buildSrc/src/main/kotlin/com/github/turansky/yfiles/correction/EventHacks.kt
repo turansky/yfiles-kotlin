@@ -14,7 +14,17 @@ internal fun applyEventHacks(source: Source) {
             it[NAME] = name
         }
 
-    fixMouseEventArgsConstructor(source)
+//    fixMouseEventArgsConstructor(source)
+
+    source.types()
+        .flatMap { it.optFlatMap(METHODS) + it.optFlatMap(CONSTRUCTORS) }
+        .plus(source.functionSignatures.run { keySet().map { getJSONObject(it) } })
+        .optFlatMap(PARAMETERS)
+        .plus(source.types().optFlatMap(PROPERTIES))
+        .filter { it[TYPE] == "UIEvent" }
+        .forEach {
+            it[TYPE] = "web.uievents.UIEvent"
+        }
 }
 
 fun JSONObject.getNewName(): String? =

@@ -19,14 +19,6 @@ internal class ClassRegistry(
         { it.memberProperties.map { it.name } }
     )
 
-    private val listenerMap = types
-        .asSequence()
-        .filterIsInstance<ExtendedType>()
-        .associateBy(
-            { it.classId },
-            { it.events.flatMap { it.listenerNames } }
-        )
-
     private fun getParents(className: String): List<String> {
         val instance = instances.getValue(className)
 
@@ -70,21 +62,21 @@ internal class ClassRegistry(
         }
     }
 
-    private fun listenerOverridden(
-        className: String,
-        listenerName: String,
-        checkCurrentClass: Boolean,
-    ): Boolean {
-        if (checkCurrentClass) {
-            val listeners = listenerMap.getValue(className)
-            if (listenerName in listeners) {
-                return true
-            }
-        }
-        return getParents(className).any {
-            listenerOverridden(it, listenerName, true)
-        }
-    }
+//    private fun listenerOverridden(
+//        className: String,
+//        listenerName: String,
+//        checkCurrentClass: Boolean,
+//    ): Boolean {
+//        if (checkCurrentClass) {
+//            val listeners = listenerMap.getValue(className)
+//            if (listenerName in listeners) {
+//                return true
+//            }
+//        }
+//        return getParents(className).any {
+//            listenerOverridden(it, listenerName, true)
+//        }
+//    }
 
     fun functionOverridden(className: String, functionName: String): Boolean {
         return functionOverridden(className, functionName, false)
@@ -94,7 +86,7 @@ internal class ClassRegistry(
         return propertyOverridden(className, propertyName, false)
     }
 
-    fun listenerOverridden(className: String, listenerName: String): Boolean {
-        return listenerOverridden(className, listenerName, false)
-    }
+//    fun listenerOverridden(className: String, listenerName: String): Boolean {
+//        return listenerOverridden(className, listenerName, false)
+//    }
 }

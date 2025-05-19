@@ -4,15 +4,15 @@
     "UNUSED_VARIABLE",
 )
 
-import yfiles.graph.DefaultGraph
+import yfiles.collections.lookup
+import yfiles.collections.lookupValue
+import yfiles.graph.Graph
 import yfiles.graph.IGraph
-import yfiles.graph.lookup
-import yfiles.graph.lookupValue
 import yfiles.input.IHitTestable
 import yfiles.lang.TimeSpan
 
 fun lookups() {
-    val graph: IGraph = DefaultGraph()
+    val graph: IGraph = Graph()
     val node = graph.createNode()
 
     // for classes

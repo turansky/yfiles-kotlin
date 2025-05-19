@@ -27,11 +27,8 @@ private fun fixOptionality(source: Source) {
     }
 
     source.types(
-        "BendConverter",
         "MinimumNodeSizeStage",
         "MultiPageLayout",
-        "OrganicPartitionGridLayoutStage",
-        "TreeComponentLayout"
     ).flatMap(CONSTRUCTORS)
         .filter { it.has(PARAMETERS) }
         .filter { it[PARAMETERS].length() == 1 }

@@ -7,6 +7,8 @@ import com.github.turansky.yfiles.vsdx.correction.correctVsdxNumbers
 import com.github.turansky.yfiles.vsdx.correction.createVsdxDataClasses
 import com.github.turansky.yfiles.vsdx.fakeVsdxInterfaces
 import java.io.File
+import java.nio.file.Paths
+import kotlin.io.path.writeText
 
 private const val GENERATOR_COMMENT = "Automatically generated - do not modify!"
 private val DEFAULT_SUPPRESSES = """
@@ -52,19 +54,11 @@ fun generateKotlinDeclarations(
     generateTagUtils(context)
     generateDataTagUtils(context)
     generateStyleTagUtils(context)
-    generateNodeTypeUtils(context)
     generateLayoutDescriptorUtils(context)
-    generateResourceUtils(context)
-    generateConvertersUtils(context)
     generateEventDispatcherUtils(context)
 
     generateClassUtils(context)
     generateFlagsUtils(context)
-    generateMementoUtils(context)
-    generateIncrementalHint(context)
-    generatePartitionCellUtils(context)
-    generateObstacleData(context)
-    generateTooltipUtils(context)
     generateDragDropData(context)
     generateYndefined(context)
 
@@ -74,9 +68,10 @@ fun generateKotlinDeclarations(
     generateEdgeDirectednessUtils(context)
 
     addIteratorSupport(context)
-    generateDpKeyDelegates(context)
 
     generateResourceTypes(devguideFile, context)
+
+    //TODO: generate event wrappers
 }
 
 fun generateVsdxKotlinDeclarations(

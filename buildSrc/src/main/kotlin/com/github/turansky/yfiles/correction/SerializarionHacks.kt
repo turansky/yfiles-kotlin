@@ -53,6 +53,8 @@ internal fun applySerializationHacks(source: Source) {
         "IGNORE_PROPERTY_CASE" to JS_BOOLEAN,
         "IGNORE_XAML_DESERIALIZATION_ERRORS" to JS_BOOLEAN,
         "INDENT_OUTPUT" to JS_BOOLEAN,
+        "GRAPH_ELEMENT_IDS" to JS_STRING,
+        "GRAPH_IDS" to JS_STRING,
         "PARSE_LABEL_SIZE" to JS_BOOLEAN,
         "REPRESENTED_EDGE" to IEDGE,
         "REWRITE_RELATIVE_RESOURCE_URIS" to JS_BOOLEAN,
@@ -61,7 +63,7 @@ internal fun applySerializationHacks(source: Source) {
         "WRITE_LABEL_SIZE_PREDICATE" to "yfiles.lang.Predicate<$ILABEL>",
         "WRITE_NODE_STYLE_DEFAULT" to JS_BOOLEAN,
         "WRITE_PORT_STYLE_DEFAULT" to JS_BOOLEAN,
-        "WRITE_STRIPE_DEFAULTS" to JS_BOOLEAN
+        "WRITE_STRIPE_DEFAULTS" to JS_BOOLEAN,
     )
 
     source.type("SerializationProperties")

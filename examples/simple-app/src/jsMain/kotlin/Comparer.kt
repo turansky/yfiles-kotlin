@@ -1,17 +1,8 @@
-@file:Suppress("unused", "UNUSED_VARIABLE")
+@file:Suppress("unused")
 
-import yfiles.algorithms.Comparers.createComparableComparer
-import yfiles.algorithms.Graph
-import yfiles.layout.DefaultLayoutGraph
-import yfiles.layout.TabularLayout
-import yfiles.tree.NodeOrderComparer
+import yfiles.layout.LayoutGraph
 
 fun comparer() {
-    val g: Graph = DefaultLayoutGraph()
-    g.sortNodes(NodeOrderComparer())
-    g.sortNodes(createComparableComparer())
-
-    val l = TabularLayout()
-    l.nodeComparer = NodeOrderComparer()
-    l.nodeComparer = createComparableComparer()
+    val g = LayoutGraph()
+    g.sortNodes { x, y -> x.index.compareTo(y.index) }
 }

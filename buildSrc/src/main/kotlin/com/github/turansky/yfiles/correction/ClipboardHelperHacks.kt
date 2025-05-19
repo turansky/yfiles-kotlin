@@ -40,7 +40,7 @@ internal fun applyClipboardHelperHacks(source: Source) {
 
     fixDecoratorProperties(source, ICLIPBOARD_HELPER, true)
 
-    source.type("GraphClipboard")
+    source.type("ClipboardOperationContext")
         .method("getClipboardHelper")
         .apply {
             setSingleTypeParameter(bound = IMODEL_ITEM)

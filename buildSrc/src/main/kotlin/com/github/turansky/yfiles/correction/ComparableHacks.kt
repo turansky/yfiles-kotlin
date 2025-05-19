@@ -10,14 +10,12 @@ internal fun applyComparableHacks(source: Source) {
     }
 
     source.types(
-        "ColumnDescriptor",
-        "PartitionCellIdEntry",
-        "RowDescriptor",
+        "LayoutGridCell",
+        "LayoutGridColumn",
+        "LayoutGridRow",
         "SnapResult",
-        "SwimlaneDescriptor",
         "TimeSpan",
-        "YDimension",
-        "YPoint"
+        "Point"
     )
         .forEach {
             val id = it[ID]
@@ -30,16 +28,6 @@ internal fun applyComparableHacks(source: Source) {
 
             it.configureCompareTo(id)
         }
-
-    source.types(
-        "IComparer",
-        "DefaultOutEdgeComparer",
-        "NodeOrderComparer",
-        "NodeWeightComparer"
-    ).flatMap(METHODS)
-        .filter { it[NAME] == "compare" }
-        .flatMap(PARAMETERS)
-        .forEach { it.changeNullability(false) }
 }
 
 private fun JSONObject.configureCompareTo(type: String) {

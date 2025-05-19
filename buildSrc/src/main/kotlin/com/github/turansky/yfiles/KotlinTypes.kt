@@ -30,6 +30,7 @@ internal fun getKotlinType(type: String): String? =
 private val STANDARD_TYPE_MAP = mapOf(
     JS_VOID to "js.core.Void",
     " unknown" to "*",
+    "unknown" to ANY,
 
     JS_ANY to ANY,
     JS_OBJECT to ANY,

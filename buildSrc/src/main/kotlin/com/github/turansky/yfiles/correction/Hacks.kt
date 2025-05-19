@@ -1,7 +1,6 @@
 package com.github.turansky.yfiles.correction
 
 import com.github.turansky.yfiles.*
-import com.github.turansky.yfiles.json.get
 import com.github.turansky.yfiles.json.removeItem
 import com.github.turansky.yfiles.json.strictRemove
 import org.json.JSONObject
@@ -11,17 +10,18 @@ internal fun applyHacks(api: JSONObject) {
 
     fieldToProperties(source)
 
-    cleanYObject(source)
-
     removeUnusedFunctionSignatures(source)
     removeDuplicatedProperties(source)
     removeDuplicatedMethods(source)
+    removeInvalidOverrides(source)
     removeSystemMethods(source)
-    removeArtifitialParameters(source)
+    removeArtificialParameters(source)
     removeThisParameters(source)
+    removeTypeMetadataMethods(source)
+
+    fixChangeHandlers(source)
 
     fixConstantGenerics(source)
-    fixFunctionGenerics(source)
 
     fixReturnType(source)
 
@@ -33,60 +33,46 @@ internal fun applyHacks(api: JSONObject) {
 
     fixMethodParameterName(source)
     fixMethodParameterType(source)
-    fixMethodParameterOptionality(source)
     fixMethodParameterNullability(source)
     fixMethodNullability(source)
     fixMethodGenericBounds(source)
 
     fixNullability(source)
+    fixCollections(source)
+    fixConvertibles(source)
+    fixMarkupExtensions(source)
+    fixConstructors(source)
 
     applyIdHacks(source)
     applyBindingHacks(source)
     applyBusinessObjectHacks(source)
     applyCloneableHacks(source)
     applyClassHacks(source)
-    applyCollectionHacks(source)
     applyComparableHacks(source)
-    applyComparerHacks(source)
+    applyContextMenuFixes(source)
     applyCursorHacks(source)
-    applyPartitionCellHacks(source)
-    applyIntersectionHacks(source)
-
-    applyDpdataHacks(source)
-    applyDataHacks(source)
-    applyDpKeyHacks(source)
+    applyItemDropInputModeHacks(source)
 
     applyListCellHacks(source)
     applyListHacks(source)
     applyYListHacks(source)
     applyEventHacks(source)
+    applyExecutorHacks(source)
 
     applyLabelModelParameterHacks(source)
-    applyMementoHacks(source)
     applyMementoSupportHacks(source)
     applyClipboardHelperHacks(source)
-    applySnapLineProviderHacks(source)
-    applyIncrementalHintHacks(source)
-    applyObstacleDataHacks(source)
-    applyTooltipHacks(source)
     applyDragDropDataHacks(source)
+
 
     applyTagHacks(source)
     applyDataTagHacks(source)
     applyStyleTagHacks(source)
-    applyNodeTypeHacks(source)
     applyLayoutDescriptorHacks(source)
-    applyResourceHacks(source)
-    applyTemplatesHacks(source)
-    applyTemplateLoadersHacks(source)
-    applyConvertersHacks(source)
     applyEventDispatcherHacks(source)
-    applyCommandHacks(source)
+    applyCreationPropertiesHacks(source)
 
     applyContextLookupHacks(source)
-    applyCanvasObjectDescriptorHacks(source)
-    applyCanvasObjectInstallerHacks(source)
-    applyVisualTemplateHacks(source)
     applyStyleRendererHacks(source)
 
     applyElementIdHacks(source)
@@ -97,18 +83,8 @@ internal fun applyHacks(api: JSONObject) {
     applyExtensionHacks(source)
     applySingletonHacks(source)
     applyResultHacks(source)
-    fixConstructors(source)
 
-    applyLayoutStrictTypes(source)
     addSizeExtensions(source)
-}
-
-private fun cleanYObject(source: Source) {
-    source.type("YObject") {
-        set(GROUP, "interface")
-
-        strictRemove(METHODS)
-    }
 }
 
 private fun removeUnusedFunctionSignatures(source: Source) {
@@ -135,15 +111,8 @@ private fun fixFunctionGenerics(source: Source) {
 }
 
 private fun fixReturnType(source: Source) {
-    source.type("DiscreteEdgeLabelLayoutModel")
-        .method("getPosition")[RETURNS][TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
-
     source.type("SvgExport")
         .method("exportSvg")[RETURNS][TYPE] = JS_SVG_SVG_ELEMENT
-
-    source.type("PortCandidateSet")
-        .property("entries")
-        .also { it.replaceInType("<$JS_ANY>", "<IPortCandidateSetEntry>") }
 }
 
 private fun fixConstantType(source: Source) {
@@ -152,28 +121,8 @@ private fun fixConstantType(source: Source) {
 }
 
 private fun fixPropertyType(source: Source) {
-    source.type("BalloonLayoutData")
-        .property("outEdgeComparer")
-        .also { require(it[SIGNATURE] == "function($IEDGE,$IEDGE):number") }
-        .set(SIGNATURE, "$ICOMPARER<$IEDGE>")
-
-    source.type("CactusGroupLayoutData")
-        .property("nodeComparer")
-        .also { require(it[SIGNATURE] == "function($INODE,$INODE):number") }
-        .set(SIGNATURE, "$ICOMPARER<$INODE>")
-
     source.type("IRenderContext")
-        .property("defsElement")
-        .set(TYPE, JS_SVG_DEFS_ELEMENT)
-
-    source.types(
-        "RadialLayoutData",
-        "SeriesParallelLayoutData",
-        "TreeLayoutData",
-    ).forEach {
-        it.property("outEdgeComparers")
-            .set(TYPE, "yfiles.layout.ItemMapping<$INODE,$ICOMPARER<$IEDGE>>")
-    }
+        .property("defsElement")[TYPE] = JS_SVG_DEFS_ELEMENT
 }
 
 private fun fixPropertyNullability(source: Source) {
@@ -219,18 +168,6 @@ private fun fixMethodParameterName(source: Source) {
     }
 }
 
-private fun fixMethodParameterOptionality(source: Source) {
-    val methodNames = setOf("onShow", "show")
-
-    source.type("MouseHoverInputMode")
-        .flatMap(METHODS)
-        .filter { it[NAME] in methodNames }
-        .flatMap(PARAMETERS)
-        .filter { it[NAME] == "content" }
-        .map { it[MODIFIERS] }
-        .forEach { it.removeItem(OPTIONAL) }
-}
-
 private fun fixMethodParameterNullability(source: Source) {
     PARAMETERS_NULLABILITY_CORRECTION
         .forEach { (data, nullable) ->
@@ -269,54 +206,16 @@ private fun fixMethodParameterNullability(source: Source) {
         .filter { it[NAME] in MODEL_MANAGER_ITEM_METHODS }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
-
-    source.types("Substructures", "SeriesParallelLayout")
-        .flatMap(METHODS)
-        .filter { STATIC in it[MODIFIERS] }
-        .map { it.firstParameter }
-        .onEach { check(it[TYPE] == GRAPH) }
-        .forEach { it.changeNullability(false) }
-
-    source.type("Font")
-        .let { it.flatMap(CONSTRUCTORS) + it.method("createCopy") }
-        .flatMap(PARAMETERS)
-        .filter { it[TYPE] != JS_NUMBER }
-        .map { it[MODIFIERS] }
-        .forEach { it.removeItem(CANBENULL) }
-
-    source.types()
-        .optFlatMap(EVENTS)
-        .eventListeners()
-        .flatMap(PARAMETERS)
-        .forEach { it.changeNullability(false) }
 }
 
 private fun fixMethodParameterType(source: Source) {
     source.type("IEnumerable")
         .method("concat")
-        .parameter("elements")
-        .set(TYPE, "$IENUMERABLE<T>")
-
-    source.type("IContextLookupChainLink")
-        .method("addingLookupChainLink")
-        .parameter("instance")
-        .set(TYPE, "TResult")
-
-    source.type("DiscreteEdgeLabelLayoutModel")
-        .method("createPositionParameter")
-        .parameter("position")[TYPE] = "yfiles.layout.DiscreteEdgeLabelPositions"
+        .parameter("elements")[TYPE] = "$IENUMERABLE<T>"
 
     source.type("SvgExport")
         .method("exportSvgString")
-        .parameter("svg")
-        .set(TYPE, JS_SVG_ELEMENT)
-
-    source.type("AspectRatioTreeLayout")
-        .flatMap(METHODS)
-        .optFlatMap(PARAMETERS)
-        .filter { it[NAME] == "localRoot" }
-        .filter { it[TYPE] == JS_OBJECT }
-        .forEach { it[TYPE] = NODE }
+        .parameter("svg")[TYPE] = JS_SVG_ELEMENT
 
     source.type("CreateEdgeInputMode") {
         val PCC = "$ITEM_EVENT_ARGS<$IPORT_CANDIDATE>"
@@ -325,13 +224,6 @@ private fun fixMethodParameterType(source: Source) {
             .optFlatMap(PARAMETERS)
             .filter { it[TYPE] == PCC }
             .forEach { it.replaceInType(">", "?>") }
-
-        val PCC_HANDLER = "$EVENT_HANDLER1<$PCC>"
-        flatMap(EVENTS)
-            .eventListeners()
-            .flatMap(PARAMETERS)
-            .filter { it[SIGNATURE] == PCC_HANDLER }
-            .forEach { it.replaceInSignature(">>", "?>>") }
     }
 
     source.type("SvgVisual")
@@ -355,10 +247,36 @@ private fun removeDuplicatedProperties(source: Source) {
     DUPLICATED_PROPERTIES
         .forEach { declaration ->
             val properties = source
-                .type(declaration.className)
-                .get(PROPERTIES)
+                .type(declaration.className)[PROPERTIES]
 
-            properties.removeItem(properties[declaration.propertyName])
+            properties
+                .map { it as JSONObject }
+                .filter { it[NAME] == declaration.propertyName }
+                .drop(1)
+                .forEach { properties.removeItem(it) }
+        }
+}
+
+private fun removeInvalidOverrides(source: Source) {
+    INVALID_PROPERTY_OVERRIDES
+        .forEach { declaration ->
+            val properties = source
+                .type(declaration.className)[PROPERTIES]
+
+            properties
+                .map { it as JSONObject }
+                .filter { it[NAME] == declaration.propertyName }
+                .forEach { properties.removeItem(it) }
+        }
+    INVALID_METHOD_OVERRIDES
+        .forEach { declaration ->
+            val methods = source
+                .type(declaration.className)[METHODS]
+
+            methods
+                .map { it as JSONObject }
+                .filter { it[NAME] == declaration.methodName }
+                .forEach { methods.removeItem(it) }
         }
 }
 
@@ -366,10 +284,13 @@ private fun removeDuplicatedMethods(source: Source) {
     DUPLICATED_METHODS
         .forEach { declaration ->
             val methods = source
-                .type(declaration.className)
-                .get(METHODS)
+                .type(declaration.className)[METHODS]
 
-            methods.removeItem(methods[declaration.methodName])
+            methods
+                .map { it as JSONObject }
+                .filter { it[NAME] == declaration.methodName }
+                .drop(1)
+                .forEach { methods.removeItem(it) }
         }
 }
 
@@ -389,7 +310,7 @@ private fun removeSystemMethods(source: Source) {
         }
 }
 
-private fun removeArtifitialParameters(source: Source) {
+private fun removeArtificialParameters(source: Source) {
     sequenceOf(CONSTRUCTORS, METHODS)
         .flatMap { parameter -> source.types().optFlatMap(parameter) }
         .filter { it.has(PARAMETERS) }
