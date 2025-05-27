@@ -49,7 +49,6 @@ internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
         .replace("any[]", "Array<Any>")
         .replaceFunctionSignatures()
         .fixSystemPackage()
-//        .fixClassDeclaration()
         .run { JSONObject(this) }
         .apply(action)
         .apply { fixFunctionSignatures() }

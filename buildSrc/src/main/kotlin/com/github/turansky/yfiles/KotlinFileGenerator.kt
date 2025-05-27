@@ -257,7 +257,6 @@ internal class KotlinFileGenerator(
                 }
 
                 if (components.isNotEmpty()) {
-                    appendLine("//components")
                     appendLine(components.indent())
                 }
 

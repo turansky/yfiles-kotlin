@@ -62,22 +62,6 @@ internal class ClassRegistry(
         }
     }
 
-//    private fun listenerOverridden(
-//        className: String,
-//        listenerName: String,
-//        checkCurrentClass: Boolean,
-//    ): Boolean {
-//        if (checkCurrentClass) {
-//            val listeners = listenerMap.getValue(className)
-//            if (listenerName in listeners) {
-//                return true
-//            }
-//        }
-//        return getParents(className).any {
-//            listenerOverridden(it, listenerName, true)
-//        }
-//    }
-
     fun functionOverridden(className: String, functionName: String): Boolean {
         return functionOverridden(className, functionName, false)
     }
@@ -85,8 +69,4 @@ internal class ClassRegistry(
     fun propertyOverridden(className: String, propertyName: String): Boolean {
         return propertyOverridden(className, propertyName, false)
     }
-
-//    fun listenerOverridden(className: String, listenerName: String): Boolean {
-//        return listenerOverridden(className, listenerName, false)
-//    }
 }

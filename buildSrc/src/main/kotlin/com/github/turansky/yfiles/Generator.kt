@@ -70,8 +70,6 @@ fun generateKotlinDeclarations(
     addIteratorSupport(context)
 
     generateResourceTypes(devguideFile, context)
-
-    //TODO: generate event wrappers
 }
 
 fun generateVsdxKotlinDeclarations(
