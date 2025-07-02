@@ -83,6 +83,7 @@ internal fun applyHacks(api: JSONObject) {
     applyExtensionHacks(source)
     applySingletonHacks(source)
     applyResultHacks(source)
+    applyVisualHacks(source)
 
     addSizeExtensions(source)
 }

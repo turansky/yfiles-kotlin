@@ -28,6 +28,7 @@ fun generateKotlinDeclarations(
     sourceDir: File,
 ) {
     val source = apiFile.readApiJson {
+        Paths.get("./build/api.json").writeText(this.toString(2))
         applyHacks(this)
         excludeUnusedTypes(this)
         correctNumbers(this)
