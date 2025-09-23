@@ -68,10 +68,6 @@
 \* - `Int`, `Double` instead of `Number`<br>
 \** - via extension methods
 
-#### Related issues
-
-* [`No Xcode or CLT version detected!`](https://github.com/nodejs/node-gyp/issues/1927#issuecomment-544507444) - For `macOS Catalina`
-
 ## `YClass`
 
 #### Metadata
