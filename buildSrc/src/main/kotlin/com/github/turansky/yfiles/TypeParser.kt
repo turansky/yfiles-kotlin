@@ -17,9 +17,6 @@ internal fun parse(
         .map { it.replace("    ", "") }
         .joinToString(" | ")
 
-    if ("Promise<" in comment)
-        println(comment)
-
     result = when (comment) {
         "T | undefined" -> "T?"
         "HTMLElement | SVGElement" -> ELEMENT
@@ -52,15 +49,6 @@ internal fun parse(
 }
 
 internal fun parseType(type: String): String {
-    // TODO: remove class hack
-    if (type.startsWith("$YCLASS<")) {
-        return type
-    }
-
-    if (type == YCLASS) {
-        return "$YCLASS<*>"
-    }
-
     if (type.startsWith("$ICOMPARABLE<")) {
         return type
     }
@@ -84,6 +72,18 @@ internal fun parseType(type: String): String {
 
         "ItemMapping<INode, IComparable|string|number|boolean>",
         -> return "yfiles.layout.ItemMapping<INode, Comparable<*>>"
+
+        "yfiles.layout.EdgeLabelDataKey<(yfiles.collections.IEnumerable<yfiles.labeling.LabelCandidate>, yfiles.layout.LayoutEdgeLabel) -> js.core.Void>"
+        -> return type
+
+        "yfiles.layout.NodeLabelDataKey<(yfiles.collections.IEnumerable<yfiles.labeling.LabelCandidate>, yfiles.layout.LayoutNodeLabel) -> js.core.Void>"
+        -> return type
+
+        "yfiles.collections.ItemMapping<TEdgeLabel,(yfiles.collections.IEnumerable<yfiles.labeling.LabelCandidate>, yfiles.layout.LayoutEdgeLabel) -> js.core.Void>"
+        -> return type
+
+        "yfiles.collections.ItemMapping<TNodeLabel,(yfiles.collections.IEnumerable<yfiles.labeling.LabelCandidate>, yfiles.layout.LayoutNodeLabel) -> js.core.Void>"
+        -> return type
     }
 
     getKotlinType(type)?.let {
@@ -95,7 +95,7 @@ internal fun parseType(type: String): String {
     }
 
     val mainType = parseType(till(type, GENERIC_START))
-    val parametrizedTypes = parseGenericParameters(type.between(GENERIC_START, GENERIC_END))
+    val parametrizedTypes = parseGenericParameters(type.between(GENERIC_START, GENERIC_END, false))
     val generics = parametrizedTypes.byComma()
 
     return "$mainType<$generics>"

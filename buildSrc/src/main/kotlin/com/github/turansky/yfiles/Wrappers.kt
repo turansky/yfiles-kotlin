@@ -6,6 +6,7 @@ import com.github.turansky.yfiles.json.*
 import org.json.JSONObject
 
 private const val DEPRECATED_ANNOTATION = """@Deprecated("Read documentation for more information")"""
+internal const val INDENT = "  "
 
 internal sealed class JsonWrapper(override val source: JSONObject) : HasSource {
     open fun toCode(): String =
@@ -73,12 +74,17 @@ internal class FunctionSignature(source: JSONObject) : JsonWrapper(source), HasC
             ""
         }
         val parameters = parameters
-            .byCommaLine { it.toCode() }
+            .byComma { it.toCode() }
         val returns = returns?.toCode() ?: UNIT
 
         val data = GeneratorData(classId)
-        return documentation +
-                "typealias ${data.name}$generics = ($parameters) -> $returns"
+        return buildString {
+            if (documentation.isNotEmpty()) {
+                appendLine(documentation)
+            }
+            append("typealias ${data.name}$generics = ($parameters) -> $returns")
+        }
+
     }
 }
 
@@ -177,7 +183,6 @@ internal sealed class Type(source: JSONObject) : Declaration(source), TypeDeclar
 
 internal sealed class ExtendedType(source: JSONObject) : Type(source) {
     override val constants: List<Constant> by declarationList(::TypeConstant)
-
     val events: List<Event> by list { Event(it, this) }
 }
 
@@ -192,6 +197,12 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
     val abstract: Boolean = modifiers.mode == ClassMode.ABSTRACT
     val enumLike: Boolean = modifiers.mode == ClassMode.SEALED
 
+    val isExtensible = when (modifiers.mode) {
+        ClassMode.OPEN -> true
+        ClassMode.ABSTRACT -> true
+        else -> false
+    }
+
     val kotlinModifier: String = when (modifiers.mode) {
         ClassMode.FINAL -> ""
         ClassMode.OPEN -> "open"
@@ -199,7 +210,7 @@ internal class Class(source: JSONObject) : ExtendedType(source) {
         ClassMode.ABSTRACT -> "abstract"
     }
 
-    private val constructors: List<Constructor> by declarationList(::Constructor)
+    internal val constructors: List<Constructor> by declarationList(::Constructor)
     val primaryConstructor: Constructor? = when {
         name in USE_LAST_CONSTRUCTOR_AS_PRIMARY -> constructors.last()
         else -> constructors.firstOrNull()
@@ -227,7 +238,6 @@ internal class Interface(source: JSONObject) : ExtendedType(source) {
     val functionalMethod: Method?
         get() = when {
             implementedTypes().isNotEmpty() -> null
-            events.isNotEmpty() -> null
             memberProperties.any { it.abstract } -> null
             name in NON_FUNCTIONAL -> null
             else -> memberMethods
@@ -239,7 +249,7 @@ internal class Interface(source: JSONObject) : ExtendedType(source) {
 internal class Enum(source: JSONObject) : Type(source) {
     private val modifiers: EnumModifiers by wrapStringList(::EnumModifiers)
     val flags = modifiers.flags
-    override val constants: List<Constant> by declarationList(::EnumConstant)
+    override val constants: List<Constant> by declarationList { source, parent -> EnumConstant(source, parent, flags) }
 }
 
 private class TypeReference(override val source: JSONObject) : HasSource {
@@ -465,8 +475,8 @@ internal class Constructor(
     parent: Class,
 ) : MethodBase(source, parent) {
     private val modifiers: ConstructorModifiers by wrapStringList(::ConstructorModifiers)
-    val public = modifiers.visibility == ConstructorVisibility.PUBLIC
-
+    val visibility = modifiers.visibility
+    val public = visibility == ConstructorVisibility.PUBLIC
     override val overridden: Boolean = false
 
     private val propertyParameterMap: Map<String, Property>? by lazy {
@@ -529,8 +539,8 @@ internal class Constructor(
     fun toPrimaryCode(): String {
         val declaration: String = when (modifiers.visibility) {
             ConstructorVisibility.PUBLIC -> ""
-            ConstructorVisibility.PROTECTED -> "\nprotected constructor"
-            ConstructorVisibility.PRIVATE -> "\nprivate constructor"
+            ConstructorVisibility.PROTECTED -> "protected constructor"
+            ConstructorVisibility.PRIVATE -> "private constructor"
         }
 
         val propertyMap = propertyParameterMap
@@ -543,7 +553,7 @@ internal class Constructor(
             kotlinParametersString()
         }
 
-        return "$declaration ($parametersString)"
+        return "$declaration($parametersString)"
     }
 
     override fun toCode(): String {
@@ -566,8 +576,8 @@ private class TypeConstant(
     parent: TypeDeclaration,
 ) : Constant(source, parent) {
     private val modifiers: ConstantModifiers by wrapStringList(::ConstantModifiers)
-    private val dpdata: DpData? by optNamed(::DpData)
-
+    override val fixGeneric: Boolean
+        get() = false
     private val documentation: String
         get() = getDocumentation(
             summary = summary,
@@ -577,14 +587,19 @@ private class TypeConstant(
 
     override fun toCode(): String {
         val modifier = exp(modifiers.protected, "protected")
-        return documentation +
-                "$modifier val $name: $type"
+        return buildString {
+            if (documentation.isNotEmpty()) {
+                appendLine(documentation)
+            }
+            append("$modifier val $name: $type")
+        }
     }
 }
 
 private class EnumConstant(
     source: JSONObject,
     parent: TypeDeclaration,
+    private val flags: Boolean = false
 ) : Constant(source, parent) {
     private val value: Int by int()
 
@@ -595,8 +610,16 @@ private class EnumConstant(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String =
-        documentation + "val $name: ${parent.classId}"
+    override fun toCode(): String {
+        return buildString {
+            appendLine(documentation)
+            if (flags) {
+                append("val $name: ${parent.classId}")
+            } else {
+                append("object $name: ${parent.classId}")
+            }
+        }
+    }
 
     override fun compareTo(other: Declaration): Int =
         when (other) {
@@ -656,52 +679,43 @@ internal class Property(
             seeAlso = seeAlso + seeAlsoDocs
         )
 
-    override fun toCode(): String =
-        "$documentation${toSimpleCode()}"
+    override fun toCode(): String = """
+        |$documentation
+        |${toSimpleCode()}
+    """.trimMargin()
 
     fun toPrimaryCode(optionalParameter: Boolean): String =
         toSimpleCode() + exp(optionalParameter, EQ_DE)
 
     private fun toSimpleCode(): String {
-        var str = ""
-
         val definedExternally = parent is Interface && !abstract
         if (definedExternally) {
             check(!overridden && !protected)
         }
 
-        if (overridden) {
-            str += exp(final, "final ") + "override "
-        } else {
-            if (protected) {
-                str += "protected "
+        val keywords = buildList {
+            if (protected) add("protected")
+            if (final || definedExternally) add("final")
+            else if (abstract && parent !is Interface) add("abstract")
+            else if (open && parent !is Interface) add("open")
+            if (overridden) add("override")
+            if (mode.writable) add("var") else add("val")
+        }.joinToString(" ")
+
+        return buildString {
+            if (modifiers.deprecated) {
+                appendLine(DEPRECATED_ANNOTATION)
             }
-
-            str += when {
-                definedExternally -> "final "
-                abstract -> "abstract "
-                final -> "final "
-                open -> "open "
-                else -> ""
+            if (!mode.readable) {
+                appendLine(
+                    """
+                        |@Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
+                        |get
+                    """.trimMargin()
+                )
             }
+            append("$keywords $name: $type${modifiers.nullability}")
         }
-
-        str += if (mode.writable) "var " else "val "
-
-        str += "$name: $type${modifiers.nullability}"
-        if (!mode.readable) {
-            str += """
-
-                @Deprecated(message = "Write-only property", level = DeprecationLevel.HIDDEN)
-                get
-            """.trimIndent()
-        }
-
-        if (modifiers.deprecated) {
-            str = DEPRECATED_ANNOTATION + "\n" + str
-        }
-
-        return str
     }
 
     override fun toExtensionCode(): String {
@@ -891,28 +905,26 @@ internal class Method(
         }
 
         if (overridden) {
-            return exp(final, "final ") + exp(abstract, "abstract ") + "override "
+            return buildList {
+                if (final && (parent !is Class || parent.isExtensible)) add("final")
+                if (abstract) add("abstract")
+                add("override")
+            }.joinToString(" ")
         }
 
-        val visibility = when {
-            internal -> "internal "
-            protected -> "protected "
-            else -> ""
-        }
+        return buildList {
+            if (internal) add("internal")
+            else if (protected) add("protected")
 
-        val infix = when {
-            parameters.size != 1 -> ""
-            returns == null -> ""
-            name !in INFIX_METHODS -> ""
-            else -> "infix "
-        }
+            if (parent !is Interface) {
+                if (abstract) add("abstract")
+                else if (open) add("open")
+            }
 
-        return when {
-            abstract -> "abstract "
-            final -> "final "
-            open -> "open "
-            else -> ""
-        } + visibility + infix
+            if (parameters.size == 1 && returns != null && name in INFIX_METHODS) {
+                add("infix")
+            }
+        }.joinToString(" ")
     }
 
     private fun nullablePromiseResult(generic: String): Boolean =
@@ -930,7 +942,7 @@ internal class Method(
     // https://youtrack.jetbrains.com/issue/KT-31249
     private fun getReturnSignature(definedExternally: Boolean = false): String {
         var type = returns?.type
-            ?: return exp(definedExternally, ":$UNIT = definedExternally")
+            ?: return exp(definedExternally, ": $UNIT = definedExternally")
 
         if (type.startsWith("$PROMISE<")) {
             val newGeneric = when (val generic = type.between("<", ">")) {
@@ -941,7 +953,7 @@ internal class Method(
             type = "$PROMISE<$newGeneric>"
         }
 
-        return ":" + type + modifiers.nullability + exp(definedExternally, " = definedExternally")
+        return ": " + type + modifiers.nullability + exp(definedExternally, " = definedExternally")
     }
 
     private fun isOperatorMode(): Boolean =
@@ -949,8 +961,12 @@ internal class Method(
                 && parameters.first().name != "x" // to exclude RectangleHandle.set
 
     override fun toCode(): String {
-        val staticCreate = static && name in FACTORY_METHODS
-                && parent.name != "List" && parent.name != "XmlName" && !parent.name.endsWith("s")
+        val staticCreate = static
+                && name in FACTORY_METHODS
+                && parent.name != "List"
+                && parent.name != "XmlName"
+                && !parent.name.endsWith("s")
+
         val additionalOperator = operatorName != null
         val operator = exp(staticCreate || additionalOperator || isOperatorMode(), "operator")
 
@@ -959,27 +975,49 @@ internal class Method(
             name in APPLY_METHODS -> "applyTo"
             else -> operatorName ?: name
         }
-        val annotation = if (methodName != name) "@JsName(\"$name\")\n" else ""
+        val annotation = if (methodName != name) "@JsName(\"$name\")" else ""
 
         val definedExternally = when {
             static -> false
             additionalOperator -> parent is Interface
-            else -> !static && !abstract && parent is Interface
+            else -> !abstract && parent is Interface
         }
 
         val returnSignature = getReturnSignature(definedExternally)
-        val modifier = if (additionalOperator || definedExternally) " final" else kotlinModifier()
-        val receiver = if (hasReceiver) parameters.first().typeDeclaration + "." else ""
+        val modifier = if (additionalOperator || definedExternally) "final" else kotlinModifier()
         val parametersString = kotlinParametersString(hasReceiver)
-        var code = "$annotation $modifier $operator fun ${generics.declaration}$receiver$methodName($parametersString)$returnSignature"
-        when {
-            deprecated ->
-                code = DEPRECATED_ANNOTATION + "\n" + code
-            hidden ->
-                code = HIDDEN_METHOD_ANNOTATION + "\n" + code
-        }
 
-        val result = documentation + code
+        var result = buildString {
+            appendLine(documentation)
+            if (deprecated) appendLine(DEPRECATED_ANNOTATION)
+            if (hidden) appendLine(HIDDEN_METHOD_ANNOTATION)
+            if (annotation.isNotEmpty())
+                appendLine(annotation)
+
+            append(buildList {
+                if (modifier.isNotEmpty())
+                    add(modifier)
+
+                if (operator.isNotEmpty())
+                    add(operator)
+
+                add("fun")
+
+                if (generics.declaration.isNotEmpty())
+                    add(generics.declaration)
+
+                add(buildString {
+                    if (hasReceiver) {
+                        append(parameters.first().typeDeclaration)
+                        append(".")
+                    }
+                    append(methodName)
+                })
+            }.joinToString(" "))
+
+            append("($parametersString)")
+            append(returnSignature)
+        }
 
         if (additionalOperator) return result
         if (static) return result
@@ -995,20 +1033,20 @@ internal class Method(
 
         val functionalMethod = parent.functionalMethod ?: return null
         val delegateName = functionalMethod.name
-        val delegateType = """(
-            ${functionalMethod.parameters.byCommaLine { it.declaration }}
-            ) -> ${(functionalMethod.returns?.type ?: UNIT)} 
-        """.trimIndent()
+        val delegateType = "(${functionalMethod.parameters.byComma { it.declaration }}) -> ${(functionalMethod.returns?.type ?: UNIT)}"
 
         val factoryGenerics = parent.generics
         val code = """
-            @JsName("$name")
-            operator fun ${factoryGenerics.wrapperDeclaration} invoke(
-                $delegateName: $delegateType
-            )${getReturnSignature()}
-        """.trimIndent()
+            |@JsName("$name")
+            |operator fun ${factoryGenerics.wrapperDeclaration} invoke(
+            |  $delegateName: $delegateType
+            |)${getReturnSignature()}
+        """.trimMargin()
 
-        return documentation + code
+        return """
+            |$documentation
+            |$code
+        """.trimMargin()
     }
 
     private fun getStaticOperatorExtensionName(): String? {
@@ -1067,10 +1105,12 @@ internal class Method(
         val returnOperator = exp(returns != null, "return ")
         val methodCall = "$name(${parameters.byComma { it.name }})"
 
-        return documentation +
-                "inline operator fun $genericDeclaration ${parent.classDeclaration}.$operatorName($extParameters)$returnSignature {\n" +
-                "    $returnOperator $AS_DYNAMIC.$methodCall\n" +
-                "}"
+        return """
+            |$documentation
+            |inline operator fun $genericDeclaration ${parent.classDeclaration}.$operatorName($extParameters)$returnSignature {
+            |  $returnOperator $AS_DYNAMIC.$methodCall
+            |}
+        """.trimMargin()
     }
 }
 
@@ -1095,17 +1135,22 @@ internal sealed class MethodBase(
         get() = seeAlsoDocs(parent, id)
 
     protected fun Parameter.toParameterString(): String {
-        val vararg = exp(modifiers.vararg, "vararg ")
-        val body = exp(modifiers.optional && !overridden, EQ_DE)
-        return "$vararg $declaration $body"
+        return buildList {
+            if (modifiers.vararg) add("vararg")
+            add(declaration)
+            if (modifiers.optional && !overridden) add(EQ_DE)
+        }.joinToString(" ")
     }
 
     protected fun kotlinParametersString(
         ignoreFirstParameter: Boolean = false,
-    ): String =
-        parameters
-            .drop(if (ignoreFirstParameter) 1 else 0)
-            .byCommaLine { it.toParameterString() }
+    ): String = parameters
+        .drop(if (ignoreFirstParameter) 1 else 0)
+        .takeUnless { it.isEmpty() }
+        ?.joinToString(separator = "", prefix = System.lineSeparator()) {
+            INDENT + it.toParameterString() + "," + System.lineSeparator()
+        } ?: ""
+
 
     override fun compareTo(other: Declaration): Int {
         val result = super.compareTo(other)
@@ -1135,7 +1180,7 @@ internal class Parameter(
     override val summary: String? by summary()
     val modifiers: ParameterModifiers by parameterModifiers()
 
-    val declaration: String by lazy { name + ": " + typeDeclaration }
+    val declaration: String by lazy { "$name: $typeDeclaration" }
 }
 
 internal class TypeParameter(source: JSONObject) : JsonWrapper(source), IParameter, ITypeParameter {
@@ -1176,21 +1221,13 @@ internal class Event(
     private val parent: TypeDeclaration,
 ) : JsonWrapper(source) {
     val name: String by string()
+    val signature: String by string()
+    val type: String by type { parse(it, signature, emptyList()).asReadOnly() }
     private val summary: String? by summary()
     private val seeAlso: List<SeeAlso> by seeAlso()
-    private val add: EventListener by eventListener(parent)
-    private val remove: EventListener by eventListener(parent)
-    private val listeners = listOf(add, remove)
-
-    val overriden by lazy {
-        listeners.any { it.overridden }
-    }
 
     private val seeAlsoDocs: List<SeeAlso>
         get() = seeAlsoDocs(parent, name)
-
-    val listenerNames: List<String>
-        get() = listeners.map { it.name }
 
     private val documentation: String
         get() = getDocumentation(
@@ -1199,58 +1236,28 @@ internal class Event(
         )
 
     override fun toCode(): String {
-        return documentation +
-                listeners.lines { it.toCode() }
+        return ""
     }
 
     override fun toExtensionCode(): String {
-        // TODO: fix in common way
         val generics = parent.generics.declaration.replace("<in T", "<T")
         val classDeclaration = parent.classDeclaration.replace("<in T>", "<T>")
-        val extensionName = "add${name}Handler"
+        val extensionName = name.split("-")
+            .joinToString(separator = "", prefix = "add", postfix = "Handler") {
+                it.replaceFirstChar(Char::titlecase)
+            }
 
-        val listenerType = add.parameters.single().type
-        val data = getHandlerData(listenerType)
-
-        return documentation +
-                """
-                    inline fun $generics $classDeclaration.$extensionName(
-                        crossinline handler: ${data.handlerType}
-                    ): () -> Unit {
-                        val listener: $listenerType = ${data.listenerBody}
-                        ${add.name}(listener)
-                        return { ${remove.name}(listener) }
-                    }
-                """.trimIndent()
-    }
-}
-
-private class EventListener(
-    source: JSONObject,
-    private val parent: HasClassId,
-) : JsonWrapper(source) {
-    val name: String by string()
-    val modifiers: EventListenerModifiers by wrapStringList(::EventListenerModifiers)
-    val parameters: List<Parameter> by list { Parameter(it) }
-
-    val overridden: Boolean
-        get() = ClassRegistry.instance
-            .listenerOverridden(parent.classId, name)
-
-    private fun kotlinModificator(): String {
-        return when {
-            overridden -> "override "
-            modifiers.abstract -> "abstract "
-            else -> ""
-        }
-    }
-
-    // TODO: update after nullability fix
-    override fun toCode(): String {
-        val parametersString = parameters
-            .byComma { it.declaration }
-
-        return "${kotlinModificator()}fun $name($parametersString)"
+        val data = getHandlerData(type)
+        return """
+                    |$documentation
+                    |inline fun $generics $classDeclaration.$extensionName(
+                    |  crossinline handler: ${data.handlerType}
+                    |): () -> Unit {
+                    |  val listener: $type = ${data.listenerBody}
+                    |  addEventListener("$name", listener)
+                    |  return { removeEventListener("$name", listener) }
+                    |}
+                """.trimMargin()
     }
 }
 
@@ -1310,9 +1317,6 @@ private fun defaultValue(): Prop<DefaultValue?> =
             .takeIf { it.isNotEmpty() }
     }
 
-private fun eventListener(parent: HasClassId): Prop<EventListener> =
-    named { EventListener(it, parent) }
-
 private fun <P : Declaration, T : Declaration> P.declarationList(
     create: (JSONObject, P) -> T,
 ): Prop<List<T>> =
@@ -1364,7 +1368,7 @@ private fun getDocumentation(
 
     return "/**\n" +
             lines.lines { " * $it" } +
-            " */\n"
+            " */"
 }
 
 private fun getDocumentationLines(
@@ -1492,3 +1496,5 @@ private fun List<String>?.toNamedList(title: String): List<String> {
 
     return listOf("### $title") + map(::listItem)
 }
+
+internal fun String.indent(indent: String = INDENT) = lines().joinToString(System.lineSeparator()) { indent + it }

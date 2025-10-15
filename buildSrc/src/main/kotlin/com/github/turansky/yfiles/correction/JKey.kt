@@ -37,6 +37,8 @@ internal object STATIC_METHODS : JArrayKey("staticMethods")
 internal object METHODS : JArrayKey("methods")
 
 internal object EVENTS : JArrayKey("events")
+internal object SEE_ALSO : JArrayKey("seeAlso")
+internal object MEMBER : JStringKey("member")
 
 internal object PARAMETERS : JArrayKey("parameters")
 internal object RETURNS : JObjectKey("returns")

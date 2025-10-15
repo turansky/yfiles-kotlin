@@ -13,11 +13,6 @@ internal fun fixNullability(source: Source) {
     fixAlgorithmsNullability(source)
     fixLayoutNullability(source)
     fixCommonLayoutNullability(source)
-    fixStageNullability(source)
-    fixMultipageNullability(source)
-    fixHierarchicNullability(source)
-    fixRouterNullability(source)
-    fixTreeNullability(source)
 }
 
 private fun fixConstructorNullability(source: Source) {
@@ -27,61 +22,16 @@ private fun fixConstructorNullability(source: Source) {
     )
 
     source.types(
-        "DpKeyBase",
-        "EdgeDpKey",
-        "GraphDpKey",
-        "GraphObjectDpKey",
-        "IEdgeLabelLayoutDpKey",
-        "ILabelLayoutDpKey",
-        "INodeLabelLayoutDpKey",
-        "NodeDpKey",
-
         "MapEntry",
-
         "GraphWrapperBase",
-        "CompositeLayoutStage",
-
-        "AspectRatioComponentLayerer",
-        "ConstraintIncrementalLayerer"
     ).flatMap { it.flatMap(CONSTRUCTORS) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 
-    source.type("MultiComponentLayerer")
-        .flatMap(CONSTRUCTORS)
-        .single()
-        .firstParameter
-        .changeNullability(false)
-
-    source.types(
-        "LookupDecorator",
-        "StripeDecorator",
-
-        "MapperInputHandler",
-        "MapperOutputHandler",
-        "InputHandlerBase",
-        "OutputHandlerBase",
-
-        "DataMapAdapter",
-        "MapperDataProviderAdapter",
-
-        "PathBasedEdgeStyleRenderer",
-
-        "ItemModelManager",
-        "CollectionModelManager"
-    ).flatMap { it.flatMap(CONSTRUCTORS) }
-        .flatMap(PARAMETERS)
-        .filter { it[TYPE].startsWith(YCLASS) }
-        .filter { it[NAME] != "deserializerTargetType" }
-        .forEach { it.changeNullability(false) }
-
     source.types(
         "ItemClickedEventArgs",
-        "ItemTappedEventArgs",
         "TableItemClickedEventArgs",
-        "TableItemTappedEventArgs",
-        "ItemSelectionChangedEventArgs"
     ).flatMap { it.flatMap(CONSTRUCTORS) }
         .map { it.firstParameter }
         .forEach { it.changeNullability(false) }
@@ -179,7 +129,9 @@ private fun fixCollectionsNullability(source: Source) {
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .filterNot { it[NAME] in excludedParameters }
-        .forEach { it.changeNullability(false) }
+        .forEach {
+            it.changeNullability(false)
+        }
 
     source.type("IEnumerable")
         .method("indexOf")
@@ -205,10 +157,10 @@ private fun fixGraphNullability(source: Source) {
     )
 
     source.types(
-        "ISelectionModel",
-        "DefaultSelectionModel",
-        "GraphSelection",
-        "StripeSelection",
+//        "ISelectionModel",
+//        "DefaultSelectionModel",
+//        "GraphSelection",
+//        "StripeSelection",
 
         "GroupingSupport"
     ).flatMap { it.flatMap(METHODS) }
@@ -282,17 +234,6 @@ private fun fixAlgorithmsNullability(source: Source) {
         "create"
     )
 
-    val excludedParameters = setOf(
-        "edgeCosts",
-        "edgeWeights",
-
-        "defaultValue",
-        "dualsNM",
-
-        "revMap",
-        "reverseEdgeMap"
-    )
-
     val excludedTypes = setOf(
         "boolean",
         "number",
@@ -302,40 +243,6 @@ private fun fixAlgorithmsNullability(source: Source) {
         "yfiles.algorithms.GraphElementInsertion"
     )
 
-    source.types(
-        "AbortHandler",
-        "BipartitionAlgorithm",
-        "CentralityAlgorithm",
-        "Comparers",
-        "Cursors",
-        "CycleAlgorithm",
-        "DataProviders",
-        "Geom",
-        "GraphChecker",
-        "GraphConnectivity",
-        "GroupAlgorithm",
-        "IndependentSetAlgorithm",
-        "IntersectionAlgorithm",
-        "NetworkFlowAlgorithm",
-        "NodeOrderAlgorithm",
-        "PathAlgorithm",
-        "RankAssignmentAlgorithm",
-        "SortingAlgorithm",
-        "ShortestPathAlgorithm",
-        "SpanningTreeAlgorithm",
-        "TransitivityAlgorithm",
-        "TreeAlgorithm",
-        "TriangulationAlgorithm"
-    ).flatMap(METHODS)
-        .filter { STATIC in it[MODIFIERS] }
-        .filter { it.has(PARAMETERS) }
-        .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
-        .filterNot { it[NAME] in excludedMethods }
-        .flatMap(PARAMETERS)
-        .filterNot { it[NAME] in excludedParameters }
-        .filterNot { it[TYPE] in excludedTypes }
-        .forEach { it.changeNullability(false) }
-
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         type.flatMap(METHODS)
             .plus(type.optFlatMap(CONSTRUCTORS))
@@ -343,63 +250,16 @@ private fun fixAlgorithmsNullability(source: Source) {
             .filterNot { it[NAME] in excludedMethods }
 
     source.types(
-        "AffineLine",
-        "BorderLine",
-        "Dendrogram",
-        "DfsAlgorithm",
-        "GraphPartitionManager",
-        "IIntersectionHandler",
-        "INodeDistanceProvider",
-        "INodeSequencer",
         "LayoutGraphHider",
         "LineSegment",
         "PlanarEmbedding",
-        "Point2D",
-        "Rectangle2D",
-        "YPoint",
-        "YRectangle"
     ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
-        .filterNot { it[TYPE] in excludedTypes }
-        .forEach { it.changeNullability(false) }
-
-    val yMethodIds = setOf(
-        "YOrientedRectangle-method-contains(yfiles.algorithms.YOrientedRectangle,number,number,number)",
-        "YOrientedRectangle-constructor-YOrientedRectangle(yfiles.algorithms.YPoint,yfiles.algorithms.YDimension)",
-        "YOrientedRectangle-constructor-YOrientedRectangle(yfiles.algorithms.YPoint,yfiles.algorithms.YDimension,yfiles.algorithms.YVector)",
-
-        "YVector-method-add"
-    )
-
-    val yMethods = setOf(
-        "adoptValues",
-        "calcPoints",
-        "calcPointsInDouble",
-        "intersectionPoint",
-
-        "angle",
-        "getNormal",
-        "orthoNormal",
-        "rightOf",
-        "scalarProduct"
-    )
-
-    source.types(
-        "YOrientedRectangle",
-        "YVector"
-    ).flatMap { it.flatMap(METHODS) + it.flatMap(CONSTRUCTORS) }
-        .filter { it[ID] in yMethodIds || it.get(NAME) in yMethods }
-        .flatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
         .forEach { it.changeNullability(false) }
 }
 
 private fun fixLayoutNullability(source: Source) {
-    val EXCLUDED_METHOD_IDS = setOf(
-        "LayoutGraphUtilities-method-getBoundingBox(yfiles.layout.LayoutGraph,yfiles.algorithms.Node)",
-        "LayoutGraphUtilities-method-getBoundingBox(yfiles.layout.LayoutGraph,yfiles.algorithms.Edge)"
-    )
-
     val excludedMethods = setOf(
         "getLabelLayout",
         "getLayout",
@@ -436,22 +296,6 @@ private fun fixLayoutNullability(source: Source) {
         "yfiles.layout.PortDirections"
     )
 
-    source.types(
-        "GraphTransformer",
-        "LayoutGraphUtilities",
-        "NodeHalo",
-        "NormalizeGraphElementOrderStage",
-        "PortConstraint",
-        "Swimlanes"
-    ).flatMap(METHODS)
-        .filter { STATIC in it[MODIFIERS] }
-        .filter { it.has(PARAMETERS) }
-        .filterNot { it[ID] in EXCLUDED_METHOD_IDS }
-        .filterNot { it[NAME] in excludedMethods }
-        .flatMap(PARAMETERS)
-        .filterNot { it[TYPE] in excludedTypes }
-        .forEach { it.changeNullability(false) }
-
     fun getAffectedMethods(type: JSONObject): Sequence<JSONObject> =
         type.optFlatMap(METHODS)
             .plus(type.optFlatMap(CONSTRUCTORS))
@@ -459,35 +303,7 @@ private fun fixLayoutNullability(source: Source) {
 
     source.types(
         "ILayoutGroupBoundsCalculator",
-        "InsetsGroupBoundsCalculator",
-        "MinimumSizeGroupBoundsCalculator",
-
-        "EdgeLabelOrientationSupport",
-        "LayoutGroupingSupport",
-        "PartitionGrid",
-        "PortConstraintConfigurator",
-        "PortCandidateSet",
-        "ItemCollectionMapping",
-
-        "INodeLabelLayoutModel",
-        "DiscreteNodeLabelLayoutModel",
-        "FreeNodeLabelLayoutModel",
-
-        "IEdgeLabelLayoutModel",
-        "DiscreteEdgeLabelLayoutModel",
-        "FreeEdgeLabelLayoutModel",
-        "SliderEdgeLabelLayoutModel",
-
         "LabelCandidate",
-        "EdgeLabelCandidate",
-        "NodeLabelCandidate",
-
-        "IIntersectionCalculator",
-        "IPortCandidateMatcher",
-
-        "IProfitModel",
-        "SimpleProfitModel",
-        "ExtendedLabelCandidateProfitModel"
     ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
@@ -512,16 +328,10 @@ private fun fixCommonLayoutNullability(source: Source) {
     source.types(
         "SequentialLayout",
 
-        "LabelingBase",
-        "MISLabelingBase",
-
         "MultiPageLayout",
         "InteractiveOrganicLayout",
         "OrganicLayout",
         "PartialLayout",
-
-        "ISeriesParallelLayoutPortAssignment",
-        "DefaultSeriesParallelLayoutPortAssignment"
     ).flatMap { getAffectedMethods(it) }
         .optFlatMap(PARAMETERS)
         .filterNot { it[TYPE] in excludedTypes }
@@ -726,13 +536,7 @@ private fun fixRouterNullability(source: Source) {
 
     source.types(
         "IDynamicDecomposition",
-        "IDecompositionListener",
-        "IGraphPartitionExtension",
         "IPartition",
-        "IObstaclePartition",
-        "GraphPartition",
-        "GraphPartitionExtensionAdapter",
-        "DynamicObstacleDecomposition",
 
         "BusRouterBusDescriptor",
         "Channel",
@@ -757,7 +561,7 @@ private fun fixRouterNullability(source: Source) {
 
         "ChannelRoutingTool",
         "ChannelBasedPathRouting",
-        "IEnterIntervalCalculator",
+//        "IEnterIntervalCalculator",
 
         "ChannelEdgeRouter",
         "EdgeRouter",

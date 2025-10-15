@@ -46,11 +46,6 @@ internal fun applyTagHacks(source: Source) {
         .eventListeners()
         .map { it.firstParameter }
         .forEach { it.replaceInSignature(",$JS_OBJECT>>", ",$TAG>>") }
-
-    source.type("LayoutGraphAdapter")
-        .constant("ORIGINAL_TAG_DP_KEY").also {
-            it.replaceInType("<$JS_ANY>", "<$TAG>")
-        }
 }
 
 private fun looksLikeTag(name: String): Boolean =

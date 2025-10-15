@@ -1,7 +1,7 @@
 import web.html.HTMLDivElement
-import yfiles.graph.DefaultGraph
+import yfiles.graph.Graph
 import yfiles.graph.invoke
-import yfiles.hierarchic.HierarchicLayout
+import yfiles.hierarchic.HierarchicalLayout
 import yfiles.input.GraphViewerInputMode
 import yfiles.layout.LayoutOrientation
 import yfiles.view.GraphComponent
@@ -10,19 +10,19 @@ fun create(): HTMLDivElement =
     GraphComponent().run {
         inputMode = GraphViewerInputMode()
 
-        div.style.apply {
+        htmlElement.style.apply {
             width = "100%"
             height = "100%"
             backgroundColor = "#CCCCCC"
         }
 
-        val layout = HierarchicLayout {
+        val layout = HierarchicalLayout {
             layoutOrientation = LayoutOrientation.LEFT_TO_RIGHT
             automaticEdgeGrouping = true
             gridSpacing = 20.0
         }
 
-        graph = DefaultGraph {
+        graph = Graph {
             val node1 = createNode()
             val node2 = createNode()
             createEdge(node1, node2)
@@ -31,14 +31,14 @@ fun create(): HTMLDivElement =
         }
 
         graph.decorator {
-            nodeDecorator {
-                selectionDecorator.hideImplementation()
-                focusIndicatorDecorator.hideImplementation()
-                highlightDecorator.hideImplementation()
+            nodes {
+                selectionRenderer.hide { true }
+                focusRenderer.hide { true }
+                highlightRenderer.hide { true }
             }
         }
 
         fitGraphBounds()
 
-        div
+        htmlElement.unsafeCast<HTMLDivElement>()
     }
