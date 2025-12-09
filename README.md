@@ -9,8 +9,6 @@
 ## [Gradle Plugin](gradle-plugin)
 
 + Resolve inheritance problems
-+ Optimize yFiles imports
-    + while [ES modules](https://youtrack.jetbrains.com/issue/KT-8373) not supported
 
 ## [IDEA Plugin](idea-plugin)
 
