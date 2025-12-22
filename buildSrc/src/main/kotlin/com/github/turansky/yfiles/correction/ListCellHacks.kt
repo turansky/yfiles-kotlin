@@ -1,18 +1,16 @@
 package com.github.turansky.yfiles.correction
 
-import com.github.turansky.yfiles.EDGE
-import com.github.turansky.yfiles.YOBJECT
 import org.json.JSONObject
 
 private const val LIST_CELL = "yfiles.algorithms.ListCell"
 
 internal fun applyListCellHacks(source: Source) {
     source.type("ListCell") {
-        setSingleTypeParameter(bound = YOBJECT)
+        setSingleTypeParameter()
 
         property("info")[TYPE] = "T"
 
-        flatMap(METHODS)
+        optFlatMap(METHODS)
             .forEach { it[RETURNS].addGeneric("T") }
     }
 
@@ -20,17 +18,6 @@ internal fun applyListCellHacks(source: Source) {
         .getTypeHolders()
         .filter { it[TYPE] == LIST_CELL }
         .forEach { it.addGeneric("T") }
-
-    source.type("BorderLine")
-        .flatMap(METHODS)
-        .filter { it[NAME] == "getValueAt" }
-        .flatMap(PARAMETERS)
-        .single { it[TYPE] == LIST_CELL }
-        .addGeneric("BorderLineSegment")
-
-    source.type("INodeData")
-        .property("firstSameLayerEdgeCell")
-        .addGeneric(EDGE)
 }
 
 private fun JSONObject.getTypeHolders(): Sequence<JSONObject> =

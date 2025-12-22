@@ -27,7 +27,7 @@ tasks {
         delete("src")
     }
 
-    val apiDescriptorFile = File(buildDir, "api.js")
+    val apiDescriptorFile = layout.buildDirectory.file("api.js").get().asFile
 
     val downloadApiDescriptor by registering(Download::class) {
         src(project.property("vsdx.api.url"))

@@ -1,7 +1,10 @@
+@file:Suppress("USELESS_IS_CHECK")
+
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("CANNOT_CHECK_FOR_EXTERNAL_INTERFACE")
 @Ignore
 class BaseClassTest {
     @Test

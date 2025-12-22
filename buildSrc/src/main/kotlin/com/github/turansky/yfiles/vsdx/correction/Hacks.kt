@@ -5,8 +5,6 @@ import com.github.turansky.yfiles.correction.*
 import org.json.JSONObject
 
 private val YFILES_TYPE_MAP = sequenceOf(
-    YCLASS,
-
     "yfiles.collections.IEnumerator",
     IENUMERABLE,
 
@@ -62,7 +60,7 @@ private val YFILES_TYPE_MAP = sequenceOf(
     "yfiles.view.HorizontalTextAlignment",
     "yfiles.view.VerticalTextAlignment"
 ).associateBy {
-    if (it == YCLASS) "Class" else it.substringAfterLast(".")
+    it.substringAfterLast(".")
 }
 
 private val TYPE_MAP = YFILES_TYPE_MAP + mapOf(
@@ -229,22 +227,19 @@ private fun fixOptionTypes(source: VsdxSource) {
         .apply {
             parameter("optionsOrNodeStyleType").apply {
                 set(NAME, "nodeStyleType")
-                set(TYPE, "$YCLASS<yfiles.styles.INodeStyle>")
+                set(TYPE, "$JS_CLASS<yfiles.styles.INodeStyle>")
             }
 
-            parameter("edgeStyleType")
-                .addGeneric("yfiles.styles.IEdgeStyle")
-            parameter("portStyleType")
-                .addGeneric("yfiles.styles.IPortStyle")
-            parameter("labelStyleType")
-                .addGeneric("yfiles.styles.ILabelStyle")
+            parameter("edgeStyleType")[TYPE] = "$JS_CLASS<yfiles.styles.IEdgeStyle>"
+            parameter("portStyleType")[TYPE] = "$JS_CLASS<yfiles.styles.IPortStyle>"
+            parameter("labelStyleType")[TYPE] = "$JS_CLASS<yfiles.styles.ILabelStyle>"
         }
 
     source.type("CustomEdgeProvider")
         .flatMap(CONSTRUCTORS)
         .single()
         .parameter("edgeStyleType")
-        .addGeneric("yfiles.styles.IEdgeStyle")
+        .set(TYPE, "$JS_CLASS<yfiles.styles.IEdgeStyle>")
 
     source.type("VssxStencilProviderFactory") {
         sequenceOf(
@@ -254,7 +249,7 @@ private fun fixOptionTypes(source: VsdxSource) {
             "createMappedPortProvider" to "yfiles.styles.IPortStyle"
         ).forEach { (methodName, styleGeneric) ->
             methodParameters(methodName, "styleType")
-                .forEach { it.addGeneric(styleGeneric) }
+                .forEach { it[TYPE] = "$JS_CLASS<$styleGeneric>" }
         }
     }
 }

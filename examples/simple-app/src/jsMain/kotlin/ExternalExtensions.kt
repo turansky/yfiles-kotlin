@@ -1,17 +1,16 @@
 @file:Suppress("unused", "UNUSED_VARIABLE")
 
-import yfiles.algorithms.Graph
-import yfiles.algorithms.GraphChecker.isAcyclic
-import yfiles.algorithms.GraphChecker.isCyclic
-import yfiles.algorithms.Trees.isForest
-import yfiles.layout.DefaultLayoutGraph
+import yfiles.analysis.LayoutGraphAlgorithms.isAcyclic
+import yfiles.analysis.LayoutGraphAlgorithms.isConnected
+import yfiles.analysis.LayoutGraphAlgorithms.isForest
+import yfiles.layout.LayoutGraph
 
 fun externalExtensions() {
-    val graph: Graph = DefaultLayoutGraph()
-    // JS: GraphChecker.isCyclic(graph)
-    graph.isCyclic()
-    // JS: GraphChecker.isAcyclic(graph)
+    val graph = LayoutGraph()
+    // JS: LayoutGraphAlgorithms.isConnected(graph)
+    graph.isConnected()
+    // JS: LayoutGraphAlgorithms.isAcyclic(graph)
     graph.isAcyclic()
-    // JS: Trees.isForest(graph)
-    graph.isForest()
+    // JS: LayoutGraphAlgorithms.isForest(graph, boolean)
+    graph.isForest(true)
 }

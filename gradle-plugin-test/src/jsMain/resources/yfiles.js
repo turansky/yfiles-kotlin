@@ -1,5 +1,3 @@
-function YObject () {}
-
 function Class () {}
 
 Class.fixType = function (type, name) {
@@ -9,8 +7,8 @@ Class.fixType = function (type, name) {
 
 function BaseClass (...types) {
   const generic = types
-    .map(type => type.name)
-    .join('-')
+      .map(type => type.name)
+      .join('-')
   const className = `BaseClass[${generic}]`
 
   const YClass = function () {}
@@ -25,7 +23,6 @@ function IVisibilityTestable () {}
 function IBoundsProvider () {}
 
 export {
-  YObject,
   Class,
   BaseClass,
   IArrow,

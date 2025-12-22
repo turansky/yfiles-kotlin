@@ -39,5 +39,3 @@ include("examples:simple-app")
 include("examples:data-classes")
 include("examples:configurable-properties")
 
-include("examples:import-optimizer-library")
-include("examples:import-optimizer-application")
