@@ -42,7 +42,7 @@ private val STANDARD_TYPE_MAP = mapOf(
     "Record" to "js.objects.ReadonlyRecord",
 
     "Event" to "web.events.Event",
-    "KeyboardEvent" to "web.uievents.KeyboardEvent",
+    "KeyboardEvent" to "web.keyboard.KeyboardEvent",
 
     "Document" to "web.dom.Document",
     "Node" to "web.dom.Node",
