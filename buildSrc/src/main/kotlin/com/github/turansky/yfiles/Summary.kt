@@ -15,6 +15,9 @@ private val TYPE_CLEAN_REGEX_2 = Regex("( data-type=\"[a-zA-Z.]+)&lt;[^\"]+")
 
 private val TYPE_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\"\\s?></api-link>")
 private val TYPE_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-text=\"([^\"]+)\"></api-link>")
+private val TYPE_MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([^\"]+)\"></api-link>")
+private val TYPE_MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([^\"]+)\" data-text=\"([^\"]+)\"></api-link>")
+private val NS_REGEX = Regex("<api-link data-ns=\"([a-zA-Z0-9.]+)\"></api-link>")
 
 private val MEMBER_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([a-zA-Z0-9_]+)\"></api-link>")
 private val MEMBER_TEXT_REGEX = Regex("<api-link data-type=\"([a-zA-Z0-9.]+)\" data-member=\"([a-zA-Z0-9_]+)\" data-text=\"([^\"]+)\"></api-link>")
@@ -30,10 +33,11 @@ private fun String.fixApiLinks(): String {
         .replace(TYPE_CLEAN_REGEX_2, "$1")
         .replace(TYPE_REGEX, "[$1]")
         .replace(TYPE_TEXT_REGEX, "[$2][$1]")
+        .replace(TYPE_MEMBER_REGEX, "[$2][$1]")
+        .replace(TYPE_MEMBER_TEXT_REGEX, "[$3][$1]")
         .replace(MEMBER_REGEX, "[$1.$2]")
         .replace(MEMBER_TEXT_REGEX, "[$3][$1.$2]")
-        .replace("[$JS_OBJECT.", "[$YOBJECT.")
-        .replace("[yfiles.lang.Object.", "[$YOBJECT.")
+        .replace(NS_REGEX, "`$1`")
         .replace("[$JS_STRING]", "[$STRING]")
         .replace("[$JS_NUMBER]", "[Number]")
         .replace("[$JS_NUMBER.", "[$DOUBLE.")
@@ -44,7 +48,7 @@ private fun String.fixApiLinks(): String {
         .replace(">evt.", ">event.")
         .replace("&apos;", "'")
         .replace("&quot;", "\"")
-        .also { check("<api-link" !in it) }
+        .also { check("<api-link" !in it) { "\"$it\" vs original \"${this@fixApiLinks}\"" } }
 }
 
 private val ENCODED_GENERIC_START = Regex("(<code>[^<]*)&lt;")

@@ -8,10 +8,40 @@ import org.json.JSONObject
 
 internal fun generateEventDispatcherUtils(context: GeneratorContext) {
     // language=kotlin
-    context[IEVENT_DISPATCHER] = "external interface IEventDispatcher"
+    context[IEVENT_DISPATCHER] = """
+        external interface IEventDispatcher {
+            final fun <T> addEventListener(event: String, handler: T)
+            final fun <T> removeEventListener(event: String, handler: T)
+        }
+""".trimIndent()
 }
 
 internal fun applyEventDispatcherHacks(source: Source) {
+    source.types()
+        .forEach { type ->
+            type.optFlatMap(EVENTS)
+                .forEach { event ->
+                    event[TYPE] = event[TYPE].replace("function(", "").replace(",this)", "") //maybe not necessary
+
+                    if (event.has(SUMMARY)) {
+                        event[SUMMARY] = "`${event[NAME]}`: " + event[SUMMARY]
+                    } else {
+                        event[SUMMARY] = "`${event[NAME]}`"
+                    }
+
+                    event.optFlatMap(SEE_ALSO)
+                        .filter { it.has(MEMBER) }
+                        .forEach {
+                            val extensionName = it[MEMBER].split("-")
+                                .joinToString(separator = "", prefix = "add", postfix = "Handler") {
+                                    it.replaceFirstChar(Char::titlecase)
+                                }
+                            it[MEMBER] = extensionName
+                        }
+
+                }
+        }
+
     source.types()
         .filter { it.has(EVENTS) || it[NAME] == "ItemModelManager" }
         .filterNot { it.hasParentDispatcher(source) }

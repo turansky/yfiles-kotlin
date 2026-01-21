@@ -24,7 +24,18 @@ internal fun JSONArray.first(predicate: (JSONObject) -> Boolean): JSONObject =
         .first(predicate)
 
 internal operator fun JSONArray.get(name: String): JSONObject =
-    first { it[NAME] == name }
+        (0 until this.length())
+            .map(this::getJSONObject)
+            .find { it[NAME] == name }
+                ?: error("No item with name '$name'")
+
+internal fun JSONArray.find(predicate: (JSONObject) -> Boolean): JSONObject? =
+        (0 until this.length())
+            .map(this::getJSONObject)
+            .firstOrNull(predicate)
+
+internal fun JSONArray.find(name: String): JSONObject? =
+        find { it[NAME] == name }
 
 internal fun JSONArray.objects(predicate: (JSONObject) -> Boolean): Iterable<JSONObject> {
     return (0 until this.length())
