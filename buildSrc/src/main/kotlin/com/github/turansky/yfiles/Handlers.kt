@@ -15,13 +15,13 @@ internal fun getHandlerData(listenerType: String): HandlerData {
         "yfiles.graph.NodeLayoutChangedHandler" ->
             HandlerData(
                 handlerType = "(node: $INODE, oldLayout: yfiles.geometry.Rect) -> Unit",
-                listenerBody = "{ _, node, oldLayout -> handler(node, oldLayout) }"
+                listenerBody = "{ node, oldLayout, _ -> handler(node, oldLayout) }"
             )
 
         "yfiles.graph.BendLocationChangedHandler" ->
             HandlerData(
                 handlerType = "(bend: yfiles.graph.IBend, oldLocation: yfiles.geometry.Point) -> Unit",
-                listenerBody = "{ _, bend, oldLocation -> handler(bend, oldLocation) }"
+                listenerBody = "{ bend, oldLocation, _ -> handler(bend, oldLocation) }"
             )
 
         else -> throw IllegalArgumentException("No handler data for $listenerType")
@@ -33,7 +33,7 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         val itemType = eventType.between("<", ">")
         return HandlerData(
             handlerType = "(item:$itemType) -> Unit",
-            listenerBody = "{ _, event -> handler(event.item) }"
+            listenerBody = "{ event, _ -> handler(event.item) }"
         )
     }
 
@@ -41,15 +41,15 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         val (itemType, valueType) = eventType.between("<", ">").split(",")
         return HandlerData(
             handlerType = "(item:$itemType, oldValue: $valueType?) -> Unit",
-            listenerBody = "{ _, event -> handler(event.item, event.oldValue) }"
+            listenerBody = "{ event, _ -> handler(event.item, event.oldValue) }"
         )
     }
 
     if (eventType.startsWith("yfiles.input.SelectionEventArgs<")) {
         val itemType = eventType.between("<", ">")
         return HandlerData(
-            handlerType = "(context:$IINPUT_MODE_CONTEXT, selection: yfiles.view.ISelectionModel<$itemType>) -> Unit",
-            listenerBody = "{ _, event -> handler(event.context, event.selection) }"
+            handlerType = "(context:$IINPUT_MODE_CONTEXT, selection: yfiles.collections.IObservableCollection<$itemType>) -> Unit",
+            listenerBody = "{ event, _ -> handler(event.context, event.selection) }"
         )
     }
 
@@ -78,7 +78,7 @@ private fun getEventHandlerData(eventType: String): HandlerData {
         else ->
             HandlerData(
                 handlerType = "(event:$eventType) -> Unit",
-                listenerBody = "{ _, event -> handler(event) }"
+                listenerBody = "{ event, _ -> handler(event) }"
             )
     }
 }
@@ -92,37 +92,37 @@ private val EMPTY_HANDLER_DATA =
 private val PROPERTY_HANDLER_DATA =
     HandlerData(
         handlerType = "(propertyName:String) -> Unit",
-        listenerBody = "{ _, event -> handler(event.propertyName) }"
+        listenerBody = "{ event, _ -> handler(event.propertyName) }"
     )
 
 private val INPUT_MODE_HANDLER_DATA =
     HandlerData(
         handlerType = "(context:$IINPUT_MODE_CONTEXT) -> Unit",
-        listenerBody = "{ _, event -> handler(event.context) }"
+        listenerBody = "{ event, _ -> handler(event.context) }"
     )
 
 private val TEXT_HANDLER_DATA =
     HandlerData(
         handlerType = "(context:$IINPUT_MODE_CONTEXT, text:String) -> Unit",
-        listenerBody = "{ _, event -> handler(event.context, event.text) }"
+        listenerBody = "{ event, _ -> handler(event.context, event.text) }"
     )
 
 private val MARQUEE_HANDLER_DATA =
     HandlerData(
         handlerType = "(rectangle:yfiles.geometry.Rect) -> Unit",
-        listenerBody = "{ _, event -> handler(event.rectangle) }"
+        listenerBody = "{ event, _ -> handler(event.rectangle) }"
     )
 
 private val LASSO_HANDLER_DATA =
     HandlerData(
-        handlerType = "(selectionPath:yfiles.geometry.GeneralPath) -> Unit",
-        listenerBody = "{ _, event -> handler(event.selectionPath) }"
+        handlerType = "(path:yfiles.geometry.GeneralPath) -> Unit",
+        listenerBody = "{ event, _ -> handler(event.path) }"
     )
 
 private val HOVER_HANDLER_DATA =
     HandlerData(
         handlerType = "(item:$IMODEL_ITEM?, oldItem:$IMODEL_ITEM?) -> Unit",
-        listenerBody = "{ _, event -> handler(event.item, event.oldItem) }"
+        listenerBody = "{ event, _ -> handler(event.item, event.oldItem) }"
     )
 
 internal data class HandlerData(

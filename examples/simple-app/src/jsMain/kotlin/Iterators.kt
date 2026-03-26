@@ -1,20 +1,18 @@
 @file:Suppress("unused")
 
-import yfiles.algorithms.iterator
 import yfiles.collections.iterator
-import yfiles.graph.DefaultGraph
+import yfiles.graph.Graph
 import yfiles.graph.IGraph
-import yfiles.hierarchic.HierarchicLayout
-import yfiles.layout.DefaultLayoutGraph
+import yfiles.hierarchic.HierarchicalLayout
 import yfiles.layout.LayoutGraph
 
 fun enumerableIterator() {
-    val graph: IGraph = DefaultGraph {
+    val graph: IGraph = Graph {
         createNode()
         createNode()
         createNode()
 
-        applyLayout(HierarchicLayout())
+        applyLayout(HierarchicalLayout())
     }
 
     for (node in graph.nodes) {
@@ -23,16 +21,16 @@ fun enumerableIterator() {
 }
 
 fun cursorIterator() {
-    val graph: LayoutGraph = DefaultLayoutGraph {
+    val graph = LayoutGraph().apply {
         createNode()
         createNode()
         createNode()
     }
 
-    HierarchicLayout()
+    HierarchicalLayout()
         .applyLayout(graph)
 
-    for (node in graph.getNodeCursor()) {
+    for (node in graph.nodes.getCursor()) {
         println("Node index: ${node.index}")
     }
 }

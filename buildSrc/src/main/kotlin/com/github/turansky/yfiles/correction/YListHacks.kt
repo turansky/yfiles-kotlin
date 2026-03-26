@@ -9,23 +9,21 @@ private fun ylist(generic: String): String =
 internal fun applyYListHacks(source: Source) {
     fixYList(source)
     fixMethodParameter(source)
-    fixProperty(source)
-    fixReturnType(source)
+
+    source.types("YList")
+        .flatMap(CONSTANTS)
+        .forEach {
+            it[TYPE] = it[TYPE].replace("<T>", "<*>")
+        }
 }
 
 private fun fixYList(source: Source) {
     source.type("YList")
         .fixGeneric()
-
-    source.type("YNodeList")
-        .addExtendsGeneric(NODE)
-
-    source.type("EdgeList")
-        .addExtendsGeneric(EDGE)
 }
 
 private fun JSONObject.fixGeneric() {
-    setSingleTypeParameter(bound = YOBJECT)
+    setSingleTypeParameter()
 
     get(IMPLEMENTS).apply {
         put(0, getString(0).replace("<$JS_ANY>", "<T>"))
@@ -50,21 +48,7 @@ private fun JSONObject.fixGeneric() {
 private fun fixMethodParameter(source: Source) {
     source.types(
         "YList",
-
-        "Geom",
-        "TriangulationAlgorithm",
         "LayoutGraph",
-
-        "LabelingBase",
-        "SelfLoopCalculator",
-        "IntersectionAlgorithm",
-        "ChannelBasedPathRouting",
-        "OrthogonalPatternEdgeRouter",
-
-        "ILayer",
-
-        "IElementFactory",
-        "DefaultElementFactory",
         "MultiPageLayout"
     ).optFlatMap(METHODS)
         .forEach {
@@ -95,7 +79,6 @@ private fun getGeneric(
     }
 
     return when (parameterName) {
-        "path", "points" -> YPOINT
         "nodeLabels" -> INODE_LABEL_LAYOUT
         "edgeLabels" -> IEDGE_LABEL_LAYOUT
         "selfLoops" -> EDGE
@@ -104,58 +87,6 @@ private fun getGeneric(
 
         else -> throw IllegalStateException("No generic found!")
     }
-}
-
-private fun fixProperty(source: Source) {
-    sequenceOf(
-        Triple("ILayer", "sameLayerEdges", EDGE),
-    ).forEach { (className, propertyName, generic) ->
-        source.type(className)
-            .property(propertyName)
-            .fixTypeGeneric(generic)
-    }
-}
-
-private fun fixReturnType(source: Source) {
-    sequenceOf(
-        "INodeLabelLayoutModel" to NODE_LABEL_CANDIDATE,
-        "DiscreteNodeLabelLayoutModel" to NODE_LABEL_CANDIDATE,
-        "FreeNodeLabelLayoutModel" to NODE_LABEL_CANDIDATE,
-
-        "IEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE,
-        "DiscreteEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE,
-        "FreeEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE,
-        "SliderEdgeLabelLayoutModel" to EDGE_LABEL_CANDIDATE
-    ).forEach { (className, generic) ->
-        source.type(className)
-            .method("getLabelCandidates")
-            .fixReturnTypeGeneric(generic)
-    }
-
-    sequenceOf(
-        "LayoutGraph" to "getPathList",
-        "LayoutGraph" to "getPointList",
-
-        "EdgeInfo" to "calculatePathPoints"
-    ).forEach { (className, methodName) ->
-        source.type(className)
-            .method(methodName)
-            .fixReturnTypeGeneric(YPOINT)
-    }
-
-    sequenceOf(
-        Triple("Geom", "calcConvexHull", YPOINT),
-        Triple("ShortestPathAlgorithm", "kShortestPaths", EDGE_LIST)
-    ).forEach { (className, methodName, generic) ->
-        source.type(className)
-            .method(methodName)
-            .fixReturnTypeGeneric(generic)
-    }
-}
-
-private fun JSONObject.fixReturnTypeGeneric(generic: String) {
-    get(RETURNS)
-        .fixTypeGeneric(generic)
 }
 
 private fun JSONObject.fixTypeGeneric(generic: String) {

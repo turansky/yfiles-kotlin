@@ -100,7 +100,8 @@ private val CONSTRUCTOR_MODIFIERS = setOf(
     PROTECTED,
     PRIVATE,
 
-    PUBLIC
+    PUBLIC,
+    EXPERT
 )
 
 internal class ConstructorModifiers(modifiers: List<String>) : Modifiers(modifiers, CONSTRUCTOR_MODIFIERS) {
@@ -115,6 +116,7 @@ private val CONSTANT_MODIFIERS = setOf(
     STATIC,
     FINAL,
     RO,
+    WO,
 
     PROTECTED,
 
@@ -219,6 +221,7 @@ private val PARAMETER_MODIFIERS = setOf(
     OPTIONAL,
 
     CANBENULL,
+    CANBEUNDEFINED,
 
     NOTNULL,
     CONVERSION

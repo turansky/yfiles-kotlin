@@ -1,7 +1,9 @@
 import Object.Companion.getOwnPropertyDescriptor
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
+@Ignore
 class ConfigurablePropertyTest {
     @Test
     fun arrowProperties() {

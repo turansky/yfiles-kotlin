@@ -4,7 +4,6 @@ import com.github.turansky.yfiles.ContentMode.ITERATOR
 import com.github.turansky.yfiles.GeneratorContext
 import com.github.turansky.yfiles.ICURSOR
 import com.github.turansky.yfiles.IENUMERABLE
-import com.github.turansky.yfiles.YOBJECT
 
 internal fun addIteratorSupport(context: GeneratorContext) {
     // language=kotlin
@@ -34,13 +33,13 @@ internal fun addIteratorSupport(context: GeneratorContext) {
 
     // language=kotlin
     context[ICURSOR, ITERATOR] = """
-        operator fun <T : $YOBJECT> ICursor<T>.iterator(): Iterator<T> =
+        operator fun <T : Any> ICursor<T>.iterator(): Iterator<T> =
             CursorIterator(this)
             
-        fun <T : $YOBJECT> ICursor<T>.asSequence(): Sequence<T> =
+        fun <T : Any> ICursor<T>.asSequence(): Sequence<T> =
             iterator().asSequence()
         
-        private class CursorIterator<T : $YOBJECT>(
+        private class CursorIterator<T : Any>(
             private val source: ICursor<T>
         ) : Iterator<T> {
             

@@ -21,17 +21,11 @@ internal class TypeGeneratorData(
     val jsName = alias ?: name
 
     val fileId: String
-        get() = if (primitive || isYObject) {
+        get() = if (primitive) {
             "$packageName.$jsName"
         } else {
             fqn
         }
-
-    val isYObject: Boolean
-        get() = isYObjectClass(fqn)
-
-    val isYBase: Boolean
-        get() = fqn == YCLASS || fqn == YENUM
 
     val primitive: Boolean
         get() = isPrimitiveClass(fqn)

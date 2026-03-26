@@ -13,6 +13,10 @@ private const val CREATE = "create"
 
 private const val QII = "qii"
 
+private val TYPE_ALIAS_REGEX = Regex("(\\w+)\\['\\w+']")
+private val COMPARISON_REGEX = Regex("function\\(([\\w.]+), ?([\\w.]+)\\):number")
+private val FUNCTION_SIGNATURE_REGEX = Regex("function\\(([^)]*)\\):([a-zA-Z0-9.]+)")
+
 internal fun File.readJson(): JSONObject =
     readText(UTF_8)
         .run { substring(indexOf("{")) }
@@ -22,6 +26,7 @@ internal fun File.readJson(): JSONObject =
 internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
     readJson()
         .apply { fixArrayDeclaration() }
+        .apply { fixTypeAliasing() }
         .apply { removeNamespaces() }
         .apply { fixInsetsDeclaration() }
         .apply { mergeDeclarations() }
@@ -30,8 +35,20 @@ internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
         .toString()
         .replace("yfiles.geometry.IPoint[]", "Array<yfiles.geometry.IPoint>")
         .replace("yfiles.layout.LabelLayoutData[]", "Array<yfiles.layout.LabelLayoutData>")
+        .replace(COMPARISON_REGEX, "yfiles.lang.Comparison1<$1>")
+        .replace("yfiles.analysis.LayoutGraphAlgorithms.DfsNodeVisited", "yfiles.analysis.DfsNodeVisited")
+        .replace("yfiles.analysis.LayoutGraphAlgorithms.DfsNodeVisiting", "yfiles.analysis.DfsNodeVisiting")
+        .replace("yfiles.analysis.LayoutGraphAlgorithms.DfsEdgeTraversed", "yfiles.analysis.DfsEdgeTraversed")
+        .replace("yfiles.analysis.LayoutGraphAlgorithms.DfsEdgeTraversing", "yfiles.analysis.DfsEdgeTraversing")
+        .replace("yfiles.analysis.LayoutGraphAlgorithms.DfsNextTreeVisiting", "yfiles.analysis.DfsNextTreeVisiting")
+        .replace("yfiles.analysis.LayoutGraphAlgorithms.DfsNextTreeVisited", "yfiles.analysis.DfsNextTreeVisited")
+        .replace("yfiles.labeling.GenericLabeling.EdgeLabelCandidateProcessor", "yfiles.labeling.EdgeLabelCandidateProcessor")
+        .replace("yfiles.labeling.GenericLabeling.NodeLabelCandidateProcessor", "yfiles.labeling.NodeLabelCandidateProcessor")
+        .replace("IEnumerableConvertible<IAnimation|WebGLAnimation>", "IEnumerableConvertible<IAnimation>")
+        .replace("\"FocusOptions\"", "\"web.dom.FocusOptions\"")
+        .replace("any[]", "Array<Any>")
+        .replaceFunctionSignatures()
         .fixSystemPackage()
-        .fixClassDeclaration()
         .run { JSONObject(this) }
         .apply(action)
         .apply { fixFunctionSignatures() }
@@ -41,17 +58,6 @@ internal fun File.readApiJson(action: JSONObject.() -> Unit): JSONObject =
 private fun String.fixSystemPackage(): String =
     replace("\"yfiles.system.", "\"yfiles.lang.")
         .replace("\"system.", "\"yfiles.lang.")
-
-private fun String.fixClassDeclaration(): String =
-    replace(""""id":"yfiles.lang.Class"""", """"id":"$YCLASS","es6name":"Class"""")
-        .replace(""""name":"Class"""", """"name":"YClass"""")
-        .replace(""""yfiles.lang.Class"""", """"$YCLASS"""")
-        .replace(""""yfiles.lang.Class<T>"""", """"$YCLASS<T>"""")
-        .replace(""""Array<yfiles.lang.Class>"""", """"Array<$YCLASS>"""")
-        .replace(
-            """"yfiles.collections.Map<yfiles.lang.Class,$JS_OBJECT>"""",
-            """"yfiles.collections.Map<$YCLASS,$JS_OBJECT>""""
-        )
 
 private fun String.fixInsetsDeclaration(): String =
     replace("yfiles.algorithms.Insets", "yfiles.algorithms.YInsets")
@@ -76,6 +82,30 @@ private fun JSONObject.fixArrayDeclaration() {
 
     remove("dimension")
     put("type", "Array<$type>")
+}
+
+private fun Any.fixTypeAliasing() {
+    when (this) {
+        is JSONObject -> fixTypeAliasing()
+        is JSONArray -> fixTypeAliasing()
+    }
+}
+
+private fun JSONArray.fixTypeAliasing() {
+    for (item in this) {
+        item.fixTypeAliasing()
+    }
+}
+
+private fun JSONObject.fixTypeAliasing() {
+    for (key in keys()) {
+        get(key).fixTypeAliasing()
+    }
+
+    val type = optString("type")
+        .ifEmpty { return }
+
+    put("type", type.replace(TYPE_ALIAS_REGEX, TAG))
 }
 
 private fun JSONArray.fixArrayDeclaration() {
@@ -121,6 +151,22 @@ private fun JSONObject.removeNamespaces() {
         .toList()
 
     set(TYPES, types)
+}
+
+private fun String.replaceFunctionSignatures() : String {
+    var str = this
+    generateSequence { FUNCTION_SIGNATURE_REGEX.find(str) }.forEach { result ->
+        val arguments = result.groupValues[1]
+            .split(",")
+            .joinToString(", ") {
+                getKotlinType(it) ?: it
+            }
+            .replace("unknown", ANY)
+
+        val returnType = result.groupValues[2].let { getKotlinType(it) ?: it }
+        str = str.replace(result.value, "($arguments) -> $returnType")
+    }
+    return str
 }
 
 private fun JSONObject.fixFunctionSignatures() {

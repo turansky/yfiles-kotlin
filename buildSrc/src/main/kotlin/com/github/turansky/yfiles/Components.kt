@@ -5,8 +5,6 @@ internal fun Class.getComponents(): String? =
         "yfiles.algorithms.Point2D",
         "yfiles.algorithms.Rectangle2D",
 
-        "yfiles.algorithms.YDimension",
-        "yfiles.algorithms.YPoint",
         "yfiles.algorithms.YOrientedRectangle",
 
         "yfiles.algorithms.YInsets",

@@ -6,23 +6,11 @@ import com.github.turansky.yfiles.READ_ONLY_PROPERTY
 import com.github.turansky.yfiles.READ_WRITE_PROPERTY
 
 internal val OBSERVABLE = "yfiles.graph.Observable"
-internal val MAKE_OBSERVABLE = "yfiles.styles.Templates.makeObservable"
 
 internal fun generateObservableDelegates(context: GeneratorContext) {
     // language=kotlin
     context[OBSERVABLE] =
-        """
-        fun <T: Any> $TAG.deepObservable(value: T): IPropertyProvider<$TAG, T> {
-            check(jsTypeOf(value) == "object")
-            makeObservable()            
-            return TagPropertyProvider(value)
-        }    
-        
-        fun <T> $TAG.observable(initialValue: T): $READ_WRITE_PROPERTY<$TAG, T> {
-            makeObservable()
-            return Property(initialValue)
-        }    
-            
+        """            
         fun <T> Any.observable(initialValue: T): $READ_WRITE_PROPERTY<Any, T> {
             return Property(initialValue)
         }
@@ -80,12 +68,6 @@ internal fun generateObservableDelegates(context: GeneratorContext) {
                     this.value = value
                     thisRef.firePropertyChanged(property.name)
                 }
-            }
-        }
-         
-        private inline fun $TAG.makeObservable() {
-            if (!firePropertyChangedDeclared) {
-                $MAKE_OBSERVABLE(this)
             }
         }
          

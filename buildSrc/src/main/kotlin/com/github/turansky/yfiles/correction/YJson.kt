@@ -50,7 +50,7 @@ internal fun JSONObject.property(name: String): JSONObject =
     get(PROPERTIES)[name]
 
 internal fun Sequence<JSONObject>.eventListeners(): Sequence<JSONObject> =
-    flatMap { sequenceOf("add", "remove").map(it::getJSONObject) }
+    flatMap { sequenceOf("add", "remove").filter(it::has).map(it::getJSONObject) }
 
 internal fun JSONObject.addProperty(
     propertyName: String,
@@ -87,7 +87,7 @@ internal fun JSONObject.changeOptionality(optional: Boolean) =
     changeModifier(OPTIONAL, optional)
 
 private fun JSONObject.changeModifier(modifier: String, value: Boolean) {
-    val modifiers = get(MODIFIERS)
+    val modifiers = opt(MODIFIERS) ?: return
     val index = modifiers.indexOf(modifier)
 
     // TEMP WORKAROUND
@@ -213,6 +213,8 @@ internal fun JSONObject.returnsSequence(): Sequence<JSONObject> =
 
 internal fun JSONObject.addGeneric(generic: String) {
     val type = get(TYPE)
+    if (type == generic)
+        return
     set(TYPE, "$type<$generic>")
 }
 

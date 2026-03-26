@@ -16,6 +16,7 @@ internal fun generateResourceTypes(
         .map { it.substringAfterLast(">") }
         .chunked(2)
         .filter { it.size == 2 }
+        .distinctBy { it.first() }
         .map { constDeclaration(it.first(), it.last()) }
         .joinToString(separator = "\n\n", postfix = "\n")
 
@@ -103,6 +104,8 @@ private fun constDeclaration(
     val name = key
         .replace(Regex("([a-z])([A-Z])"), "$1_$2")
         .replace(".", "__")
+        .replace("%", "")
+        .replace(" ", "_")
         .uppercase()
 
     return if (key.endsWith("Key")) {
