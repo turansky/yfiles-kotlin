@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+
 plugins {
     kotlin("jvm") version "2.3.20"
     id("org.jetbrains.intellij") version "1.17.3"
@@ -23,7 +25,9 @@ intellij {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions {
+            jvmTarget = JVM_21
+        }
     }
 
     runIde {
